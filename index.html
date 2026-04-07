@@ -113,11 +113,6 @@ a { color: var(--blue); text-decoration: none; }
 .tab-btn:hover { color: rgba(255,255,255,0.6); }
 .tab-btn.active { background: rgba(255,255,255,0.08); color: #fff; }
 .tab-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-.server-dot {
-  width: 7px; height: 7px; border-radius: 50%; display: inline-block;
-  background: var(--red); transition: background 0.3s;
-}
-.server-dot.ok { background: var(--green); box-shadow: 0 0 8px rgba(52,211,153,0.4); }
 .icon-btn {
   background: rgba(255,255,255,0.04);
   border: 1px solid var(--border);
@@ -141,37 +136,59 @@ a { color: var(--blue); text-decoration: none; }
   margin: 0 auto;
   padding: 24px 20px 80px;
 }
-.task-input-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.task-input-row input {
-  flex: 1;
+.task-input-card {
   background: var(--card);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-blue);
   border-radius: var(--radius);
-  padding: 14px 18px;
-  font-size: 14px;
+  padding: 16px;
+  margin-bottom: 20px;
+  transition: border-color 0.3s;
+}
+.task-input-card:focus-within { border-color: rgba(59,130,246,0.2); }
+.task-input-card input[type="text"] {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-size: 15px;
   color: #fff;
   outline: none;
-  transition: border-color 0.2s;
+  margin-bottom: 12px;
 }
-.task-input-row input::placeholder { color: var(--text-muted); }
-.task-input-row input:focus { border-color: rgba(59,130,246,0.25); }
-.task-input-row button {
-  padding: 14px 24px;
-  border-radius: var(--radius);
-  background: rgba(59,130,246,0.12);
-  color: var(--blue);
+.task-input-card input[type="text"]::placeholder { color: var(--text-muted); }
+.task-input-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.opt-group { display: flex; gap: 3px; }
+.opt-group-label { font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-right: 2px; align-self: center; }
+.opt-btn {
+  padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;
+  border: 1px solid var(--border); background: transparent;
+  color: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.15s;
+}
+.opt-btn:hover { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.12); }
+.opt-btn.sel { color: #fff; }
+.opt-btn.sel.cat-work { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.3); color: var(--blue); }
+.opt-btn.sel.cat-personal { background: rgba(139,92,246,0.15); border-color: rgba(139,92,246,0.3); color: var(--purple); }
+.opt-btn.sel.cat-project { background: rgba(52,211,153,0.15); border-color: rgba(52,211,153,0.3); color: var(--green); }
+.opt-btn.sel.pri-high { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.25); color: var(--red); }
+.opt-btn.sel.pri-medium { background: rgba(234,179,8,0.12); border-color: rgba(234,179,8,0.25); color: var(--yellow); }
+.opt-btn.sel.pri-low { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); color: var(--text-muted); }
+.task-add-btn {
+  padding: 6px 20px; border-radius: 12px; margin-left: auto;
+  background: rgba(59,130,246,0.12); color: var(--blue);
   border: 1px solid rgba(59,130,246,0.2);
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
+  font-weight: 700; font-size: 12px; cursor: pointer;
   transition: all 0.2s var(--ease);
 }
-.task-input-row button:hover { background: rgba(59,130,246,0.2); transform: translateY(-1px); }
+.task-add-btn:hover { background: rgba(59,130,246,0.2); transform: translateY(-1px); }
+.task-due-input {
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px;
+  padding: 4px 8px; font-size: 10px; color: var(--text-body); outline: none;
+}
 
 .task-filters {
   display: flex;
@@ -483,7 +500,6 @@ a { color: var(--blue); text-decoration: none; }
     </div>
     <div class="tab-actions">
       <button class="icon-btn" onclick="promptFirebaseUrl()">DB</button>
-      <span class="server-dot" id="serverDot" title="Server status"></span>
     </div>
   </div>
 </nav>
@@ -491,9 +507,22 @@ a { color: var(--blue); text-decoration: none; }
 <!-- ═══ TASKS VIEW ═══ -->
 <main id="tasksView" class="view active">
   <div class="tasks-container">
-    <div class="task-input-row">
-      <input id="newTaskInput" type="text" placeholder="Add a task... (!high @work due:4/15)" onkeydown="if(event.key==='Enter')addTask()">
-      <button onclick="addTask()">Add</button>
+    <div class="task-input-card">
+      <input id="newTaskInput" type="text" placeholder="What needs to be done?" onkeydown="if(event.key==='Enter')addTask()">
+      <div class="task-input-options">
+        <div class="opt-group">
+          <button class="opt-btn sel cat-work" onclick="setNewCat('work',this)" data-cat="work">Work</button>
+          <button class="opt-btn cat-personal" onclick="setNewCat('personal',this)" data-cat="personal">Personal</button>
+          <button class="opt-btn cat-project" onclick="setNewCat('project',this)" data-cat="project">Project</button>
+        </div>
+        <div class="opt-group">
+          <button class="opt-btn pri-high" onclick="setNewPri('high',this)" data-pri="high">High</button>
+          <button class="opt-btn sel pri-medium" onclick="setNewPri('medium',this)" data-pri="medium">Med</button>
+          <button class="opt-btn pri-low" onclick="setNewPri('low',this)" data-pri="low">Low</button>
+        </div>
+        <input type="date" id="newTaskDue" class="task-due-input">
+        <button class="task-add-btn" onclick="addTask()">Add</button>
+      </div>
     </div>
     <div class="task-filters" id="taskFilters"></div>
     <div class="task-list" id="taskList"></div>
@@ -584,36 +613,28 @@ function attachFirebaseListeners() {
     tasks = val || {};
     renderTasks();
   });
+  attachVaultListener();
 }
 
 // ══════════════════════════════════════════
 //  Task CRUD
 // ══════════════════════════════════════════
-function parseTaskInput(text) {
-  let title = text;
-  let priority = 'medium';
-  let category = 'personal';
-  let dueDate = '';
+let newCat = 'work';
+let newPri = 'medium';
 
-  // !high, !low
-  const priMatch = title.match(/!(high|medium|low)/i);
-  if (priMatch) { priority = priMatch[1].toLowerCase(); title = title.replace(priMatch[0], '').trim(); }
-
-  // @work, @personal, @project
-  const catMatch = title.match(/@(work|personal|project)/i);
-  if (catMatch) { category = catMatch[1].toLowerCase(); title = title.replace(catMatch[0], '').trim(); }
-
-  // due:4/15 or due:2026-04-15
-  const dueMatch = title.match(/due:(\S+)/i);
-  if (dueMatch) {
-    dueDate = dueMatch[1];
-    title = title.replace(dueMatch[0], '').trim();
-    // Normalize M/D to 2026-MM-DD
-    const md = dueDate.match(/^(\d{1,2})\/(\d{1,2})$/);
-    if (md) dueDate = `2026-${md[1].padStart(2,'0')}-${md[2].padStart(2,'0')}`;
-  }
-
-  return { title: title.trim(), priority, category, dueDate };
+function setNewCat(cat, btn) {
+  newCat = cat;
+  document.querySelectorAll('.task-input-options .opt-btn[data-cat]').forEach(b => {
+    b.classList.toggle('sel', b.dataset.cat === cat);
+    b.classList.toggle('cat-' + b.dataset.cat, b.dataset.cat === cat);
+  });
+}
+function setNewPri(pri, btn) {
+  newPri = pri;
+  document.querySelectorAll('.task-input-options .opt-btn[data-pri]').forEach(b => {
+    b.classList.toggle('sel', b.dataset.pri === pri);
+    b.classList.toggle('pri-' + b.dataset.pri, b.dataset.pri === pri);
+  });
 }
 
 function addTask() {
@@ -622,9 +643,12 @@ function addTask() {
   if (!text) return;
   if (!db) { alert('Configure Firebase first (click DB button)'); return; }
 
-  const parsed = parseTaskInput(text);
+  const dueDate = document.getElementById('newTaskDue')?.value || '';
   fbPush('tasks', {
-    ...parsed,
+    title: text,
+    priority: newPri,
+    category: newCat,
+    dueDate,
     description: '',
     completed: false,
     completedAt: '',
@@ -632,6 +656,7 @@ function addTask() {
     order: Date.now(),
   });
   input.value = '';
+  document.getElementById('newTaskDue').value = '';
 }
 
 function toggleComplete(id) {
@@ -703,7 +728,8 @@ function renderTasks() {
     const overdue = t.dueDate && !t.completed && t.dueDate < today;
     const dueLabel = t.dueDate ? (overdue ? `Overdue: ${t.dueDate}` : `Due: ${t.dueDate}`) : '';
 
-    let html = `<div class="task-card ${t.completed ? 'completed' : ''}" style="animation-delay:${idx * 30}ms">
+    const catColor = t.category === 'work' ? 'var(--blue)' : t.category === 'project' ? 'var(--green)' : 'var(--purple)';
+    let html = `<div class="task-card ${t.completed ? 'completed' : ''}" style="animation-delay:${idx * 30}ms;border-left:3px solid ${catColor}">
       <button class="task-check" onclick="toggleComplete('${id}')">${t.completed ? '&#10003;' : ''}</button>
       <div class="task-body">
         <div class="task-title" onclick="toggleExpand('${id}')">${escHtml(t.title || 'Untitled')}</div>
@@ -746,41 +772,55 @@ function renderTasks() {
 function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ══════════════════════════════════════════
-//  Vault
+//  Vault (Firebase-backed)
 // ══════════════════════════════════════════
-const PROXY_URL = localStorage.getItem('oyt_proxy') || 'http://localhost:8890';
-let vaultNotes = [];
-let selectedNotePath = null;
+let vaultNotes = {};  // {id: {title, folder, content, color, createdAt}}
+let selectedNoteId = null;
 let vaultEditMode = false;
 let collapsedFolders = {};
 
-async function loadVaultNotes() {
-  try {
-    const res = await fetch(PROXY_URL + '/api/vault/notes');
-    if (!res.ok) throw new Error('Server not reachable');
-    vaultNotes = await res.json();
+const FOLDER_COLORS = {
+  'Ideas': '#3b82f6',
+  'Projects': '#34d399',
+  'Personal': '#8b5cf6',
+  'Work': '#f59e0b',
+  'Reference': '#94a3b8',
+  'Daily': '#6366f1',
+};
+
+function attachVaultListener() {
+  fbListen('vault', (val) => {
+    vaultNotes = val || {};
     renderVaultTree();
-  } catch(e) {
-    document.getElementById('vaultTree').innerHTML = '<div style="padding:16px;color:var(--text-muted);font-size:11px">Start server.py to load vault</div>';
-  }
+    if (selectedNoteId && vaultNotes[selectedNoteId]) {
+      renderNoteView(selectedNoteId, vaultNotes[selectedNoteId]);
+    }
+  });
+}
+
+function loadVaultNotes() {
+  // Already loaded via listener; just render
+  renderVaultTree();
 }
 
 function renderVaultTree() {
   const el = document.getElementById('vaultTree');
   const query = (document.getElementById('vaultSearch')?.value || '').toLowerCase();
-  const filtered = query ? vaultNotes.filter(n => n.name.toLowerCase().includes(query) || n.title.toLowerCase().includes(query)) : vaultNotes;
+  const entries = Object.entries(vaultNotes);
+  const filtered = query ? entries.filter(([,n]) => (n.title||'').toLowerCase().includes(query) || (n.folder||'').toLowerCase().includes(query)) : entries;
 
   // Group by folder
   const folders = {};
-  filtered.forEach(n => {
-    const f = n.folder || 'Root';
+  filtered.forEach(([id, n]) => {
+    const f = n.folder || 'Unfiled';
     if (!folders[f]) folders[f] = [];
-    folders[f].push(n);
+    folders[f].push({ id, ...n });
   });
 
-  let html = '';
+  // New note button
+  let html = '<div style="padding:8px 12px"><button class="vault-edit-btn" style="width:100%;text-align:center" onclick="createNewNote()">+ New Note</button></div>';
   Object.entries(folders).sort((a,b) => a[0].localeCompare(b[0])).forEach(([folder, notes]) => {
-    const color = notes[0]?.color || '#64748b';
+    const color = FOLDER_COLORS[folder] || '#64748b';
     const collapsed = collapsedFolders[folder];
     html += `<div class="vault-folder-header" onclick="collapsedFolders['${folder}']=!collapsedFolders['${folder}'];renderVaultTree()">
       <span class="folder-dot" style="background:${color}"></span>
@@ -788,70 +828,80 @@ function renderVaultTree() {
       <span class="folder-count">${notes.length}</span>
     </div>`;
     if (!collapsed) {
-      notes.forEach(n => {
-        html += `<div class="vault-note-item ${selectedNotePath===n.path?'active':''}" onclick="loadNoteContent('${n.path}')">${n.title || n.name}</div>`;
+      notes.sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||'')).forEach(n => {
+        html += `<div class="vault-note-item ${selectedNoteId===n.id?'active':''}" onclick="selectNote('${n.id}')">${escHtml(n.title || 'Untitled')}</div>`;
       });
     }
   });
-  el.innerHTML = html || '<div style="padding:16px;color:var(--text-muted);font-size:11px">No notes found</div>';
+  el.innerHTML = entries.length ? html : html + '<div style="padding:16px;color:var(--text-muted);font-size:11px">No notes yet. Create one above.</div>';
 }
 
-async function loadNoteContent(path) {
-  selectedNotePath = path;
+function selectNote(id) {
+  selectedNoteId = id;
   vaultEditMode = false;
   renderVaultTree();
-  const content = document.getElementById('vaultContent');
-  content.innerHTML = '<div class="vault-empty">Loading...</div>';
-  try {
-    const res = await fetch(PROXY_URL + '/api/vault/read?path=' + encodeURIComponent(path));
-    const data = await res.json();
-    const note = vaultNotes.find(n => n.path === path) || {};
-    renderNoteView(note, data.content);
-  } catch(e) {
-    content.innerHTML = '<div class="vault-empty">Error loading note</div>';
-  }
+  const note = vaultNotes[id];
+  if (note) renderNoteView(id, note);
 }
 
-function renderNoteView(note, raw) {
+function createNewNote() {
+  if (!db) { alert('Configure Firebase first'); return; }
+  const folder = prompt('Folder (Ideas, Projects, Personal, Work, Reference, Daily):', 'Ideas');
+  if (!folder) return;
+  const title = prompt('Note title:');
+  if (!title) return;
+  const ref = fbPush('vault', {
+    title,
+    folder,
+    content: `# ${title}\n\n`,
+    color: FOLDER_COLORS[folder] || '#64748b',
+    createdAt: new Date().toISOString(),
+  });
+}
+
+function renderNoteView(id, note) {
   const content = document.getElementById('vaultContent');
+  const raw = note.content || '';
   if (vaultEditMode) {
     content.innerHTML = `<div class="vault-note-header">
       <div>
-        <div class="vault-note-title">${escHtml(note.title || note.name || '')}</div>
-        <div class="vault-note-path">${escHtml(note.path || '')}</div>
+        <div class="vault-note-title">${escHtml(note.title || '')}</div>
+        <div class="vault-note-path">${escHtml(note.folder || '')}</div>
       </div>
       <div style="display:flex;gap:6px">
-        <button class="vault-edit-btn" onclick="saveNoteEdit()">Save</button>
-        <button class="vault-edit-btn" onclick="vaultEditMode=false;loadNoteContent('${note.path}')">Cancel</button>
+        <button class="vault-edit-btn" onclick="saveNoteEdit('${id}')">Save</button>
+        <button class="vault-edit-btn" onclick="vaultEditMode=false;selectNote('${id}')">Cancel</button>
+        <button class="vault-edit-btn" style="color:var(--red)" onclick="if(confirm('Delete this note?')){fbSet('vault/${id}',null);selectedNoteId=null;document.getElementById('vaultContent').innerHTML='<div class=vault-empty>Note deleted</div>'}">Delete</button>
       </div>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <input type="text" value="${escHtml(note.title||'')}" onblur="fbSet('vault/${id}/title',this.value)" placeholder="Title" style="flex:1;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;color:#fff;outline:none">
+      <select onchange="fbSet('vault/${id}/folder',this.value)" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:11px;color:var(--text-body);outline:none">
+        ${['Ideas','Projects','Personal','Work','Reference','Daily'].map(f => `<option value="${f}" ${note.folder===f?'selected':''}>${f}</option>`).join('')}
+      </select>
     </div>
     <textarea class="vault-editor" id="vaultEditor">${escHtml(raw)}</textarea>`;
   } else {
     content.innerHTML = `<div class="vault-note-header">
       <div>
-        <div class="vault-note-title">${escHtml(note.title || note.name || '')}</div>
-        <div class="vault-note-path">${escHtml(note.path || '')}</div>
+        <div class="vault-note-title">${escHtml(note.title || '')}</div>
+        <div class="vault-note-path" style="color:${FOLDER_COLORS[note.folder]||'var(--text-muted)'}">${escHtml(note.folder || '')}</div>
       </div>
-      <button class="vault-edit-btn" onclick="vaultEditMode=true;renderNoteView(${JSON.stringify(note).replace(/"/g,'&quot;')},document.getElementById('vaultRaw')?.value||'')">Edit</button>
+      <button class="vault-edit-btn" onclick="vaultEditMode=true;renderNoteView('${id}',vaultNotes['${id}'])">Edit</button>
     </div>
-    <div class="vault-md" id="vaultMd">${renderMarkdown(raw)}</div>
-    <textarea id="vaultRaw" style="display:none">${escHtml(raw)}</textarea>`;
+    <div class="vault-md" id="vaultMd">${renderMarkdown(raw)}</div>`;
     wireWikilinks();
   }
 }
 
-async function saveNoteEdit() {
+function saveNoteEdit(id) {
   const ed = document.getElementById('vaultEditor');
-  if (!ed || !selectedNotePath) return;
-  try {
-    await fetch(PROXY_URL + '/api/vault/write', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: selectedNotePath, content: ed.value }),
-    });
-    vaultEditMode = false;
-    loadNoteContent(selectedNotePath);
-  } catch(e) { alert('Save failed: ' + e.message); }
+  if (!ed) return;
+  fbSet(`vault/${id}/content`, ed.value);
+  // Update title from first heading if present
+  const firstLine = ed.value.split('\n')[0].replace(/^#+\s*/, '').trim();
+  if (firstLine) fbSet(`vault/${id}/title`, firstLine);
+  vaultEditMode = false;
 }
 
 function renderMarkdown(text) {
@@ -891,20 +941,33 @@ function wireWikilinks() {
   document.querySelectorAll('.wikilink').forEach(el => {
     el.addEventListener('click', () => {
       const name = el.dataset.note;
-      const note = vaultNotes.find(n => n.name === name || n.title === name);
-      if (note) loadNoteContent(note.path);
-      // Also enhance brain node
+      const match = Object.entries(vaultNotes).find(([,n]) => n.title === name);
+      if (match) selectNote(match[0]);
       enhanceBrainNode(name);
     });
   });
 }
 
 // ══════════════════════════════════════════
-//  Alfred Chat
+//  Alfred Chat (MiniMax M2.7 — direct API)
 // ══════════════════════════════════════════
+const ALFRED_API_URL = 'https://api.minimax.io/anthropic/v1/messages';
+const ALFRED_MODEL = 'MiniMax-M2.7';
 let alfredOpen = false;
 let alfredHistory = [];
+let alfredKey = null;
 let isStreaming = false;
+
+async function getAlfredKey() {
+  if (alfredKey) return alfredKey;
+  alfredKey = await fbGet('config/minimax_key');
+  if (!alfredKey) alfredKey = localStorage.getItem('oyt_alfred_key');
+  if (!alfredKey) {
+    alfredKey = prompt('Enter MiniMax API key for Alfred:');
+    if (alfredKey) { localStorage.setItem('oyt_alfred_key', alfredKey); fbSet('config/minimax_key', alfredKey); }
+  }
+  return alfredKey;
+}
 
 function toggleAlfred() {
   alfredOpen = !alfredOpen;
@@ -943,9 +1006,17 @@ CURRENT TASKS:\n`;
   } else {
     sys += '(no tasks yet)\n';
   }
-  if (selectedNotePath) {
-    const raw = document.getElementById('vaultRaw')?.value || '';
-    if (raw) sys += `\nCURRENT VAULT NOTE: ${selectedNotePath}\n${raw.slice(0, 800)}\n`;
+  // Vault context
+  const vaultEntries = Object.entries(vaultNotes);
+  if (vaultEntries.length) {
+    sys += '\nVAULT NOTES:\n';
+    vaultEntries.slice(0, 20).forEach(([id, n]) => {
+      sys += `- ${n.title} (${n.folder}) id:${id}\n`;
+    });
+  }
+  if (selectedNoteId && vaultNotes[selectedNoteId]) {
+    const n = vaultNotes[selectedNoteId];
+    sys += `\nCURRENT NOTE: ${n.title} (${n.folder})\n${(n.content||'').slice(0, 800)}\n`;
   }
   return sys;
 }
@@ -955,6 +1026,8 @@ async function sendAlfred() {
   const msg = input.value.trim();
   if (!msg || isStreaming) return;
   input.value = '';
+  const key = await getAlfredKey();
+  if (!key) return;
   isStreaming = true;
 
   appendAlfredMsg('user', msg);
@@ -965,15 +1038,18 @@ async function sendAlfred() {
   el.classList.add('streaming');
 
   try {
-    const res = await fetch(PROXY_URL + '/api/chat', {
+    const res = await fetch(ALFRED_API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + key,
+      },
       body: JSON.stringify({
-        provider: 'codex',
-        model: 'gpt-5.3-codex',
-        max_tokens: 2048,
+        model: ALFRED_MODEL,
         system: buildAlfredSystem(),
         messages: alfredHistory.slice(-12).filter(m => m.role !== 'system'),
+        stream: true,
+        max_tokens: 1200,
       }),
     });
 
@@ -982,7 +1058,7 @@ async function sendAlfred() {
       throw new Error(err.slice(0, 200));
     }
 
-    // Read SSE stream (OpenAI format from proxy)
+    // Read SSE stream (Anthropic format)
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let full = '';
@@ -996,20 +1072,17 @@ async function sendAlfred() {
       buffer = lines.pop() || '';
 
       for (const line of lines) {
-        if (!line.startsWith('data: ')) continue;
-        const data = line.slice(6).trim();
-        if (data === '[DONE]') continue;
+        if (!line.startsWith('data:')) continue;
+        const data = line.slice(5).trim();
+        if (!data) continue;
         try {
-          const json = JSON.parse(data);
-          if (json.choices?.[0]?.delta?.content) {
-            full += json.choices[0].delta.content;
+          const evt = JSON.parse(data);
+          if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta' && evt.delta?.text) {
+            full += evt.delta.text;
             el.textContent = full.replace(/\[ENHANCE\s+[^\]]+\]/gi, '').replace(/```(?:task|done|edit)\s*\n[\s\S]*?\n```/g, '');
             scrollAlfred();
           }
-          if (json.error) throw new Error(json.error);
-        } catch(e) {
-          if (e.message && !e.message.startsWith('Unexpected')) throw e;
-        }
+        } catch {}
       }
     }
 
@@ -1245,22 +1318,6 @@ function switchTab(tab) {
 }
 
 // ══════════════════════════════════════════
-//  Server Status
-// ══════════════════════════════════════════
-async function checkServerStatus() {
-  try {
-    const res = await fetch(PROXY_URL + '/api/status', { signal: AbortSignal.timeout(3000) });
-    if (res.ok) {
-      document.getElementById('serverDot').classList.add('ok');
-      document.getElementById('serverDot').title = 'Server connected';
-    }
-  } catch {
-    document.getElementById('serverDot').classList.remove('ok');
-    document.getElementById('serverDot').title = 'Server offline — start server.py';
-  }
-}
-
-// ══════════════════════════════════════════
 //  Swipe gestures for Alfred
 // ══════════════════════════════════════════
 let swipeStartX = 0;
@@ -1277,8 +1334,6 @@ document.addEventListener('touchend', e => {
 // ══════════════════════════════════════════
 if (initFirebase()) attachFirebaseListeners();
 renderTasks();
-checkServerStatus();
-setInterval(checkServerStatus, 30000);
 </script>
 </body>
 </html>
