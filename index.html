@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenYap Todo</title>
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%E2%9C%93</text></svg>">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<style>
+/* ── Variables ── */
+:root {
+  --bg: #000000;
+  --card: rgba(6,6,14,0.82);
+  --card-solid: #0a0a14;
+  --blue: #3B82F6;
+  --green: #34D399;
+  --purple: #8B5CF6;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --text: #FFFFFF;
+  --text-body: #b0b0b0;
+  --text-muted: #555555;
+  --border: rgba(255,255,255,0.06);
+  --border-blue: rgba(59,130,246,0.08);
+  --radius: 16px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow: 0 16px 48px rgba(0,0,0,0.4);
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text-body);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  transition: margin-right 0.3s var(--ease);
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+::selection { background: rgba(59,130,246,0.3); }
+input, select, textarea, button { font-family: inherit; }
+a { color: var(--blue); text-decoration: none; }
+
+/* ── Aurora Background ── */
+.aurora {
+  position: fixed;
+  inset: -20%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 600px 400px at 20% 50%, rgba(59,130,246,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 300px at 80% 30%, rgba(52,211,153,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 600px at 60% 80%, rgba(139,92,246,0.05) 0%, transparent 70%);
+  animation: aurora 15s ease-in-out infinite alternate;
+}
+@keyframes aurora {
+  0% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(-30px,20px) scale(1.05) rotate(2deg); }
+  100% { transform: translate(20px,-10px) scale(0.98) rotate(-1deg); }
+}
+
+/* ── Tab Bar ── */
+.tab-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(6,8,16,0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+.tab-bar-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.app-title {
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: rgba(140,170,210,0.3);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.tabs { display: flex; gap: 4px; }
+.tab-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  background: transparent;
+  color: rgba(255,255,255,0.35);
+}
+.tab-btn:hover { color: rgba(255,255,255,0.6); }
+.tab-btn.active { background: rgba(255,255,255,0.08); color: #fff; }
+.tab-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.server-dot {
+  width: 7px; height: 7px; border-radius: 50%; display: inline-block;
+  background: var(--red); transition: background 0.3s;
+}
+.server-dot.ok { background: var(--green); box-shadow: 0 0 8px rgba(52,211,153,0.4); }
+.icon-btn {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: rgba(255,255,255,0.3);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.icon-btn:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+
+/* ── Views ── */
+.view { display: none; position: relative; z-index: 1; }
+.view.active { display: block; }
+
+/* ── Tasks View ── */
+.tasks-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+}
+.task-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.task-input-row input {
+  flex: 1;
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-blue);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  font-size: 14px;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.task-input-row input::placeholder { color: var(--text-muted); }
+.task-input-row input:focus { border-color: rgba(59,130,246,0.25); }
+.task-input-row button {
+  padding: 14px 24px;
+  border-radius: var(--radius);
+  background: rgba(59,130,246,0.12);
+  color: var(--blue);
+  border: 1px solid rgba(59,130,246,0.2);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+.task-input-row button:hover { background: rgba(59,130,246,0.2); transform: translateY(-1px); }
+
+.task-filters {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.filter-pill {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: rgba(255,255,255,0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-pill:hover { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.12); }
+.filter-pill.active { background: rgba(255,255,255,0.08); color: #fff; border-color: rgba(255,255,255,0.15); }
+
+.task-list { display: flex; flex-direction: column; gap: 6px; }
+
+.task-card {
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-blue);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: all 0.3s var(--ease);
+  cursor: default;
+  animation: taskIn 0.35s var(--ease) both;
+}
+.task-card:hover { border-color: rgba(59,130,246,0.15); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.task-card.completed { opacity: 0.4; }
+.task-card.completed .task-title { text-decoration: line-through; color: var(--text-muted); }
+@keyframes taskIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.task-check {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; margin-top: 2px;
+  border: 2px solid rgba(255,255,255,0.15); background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s var(--ease);
+  color: transparent; font-size: 11px;
+}
+.task-check:hover { border-color: var(--green); }
+.task-card.completed .task-check {
+  border-color: var(--green); background: var(--green); color: #000;
+}
+.task-body { flex: 1; min-width: 0; }
+.task-title { font-size: 14px; font-weight: 500; color: #fff; line-height: 1.4; }
+.task-meta { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; align-items: center; }
+.priority-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.priority-dot.high { background: var(--red); box-shadow: 0 0 6px rgba(239,68,68,0.4); }
+.priority-dot.medium { background: var(--yellow); }
+.priority-dot.low { background: var(--text-muted); }
+.cat-pill {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 2px 8px; border-radius: 10px;
+}
+.cat-pill.work { background: rgba(59,130,246,0.12); color: rgba(59,130,246,0.7); }
+.cat-pill.personal { background: rgba(139,92,246,0.12); color: rgba(139,92,246,0.7); }
+.cat-pill.project { background: rgba(52,211,153,0.12); color: rgba(52,211,153,0.7); }
+.due-label { font-size: 10px; color: var(--text-muted); }
+.due-label.overdue { color: var(--red); }
+.task-actions {
+  display: flex; gap: 4px; flex-shrink: 0; opacity: 0; transition: opacity 0.2s;
+}
+.task-card:hover .task-actions { opacity: 1; }
+.task-action-btn {
+  width: 28px; height: 28px; border-radius: 8px; border: none;
+  background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.3);
+  cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.task-action-btn:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+.task-action-btn.delete:hover { background: rgba(239,68,68,0.1); color: var(--red); }
+
+/* Expanded task edit */
+.task-expand {
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.task-expand textarea {
+  width: 100%; background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 12px; color: var(--text-body); font-size: 12px;
+  resize: vertical; min-height: 60px; outline: none;
+}
+.task-expand textarea:focus { border-color: rgba(59,130,246,0.2); }
+.task-expand-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.task-expand-row select, .task-expand-row input[type="date"] {
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px;
+  padding: 6px 10px; font-size: 11px; color: var(--text-body); outline: none;
+}
+
+.task-stats {
+  margin-top: 24px; text-align: center; font-size: 11px; color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+/* ── Vault View ── */
+.vault-layout {
+  display: flex;
+  height: calc(100vh - 52px);
+}
+.vault-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  background: rgba(4,6,12,0.6);
+  scrollbar-width: thin;
+}
+.vault-search {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.vault-search input {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #fff;
+  outline: none;
+}
+.vault-search input:focus { border-color: rgba(59,130,246,0.2); }
+.vault-folder-header {
+  padding: 8px 14px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+.vault-folder-header:hover { color: var(--text-body); }
+.vault-folder-header .folder-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+}
+.vault-folder-header .folder-count {
+  margin-left: auto; font-size: 9px; color: rgba(255,255,255,0.15);
+}
+.vault-note-item {
+  padding: 6px 14px 6px 24px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vault-note-item:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.02); }
+.vault-note-item.active { color: var(--blue); background: rgba(59,130,246,0.06); }
+.vault-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px;
+  scrollbar-width: thin;
+}
+.vault-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.vault-note-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.vault-note-title { font-size: 20px; font-weight: 700; color: #fff; }
+.vault-note-path { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.vault-edit-btn {
+  padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 600;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s;
+}
+.vault-edit-btn:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.08); }
+.vault-md { line-height: 1.8; font-size: 14px; color: var(--text-body); }
+.vault-md h1 { font-size: 22px; font-weight: 700; color: #fff; margin: 20px 0 8px; }
+.vault-md h2 { font-size: 18px; font-weight: 700; color: #fff; margin: 18px 0 6px; }
+.vault-md h3 { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.85); margin: 14px 0 4px; }
+.vault-md p { margin: 8px 0; }
+.vault-md ul, .vault-md ol { padding-left: 20px; margin: 6px 0; }
+.vault-md li { margin: 3px 0; }
+.vault-md code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--green); }
+.vault-md pre { background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; overflow-x: auto; margin: 10px 0; }
+.vault-md pre code { background: none; padding: 0; }
+.vault-md blockquote { border-left: 3px solid var(--purple); padding-left: 12px; color: rgba(255,255,255,0.5); margin: 10px 0; }
+.vault-md hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+.vault-md .wikilink {
+  color: var(--blue); cursor: pointer; border-bottom: 1px dashed rgba(59,130,246,0.3);
+  transition: color 0.15s;
+}
+.vault-md .wikilink:hover { color: #6ba3ff; }
+.vault-editor {
+  width: 100%; min-height: 400px; background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px; color: var(--text-body); font-size: 13px;
+  font-family: 'SF Mono', 'Fira Code', monospace; resize: vertical; outline: none; line-height: 1.7;
+}
+.vault-editor:focus { border-color: rgba(59,130,246,0.2); }
+
+/* ── Alfred Sidebar ── */
+#alfredToggle {
+  position: fixed; right: 0; top: 50%; z-index: 99; transform: translateY(-50%);
+  width: 36px; height: 72px;
+  background: rgba(59,130,246,0.1); backdrop-filter: blur(16px);
+  border: 1px solid rgba(59,130,246,0.2); border-right: none;
+  border-radius: 10px 0 0 10px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s; box-shadow: 0 0 20px rgba(59,130,246,0.06);
+}
+#alfredToggle:hover { background: rgba(59,130,246,0.18); border-color: rgba(59,130,246,0.35); }
+#alfredSidebar {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 340px; z-index: 100;
+  background: rgba(6,6,14,0.94); backdrop-filter: blur(24px);
+  border-left: 1px solid rgba(59,130,246,0.08);
+  transform: translateX(100%); transition: transform 0.35s var(--ease);
+  display: flex; flex-direction: column;
+  box-shadow: -8px 0 40px rgba(0,0,0,0.3);
+}
+#alfredSidebar.open { transform: translateX(0); }
+@media(max-width:640px) { #alfredSidebar { width: 100vw; } }
+
+.alfred-header {
+  padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.alfred-header-title { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; color: rgba(140,170,210,0.3); }
+.alfred-close { background: none; border: none; color: rgba(255,255,255,0.15); cursor: pointer; font-size: 18px; }
+.alfred-close:hover { color: rgba(255,255,255,0.4); }
+
+.alfred-brain { height: 180px; background: rgba(4,6,12,0.8); border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+#brainCanvas { width: 100%; height: 100%; display: block; }
+
+.alfred-messages {
+  flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px;
+  scrollbar-width: thin;
+}
+.alfred-msg {
+  padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.6;
+  word-wrap: break-word; white-space: pre-wrap;
+  animation: msgIn 0.25s var(--ease) both;
+}
+@keyframes msgIn { from { opacity: 0; transform: translateY(4px); } }
+.alfred-msg.user {
+  background: rgba(59,130,246,0.1); color: rgba(255,255,255,0.7);
+  max-width: 80%; margin-left: auto; border: 1px solid rgba(59,130,246,0.12);
+}
+.alfred-msg.ai { color: rgba(200,215,235,0.7); }
+.alfred-msg.ai.streaming { border-left: 2px solid rgba(59,130,246,0.3); padding-left: 10px; }
+
+.alfred-input-row {
+  padding: 10px 12px; display: flex; gap: 8px;
+  border-top: 1px solid var(--border); background: rgba(6,6,14,0.8);
+}
+.alfred-input-row input {
+  flex: 1; background: rgba(255,255,255,0.02); border: 1px solid rgba(50,80,130,0.1);
+  border-radius: 10px; padding: 10px 14px; font-size: 12px; color: rgba(255,255,255,0.7);
+  outline: none;
+}
+.alfred-input-row input::placeholder { color: rgba(255,255,255,0.15); }
+.alfred-input-row input:focus { border-color: rgba(60,100,160,0.2); }
+.alfred-send {
+  padding: 10px 14px; border-radius: 10px; background: rgba(50,80,130,0.08);
+  color: rgba(140,170,210,0.4); border: 1px solid rgba(50,80,130,0.1);
+  font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s;
+}
+.alfred-send:hover { background: rgba(50,80,130,0.15); color: rgba(140,170,210,0.6); }
+
+/* ── Responsive ── */
+@media(max-width:768px) {
+  .vault-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 40vh; }
+  .vault-layout { flex-direction: column; }
+  .vault-content { padding: 16px; }
+  .tasks-container { padding: 16px 12px 80px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Aurora -->
+<div class="aurora"></div>
+
+<!-- Tab Bar -->
+<nav class="tab-bar">
+  <div class="tab-bar-inner">
+    <span class="app-title">openyap</span>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('tasks')">Tasks</button>
+      <button class="tab-btn" onclick="switchTab('vault')">Vault</button>
+    </div>
+    <div class="tab-actions">
+      <button class="icon-btn" onclick="promptFirebaseUrl()">DB</button>
+      <span class="server-dot" id="serverDot" title="Server status"></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ TASKS VIEW ═══ -->
+<main id="tasksView" class="view active">
+  <div class="tasks-container">
+    <div class="task-input-row">
+      <input id="newTaskInput" type="text" placeholder="Add a task... (!high @work due:4/15)" onkeydown="if(event.key==='Enter')addTask()">
+      <button onclick="addTask()">Add</button>
+    </div>
+    <div class="task-filters" id="taskFilters"></div>
+    <div class="task-list" id="taskList"></div>
+    <div class="task-stats" id="taskStats"></div>
+  </div>
+</main>
+
+<!-- ═══ VAULT VIEW ═══ -->
+<main id="vaultView" class="view">
+  <div class="vault-layout">
+    <aside class="vault-sidebar">
+      <div class="vault-search">
+        <input id="vaultSearch" type="text" placeholder="Search notes..." oninput="renderVaultTree()">
+      </div>
+      <div id="vaultTree"></div>
+    </aside>
+    <div class="vault-content" id="vaultContent">
+      <div class="vault-empty">Select a note to view</div>
+    </div>
+  </div>
+</main>
+
+<!-- ═══ ALFRED SIDEBAR ═══ -->
+<div id="alfredToggle" onclick="toggleAlfred()">
+  <span style="writing-mode:vertical-lr;font-size:9px;font-weight:700;letter-spacing:2px;color:rgba(59,130,246,0.4)">ALFRED</span>
+</div>
+<aside id="alfredSidebar">
+  <div class="alfred-header">
+    <span class="alfred-header-title">ALFRED</span>
+    <button class="alfred-close" onclick="toggleAlfred()">&times;</button>
+  </div>
+  <div class="alfred-brain">
+    <canvas id="brainCanvas"></canvas>
+  </div>
+  <div class="alfred-messages" id="alfredMessages">
+    <div class="alfred-msg ai">What's on the agenda? I can help manage tasks or brainstorm from your vault.</div>
+  </div>
+  <div class="alfred-input-row">
+    <input id="alfredInput" type="text" placeholder="Ask Alfred..." onkeydown="if(event.key==='Enter')sendAlfred()">
+    <button class="alfred-send" onclick="sendAlfred()">Send</button>
+  </div>
+</aside>
+
+<script>
+// ══════════════════════════════════════════
+//  Firebase
+// ══════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  databaseURL: localStorage.getItem('oyt_firebase_url') || ''
+};
+let db = null;
+
+function initFirebase() {
+  if (!FIREBASE_CONFIG.databaseURL) return false;
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    return true;
+  } catch(e) { console.error('Firebase init:', e); return false; }
+}
+function fbSet(path, data) { if (db) return db.ref(path).set(data); }
+function fbPush(path, data) { if (db) return db.ref(path).push(data); }
+function fbGet(path) { if (db) return db.ref(path).once('value').then(s => s.val()); return Promise.resolve(null); }
+function fbListen(path, cb) { if (db) db.ref(path).on('value', snap => cb(snap.val())); }
+
+function promptFirebaseUrl() {
+  const url = prompt('Firebase Realtime Database URL:', FIREBASE_CONFIG.databaseURL || 'https://your-project.firebaseio.com');
+  if (url) {
+    localStorage.setItem('oyt_firebase_url', url);
+    FIREBASE_CONFIG.databaseURL = url;
+    if (initFirebase()) {
+      attachFirebaseListeners();
+      renderTasks();
+    }
+  }
+}
+
+// ══════════════════════════════════════════
+//  Task State
+// ══════════════════════════════════════════
+let tasks = {};
+let expandedTask = null;
+let activeFilter = 'all'; // all, active, completed
+let activeCat = 'all';
+
+function attachFirebaseListeners() {
+  fbListen('tasks', (val) => {
+    tasks = val || {};
+    renderTasks();
+  });
+}
+
+// ══════════════════════════════════════════
+//  Task CRUD
+// ══════════════════════════════════════════
+function parseTaskInput(text) {
+  let title = text;
+  let priority = 'medium';
+  let category = 'personal';
+  let dueDate = '';
+
+  // !high, !low
+  const priMatch = title.match(/!(high|medium|low)/i);
+  if (priMatch) { priority = priMatch[1].toLowerCase(); title = title.replace(priMatch[0], '').trim(); }
+
+  // @work, @personal, @project
+  const catMatch = title.match(/@(work|personal|project)/i);
+  if (catMatch) { category = catMatch[1].toLowerCase(); title = title.replace(catMatch[0], '').trim(); }
+
+  // due:4/15 or due:2026-04-15
+  const dueMatch = title.match(/due:(\S+)/i);
+  if (dueMatch) {
+    dueDate = dueMatch[1];
+    title = title.replace(dueMatch[0], '').trim();
+    // Normalize M/D to 2026-MM-DD
+    const md = dueDate.match(/^(\d{1,2})\/(\d{1,2})$/);
+    if (md) dueDate = `2026-${md[1].padStart(2,'0')}-${md[2].padStart(2,'0')}`;
+  }
+
+  return { title: title.trim(), priority, category, dueDate };
+}
+
+function addTask() {
+  const input = document.getElementById('newTaskInput');
+  const text = input.value.trim();
+  if (!text) return;
+  if (!db) { alert('Configure Firebase first (click DB button)'); return; }
+
+  const parsed = parseTaskInput(text);
+  fbPush('tasks', {
+    ...parsed,
+    description: '',
+    completed: false,
+    completedAt: '',
+    createdAt: new Date().toISOString(),
+    order: Date.now(),
+  });
+  input.value = '';
+}
+
+function toggleComplete(id) {
+  const t = tasks[id];
+  if (!t) return;
+  fbSet(`tasks/${id}/completed`, !t.completed);
+  fbSet(`tasks/${id}/completedAt`, !t.completed ? new Date().toISOString() : '');
+}
+
+function updateTask(id, field, value) {
+  fbSet(`tasks/${id}/${field}`, value);
+}
+
+function deleteTask(id) {
+  fbSet(`tasks/${id}`, null);
+  if (expandedTask === id) expandedTask = null;
+}
+
+function toggleExpand(id) {
+  expandedTask = expandedTask === id ? null : id;
+  renderTasks();
+}
+
+// ══════════════════════════════════════════
+//  Task Rendering
+// ══════════════════════════════════════════
+function renderFilters() {
+  const el = document.getElementById('taskFilters');
+  const counts = { all: 0, active: 0, completed: 0, work: 0, personal: 0, project: 0 };
+  Object.values(tasks).forEach(t => {
+    counts.all++;
+    if (t.completed) counts.completed++; else counts.active++;
+    if (t.category) counts[t.category] = (counts[t.category]||0);
+  });
+  el.innerHTML = ['all','active','completed'].map(f =>
+    `<button class="filter-pill ${activeFilter===f?'active':''}" onclick="activeFilter='${f}';renderTasks()">${f} ${counts[f]||''}</button>`
+  ).join('') + '&nbsp;' + ['all','work','personal','project'].map(c =>
+    `<button class="filter-pill ${activeCat===c?'active':''}" onclick="activeCat='${c}';renderTasks()">${c === 'all' ? 'all cats' : c}</button>`
+  ).join('');
+}
+
+function renderTasks() {
+  renderFilters();
+  const list = document.getElementById('taskList');
+  const stats = document.getElementById('taskStats');
+  const entries = Object.entries(tasks);
+
+  if (!entries.length) {
+    list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px">No tasks yet. Add one above.</div>';
+    stats.innerHTML = '';
+    return;
+  }
+
+  // Filter
+  let filtered = entries;
+  if (activeFilter === 'active') filtered = filtered.filter(([,t]) => !t.completed);
+  if (activeFilter === 'completed') filtered = filtered.filter(([,t]) => t.completed);
+  if (activeCat !== 'all') filtered = filtered.filter(([,t]) => t.category === activeCat);
+
+  // Sort: active by order desc, completed at bottom
+  filtered.sort((a, b) => {
+    if (a[1].completed !== b[1].completed) return a[1].completed ? 1 : -1;
+    return (b[1].order || 0) - (a[1].order || 0);
+  });
+
+  list.innerHTML = filtered.map(([id, t], idx) => {
+    const isExpanded = expandedTask === id;
+    const today = new Date().toISOString().slice(0, 10);
+    const overdue = t.dueDate && !t.completed && t.dueDate < today;
+    const dueLabel = t.dueDate ? (overdue ? `Overdue: ${t.dueDate}` : `Due: ${t.dueDate}`) : '';
+
+    let html = `<div class="task-card ${t.completed ? 'completed' : ''}" style="animation-delay:${idx * 30}ms">
+      <button class="task-check" onclick="toggleComplete('${id}')">${t.completed ? '&#10003;' : ''}</button>
+      <div class="task-body">
+        <div class="task-title" onclick="toggleExpand('${id}')">${escHtml(t.title || 'Untitled')}</div>
+        <div class="task-meta">
+          <span class="priority-dot ${t.priority || 'medium'}"></span>
+          <span class="cat-pill ${t.category || 'personal'}">${t.category || 'personal'}</span>
+          ${dueLabel ? `<span class="due-label ${overdue ? 'overdue' : ''}">${dueLabel}</span>` : ''}
+        </div>`;
+
+    if (isExpanded) {
+      html += `<div class="task-expand">
+        <textarea placeholder="Description..." onblur="updateTask('${id}','description',this.value)">${escHtml(t.description || '')}</textarea>
+        <div class="task-expand-row">
+          <select onchange="updateTask('${id}','priority',this.value)">
+            ${['high','medium','low'].map(p => `<option value="${p}" ${t.priority===p?'selected':''}>${p}</option>`).join('')}
+          </select>
+          <select onchange="updateTask('${id}','category',this.value)">
+            ${['work','personal','project'].map(c => `<option value="${c}" ${t.category===c?'selected':''}>${c}</option>`).join('')}
+          </select>
+          <input type="date" value="${t.dueDate || ''}" onchange="updateTask('${id}','dueDate',this.value)">
+        </div>
+      </div>`;
+    }
+
+    html += `</div>
+      <div class="task-actions">
+        <button class="task-action-btn" onclick="toggleExpand('${id}')" title="Edit">${isExpanded ? '&minus;' : '&#9998;'}</button>
+        <button class="task-action-btn delete" onclick="deleteTask('${id}')" title="Delete">&times;</button>
+      </div>
+    </div>`;
+    return html;
+  }).join('');
+
+  // Stats
+  const total = entries.length;
+  const done = entries.filter(([,t]) => t.completed).length;
+  stats.textContent = `${done} of ${total} completed`;
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ══════════════════════════════════════════
+//  Vault
+// ══════════════════════════════════════════
+const PROXY_URL = localStorage.getItem('oyt_proxy') || 'http://localhost:8890';
+let vaultNotes = [];
+let selectedNotePath = null;
+let vaultEditMode = false;
+let collapsedFolders = {};
+
+async function loadVaultNotes() {
+  try {
+    const res = await fetch(PROXY_URL + '/api/vault/notes');
+    if (!res.ok) throw new Error('Server not reachable');
+    vaultNotes = await res.json();
+    renderVaultTree();
+  } catch(e) {
+    document.getElementById('vaultTree').innerHTML = '<div style="padding:16px;color:var(--text-muted);font-size:11px">Start server.py to load vault</div>';
+  }
+}
+
+function renderVaultTree() {
+  const el = document.getElementById('vaultTree');
+  const query = (document.getElementById('vaultSearch')?.value || '').toLowerCase();
+  const filtered = query ? vaultNotes.filter(n => n.name.toLowerCase().includes(query) || n.title.toLowerCase().includes(query)) : vaultNotes;
+
+  // Group by folder
+  const folders = {};
+  filtered.forEach(n => {
+    const f = n.folder || 'Root';
+    if (!folders[f]) folders[f] = [];
+    folders[f].push(n);
+  });
+
+  let html = '';
+  Object.entries(folders).sort((a,b) => a[0].localeCompare(b[0])).forEach(([folder, notes]) => {
+    const color = notes[0]?.color || '#64748b';
+    const collapsed = collapsedFolders[folder];
+    html += `<div class="vault-folder-header" onclick="collapsedFolders['${folder}']=!collapsedFolders['${folder}'];renderVaultTree()">
+      <span class="folder-dot" style="background:${color}"></span>
+      ${collapsed ? '&#9654;' : '&#9660;'} ${folder}
+      <span class="folder-count">${notes.length}</span>
+    </div>`;
+    if (!collapsed) {
+      notes.forEach(n => {
+        html += `<div class="vault-note-item ${selectedNotePath===n.path?'active':''}" onclick="loadNoteContent('${n.path}')">${n.title || n.name}</div>`;
+      });
+    }
+  });
+  el.innerHTML = html || '<div style="padding:16px;color:var(--text-muted);font-size:11px">No notes found</div>';
+}
+
+async function loadNoteContent(path) {
+  selectedNotePath = path;
+  vaultEditMode = false;
+  renderVaultTree();
+  const content = document.getElementById('vaultContent');
+  content.innerHTML = '<div class="vault-empty">Loading...</div>';
+  try {
+    const res = await fetch(PROXY_URL + '/api/vault/read?path=' + encodeURIComponent(path));
+    const data = await res.json();
+    const note = vaultNotes.find(n => n.path === path) || {};
+    renderNoteView(note, data.content);
+  } catch(e) {
+    content.innerHTML = '<div class="vault-empty">Error loading note</div>';
+  }
+}
+
+function renderNoteView(note, raw) {
+  const content = document.getElementById('vaultContent');
+  if (vaultEditMode) {
+    content.innerHTML = `<div class="vault-note-header">
+      <div>
+        <div class="vault-note-title">${escHtml(note.title || note.name || '')}</div>
+        <div class="vault-note-path">${escHtml(note.path || '')}</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="vault-edit-btn" onclick="saveNoteEdit()">Save</button>
+        <button class="vault-edit-btn" onclick="vaultEditMode=false;loadNoteContent('${note.path}')">Cancel</button>
+      </div>
+    </div>
+    <textarea class="vault-editor" id="vaultEditor">${escHtml(raw)}</textarea>`;
+  } else {
+    content.innerHTML = `<div class="vault-note-header">
+      <div>
+        <div class="vault-note-title">${escHtml(note.title || note.name || '')}</div>
+        <div class="vault-note-path">${escHtml(note.path || '')}</div>
+      </div>
+      <button class="vault-edit-btn" onclick="vaultEditMode=true;renderNoteView(${JSON.stringify(note).replace(/"/g,'&quot;')},document.getElementById('vaultRaw')?.value||'')">Edit</button>
+    </div>
+    <div class="vault-md" id="vaultMd">${renderMarkdown(raw)}</div>
+    <textarea id="vaultRaw" style="display:none">${escHtml(raw)}</textarea>`;
+    wireWikilinks();
+  }
+}
+
+async function saveNoteEdit() {
+  const ed = document.getElementById('vaultEditor');
+  if (!ed || !selectedNotePath) return;
+  try {
+    await fetch(PROXY_URL + '/api/vault/write', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: selectedNotePath, content: ed.value }),
+    });
+    vaultEditMode = false;
+    loadNoteContent(selectedNotePath);
+  } catch(e) { alert('Save failed: ' + e.message); }
+}
+
+function renderMarkdown(text) {
+  if (!text) return '';
+  // Wikilinks
+  let html = text.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, name, alias) =>
+    `<span class="wikilink" data-note="${escHtml(name)}">${escHtml(alias || name)}</span>`
+  );
+  // Code blocks
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Headers
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+  // Bold, italic
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  // Blockquote
+  html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+  // HR
+  html = html.replace(/^---$/gm, '<hr>');
+  // Lists
+  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>');
+  html = html.replace(/<\/ul>\s*<ul>/g, '');
+  // Paragraphs
+  html = html.replace(/\n{2,}/g, '</p><p>');
+  html = '<p>' + html + '</p>';
+  html = html.replace(/<p>\s*(<h[123]|<pre|<ul|<blockquote|<hr)/g, '$1');
+  html = html.replace(/(<\/h[123]>|<\/pre>|<\/ul>|<\/blockquote>|<hr>)\s*<\/p>/g, '$1');
+  return html;
+}
+
+function wireWikilinks() {
+  document.querySelectorAll('.wikilink').forEach(el => {
+    el.addEventListener('click', () => {
+      const name = el.dataset.note;
+      const note = vaultNotes.find(n => n.name === name || n.title === name);
+      if (note) loadNoteContent(note.path);
+      // Also enhance brain node
+      enhanceBrainNode(name);
+    });
+  });
+}
+
+// ══════════════════════════════════════════
+//  Alfred Chat
+// ══════════════════════════════════════════
+let alfredOpen = false;
+let alfredHistory = [];
+let isStreaming = false;
+
+function toggleAlfred() {
+  alfredOpen = !alfredOpen;
+  document.getElementById('alfredSidebar').classList.toggle('open', alfredOpen);
+  document.getElementById('alfredToggle').style.display = alfredOpen ? 'none' : '';
+  const pad = (alfredOpen && window.innerWidth > 640) ? '320px' : '0';
+  document.body.style.marginRight = pad;
+  if (alfredOpen && !brainInit) initBrain();
+}
+
+function buildAlfredSystem() {
+  let sys = `You are Alfred, a sharp productivity assistant for OpenYap Todo.
+You help manage tasks and brainstorm using the user's Obsidian vault (~/openyap-vault).
+
+PERSONALITY: Concise, witty, direct. Talk like a teammate. 1-3 sentences unless asked for detail.
+
+COMMANDS (use these code blocks to execute actions):
+\`\`\`task
+{"title":"...", "priority":"high|medium|low", "category":"work|personal|project", "dueDate":"YYYY-MM-DD"}
+\`\`\`
+\`\`\`done
+{"taskId":"..."}
+\`\`\`
+\`\`\`edit
+{"taskId":"...", "field":"title|priority|category|dueDate|description", "value":"..."}
+\`\`\`
+
+To highlight a brain node, include [ENHANCE NodeName] in your response.
+
+CURRENT TASKS:\n`;
+  const entries = Object.entries(tasks);
+  if (entries.length) {
+    entries.slice(0, 30).forEach(([id, t]) => {
+      sys += `- [${t.completed ? 'x' : ' '}] ${t.title} (${t.priority}, ${t.category}${t.dueDate ? ', due:' + t.dueDate : ''}) id:${id}\n`;
+    });
+  } else {
+    sys += '(no tasks yet)\n';
+  }
+  if (selectedNotePath) {
+    const raw = document.getElementById('vaultRaw')?.value || '';
+    if (raw) sys += `\nCURRENT VAULT NOTE: ${selectedNotePath}\n${raw.slice(0, 800)}\n`;
+  }
+  return sys;
+}
+
+async function sendAlfred() {
+  const input = document.getElementById('alfredInput');
+  const msg = input.value.trim();
+  if (!msg || isStreaming) return;
+  input.value = '';
+  isStreaming = true;
+
+  appendAlfredMsg('user', msg);
+  alfredHistory.push({ role: 'user', content: msg });
+  flashBrainNodes();
+
+  const el = appendAlfredMsg('ai', '');
+  el.classList.add('streaming');
+
+  try {
+    const res = await fetch(PROXY_URL + '/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider: 'codex',
+        model: 'gpt-5.3-codex',
+        max_tokens: 2048,
+        system: buildAlfredSystem(),
+        messages: alfredHistory.slice(-12).filter(m => m.role !== 'system'),
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err.slice(0, 200));
+    }
+
+    // Read SSE stream (OpenAI format from proxy)
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let full = '';
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') continue;
+        try {
+          const json = JSON.parse(data);
+          if (json.choices?.[0]?.delta?.content) {
+            full += json.choices[0].delta.content;
+            el.textContent = full.replace(/\[ENHANCE\s+[^\]]+\]/gi, '').replace(/```(?:task|done|edit)\s*\n[\s\S]*?\n```/g, '');
+            scrollAlfred();
+          }
+          if (json.error) throw new Error(json.error);
+        } catch(e) {
+          if (e.message && !e.message.startsWith('Unexpected')) throw e;
+        }
+      }
+    }
+
+    el.classList.remove('streaming');
+    alfredHistory.push({ role: 'assistant', content: full });
+
+    // Parse [ENHANCE] commands
+    const enhanceRe = /\[ENHANCE\s+([^\]]+)\]/gi;
+    let em;
+    while ((em = enhanceRe.exec(full)) !== null) {
+      enhanceBrainNode(em[1].trim());
+    }
+
+    // Parse task/done/edit commands
+    const taskMatch = full.match(/```task\s*\n?([\s\S]*?)\n?```/);
+    if (taskMatch) {
+      try {
+        const cmd = JSON.parse(taskMatch[1]);
+        fbPush('tasks', { title: cmd.title || '', priority: cmd.priority || 'medium', category: cmd.category || 'personal', dueDate: cmd.dueDate || '', description: cmd.description || '', completed: false, completedAt: '', createdAt: new Date().toISOString(), order: Date.now() });
+      } catch {}
+    }
+    const doneMatch = full.match(/```done\s*\n?([\s\S]*?)\n?```/);
+    if (doneMatch) {
+      try { const cmd = JSON.parse(doneMatch[1]); if (cmd.taskId) { fbSet(`tasks/${cmd.taskId}/completed`, true); fbSet(`tasks/${cmd.taskId}/completedAt`, new Date().toISOString()); } } catch {}
+    }
+    const editMatch = full.match(/```edit\s*\n?([\s\S]*?)\n?```/);
+    if (editMatch) {
+      try { const cmd = JSON.parse(editMatch[1]); if (cmd.taskId && cmd.field) updateTask(cmd.taskId, cmd.field, cmd.value); } catch {}
+    }
+
+    // Clean display
+    el.textContent = full.replace(/\[ENHANCE\s+[^\]]+\]/gi, '').replace(/```(?:task|done|edit)\s*\n[\s\S]*?\n```/g, '').trim();
+
+  } catch(e) {
+    el.classList.remove('streaming');
+    el.textContent = 'Error: ' + e.message;
+  }
+  isStreaming = false;
+}
+
+function appendAlfredMsg(role, text) {
+  const container = document.getElementById('alfredMessages');
+  const div = document.createElement('div');
+  div.className = 'alfred-msg ' + (role === 'user' ? 'user' : 'ai');
+  div.textContent = text;
+  container.appendChild(div);
+  scrollAlfred();
+  return div;
+}
+
+function scrollAlfred() {
+  const c = document.getElementById('alfredMessages');
+  c.scrollTop = c.scrollHeight;
+}
+
+// ══════════════════════════════════════════
+//  Brain Canvas (Alfred visualization)
+// ══════════════════════════════════════════
+let brainInit = false;
+let brainNodes = [];
+let brainAnim = null;
+
+function initBrain() {
+  brainInit = true;
+  const canvas = document.getElementById('brainCanvas');
+  const W = canvas.parentElement.clientWidth * 2;
+  const H = canvas.parentElement.clientHeight * 2;
+  canvas.width = W;
+  canvas.height = H;
+  canvas.style.width = canvas.parentElement.clientWidth + 'px';
+  canvas.style.height = canvas.parentElement.clientHeight + 'px';
+
+  const cx = W / 2, cy = H / 2;
+  const colors = ['#3B82F6', '#8B5CF6', '#34D399', '#f59e0b', '#ef4444', '#6366f1', '#ec4899', '#06b6d4'];
+
+  // Create nodes: mix of task categories + vault folders
+  const nodeNames = ['Tasks', 'Work', 'Personal', 'Projects', 'Vault', 'Goals', 'Ideas', 'Reference', 'OpenYap', 'Stocks', 'People', 'Wins', 'Daily'];
+  nodeNames.forEach((name, i) => {
+    const angle = (i / nodeNames.length) * Math.PI * 2;
+    const r = 40 + Math.random() * (Math.min(W, H) * 0.25);
+    brainNodes.push({
+      name,
+      angle,
+      r,
+      speed: 0.003 + Math.random() * 0.005,
+      size: 4 + Math.random() * 5,
+      color: colors[i % colors.length],
+      glow: 0,
+      enhancePulse: 0,
+      x: cx + Math.cos(angle) * r,
+      y: cy + Math.sin(angle) * r,
+    });
+  });
+
+  brainLoop();
+}
+
+function brainLoop() {
+  const canvas = document.getElementById('brainCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W / 2, cy = H / 2;
+  ctx.clearRect(0, 0, W, H);
+
+  // Update positions
+  brainNodes.forEach(n => {
+    n.angle += n.speed;
+    n.x = cx + Math.cos(n.angle) * n.r;
+    n.y = cy + Math.sin(n.angle) * n.r;
+  });
+
+  // Connections
+  ctx.lineWidth = 1;
+  for (let i = 0; i < brainNodes.length; i++) {
+    const a = brainNodes[i];
+    for (let j = i + 1; j < brainNodes.length; j++) {
+      const b = brainNodes[j];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      const maxDist = Math.min(W, H) * 0.35;
+      if (d < maxDist) {
+        const alpha = Math.round((1 - d / maxDist) * (a.glow > 0 || b.glow > 0 ? 60 : 30));
+        ctx.strokeStyle = a.color + alpha.toString(16).padStart(2, '0');
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Nodes
+  brainNodes.forEach(n => {
+    if (n.enhancePulse > 0) {
+      n.enhancePulse -= 0.8;
+      // Shockwave ring
+      const ringR = n.size + (90 - n.enhancePulse) * 1.5;
+      ctx.strokeStyle = n.color + Math.round(n.enhancePulse).toString(16).padStart(2, '0');
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, ringR, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.lineWidth = 1;
+      // Bright node
+      ctx.shadowBlur = 25;
+      ctx.shadowColor = n.color;
+      ctx.fillStyle = n.color;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.size * 1.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    } else if (n.glow > 0) {
+      n.glow -= 0.006;
+      ctx.shadowBlur = 16;
+      ctx.shadowColor = n.color;
+      ctx.fillStyle = n.color;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.size * (1 + n.glow * 0.6), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = n.color + '33';
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.size * (1 + n.glow) + 6, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    } else {
+      ctx.shadowBlur = 5;
+      ctx.shadowColor = n.color;
+      ctx.fillStyle = n.color + '99';
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    // Label (only for bigger nodes or enhanced)
+    if (n.size > 6 || n.enhancePulse > 30) {
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
+      ctx.font = '16px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(n.name, n.x, n.y + n.size + 16);
+    }
+  });
+
+  // Center glow
+  const anyGlow = brainNodes.some(n => n.glow > 0 || n.enhancePulse > 0);
+  const gr = ctx.createRadialGradient(cx, cy, 0, cx, cy, anyGlow ? 30 : 16);
+  gr.addColorStop(0, anyGlow ? 'rgba(59,130,246,0.25)' : 'rgba(59,130,246,0.08)');
+  gr.addColorStop(1, 'transparent');
+  ctx.fillStyle = gr;
+  ctx.beginPath();
+  ctx.arc(cx, cy, anyGlow ? 30 : 16, 0, Math.PI * 2);
+  ctx.fill();
+
+  brainAnim = requestAnimationFrame(brainLoop);
+}
+
+function flashBrainNodes() {
+  brainNodes.forEach(n => {
+    n.glow = 1;
+    n.speed = 0.015 + Math.random() * 0.01;
+  });
+  setTimeout(() => brainNodes.forEach(n => { n.speed = 0.003 + Math.random() * 0.005; }), 2500);
+}
+
+function enhanceBrainNode(name) {
+  const node = brainNodes.find(n => n.name.toLowerCase() === name.toLowerCase());
+  if (node) {
+    node.enhancePulse = 90;
+    // Pulse neighbors
+    brainNodes.forEach(n => {
+      if (n !== node) {
+        const d = Math.hypot(n.x - node.x, n.y - node.y);
+        if (d < 300) n.glow = Math.max(n.glow, 0.7);
+      }
+    });
+  }
+}
+
+// ══════════════════════════════════════════
+//  Tab Switching
+// ══════════════════════════════════════════
+let currentTab = 'tasks';
+let vaultLoaded = false;
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(tab + 'View').classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase() === tab));
+  if (tab === 'vault' && !vaultLoaded) {
+    vaultLoaded = true;
+    loadVaultNotes();
+  }
+}
+
+// ══════════════════════════════════════════
+//  Server Status
+// ══════════════════════════════════════════
+async function checkServerStatus() {
+  try {
+    const res = await fetch(PROXY_URL + '/api/status', { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      document.getElementById('serverDot').classList.add('ok');
+      document.getElementById('serverDot').title = 'Server connected';
+    }
+  } catch {
+    document.getElementById('serverDot').classList.remove('ok');
+    document.getElementById('serverDot').title = 'Server offline — start server.py';
+  }
+}
+
+// ══════════════════════════════════════════
+//  Swipe gestures for Alfred
+// ══════════════════════════════════════════
+let swipeStartX = 0;
+document.addEventListener('touchstart', e => { swipeStartX = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - swipeStartX;
+  const sw = window.innerWidth;
+  if (!alfredOpen && swipeStartX > sw - 40 && dx < -60) toggleAlfred();
+  if (alfredOpen && dx > 60) toggleAlfred();
+}, { passive: true });
+
+// ══════════════════════════════════════════
+//  Init
+// ══════════════════════════════════════════
+if (initFirebase()) attachFirebaseListeners();
+renderTasks();
+checkServerStatus();
+setInterval(checkServerStatus, 30000);
+</script>
+</body>
+</html>
