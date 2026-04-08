@@ -124,9 +124,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .tc.done{opacity:.3}
 .tc.done .tt{text-decoration:line-through;color:var(--text-muted)}
 @keyframes ti{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.ck{width:20px;height:20px;border-radius:50%;flex-shrink:0;margin-top:2px;border:2px solid var(--card-hover);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s var(--ease);color:transparent;font-size:11px}
-.ck:hover{border-color:var(--purple);box-shadow:0 0 8px var(--card-hover)}
-.tc.done .ck{border-color:var(--purple);background:var(--purple);color:#fff}
+.ck{width:22px;height:22px;border-radius:50%;flex-shrink:0;margin-top:2px;border:2px solid rgba(255,255,255,0.18);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s var(--ease);color:transparent;font-size:12px}
+.ck:hover{border-color:var(--accent1);background:var(--accent1-10);box-shadow:0 0 10px var(--accent1-10)}
+.tc.done .ck{border-color:var(--accent1);background:var(--accent1);color:#fff}
 .tb{flex:1;min-width:0}
 .tt{font-size:14px;font-weight:500;color:var(--text);line-height:1.4;cursor:pointer}
 .t-notes{font-size:11px;color:rgba(168,164,184,0.5);margin-top:2px;white-space:pre-wrap}
@@ -655,7 +655,7 @@ function renderStatRow(){
       <div class="stat-info"><span class="stat-val">${verdict}</span><span class="stat-desc">${beatPct}% deadlines met</span></div>
     </div>
     <div class="stat-chip">
-      <span class="stat-emoji">${streak>=3?te.streak:streak>=1?te.early:te.nodata}</span>
+      <span class="stat-emoji">${streak>=3?te.streak:streak>=1?te.streak:'💤'}</span>
       <div class="stat-info"><span class="stat-val">${streak} day${streak!==1?'s':''}</span><span class="stat-desc">Completion streak</span></div>
     </div>
     <div class="stat-chip">
