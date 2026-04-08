@@ -217,6 +217,51 @@ input,select,textarea,button{font-family:inherit}
 .bj-bet-btn{width:24px;height:24px;border-radius:50%;border:1px solid rgba(255,255,255,0.06);background:transparent;color:rgba(255,255,255,0.3);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
 .bj-bet-val{font-size:12px;font-weight:700;color:var(--purple);min-width:28px;text-align:center}
 
+/* Tabs */
+.tab-btn{padding:5px 14px;border-radius:16px;font-size:10px;font-weight:600;border:none;cursor:pointer;transition:all .2s var(--ease);background:transparent;color:rgba(255,255,255,0.25)}
+.tab-btn:hover{color:rgba(255,255,255,0.5)}
+.tab-btn.active{background:rgba(139,92,246,0.1);color:var(--accent1)}
+.view{display:none}.view.active{display:block}
+
+/* Calendar */
+.cal-wrap{max-width:680px;margin:0 auto;padding:20px 20px 100px;position:relative;z-index:1}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-month{font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.5px}
+.cal-arrow{width:30px;height:30px;border-radius:10px;border:1px solid var(--border);background:transparent;color:rgba(255,255,255,0.3);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.cal-arrow:hover{color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.04)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-day-head{text-align:center;font-size:8px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;padding:4px 0}
+.cal-day{background:var(--card);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.03);border-radius:10px;min-height:70px;padding:6px;cursor:pointer;transition:all .2s var(--ease);position:relative}
+.cal-day:hover{border-color:rgba(139,92,246,0.12)}
+.cal-day.today{border-color:rgba(139,92,246,0.2);box-shadow:0 0 12px rgba(139,92,246,0.06)}
+.cal-day.other{opacity:.3}
+.cal-num{font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);margin-bottom:2px}
+.cal-day.today .cal-num{color:var(--accent1)}
+.cal-task{font-size:7px;font-weight:600;padding:2px 4px;border-radius:4px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cal-task.work{background:rgba(59,130,246,0.12);color:rgba(59,130,246,0.7)}
+.cal-task.personal{background:rgba(139,92,246,0.12);color:rgba(139,92,246,0.7)}
+.cal-task.project{background:rgba(236,72,153,0.1);color:rgba(236,72,153,0.7)}
+.cal-task.done{opacity:.3;text-decoration:line-through}
+
+/* Stats View */
+.stats-wrap{max-width:680px;margin:0 auto;padding:20px 20px 100px;position:relative;z-index:1}
+.stats-section{margin-bottom:20px}
+.stats-title{font-size:12px;font-weight:700;color:var(--accent1);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat-big{background:var(--card);backdrop-filter:blur(12px);border:1px solid rgba(139,92,246,0.06);border-radius:14px;padding:16px;text-align:center}
+.stat-big-val{font-size:32px;font-weight:900;line-height:1;letter-spacing:-1px}
+.stat-big-label{font-size:8px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.week-chart{display:flex;align-items:flex-end;gap:4px;height:100px;padding:12px 0}
+.week-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.week-bar{width:100%;border-radius:6px 6px 2px 2px;transition:height .6s var(--ease);min-height:2px}
+.week-bar-label{font-size:7px;font-weight:600;color:var(--text-muted)}
+.cat-breakdown{display:flex;gap:8px;flex-wrap:wrap}
+.cat-stat{background:var(--card);border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;flex:1;min-width:120px}
+.cat-dot{width:8px;height:8px;border-radius:50%}
+.cat-stat-info{display:flex;flex-direction:column}
+.cat-stat-val{font-size:14px;font-weight:800;color:var(--text)}
+.cat-stat-name{font-size:8px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+
 /* Sort bar */
 .sort-bar{display:flex;align-items:center;gap:4px;margin-bottom:12px}
 .sort-label{font-size:8px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-right:4px}
@@ -246,6 +291,11 @@ input,select,textarea,button{font-family:inherit}
 <nav class="header">
   <div class="header-inner">
     <span class="app-title">openyap todo</span>
+    <div style="display:flex;gap:3px">
+      <button class="tab-btn active" onclick="switchView('tasks')">Tasks</button>
+      <button class="tab-btn" onclick="switchView('calendar')">Calendar</button>
+      <button class="tab-btn" onclick="switchView('stats')">Stats</button>
+    </div>
     <div class="header-right">
       <span class="sync-label">synced</span>
       <span class="sync-dot"></span>
@@ -265,6 +315,8 @@ input,select,textarea,button{font-family:inherit}
 </nav>
 
 <div class="main">
+<!-- Tasks View -->
+<div class="view active" id="v-tasks">
   <!-- Input -->
   <div class="input-card">
     <input id="newTask" type="text" placeholder="What needs to be done?" onkeydown="if(event.key==='Enter')addTask()">
@@ -305,7 +357,26 @@ input,select,textarea,button{font-family:inherit}
   <!-- Task List -->
   <div class="task-list" id="taskList"></div>
   <div class="stats" id="stats"></div>
+</div><!-- /tasks -->
+
+<!-- Calendar View -->
+<div class="view" id="v-calendar">
+  <div class="cal-wrap">
+    <div class="cal-nav">
+      <button class="cal-arrow" onclick="calNav(-1)">&larr;</button>
+      <span class="cal-month" id="calMonth"></span>
+      <button class="cal-arrow" onclick="calNav(1)">&rarr;</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
 </div>
+
+<!-- Stats View -->
+<div class="view" id="v-stats">
+  <div class="stats-wrap" id="statsView"></div>
+</div>
+
+</div><!-- /main -->
 
 <!-- Blackjack -->
 <div id="bjToggle" onclick="toggleBJ()">
@@ -837,6 +908,187 @@ function setTheme(t){
 
 // Close theme picker on outside click
 document.addEventListener('click',e=>{if(!e.target.closest('.theme-picker'))document.getElementById('themeDots')?.classList.remove('show')});
+
+// ═══════════════════════════════════════════
+//  View Switching
+// ═══════════════════════════════════════════
+let currentView='tasks';
+function switchView(v){
+  currentView=v;
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('v-'+v)?.classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase()===v));
+  if(v==='calendar')renderCalendar();
+  if(v==='stats')renderStatsView();
+}
+
+// ═══════════════════════════════════════════
+//  Calendar
+// ═══════════════════════════════════════════
+let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
+
+function calNav(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++}if(calMonth<0){calMonth=11;calYear--}renderCalendar()}
+
+function renderCalendar(){
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('calMonth').textContent=months[calMonth]+' '+calYear;
+  const grid=document.getElementById('calGrid');
+  const today=new Date();const todayStr=today.toISOString().slice(0,10);
+  const first=new Date(calYear,calMonth,1);
+  const startDay=first.getDay(); // 0=Sun
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+
+  // Task map by due date
+  const taskMap={};
+  Object.entries(tasks).forEach(([id,t])=>{if(t.dueDate)taskMap[t.dueDate]=(taskMap[t.dueDate]||[]).push({id,...t})||taskMap[t.dueDate]});
+  // Rebuild properly
+  const tMap={};
+  Object.entries(tasks).forEach(([id,t])=>{if(t.dueDate){if(!tMap[t.dueDate])tMap[t.dueDate]=[];tMap[t.dueDate].push({id,...t})}});
+
+  let html='';
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d=>{html+=`<div class="cal-day-head">${d}</div>`});
+
+  // Previous month padding
+  const prevDays=new Date(calYear,calMonth,0).getDate();
+  for(let i=startDay-1;i>=0;i--){
+    const d=prevDays-i;
+    html+=`<div class="cal-day other"><span class="cal-num">${d}</span></div>`;
+  }
+
+  // Current month
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=dateStr===todayStr;
+    const dayTasks=tMap[dateStr]||[];
+    html+=`<div class="cal-day ${isToday?'today':''}">
+      <span class="cal-num">${d}</span>
+      ${dayTasks.slice(0,3).map(t=>`<div class="cal-task ${t.category||'personal'} ${t.completed?'done':''}" onclick="switchView('tasks');expanded='${t.id}';renderTasks()">${t.title}</div>`).join('')}
+      ${dayTasks.length>3?`<div style="font-size:6px;color:var(--text-muted)">+${dayTasks.length-3} more</div>`:''}
+    </div>`;
+  }
+
+  // Next month padding
+  const totalCells=startDay+daysInMonth;
+  const remaining=totalCells%7===0?0:7-totalCells%7;
+  for(let i=1;i<=remaining;i++){html+=`<div class="cal-day other"><span class="cal-num">${i}</span></div>`}
+
+  grid.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════
+//  Stats View
+// ═══════════════════════════════════════════
+function renderStatsView(){
+  const el=document.getElementById('statsView');
+  const all=Object.values(tasks);
+  const done=all.filter(t=>t.completed);
+  const active=all.filter(t=>!t.completed);
+  const today=new Date();const todayStr=today.toISOString().slice(0,10);
+
+  // Deadline stats
+  const withDue=done.filter(t=>t.dueDate&&t.completedAt);
+  let early=0,onTime=0,late=0;
+  withDue.forEach(t=>{const c=t.completedAt.slice(0,10);if(c<t.dueDate)early++;else if(c===t.dueDate)onTime++;else late++});
+  const beatPct=withDue.length?Math.round((early+onTime)/withDue.length*100):0;
+
+  // Weekly completions (last 7 days)
+  const weekData=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    const count=done.filter(t=>t.completedAt&&t.completedAt.slice(0,10)===ds).length;
+    const dayName=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+    weekData.push({day:dayName,count,isToday:i===0});
+  }
+  const maxWeek=Math.max(...weekData.map(d=>d.count),1);
+
+  // Category breakdown
+  const cats={work:{done:0,active:0,color:'var(--accent2)'},personal:{done:0,active:0,color:'var(--accent1)'},project:{done:0,active:0,color:'var(--accent3)'}};
+  all.forEach(t=>{const c=t.category||'personal';if(!cats[c])return;t.completed?cats[c].done++:cats[c].active++});
+
+  // Average time
+  let avgDays=0;
+  if(done.length){avgDays=Math.round(done.reduce((s,t)=>s+(t.completedAt&&t.createdAt?Math.max(0,(new Date(t.completedAt)-new Date(t.createdAt))/86400000):0),0)/done.length*10)/10}
+
+  // Streak
+  const streak=calcStreak();
+
+  // Verdict
+  let verdict='',vColor='';
+  if(beatPct>=90){verdict='YOU ARE HIM';vColor='var(--accent1)'}
+  else if(beatPct>=70){verdict='LOCKED IN';vColor='var(--accent2)'}
+  else if(beatPct>=50){verdict='SOLID';vColor='var(--accent3)'}
+  else if(withDue.length){verdict='GRIND MORE';vColor='var(--red)'}
+  else{verdict='GET STARTED';vColor='var(--text-muted)'}
+
+  el.innerHTML=`
+  <div class="stats-section">
+    <div class="stats-title">Overview</div>
+    <div class="stats-grid">
+      <div class="stat-big"><div class="stat-big-val" style="color:var(--accent1)">${all.length}</div><div class="stat-big-label">Total Tasks</div></div>
+      <div class="stat-big"><div class="stat-big-val" style="color:#34d399">${done.length}</div><div class="stat-big-label">Completed</div></div>
+      <div class="stat-big"><div class="stat-big-val" style="color:var(--accent3)">${active.length}</div><div class="stat-big-label">Active</div></div>
+    </div>
+  </div>
+
+  <div class="stats-section">
+    <div class="stats-title">Verdict</div>
+    <div style="background:var(--card);border-radius:16px;padding:20px;text-align:center;border:1px solid rgba(139,92,246,0.06)">
+      <div style="font-size:36px;font-weight:900;letter-spacing:-1px;color:${vColor}">${verdict}</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px">${beatPct}% deadlines met &middot; ${streak} day streak &middot; ${avgDays}d avg completion</div>
+      <div style="display:flex;justify-content:center;gap:16px;margin-top:12px">
+        <div><span style="font-size:18px;font-weight:800;color:#34d399">${early}</span><div style="font-size:8px;color:var(--text-muted)">EARLY</div></div>
+        <div><span style="font-size:18px;font-weight:800;color:var(--accent1)">${onTime}</span><div style="font-size:8px;color:var(--text-muted)">ON TIME</div></div>
+        <div><span style="font-size:18px;font-weight:800;color:var(--red)">${late}</span><div style="font-size:8px;color:var(--text-muted)">LATE</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-section">
+    <div class="stats-title">This Week</div>
+    <div style="background:var(--card);border-radius:14px;padding:16px;border:1px solid rgba(139,92,246,0.06)">
+      <div class="week-chart">
+        ${weekData.map(d=>`<div class="week-bar-wrap">
+          <div class="week-bar" style="height:${d.count/maxWeek*100}%;background:${d.isToday?'var(--accent1)':'rgba(139,92,246,0.3)'}"></div>
+          <span class="week-bar-label" style="${d.isToday?'color:var(--accent1)':''}">${d.day}</span>
+          ${d.count?`<span style="font-size:8px;font-weight:700;color:var(--text-muted)">${d.count}</span>`:''}
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-section">
+    <div class="stats-title">By Category</div>
+    <div class="cat-breakdown">
+      ${Object.entries(cats).map(([name,c])=>`<div class="cat-stat">
+        <span class="cat-dot" style="background:${c.color}"></span>
+        <div class="cat-stat-info">
+          <span class="cat-stat-val">${c.done+c.active}</span>
+          <span class="cat-stat-name">${name} (${c.done} done)</span>
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>
+
+  <div class="stats-section">
+    <div class="stats-title">Priority Breakdown</div>
+    <div class="stats-grid">
+      <div class="stat-big"><div class="stat-big-val" style="color:var(--red)">${active.filter(t=>t.priority==='high').length}</div><div class="stat-big-label">High Active</div></div>
+      <div class="stat-big"><div class="stat-big-val" style="color:var(--accent1)">${active.filter(t=>t.priority==='medium').length}</div><div class="stat-big-label">Medium Active</div></div>
+      <div class="stat-big"><div class="stat-big-val" style="color:var(--gray)">${active.filter(t=>t.priority==='low').length}</div><div class="stat-big-label">Low Active</div></div>
+    </div>
+  </div>
+
+  <div class="stats-section">
+    <div class="stats-title">Overdue</div>
+    ${active.filter(t=>t.dueDate&&t.dueDate<todayStr).length?
+      active.filter(t=>t.dueDate&&t.dueDate<todayStr).map(t=>`<div style="background:var(--card);border:1px solid rgba(239,68,68,0.1);border-radius:10px;padding:8px 12px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;color:var(--text)">${esc(t.title)}</span>
+        <span style="font-size:9px;color:var(--red);font-weight:700">${t.dueDate}</span>
+      </div>`).join('')
+      :'<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px">No overdue tasks</div>'}
+  </div>`;
+}
 
 // Init
 const savedTheme=localStorage.getItem('oyt_theme')||'';
