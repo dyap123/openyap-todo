@@ -935,11 +935,11 @@ document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sw
 // ═══════════════════════════════════════════
 const THEMES={
   '':{mascot:'🤖',minis:['⚡','💜','🔮','🛸','🌌'],stats:{nodata:'🤖',streak:'⚡',early:'🚀',late:'🐌',time:'⏱️',him:'👑',locked:'🔥',solid:'💪',grind:'😤'}},
-  't-ocean':{mascot:'🐋',minis:['🐚','🌊','🐠','🦑','🧊'],stats:{nodata:'🧭',streak:'🌊',early:'🐬',late:'🐢',time:'⚓',him:'🔱',locked:'🌊',solid:'🐠',grind:'🦈'}},
-  't-forest':{mascot:'🦎',minis:['🍃','🌿','🍄','🦉','🐿️'],stats:{nodata:'🌱',streak:'🌳',early:'🐇',late:'🐌',time:'🍂',him:'🦁',locked:'🌲',solid:'🦉',grind:'🐺'}},
-  't-sunset':{mascot:'🦊',minis:['🌅','✨','🦩','🌵','🔥'],stats:{nodata:'🌅',streak:'🔥',early:'🦅',late:'🐾',time:'⏳',him:'🌟',locked:'🔥',solid:'🦊',grind:'💥'}},
-  't-mono':{mascot:'🗿',minis:['♟️','🎲','🖤','♠️','🌑'],stats:{nodata:'📊',streak:'▪️',early:'◾',late:'◽',time:'⏲️',him:'🏛️',locked:'⚫',solid:'◼️',grind:'▫️'}},
-  't-sakura':{mascot:'🌸',minis:['🎀','💮','🦋','🧁','🎐'],stats:{nodata:'🌸',streak:'💗',early:'🦋',late:'🐛',time:'🎐',him:'💎',locked:'🌺',solid:'🌷',grind:'🥀'}},
+  't-ocean':{mascot:'🐋',minis:['🐚','🌊','🐠','🦑','🧊'],stats:{nodata:'🧭',streak:'🐚',early:'🐬',late:'🐢',time:'⚓',him:'🔱',locked:'🦭',solid:'🐡',grind:'🦈'}},
+  't-forest':{mascot:'🦎',minis:['🍃','🌿','🍄','🦉','🐿️'],stats:{nodata:'🌱',streak:'🌳',early:'🐇',late:'🐛',time:'🍂',him:'🦁',locked:'🌲',solid:'🦉',grind:'🐺'}},
+  't-sunset':{mascot:'🦊',minis:['🌅','✨','🦩','🌵','🔥'],stats:{nodata:'🌅',streak:'☀️',early:'🦅',late:'🐾',time:'⏳',him:'🌟',locked:'🏜️',solid:'🦊',grind:'💥'}},
+  't-mono':{mascot:'🗿',minis:['♟️','🎲','🖤','♠️','🌑'],stats:{nodata:'📊',streak:'♟️',early:'♠️',late:'♣️',time:'⏲️',him:'🏛️',locked:'⚫',solid:'♦️',grind:'▪️'}},
+  't-sakura':{mascot:'🌸',minis:['🎀','💮','🦋','🧁','🎐'],stats:{nodata:'🌸',streak:'💗',early:'🦋',late:'🥀',time:'🎐',him:'💎',locked:'🌺',solid:'🌷',grind:'🧁'}},
 };
 
 function setTheme(t){
@@ -953,6 +953,9 @@ function setTheme(t){
   const idx=['','t-ocean','t-forest','t-sunset','t-mono','t-sakura'].indexOf(t);
   if(idx>=0&&dots[idx])dots[idx].classList.add('active');
   document.getElementById('themeDots').classList.remove('show');
+  // Re-render everything so stat icons update
+  renderTasks();
+  if(currentView==='stats')renderStatsView();
 }
 
 // Close theme picker on outside click
