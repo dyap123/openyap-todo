@@ -746,13 +746,16 @@ function initSisyphus(){
       ctx.fillText(Math.round(p*100)+'%',x,y+14);
     });
 
-    // Trail behind boulder — dust particles
+    // Boulder position
     const time=Date.now()*.001;
+    const bx2=hillStartX+pct*hillLen;
+    const by2=hillBottomY-pct*(hillBottomY-hillTopY);
+
+    // Trail behind boulder — dust particles
     if(!allDone&&total>0){
       for(let i=0;i<5;i++){
-        const dt=i*0.06;
-        const dx=bx-10-i*6+Math.sin(time*4+i)*2;
-        const dy=by+4+Math.cos(time*3+i)*2;
+        const dx=bx2-10-i*6+Math.sin(time*4+i)*2;
+        const dy=by2+4+Math.cos(time*3+i)*2;
         ctx.globalAlpha=0.08-i*0.015;
         ctx.fillStyle='rgba(255,255,255,1)';
         ctx.beginPath();ctx.arc(dx,dy,1.5-i*0.2,0,Math.PI*2);ctx.fill();
@@ -760,12 +763,8 @@ function initSisyphus(){
       ctx.globalAlpha=1;
     }
 
-    // Boulder position
-    const bx2=hillStartX+pct*hillLen;
-    const by2=hillBottomY-pct*(hillBottomY-hillTopY);
-
     // Boulder — bigger, more detail
-    boulderAngle+=allDone?0:0.1;
+    boulderAngle+=allDone?0:0.06;
     const boulderR=14;
     ctx.save();
     ctx.translate(bx2+16,by2-boulderR-1);
