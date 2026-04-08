@@ -368,7 +368,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 
   <!-- Sisyphus -->
   <div style="position:relative;margin-bottom:12px">
-    <canvas id="sisCanvas" style="width:100%;height:80px;display:block;border-radius:14px;background:var(--card);border:1px solid var(--card-border)"></canvas>
+    <canvas id="sisCanvas" style="width:100%;height:90px;display:block;border-radius:14px;background:var(--card);border:1px solid var(--card-border)"></canvas>
   </div>
 
   <!-- Stats -->
@@ -677,8 +677,8 @@ function initSisyphus(){
   if(!canvas)return;
   const dpr=Math.min(window.devicePixelRatio,2);
   const W=canvas.parentElement.clientWidth;
-  canvas.width=W*dpr;canvas.height=80*dpr;
-  canvas.style.width=W+'px';canvas.style.height='80px';
+  canvas.width=W*dpr;canvas.height=90*dpr;
+  canvas.style.width=W+'px';canvas.style.height='90px';
 
   let boulderAngle=0;
   let mascotBob=0;
@@ -691,7 +691,7 @@ function initSisyphus(){
     ctx.clearRect(0,0,w,h);
     ctx.save();
     ctx.scale(dpr,dpr);
-    const cw=W,ch=80;
+    const cw=W,ch=90;
 
     const all=Object.values(tasks);
     const total=all.length;
@@ -710,79 +710,117 @@ function initSisyphus(){
     const hillTopY=18;
     const hillLen=hillEndX-hillStartX;
 
-    // Draw slope line
-    ctx.strokeStyle='rgba(255,255,255,0.06)';
-    ctx.lineWidth=2;
+    // Draw slope — thick, visible
+    ctx.strokeStyle='rgba(255,255,255,0.12)';
+    ctx.lineWidth=3;
     ctx.beginPath();
     ctx.moveTo(hillStartX,hillBottomY);
     ctx.lineTo(hillEndX,hillTopY);
     ctx.stroke();
-
-    // Ground dots along slope
-    for(let i=0;i<=20;i++){
-      const t=i/20;
+    // Ground texture — dashes along slope
+    ctx.strokeStyle='rgba(255,255,255,0.06)';
+    ctx.lineWidth=1;
+    for(let i=0;i<=30;i++){
+      const t=i/30;
       const x=hillStartX+t*hillLen;
       const y=hillBottomY-t*(hillBottomY-hillTopY);
-      ctx.fillStyle='rgba(255,255,255,0.03)';
-      ctx.beginPath();ctx.arc(x,y+6,1.5,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.moveTo(x,y+4);ctx.lineTo(x+3,y+8);ctx.stroke();
     }
 
-    // Percentage markers
+    // Percentage flags
     [0.25,0.5,0.75,1].forEach(p=>{
       const x=hillStartX+p*hillLen;
       const y=hillBottomY-p*(hillBottomY-hillTopY);
-      ctx.fillStyle='rgba(255,255,255,0.06)';
-      ctx.font='8px -apple-system,sans-serif';
+      // Flag pole
+      ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-14);ctx.stroke();
+      // Flag
+      ctx.fillStyle=p<=pct?'var(--accent1)':'rgba(255,255,255,0.06)';
+      ctx.globalAlpha=p<=pct?0.4:0.15;
+      ctx.beginPath();ctx.moveTo(x,y-14);ctx.lineTo(x+8,y-11);ctx.lineTo(x,y-8);ctx.fill();
+      ctx.globalAlpha=1;
+      // Label
+      ctx.fillStyle=p<=pct?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.08)';
+      ctx.font='700 7px -apple-system,sans-serif';
       ctx.textAlign='center';
-      ctx.fillText(Math.round(p*100)+'%',x,y-8);
-      // Tick mark
-      ctx.fillRect(x-0.5,y-3,1,6);
+      ctx.fillText(Math.round(p*100)+'%',x,y+14);
     });
 
-    // Boulder position
-    const bx=hillStartX+pct*hillLen;
-    const by=hillBottomY-pct*(hillBottomY-hillTopY);
+    // Trail behind boulder — dust particles
+    const time=Date.now()*.001;
+    if(!allDone&&total>0){
+      for(let i=0;i<5;i++){
+        const dt=i*0.06;
+        const dx=bx-10-i*6+Math.sin(time*4+i)*2;
+        const dy=by+4+Math.cos(time*3+i)*2;
+        ctx.globalAlpha=0.08-i*0.015;
+        ctx.fillStyle='rgba(255,255,255,1)';
+        ctx.beginPath();ctx.arc(dx,dy,1.5-i*0.2,0,Math.PI*2);ctx.fill();
+      }
+      ctx.globalAlpha=1;
+    }
 
-    // Boulder
-    boulderAngle+=allDone?0:0.04;
-    const boulderR=10;
+    // Boulder position
+    const bx2=hillStartX+pct*hillLen;
+    const by2=hillBottomY-pct*(hillBottomY-hillTopY);
+
+    // Boulder — bigger, more detail
+    boulderAngle+=allDone?0:0.1;
+    const boulderR=14;
     ctx.save();
-    ctx.translate(bx+14,by-boulderR-2);
+    ctx.translate(bx2+16,by2-boulderR-1);
     ctx.rotate(boulderAngle);
-    ctx.fillStyle='rgba(255,255,255,0.08)';
+    // Boulder body
+    ctx.fillStyle='rgba(255,255,255,0.12)';
     ctx.beginPath();ctx.arc(0,0,boulderR,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,0.12)';
-    ctx.lineWidth=1.5;
+    ctx.strokeStyle='rgba(255,255,255,0.2)';
+    ctx.lineWidth=2;
     ctx.beginPath();ctx.arc(0,0,boulderR,0,Math.PI*2);ctx.stroke();
-    // Cracks on boulder
-    ctx.strokeStyle='rgba(255,255,255,0.06)';
-    ctx.lineWidth=0.8;
-    ctx.beginPath();ctx.moveTo(-3,-5);ctx.lineTo(2,1);ctx.lineTo(-1,5);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(4,-3);ctx.lineTo(1,4);ctx.stroke();
+    // Cracks
+    ctx.strokeStyle='rgba(255,255,255,0.1)';
+    ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(-4,-7);ctx.lineTo(2,0);ctx.lineTo(-2,6);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(5,-4);ctx.lineTo(0,5);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-6,2);ctx.lineTo(-1,-3);ctx.stroke();
+    // Shine spot
+    ctx.fillStyle='rgba(255,255,255,0.08)';
+    ctx.beginPath();ctx.arc(-3,-4,3,0,Math.PI*2);ctx.fill();
     ctx.restore();
 
-    // Mascot
-    mascotBob+=allDone?0.08:0.12;
-    const mBob=allDone?0:Math.sin(mascotBob)*2;
-    const mLean=allDone?0:3;
+    // Mascot — bigger, more animated
+    mascotBob+=allDone?0.06:0.18;
+    const mBob=allDone?Math.sin(mascotBob)*1:Math.sin(mascotBob)*3.5;
+    const mLean=allDone?0:5+Math.sin(mascotBob*2)*2;
+    const mScale=allDone?1:1+Math.sin(mascotBob*2)*0.03;
     ctx.save();
-    ctx.translate(bx-4,by-6+mBob);
+    ctx.translate(bx2-6,by2-8+mBob);
     ctx.rotate(mLean*Math.PI/180);
-    ctx.font='20px -apple-system,sans-serif';
+    ctx.scale(mScale,mScale);
+    // Shadow
+    ctx.fillStyle='rgba(0,0,0,0.2)';
+    ctx.beginPath();ctx.ellipse(0,16,10,4,0,0,Math.PI*2);ctx.fill();
+    // Character
+    ctx.font='26px -apple-system,sans-serif';
     ctx.textAlign='center';
     ctx.textBaseline='middle';
-    // Subtle shadow under mascot
-    ctx.fillStyle='rgba(0,0,0,0.15)';
-    ctx.beginPath();ctx.ellipse(0,12,8,3,0,0,Math.PI*2);ctx.fill();
     ctx.fillText(mascot,0,0);
     ctx.restore();
 
-    // Sweat drops when pushing
+    // Effort effects when pushing
     if(!allDone&&total>0){
-      sweatTimer+=0.06;
-      if(Math.sin(sweatTimer)>0.7){
-        ctx.font='8px -apple-system,sans-serif';
-        ctx.fillText('💧',bx-16,by-18+Math.sin(sweatTimer*3)*3);
+      sweatTimer+=0.08;
+      // Sweat drops — multiple, animated
+      const sweatY=Math.sin(sweatTimer*2)*4;
+      ctx.font='10px -apple-system,sans-serif';
+      if(Math.sin(sweatTimer)>0.5) ctx.fillText('💧',bx2-18,by2-22+sweatY);
+      if(Math.sin(sweatTimer+1.5)>0.6) ctx.fillText('💧',bx2-24,by2-16+sweatY*0.7);
+      // Effort lines behind mascot
+      ctx.strokeStyle='rgba(255,255,255,0.08)';
+      ctx.lineWidth=1;
+      for(let i=0;i<3;i++){
+        const lx=bx2-20-i*8;
+        const ly=by2-4+i*4+Math.sin(time*3+i)*2;
+        ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx-6,ly);ctx.stroke();
       }
     }
 
@@ -792,8 +830,8 @@ function initSisyphus(){
       if(confetti.length<30){
         for(let i=0;i<30;i++){
           confetti.push({
-            x:bx+Math.random()*40-20,
-            y:by-20,
+            x:bx2+Math.random()*40-20,
+            y:by2-20,
             vx:(Math.random()-0.5)*2,
             vy:-Math.random()*2-1,
             size:2+Math.random()*3,
@@ -813,7 +851,8 @@ function initSisyphus(){
       ctx.globalAlpha=1;
       // Trophy
       ctx.font='14px -apple-system,sans-serif';
-      ctx.fillText('🏆',bx+30,by-10+Math.sin(mascotBob)*2);
+      ctx.font='18px -apple-system,sans-serif';
+      ctx.fillText('🏆',bx2+34,by2-12+Math.sin(mascotBob)*3);
     } else {
       confetti=[];
     }
