@@ -30,6 +30,50 @@ body.t-forest{--card:rgba(12,22,14,0.7);--accent1:#22c55e;--accent2:#94a3b8;--ac
 body.t-sunset{--card:rgba(30,18,14,0.7);--accent1:#f97316;--accent2:#ec4899;--accent3:#fbbf24;--accent1-10:rgba(249,115,22,0.1);--accent1-06:rgba(249,115,22,0.06);--card-border:rgba(249,115,22,0.06);--card-hover:rgba(249,115,22,0.12);--text:#f0e8e0;--text-body:#c0b0a8;--text-muted:#7a6860;--glow1:rgba(249,115,22,0.09);--glow2:rgba(236,72,153,0.07);--glow3:rgba(251,191,36,0.06);--body-bg:linear-gradient(160deg,#1a1210 0%,#201614 40%,#1c1012 70%,#181010 100%);--hdr-bg:rgba(26,18,16,0.88);--sidebar-bg:rgba(26,18,16,0.95);--cat-work-bg:rgba(236,72,153,0.1);--cat-work-fg:rgba(236,72,153,0.6);--cat-pers-bg:rgba(249,115,22,0.1);--cat-pers-fg:rgba(249,115,22,0.6);--cat-proj-bg:rgba(251,191,36,0.1);--cat-proj-fg:rgba(251,191,36,0.6)}
 body.t-mono{--card:rgba(18,18,22,0.7);--accent1:#a8a8b8;--accent2:#d4d4e0;--accent3:#78788a;--accent1-10:rgba(168,168,184,0.08);--accent1-06:rgba(168,168,184,0.04);--card-border:rgba(168,168,184,0.04);--card-hover:rgba(168,168,184,0.08);--text:#d8d8e0;--text-body:#a0a0b0;--text-muted:#555;--glow1:rgba(168,168,184,0.06);--glow2:rgba(212,212,224,0.05);--glow3:rgba(120,120,138,0.04);--body-bg:linear-gradient(160deg,#111114 0%,#161618 40%,#131316 70%,#101012 100%);--hdr-bg:rgba(17,17,20,0.88);--sidebar-bg:rgba(17,17,20,0.95);--cat-work-bg:rgba(212,212,224,0.08);--cat-work-fg:rgba(212,212,224,0.5);--cat-pers-bg:rgba(168,168,184,0.08);--cat-pers-fg:rgba(168,168,184,0.5);--cat-proj-bg:rgba(120,120,138,0.08);--cat-proj-fg:rgba(120,120,138,0.5)}
 body.t-sakura{--card:rgba(28,14,24,0.7);--accent1:#f472b6;--accent2:#c084fc;--accent3:#fda4af;--accent1-10:rgba(244,114,182,0.1);--accent1-06:rgba(244,114,182,0.06);--card-border:rgba(244,114,182,0.06);--card-hover:rgba(244,114,182,0.12);--text:#f0e0ea;--text-body:#c0a8b8;--text-muted:#7a5a6a;--glow1:rgba(244,114,182,0.08);--glow2:rgba(192,132,252,0.07);--glow3:rgba(253,164,175,0.05);--body-bg:linear-gradient(160deg,#1a1018 0%,#1e1420 40%,#18101c 70%,#141018 100%);--hdr-bg:rgba(26,16,24,0.88);--sidebar-bg:rgba(26,16,24,0.95);--cat-work-bg:rgba(192,132,252,0.1);--cat-work-fg:rgba(192,132,252,0.6);--cat-pers-bg:rgba(244,114,182,0.1);--cat-pers-fg:rgba(244,114,182,0.6);--cat-proj-bg:rgba(253,164,175,0.1);--cat-proj-fg:rgba(253,164,175,0.6)}
+/* Light theme — inverted with dark text on warm white */
+body.t-light{
+  --is-light:1;
+  --bg:#f6f5fb;--card:rgba(255,255,255,0.78);
+  --accent1:#7c3aed;--accent2:#2563eb;--accent3:#db2777;
+  --accent1-10:rgba(124,58,237,0.10);--accent1-06:rgba(124,58,237,0.05);
+  --card-border:rgba(124,58,237,0.12);--card-hover:rgba(124,58,237,0.22);
+  --text:#1a1a2e;--text-body:#525266;--text-muted:#8a8aa0;
+  --border:rgba(0,0,0,0.06);
+  --glow1:rgba(124,58,237,0.06);--glow2:rgba(37,99,235,0.05);--glow3:rgba(219,39,119,0.04);
+  --body-bg:linear-gradient(160deg,#f6f5fb 0%,#efebf7 35%,#f0e9f4 70%,#f2eef8 100%);
+  --hdr-bg:rgba(246,245,251,0.88);--sidebar-bg:rgba(246,245,251,0.95);
+  --cat-work-bg:rgba(37,99,235,0.10);--cat-work-fg:rgba(37,99,235,0.85);
+  --cat-pers-bg:rgba(124,58,237,0.10);--cat-pers-fg:rgba(124,58,237,0.85);
+  --cat-proj-bg:rgba(219,39,119,0.10);--cat-proj-fg:rgba(219,39,119,0.85);
+}
+/* Light-mode overrides for elements using rgba(255,255,255,...) directly */
+body.t-light .ck{border-color:rgba(0,0,0,0.22)}
+body.t-light .fp,body.t-light .sort-btn{border-color:rgba(0,0,0,0.08);color:rgba(0,0,0,0.55)}
+body.t-light .tab-btn{color:rgba(0,0,0,0.55)}
+body.t-light .ob{border-color:rgba(0,0,0,0.08);color:rgba(0,0,0,0.45)}
+body.t-light .ob:hover{color:rgba(0,0,0,0.7)}
+body.t-light .tex textarea,body.t-light .tex-row select,body.t-light .tex-row input,body.t-light .tex-title{background:rgba(0,0,0,0.03);border-color:rgba(0,0,0,0.08);color:var(--text)}
+body.t-light .input-card input[type="text"],body.t-light .notes-row textarea,body.t-light .input-card input[type="text"]::placeholder{color:var(--text)}
+body.t-light .input-card input[type="text"]::placeholder,body.t-light .notes-row textarea::placeholder{color:rgba(0,0,0,0.35)}
+body.t-light .t-rank{color:rgba(0,0,0,0.18)}
+body.t-light .pd.medium{background:var(--accent1)}
+body.t-light .pd.low{background:var(--gray)}
+body.t-light .stats{color:rgba(124,58,237,0.4)}
+body.t-light .empty-bubble{color:var(--text)}
+body.t-light .empty-bubble::before{background:rgba(255,255,255,0.78)}
+body.t-light .verdict-card{background:linear-gradient(135deg,rgba(255,255,255,0.95),rgba(248,247,253,0.92))}
+body.t-light .ai-row input{color:var(--text)}
+body.t-light .am.user{color:var(--text)}
+body.t-light #alfredSidebar{background:rgba(246,245,251,0.95)}
+body.t-light #celebText{filter:drop-shadow(0 4px 24px rgba(124,58,237,0.3))}
+body.t-light .celeb-sub{color:rgba(0,0,0,0.55)}
+body.t-light .mascot{filter:grayscale(0.4) brightness(0.85);opacity:0.18}
+body.t-light .mascot:hover{filter:grayscale(0) brightness(1);opacity:0.7}
+body.t-light .mascot-mini{filter:grayscale(0.7) brightness(0.7);opacity:0.06}
+body.t-light .stat-emoji{filter:grayscale(0.5) brightness(0.85)}
+body.t-light .bg-mesh::before{opacity:0.6}
+/* Light Sisyphus canvas */
+body.t-light #sisCanvas{background:linear-gradient(180deg,#e8e4f5 0%,#d8d0ee 60%,#cec3e8 100%) !important;border-color:rgba(124,58,237,0.18) !important;box-shadow:0 4px 20px rgba(124,58,237,0.08),inset 0 1px 0 rgba(255,255,255,0.6) !important}
 
 /* Mascot — blended, subtle, alive */
 .mascot{position:fixed;bottom:20px;left:20px;font-size:32px;z-index:10;opacity:0.12;transition:all .4s var(--ease);cursor:pointer;filter:grayscale(0.5) brightness(0.7);animation:mascotFloat 5s ease-in-out infinite}
@@ -396,6 +440,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
           <div class="theme-dot" onclick="setTheme('t-sunset')" style="background:linear-gradient(135deg,#f97316,#ec4899)" title="Sunset">🦊</div>
           <div class="theme-dot" onclick="setTheme('t-mono')" style="background:linear-gradient(135deg,#a8a8b8,#555)" title="Mono">🗿</div>
           <div class="theme-dot" onclick="setTheme('t-sakura')" style="background:linear-gradient(135deg,#f472b6,#c084fc)" title="Sakura">🌸</div>
+          <div class="theme-dot" onclick="setTheme('t-light')" style="background:linear-gradient(135deg,#f6f5fb,#c4b5fd);color:#7c3aed" title="Light">☀️</div>
         </div>
       </div>
     </div>
@@ -1008,6 +1053,10 @@ function initSisyphus(){
     const a1=cs.getPropertyValue('--accent1').trim()||'#8B5CF6';
     const a2=cs.getPropertyValue('--accent2').trim()||'#3B82F6';
     const a3=cs.getPropertyValue('--accent3').trim()||'#ec4899';
+    const isLight=cs.getPropertyValue('--is-light').trim()==='1';
+    // In light mode, use dark ink for hill/text/dust; in dark mode use white
+    const ink=isLight?'rgba(40,30,70,':'rgba(255,255,255,';
+    const inkLite=isLight?'rgba(80,60,120,':'rgba(255,255,255,';
 
     const all=Object.values(tasks);
     const total=all.length;
@@ -1029,13 +1078,12 @@ function initSisyphus(){
 
     const time=Date.now()*.001;
 
-    // Twinkling stars in the sky
+    // Twinkling stars (or sun-specks in light mode)
     stars.forEach(s=>{
       const tw=0.4+Math.sin(time*s.speed+s.phase)*0.5;
-      ctx.globalAlpha=Math.max(0,tw)*0.65;
-      ctx.fillStyle='#ffffff';
+      ctx.globalAlpha=Math.max(0,tw)*(isLight?0.4:0.65);
+      ctx.fillStyle=isLight?'#ffffff':'#ffffff';
       ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
-      // Cross-shape glint on the larger ones
       if(s.r>1.2){
         ctx.globalAlpha*=0.5;
         ctx.fillRect(s.x-s.r*1.6,s.y-0.3,s.r*3.2,0.6);
@@ -1059,15 +1107,15 @@ function initSisyphus(){
     const hillLen=hillEndX-hillStartX;
 
     // Slope — bright, visible
-    ctx.strokeStyle='rgba(255,255,255,0.32)';
+    ctx.strokeStyle=ink+(isLight?'0.55)':'0.32)');
     ctx.lineWidth=2.5;
     ctx.lineCap='round';
     ctx.beginPath();
     ctx.moveTo(hillStartX,hillBottomY);
     ctx.lineTo(hillEndX,hillTopY);
     ctx.stroke();
-    // Ground texture — bigger, more spaced dashes
-    ctx.strokeStyle='rgba(255,255,255,0.18)';
+    // Ground texture
+    ctx.strokeStyle=ink+(isLight?'0.32)':'0.18)');
     ctx.lineWidth=1.2;
     for(let i=0;i<=24;i++){
       const t=i/24;
@@ -1082,20 +1130,19 @@ function initSisyphus(){
       const y=hillBottomY-p*(hillBottomY-hillTopY);
       const reached=p<=pct;
       // Flag pole
-      ctx.strokeStyle=reached?a1+'aa':'rgba(255,255,255,0.22)';
+      ctx.strokeStyle=reached?a1+'cc':ink+(isLight?'0.4)':'0.22)');
       ctx.lineWidth=1.2;
       ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-15);ctx.stroke();
-      // Flag — use proper accent color (not CSS var string!)
-      ctx.fillStyle=reached?a1:'rgba(255,255,255,0.3)';
+      // Flag
+      ctx.fillStyle=reached?a1:ink+(isLight?'0.45)':'0.3)');
       ctx.beginPath();ctx.moveTo(x,y-15);ctx.lineTo(x+9,y-12);ctx.lineTo(x,y-9);ctx.closePath();ctx.fill();
-      // Glow on reached flags
       if(reached){
         ctx.shadowBlur=8;ctx.shadowColor=a1;
         ctx.fill();
         ctx.shadowBlur=0;
       }
       // Label
-      ctx.fillStyle=reached?'rgba(255,255,255,0.7)':'rgba(255,255,255,0.32)';
+      ctx.fillStyle=reached?inkLite+(isLight?'0.85)':'0.7)'):ink+(isLight?'0.45)':'0.32)');
       ctx.font='700 7.5px -apple-system,sans-serif';
       ctx.textAlign='center';
       ctx.fillText(Math.round(p*100)+'%',x,y+14);
@@ -1105,13 +1152,13 @@ function initSisyphus(){
     const bx2=hillStartX+pct*hillLen;
     const by2=hillBottomY-pct*(hillBottomY-hillTopY);
 
-    // Trail behind boulder — chunky, visible dust particles
+    // Trail behind boulder — chunky dust particles
     if(!allDone&&total>0){
       for(let i=0;i<6;i++){
         const dx=bx2-10-i*7+Math.sin(time*4+i)*2;
         const dy=by2+4+Math.cos(time*3+i)*2;
         ctx.globalAlpha=Math.max(0.05,0.4-i*0.07);
-        ctx.fillStyle='#ffffff';
+        ctx.fillStyle=isLight?'#3a2a5a':'#ffffff';
         ctx.beginPath();ctx.arc(dx,dy,Math.max(1,2.5-i*0.3),0,Math.PI*2);ctx.fill();
       }
       ctx.globalAlpha=1;
@@ -1143,7 +1190,7 @@ function initSisyphus(){
     ctx.beginPath();ctx.arc(0,0,boulderR,0,Math.PI*2);ctx.stroke();
     ctx.globalAlpha=1;
     // Cracks
-    ctx.strokeStyle='rgba(255,255,255,0.4)';
+    ctx.strokeStyle=isLight?'rgba(0,0,0,0.35)':'rgba(255,255,255,0.4)';
     ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(-4,-7);ctx.lineTo(2,0);ctx.lineTo(-2,6);ctx.stroke();
     ctx.beginPath();ctx.moveTo(5,-4);ctx.lineTo(0,5);ctx.stroke();
@@ -1187,7 +1234,7 @@ function initSisyphus(){
       if(Math.sin(sweatTimer)>0.5) ctx.fillText('💧',bx2-18,by2-22+sweatY);
       if(Math.sin(sweatTimer+1.5)>0.6) ctx.fillText('💧',bx2-24,by2-16+sweatY*0.7);
       // Effort lines behind mascot
-      ctx.strokeStyle='rgba(255,255,255,0.22)';
+      ctx.strokeStyle=ink+(isLight?'0.35)':'0.22)');
       ctx.lineWidth=1.2;
       for(let i=0;i<3;i++){
         const lx=bx2-20-i*8;
@@ -1566,6 +1613,7 @@ const THEMES={
   't-sunset':{mascot:'🦊',minis:['🌅','✨','🦩','🌵','🔥'],stats:{nodata:'🌅',streak:'☀️',early:'🦅',late:'🐾',time:'⏳',him:'🌟',locked:'🏜️',solid:'🦊',grind:'💥'}},
   't-mono':{mascot:'🗿',minis:['♟️','🎲','🖤','♠️','🌑'],stats:{nodata:'📊',streak:'♟️',early:'♠️',late:'♣️',time:'⏲️',him:'🏛️',locked:'⚫',solid:'♦️',grind:'▪️'}},
   't-sakura':{mascot:'🌸',minis:['🎀','💮','🦋','🧁','🎐'],stats:{nodata:'🌸',streak:'💗',early:'🦋',late:'🥀',time:'🎐',him:'💎',locked:'🌺',solid:'🌷',grind:'🧁'}},
+  't-light':{mascot:'☀️',minis:['☁️','🌤️','💎','🪶','✨'],stats:{nodata:'☀️',streak:'🔆',early:'🕊️',late:'🐢',time:'⏰',him:'🏆',locked:'⭐',solid:'👍',grind:'💪'}},
 };
 
 function setTheme(t){
@@ -1576,7 +1624,7 @@ function setTheme(t){
   for(let i=0;i<5;i++){const el=document.getElementById('mm'+i);if(el)el.textContent=th.minis[i]||''}
   document.querySelectorAll('.theme-dot').forEach(d=>d.classList.remove('active'));
   const dots=document.querySelectorAll('.theme-dot');
-  const idx=['','t-ocean','t-forest','t-sunset','t-mono','t-sakura'].indexOf(t);
+  const idx=['','t-ocean','t-forest','t-sunset','t-mono','t-sakura','t-light'].indexOf(t);
   if(idx>=0&&dots[idx])dots[idx].classList.add('active');
   document.getElementById('themeDots').classList.remove('show');
   // Re-render everything so stat icons update
