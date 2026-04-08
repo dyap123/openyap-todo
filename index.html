@@ -236,10 +236,13 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 
 /* Dashboard Metrics */
 .dash{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
-.dash-card{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--accent1-06);border-radius:14px;padding:14px 12px;text-align:center;transition:all .3s var(--ease)}
-.dash-card:hover{border-color:var(--card-hover);transform:translateY(-2px)}
-.dash-val{font-size:24px;font-weight:800;line-height:1;letter-spacing:-1px}
-.dash-val.blue{color:var(--blue)}.dash-val.purple{color:var(--purple)}.dash-val.pink{color:var(--pink)}.dash-val.green{color:#34d399}
+.dash-card{position:relative;background:linear-gradient(135deg,rgba(20,20,40,0.8),rgba(15,12,30,0.85));backdrop-filter:blur(12px);border:1.5px solid transparent;background-clip:padding-box;border-radius:14px;padding:14px 12px;text-align:center;transition:all .3s var(--ease);overflow:hidden}
+.dash-card::before{content:'';position:absolute;inset:-1.5px;border-radius:14px;padding:1.5px;background:linear-gradient(135deg,var(--accent1),var(--accent3),var(--accent2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:0.35;transition:opacity .3s}
+.dash-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,0.3),0 0 30px var(--accent1-10)}
+.dash-card:hover::before{opacity:0.85}
+body.t-light .dash-card{background:linear-gradient(135deg,rgba(255,255,255,0.95),rgba(248,247,253,0.92))}
+.dash-val{font-size:26px;font-weight:900;line-height:1;letter-spacing:-1px;background:linear-gradient(135deg,var(--accent1),var(--accent3),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 12px var(--accent1-10))}
+.dash-val.green{background:linear-gradient(135deg,#34d399,var(--accent1),#34d399);-webkit-background-clip:text;background-clip:text}
 .dash-label{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-top:4px}
 .dash-bar{height:3px;border-radius:2px;background:rgba(255,255,255,0.04);margin-top:8px;overflow:hidden}
 .dash-bar-fill{height:100%;border-radius:2px;transition:width .6s var(--ease)}
@@ -358,8 +361,12 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .stats-section{margin-bottom:20px}
 .stats-title{font-size:12px;font-weight:700;color:var(--accent1);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat-big{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--accent1-06);border-radius:14px;padding:16px;text-align:center}
-.stat-big-val{font-size:32px;font-weight:900;line-height:1;letter-spacing:-1px}
+.stat-big{position:relative;background:linear-gradient(135deg,rgba(20,20,40,0.8),rgba(15,12,30,0.85));backdrop-filter:blur(12px);border:1.5px solid transparent;background-clip:padding-box;border-radius:14px;padding:18px 16px;text-align:center;overflow:hidden;transition:all .3s var(--ease)}
+.stat-big::before{content:'';position:absolute;inset:-1.5px;border-radius:14px;padding:1.5px;background:linear-gradient(135deg,var(--accent1),var(--accent3),var(--accent2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:0.4;transition:opacity .3s}
+.stat-big:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,0.3),0 0 30px var(--accent1-10)}
+.stat-big:hover::before{opacity:0.9}
+body.t-light .stat-big{background:linear-gradient(135deg,rgba(255,255,255,0.95),rgba(248,247,253,0.92))}
+.stat-big-val{font-size:34px;font-weight:900;line-height:1;letter-spacing:-1px;background:linear-gradient(135deg,var(--accent1),var(--accent3),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 12px var(--accent1-10))}
 /* Verdict card */
 .verdict-card{position:relative;border-radius:18px;padding:24px 20px;text-align:center;overflow:hidden;background:linear-gradient(135deg,rgba(20,20,40,0.85),rgba(15,12,30,0.9));border:1.5px solid transparent;background-clip:padding-box}
 .verdict-card::before{content:'';position:absolute;inset:-1.5px;border-radius:18px;padding:1.5px;background:linear-gradient(135deg,var(--accent1),var(--accent3),var(--accent2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:0.4}
@@ -486,7 +493,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 
   <!-- Sisyphus -->
   <div style="position:relative;margin-bottom:12px">
-    <canvas id="sisCanvas" style="width:100%;height:96px;display:block;border-radius:14px;background:linear-gradient(180deg,#0f0f1c 0%,#0a0a16 60%,#06060f 100%);border:1px solid var(--card-border);box-shadow:0 4px 20px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04)"></canvas>
+    <canvas id="sisCanvas" style="width:100%;height:88px;display:block;border-radius:14px;background:linear-gradient(180deg,#0f0f1c 0%,#0a0a16 60%,#06060f 100%);border:1px solid var(--card-border);box-shadow:0 4px 20px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04)"></canvas>
   </div>
 
   <!-- Stats -->
@@ -1027,18 +1034,11 @@ function initSisyphus(){
   if(!canvas)return;
   const dpr=Math.min(window.devicePixelRatio,2);
   const W=canvas.parentElement.clientWidth;
-  canvas.width=W*dpr;canvas.height=96*dpr;
-  canvas.style.width=W+'px';canvas.style.height='96px';
+  canvas.width=W*dpr;canvas.height=88*dpr;
+  canvas.style.width=W+'px';canvas.style.height='88px';
 
   let boulderAngle=0;
   let mascotBob=0;
-  let sweatTimer=0;
-  let confetti=[];
-  // Twinkling stars in the sky portion
-  const stars=[];
-  for(let i=0;i<10;i++){
-    stars.push({x:20+Math.random()*(W-40),y:6+Math.random()*40,r:0.6+Math.random()*1.2,phase:Math.random()*Math.PI*2,speed:0.4+Math.random()*0.8});
-  }
 
   function draw(){
     const ctx=canvas.getContext('2d');
@@ -1046,7 +1046,7 @@ function initSisyphus(){
     ctx.clearRect(0,0,w,h);
     ctx.save();
     ctx.scale(dpr,dpr);
-    const cw=W,ch=96;
+    const cw=W,ch=88;
 
     // Theme colors from CSS variables — read EARLY so we can use them throughout
     const cs=getComputedStyle(document.body);
@@ -1078,203 +1078,79 @@ function initSisyphus(){
 
     const time=Date.now()*.001;
 
-    // Twinkling stars (or sun-specks in light mode)
-    stars.forEach(s=>{
-      const tw=0.4+Math.sin(time*s.speed+s.phase)*0.5;
-      ctx.globalAlpha=Math.max(0,tw)*(isLight?0.4:0.65);
-      ctx.fillStyle=isLight?'#ffffff':'#ffffff';
-      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
-      if(s.r>1.2){
-        ctx.globalAlpha*=0.5;
-        ctx.fillRect(s.x-s.r*1.6,s.y-0.3,s.r*3.2,0.6);
-        ctx.fillRect(s.x-0.3,s.y-s.r*1.6,0.6,s.r*3.2);
-      }
-    });
-    ctx.globalAlpha=1;
-
-    // Distant horizon glow
-    const hg=ctx.createLinearGradient(0,ch-30,0,ch);
-    hg.addColorStop(0,'rgba(0,0,0,0)');
-    hg.addColorStop(1,a1+'18');
-    ctx.fillStyle=hg;
-    ctx.fillRect(0,ch-30,cw,30);
-
-    // Hill
+    // ── Hill ──
     const hillStartX=30;
     const hillEndX=cw-40;
-    const hillBottomY=ch-14;
-    const hillTopY=20;
+    const hillBottomY=ch-16;
+    const hillTopY=24;
     const hillLen=hillEndX-hillStartX;
 
-    // Slope — bright, visible
-    ctx.strokeStyle=ink+(isLight?'0.55)':'0.32)');
-    ctx.lineWidth=2.5;
+    // Slope — single clean line
+    ctx.strokeStyle=ink+(isLight?'0.4)':'0.28)');
+    ctx.lineWidth=2;
     ctx.lineCap='round';
     ctx.beginPath();
     ctx.moveTo(hillStartX,hillBottomY);
     ctx.lineTo(hillEndX,hillTopY);
     ctx.stroke();
-    // Ground texture
-    ctx.strokeStyle=ink+(isLight?'0.32)':'0.18)');
-    ctx.lineWidth=1.2;
-    for(let i=0;i<=24;i++){
-      const t=i/24;
-      const x=hillStartX+t*hillLen;
-      const y=hillBottomY-t*(hillBottomY-hillTopY);
-      ctx.beginPath();ctx.moveTo(x,y+4);ctx.lineTo(x+4,y+9);ctx.stroke();
-    }
 
-    // Percentage flags
-    [0.25,0.5,0.75,1].forEach(p=>{
-      const x=hillStartX+p*hillLen;
-      const y=hillBottomY-p*(hillBottomY-hillTopY);
-      const reached=p<=pct;
-      // Flag pole
-      ctx.strokeStyle=reached?a1+'cc':ink+(isLight?'0.4)':'0.22)');
-      ctx.lineWidth=1.2;
-      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-15);ctx.stroke();
-      // Flag
-      ctx.fillStyle=reached?a1:ink+(isLight?'0.45)':'0.3)');
-      ctx.beginPath();ctx.moveTo(x,y-15);ctx.lineTo(x+9,y-12);ctx.lineTo(x,y-9);ctx.closePath();ctx.fill();
-      if(reached){
-        ctx.shadowBlur=8;ctx.shadowColor=a1;
-        ctx.fill();
-        ctx.shadowBlur=0;
-      }
-      // Label
-      ctx.fillStyle=reached?inkLite+(isLight?'0.85)':'0.7)'):ink+(isLight?'0.45)':'0.32)');
-      ctx.font='700 7.5px -apple-system,sans-serif';
-      ctx.textAlign='center';
-      ctx.fillText(Math.round(p*100)+'%',x,y+14);
-    });
+    // Summit flag at top — only one flag
+    const flagX=hillEndX;
+    const flagY=hillTopY;
+    ctx.strokeStyle=allDone?a1:ink+(isLight?'0.35)':'0.2)');
+    ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(flagX,flagY);ctx.lineTo(flagX,flagY-16);ctx.stroke();
+    // Flag pennant
+    ctx.fillStyle=allDone?a1:ink+(isLight?'0.4)':'0.25)');
+    if(allDone){ctx.shadowBlur=12;ctx.shadowColor=a1}
+    ctx.beginPath();ctx.moveTo(flagX,flagY-16);ctx.lineTo(flagX+10,flagY-13);ctx.lineTo(flagX,flagY-10);ctx.closePath();ctx.fill();
+    ctx.shadowBlur=0;
 
-    // Boulder position
-    const bx2=hillStartX+pct*hillLen;
-    const by2=hillBottomY-pct*(hillBottomY-hillTopY);
+    // ── Boulder + Mascot positions ──
+    // Add some left padding so boulder starts visible at 0%
+    const startOffset=20;
+    const usableLen=hillLen-startOffset;
+    const bx2=hillStartX+startOffset+pct*usableLen;
+    const by2=hillBottomY-(startOffset+pct*usableLen)*((hillBottomY-hillTopY)/hillLen);
 
-    // Trail behind boulder — chunky dust particles
-    if(!allDone&&total>0){
-      for(let i=0;i<6;i++){
-        const dx=bx2-10-i*7+Math.sin(time*4+i)*2;
-        const dy=by2+4+Math.cos(time*3+i)*2;
-        ctx.globalAlpha=Math.max(0.05,0.4-i*0.07);
-        ctx.fillStyle=isLight?'#3a2a5a':'#ffffff';
-        ctx.beginPath();ctx.arc(dx,dy,Math.max(1,2.5-i*0.3),0,Math.PI*2);ctx.fill();
-      }
-      ctx.globalAlpha=1;
-    }
-
-    // Boulder — colored, glowing, alive
-    boulderAngle+=allDone?0:0.06;
-    const boulderR=14;
+    // ── Boulder — actually looks like a stone ──
+    boulderAngle+=allDone?0:0.05;
+    const boulderR=11;
     ctx.save();
-    ctx.translate(bx2+16,by2-boulderR-1);
+    ctx.translate(bx2+18,by2-boulderR-2);
     ctx.rotate(boulderAngle);
-    // Outer glow
-    const glow=ctx.createRadialGradient(0,0,boulderR*0.4,0,0,boulderR*1.6);
-    glow.addColorStop(0,a1+'66');
-    glow.addColorStop(1,a1+'00');
-    ctx.fillStyle=glow;
-    ctx.beginPath();ctx.arc(0,0,boulderR*1.6,0,Math.PI*2);ctx.fill();
-    // Boulder body — gradient from accent2 to accent1
-    const bg=ctx.createRadialGradient(-4,-4,2,0,0,boulderR);
-    bg.addColorStop(0,a3);
-    bg.addColorStop(0.6,a1);
-    bg.addColorStop(1,a2);
+    // Soft shadow under boulder
+    ctx.fillStyle='rgba(0,0,0,0.25)';
+    ctx.beginPath();ctx.ellipse(0,boulderR+2,boulderR*0.9,2.5,0,0,Math.PI*2);ctx.fill();
+    // Stone body — radial from light gray to dark gray (subtle accent tint)
+    const stoneCol=isLight?['#9b95ae','#6b6582','#4a4560']:['#6c6680','#4a4458','#2a2535'];
+    const bg=ctx.createRadialGradient(-3,-3,1,0,0,boulderR);
+    bg.addColorStop(0,stoneCol[0]);
+    bg.addColorStop(0.55,stoneCol[1]);
+    bg.addColorStop(1,stoneCol[2]);
     ctx.fillStyle=bg;
     ctx.beginPath();ctx.arc(0,0,boulderR,0,Math.PI*2);ctx.fill();
-    // Outline
-    ctx.strokeStyle=a1;
-    ctx.lineWidth=1.5;
-    ctx.globalAlpha=0.6;
-    ctx.beginPath();ctx.arc(0,0,boulderR,0,Math.PI*2);ctx.stroke();
-    ctx.globalAlpha=1;
-    // Cracks
-    ctx.strokeStyle=isLight?'rgba(0,0,0,0.35)':'rgba(255,255,255,0.4)';
-    ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(-4,-7);ctx.lineTo(2,0);ctx.lineTo(-2,6);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(5,-4);ctx.lineTo(0,5);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(-6,2);ctx.lineTo(-1,-3);ctx.stroke();
-    // Bright shine spot
-    ctx.fillStyle='rgba(255,255,255,0.5)';
-    ctx.beginPath();ctx.arc(-4,-5,2.5,0,Math.PI*2);ctx.fill();
+    // Single highlight to read as 3D
+    ctx.fillStyle='rgba(255,255,255,0.18)';
+    ctx.beginPath();ctx.arc(-3,-4,2,0,Math.PI*2);ctx.fill();
     ctx.restore();
 
-    // Mascot — bigger, more animated, with glow halo
-    mascotBob+=allDone?0.06:0.18;
-    const mBob=allDone?Math.sin(mascotBob)*1:Math.sin(mascotBob)*3.5;
-    const mLean=allDone?0:5+Math.sin(mascotBob*2)*2;
-    const mScale=allDone?1:1+Math.sin(mascotBob*2)*0.03;
+    // ── Mascot ──
+    mascotBob+=allDone?0.05:0.15;
+    const mBob=Math.sin(mascotBob)*(allDone?1.5:2.5);
+    const mLean=allDone?0:6;
     ctx.save();
-    ctx.translate(bx2-6,by2-8+mBob);
+    ctx.translate(bx2-2,by2-6+mBob);
     ctx.rotate(mLean*Math.PI/180);
-    ctx.scale(mScale,mScale);
-    // Glow halo
-    const halo=ctx.createRadialGradient(0,0,2,0,0,20);
-    halo.addColorStop(0,a1+'40');
-    halo.addColorStop(1,a1+'00');
-    ctx.fillStyle=halo;
-    ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill();
-    // Shadow
-    ctx.fillStyle='rgba(0,0,0,0.3)';
-    ctx.beginPath();ctx.ellipse(0,16,11,4,0,0,Math.PI*2);ctx.fill();
-    // Character — full color, no opacity tricks
-    ctx.font='26px -apple-system,sans-serif';
+    // Soft shadow
+    ctx.fillStyle='rgba(0,0,0,0.2)';
+    ctx.beginPath();ctx.ellipse(0,15,9,3,0,0,Math.PI*2);ctx.fill();
+    // Character
+    ctx.font='24px -apple-system,sans-serif';
     ctx.textAlign='center';
     ctx.textBaseline='middle';
     ctx.fillText(mascot,0,0);
     ctx.restore();
-
-    // Effort effects when pushing
-    if(!allDone&&total>0){
-      sweatTimer+=0.08;
-      // Sweat drops — multiple, animated
-      const sweatY=Math.sin(sweatTimer*2)*4;
-      ctx.font='10px -apple-system,sans-serif';
-      if(Math.sin(sweatTimer)>0.5) ctx.fillText('💧',bx2-18,by2-22+sweatY);
-      if(Math.sin(sweatTimer+1.5)>0.6) ctx.fillText('💧',bx2-24,by2-16+sweatY*0.7);
-      // Effort lines behind mascot
-      ctx.strokeStyle=ink+(isLight?'0.35)':'0.22)');
-      ctx.lineWidth=1.2;
-      for(let i=0;i<3;i++){
-        const lx=bx2-20-i*8;
-        const ly=by2-4+i*4+Math.sin(time*3+i)*2;
-        ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx-6,ly);ctx.stroke();
-      }
-    }
-
-    // All done — celebration
-    if(allDone){
-      // Confetti
-      if(confetti.length<30){
-        for(let i=0;i<30;i++){
-          confetti.push({
-            x:bx2+Math.random()*40-20,
-            y:by2-20,
-            vx:(Math.random()-0.5)*2,
-            vy:-Math.random()*2-1,
-            size:2+Math.random()*3,
-            color:['#8B5CF6','#3B82F6','#ec4899','#34D399','#fbbf24'][Math.floor(Math.random()*5)],
-            life:1
-          });
-        }
-      }
-      confetti.forEach(c=>{
-        c.x+=c.vx;c.y+=c.vy;c.vy+=0.03;c.life-=0.005;
-        if(c.life>0){
-          ctx.globalAlpha=c.life*0.6;
-          ctx.fillStyle=c.color;
-          ctx.beginPath();ctx.arc(c.x,c.y,c.size,0,Math.PI*2);ctx.fill();
-        }
-      });
-      ctx.globalAlpha=1;
-      // Trophy
-      ctx.font='14px -apple-system,sans-serif';
-      ctx.font='18px -apple-system,sans-serif';
-      ctx.fillText('🏆',bx2+34,by2-12+Math.sin(mascotBob)*3);
-    } else {
-      confetti=[];
-    }
 
     // Creative progress label — changes with completion
     const msgs={
@@ -1814,9 +1690,9 @@ function renderStatsView(){
   <div class="stats-section">
     <div class="stats-title">Overview</div>
     <div class="stats-grid">
-      <div class="stat-big"><div class="stat-big-val" style="color:var(--accent1)">${all.length}</div><div class="stat-big-label">Total Tasks</div></div>
-      <div class="stat-big"><div class="stat-big-val" style="color:#34d399">${done.length}</div><div class="stat-big-label">Completed</div></div>
-      <div class="stat-big"><div class="stat-big-val" style="color:var(--accent3)">${active.length}</div><div class="stat-big-label">Active</div></div>
+      <div class="stat-big"><div class="stat-big-val">${all.length}</div><div class="stat-big-label">Total Tasks</div></div>
+      <div class="stat-big"><div class="stat-big-val">${done.length}</div><div class="stat-big-label">Completed</div></div>
+      <div class="stat-big"><div class="stat-big-val">${active.length}</div><div class="stat-big-label">Active</div></div>
     </div>
   </div>
 
@@ -1862,9 +1738,9 @@ function renderStatsView(){
   <div class="stats-section">
     <div class="stats-title">Priority Breakdown</div>
     <div class="stats-grid">
-      <div class="stat-big"><div class="stat-big-val" style="color:var(--red)">${active.filter(t=>t.priority==='high').length}</div><div class="stat-big-label">High Active</div></div>
-      <div class="stat-big"><div class="stat-big-val" style="color:var(--accent1)">${active.filter(t=>t.priority==='medium').length}</div><div class="stat-big-label">Medium Active</div></div>
-      <div class="stat-big"><div class="stat-big-val" style="color:var(--gray)">${active.filter(t=>t.priority==='low').length}</div><div class="stat-big-label">Low Active</div></div>
+      <div class="stat-big"><div class="stat-big-val">${active.filter(t=>t.priority==='high').length}</div><div class="stat-big-label">High Active</div></div>
+      <div class="stat-big"><div class="stat-big-val">${active.filter(t=>t.priority==='medium').length}</div><div class="stat-big-label">Medium Active</div></div>
+      <div class="stat-big"><div class="stat-big-val">${active.filter(t=>t.priority==='low').length}</div><div class="stat-big-label">Low Active</div></div>
     </div>
   </div>
 
