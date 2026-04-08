@@ -366,6 +366,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
   <!-- Dashboard -->
   <div class="dash" id="dash"></div>
 
+  <!-- Sisyphus -->
+  <div style="position:relative;margin-bottom:12px">
+    <canvas id="sisCanvas" style="width:100%;height:80px;display:block;border-radius:14px;background:var(--card);border:1px solid var(--card-border)"></canvas>
+  </div>
+
   <!-- Stats -->
   <div class="stat-row" id="statRow"></div>
 
@@ -663,9 +668,173 @@ function renderStatRow(){
     </div>`;
 }
 
+// ═══════════════════════════════════════════
+//  Sisyphus Animation
+// ═══════════════════════════════════════════
+let sisAnim=null;
+function initSisyphus(){
+  const canvas=document.getElementById('sisCanvas');
+  if(!canvas)return;
+  const dpr=Math.min(window.devicePixelRatio,2);
+  const W=canvas.parentElement.clientWidth;
+  canvas.width=W*dpr;canvas.height=80*dpr;
+  canvas.style.width=W+'px';canvas.style.height='80px';
+
+  let boulderAngle=0;
+  let mascotBob=0;
+  let sweatTimer=0;
+  let confetti=[];
+
+  function draw(){
+    const ctx=canvas.getContext('2d');
+    const w=canvas.width,h=canvas.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.save();
+    ctx.scale(dpr,dpr);
+    const cw=W,ch=80;
+
+    const all=Object.values(tasks);
+    const total=all.length;
+    const done=all.filter(t=>t.completed).length;
+    const pct=total?done/total:0;
+    const allDone=total>0&&pct>=1;
+
+    // Get mascot
+    const curTheme=localStorage.getItem('oyt_theme')||'';
+    const mascot=(THEMES[curTheme]||THEMES['']).mascot;
+
+    // Hill
+    const hillStartX=30;
+    const hillEndX=cw-40;
+    const hillBottomY=ch-14;
+    const hillTopY=18;
+    const hillLen=hillEndX-hillStartX;
+
+    // Draw slope line
+    ctx.strokeStyle='rgba(255,255,255,0.06)';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(hillStartX,hillBottomY);
+    ctx.lineTo(hillEndX,hillTopY);
+    ctx.stroke();
+
+    // Ground dots along slope
+    for(let i=0;i<=20;i++){
+      const t=i/20;
+      const x=hillStartX+t*hillLen;
+      const y=hillBottomY-t*(hillBottomY-hillTopY);
+      ctx.fillStyle='rgba(255,255,255,0.03)';
+      ctx.beginPath();ctx.arc(x,y+6,1.5,0,Math.PI*2);ctx.fill();
+    }
+
+    // Percentage markers
+    [0.25,0.5,0.75,1].forEach(p=>{
+      const x=hillStartX+p*hillLen;
+      const y=hillBottomY-p*(hillBottomY-hillTopY);
+      ctx.fillStyle='rgba(255,255,255,0.06)';
+      ctx.font='8px -apple-system,sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText(Math.round(p*100)+'%',x,y-8);
+      // Tick mark
+      ctx.fillRect(x-0.5,y-3,1,6);
+    });
+
+    // Boulder position
+    const bx=hillStartX+pct*hillLen;
+    const by=hillBottomY-pct*(hillBottomY-hillTopY);
+
+    // Boulder
+    boulderAngle+=allDone?0:0.04;
+    const boulderR=10;
+    ctx.save();
+    ctx.translate(bx+14,by-boulderR-2);
+    ctx.rotate(boulderAngle);
+    ctx.fillStyle='rgba(255,255,255,0.08)';
+    ctx.beginPath();ctx.arc(0,0,boulderR,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.12)';
+    ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(0,0,boulderR,0,Math.PI*2);ctx.stroke();
+    // Cracks on boulder
+    ctx.strokeStyle='rgba(255,255,255,0.06)';
+    ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.moveTo(-3,-5);ctx.lineTo(2,1);ctx.lineTo(-1,5);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(4,-3);ctx.lineTo(1,4);ctx.stroke();
+    ctx.restore();
+
+    // Mascot
+    mascotBob+=allDone?0.08:0.12;
+    const mBob=allDone?0:Math.sin(mascotBob)*2;
+    const mLean=allDone?0:3;
+    ctx.save();
+    ctx.translate(bx-4,by-6+mBob);
+    ctx.rotate(mLean*Math.PI/180);
+    ctx.font='20px -apple-system,sans-serif';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    // Subtle shadow under mascot
+    ctx.fillStyle='rgba(0,0,0,0.15)';
+    ctx.beginPath();ctx.ellipse(0,12,8,3,0,0,Math.PI*2);ctx.fill();
+    ctx.fillText(mascot,0,0);
+    ctx.restore();
+
+    // Sweat drops when pushing
+    if(!allDone&&total>0){
+      sweatTimer+=0.06;
+      if(Math.sin(sweatTimer)>0.7){
+        ctx.font='8px -apple-system,sans-serif';
+        ctx.fillText('💧',bx-16,by-18+Math.sin(sweatTimer*3)*3);
+      }
+    }
+
+    // All done — celebration
+    if(allDone){
+      // Confetti
+      if(confetti.length<30){
+        for(let i=0;i<30;i++){
+          confetti.push({
+            x:bx+Math.random()*40-20,
+            y:by-20,
+            vx:(Math.random()-0.5)*2,
+            vy:-Math.random()*2-1,
+            size:2+Math.random()*3,
+            color:['#8B5CF6','#3B82F6','#ec4899','#34D399','#fbbf24'][Math.floor(Math.random()*5)],
+            life:1
+          });
+        }
+      }
+      confetti.forEach(c=>{
+        c.x+=c.vx;c.y+=c.vy;c.vy+=0.03;c.life-=0.005;
+        if(c.life>0){
+          ctx.globalAlpha=c.life*0.6;
+          ctx.fillStyle=c.color;
+          ctx.beginPath();ctx.arc(c.x,c.y,c.size,0,Math.PI*2);ctx.fill();
+        }
+      });
+      ctx.globalAlpha=1;
+      // Trophy
+      ctx.font='14px -apple-system,sans-serif';
+      ctx.fillText('🏆',bx+30,by-10+Math.sin(mascotBob)*2);
+    } else {
+      confetti=[];
+    }
+
+    // Label
+    ctx.fillStyle='rgba(255,255,255,0.1)';
+    ctx.font='600 7px -apple-system,sans-serif';
+    ctx.textAlign='left';
+    ctx.fillText(allDone?'ALL TASKS DONE':'KEEP PUSHING',8,ch-4);
+
+    ctx.restore();
+    sisAnim=requestAnimationFrame(draw);
+  }
+  if(sisAnim)cancelAnimationFrame(sisAnim);
+  draw();
+}
+
 function renderTasks(){
   renderDash();
   renderStatRow();
+  initSisyphus();
   renderFilters();
   renderSortBar();
   const list=document.getElementById('taskList'),stats=document.getElementById('stats');
