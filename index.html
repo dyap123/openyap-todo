@@ -111,6 +111,28 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .notes-row textarea{width:100%;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:10px;padding:8px 12px;color:var(--text-body);font-size:12px;resize:none;height:36px;outline:none;transition:all .2s}
 .notes-row textarea:focus{height:70px;border-color:var(--card-hover)}
 .notes-row textarea::placeholder{color:rgba(168,164,184,0.25)}
+/* Difficulty buttons */
+.ob.s[data-d="easy"]{background:rgba(74,222,128,0.12);border-color:rgba(74,222,128,0.3);color:#4ade80}
+.ob.s[data-d="medium"]{background:rgba(251,191,36,0.12);border-color:rgba(251,191,36,0.3);color:#fbbf24}
+.ob.s[data-d="hard"]{background:rgba(249,115,22,0.12);border-color:rgba(249,115,22,0.3);color:#f97316}
+.ob.s[data-d="epic"]{background:rgba(236,72,153,0.15);border-color:rgba(236,72,153,0.35);color:var(--accent3)}
+/* Difficulty stars on task card */
+.t-diff{display:inline-flex;gap:1px;font-size:9px;line-height:1;letter-spacing:0;color:rgba(255,255,255,0.2)}
+.t-diff.easy{color:#4ade80}.t-diff.medium{color:#fbbf24}.t-diff.hard{color:#f97316}.t-diff.epic{color:var(--accent3)}
+/* Progress slider on task card */
+.t-prog{display:flex;align-items:center;gap:6px;margin-top:6px}
+.t-prog-bar{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,0.05);overflow:hidden;cursor:pointer;position:relative}
+.t-prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent1),var(--accent3));transition:width .35s var(--ease)}
+.t-prog-val{font-size:9px;font-weight:700;color:var(--text-muted);min-width:28px;text-align:right;font-variant-numeric:tabular-nums}
+.t-prog-input{width:100%;background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:8px;padding:5px 8px;color:var(--text-body);font-size:11px;outline:none}
+.t-prog-input:focus{border-color:var(--card-hover)}
+/* Celebration overlay */
+#celebOverlay{position:fixed;inset:0;z-index:9999;pointer-events:none;display:none}
+#celebOverlay.show{display:block}
+#celebCanvas{position:absolute;inset:0;width:100%;height:100%}
+.celeb-text{position:absolute;top:35%;left:50%;transform:translateX(-50%);font-size:48px;font-weight:900;letter-spacing:-1.5px;background:linear-gradient(135deg,var(--accent1),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;animation:celebTextIn 2.2s var(--ease) both;text-shadow:0 0 40px rgba(139,92,246,0.4);filter:drop-shadow(0 4px 24px rgba(0,0,0,0.6))}
+.celeb-sub{display:block;font-size:14px;font-weight:600;color:rgba(255,255,255,0.5);letter-spacing:3px;text-transform:uppercase;margin-top:8px;-webkit-text-fill-color:rgba(255,255,255,0.5);background:none}
+@keyframes celebTextIn{0%{opacity:0;transform:translateX(-50%) translateY(20px) scale(0.8)}15%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.15)}30%{transform:translateX(-50%) translateY(0) scale(1)}80%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-20px) scale(1)}}
 
 /* Filters */
 .filters{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap}
@@ -151,6 +173,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .tex{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.04);display:flex;flex-direction:column;gap:6px}
 .tex textarea{width:100%;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:10px;padding:8px 10px;color:var(--text-body);font-size:12px;resize:vertical;min-height:50px;outline:none}
 .tex textarea:focus{border-color:var(--card-hover)}
+.tex-title{width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:8px 10px;color:var(--text);font-size:14px;font-weight:500;outline:none;font-family:inherit}
+.tex-title:focus{border-color:var(--card-hover)}
 .tex-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
 .tex-row select,.tex-row input[type="date"]{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:5px 8px;font-size:11px;color:var(--text-body);outline:none}
 
@@ -315,6 +339,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 <div class="bg-mesh"></div>
 <div class="glow-line top"></div>
 <div class="glow-line mid"></div>
+<div id="celebOverlay"><canvas id="celebCanvas"></canvas><div id="celebText" class="celeb-text"></div></div>
 <div class="mascot" id="mascot"></div>
 <div class="mascot-mini mm" id="mm0" style="top:12%;right:5%"></div>
 <div class="mascot-mini mm" id="mm1" style="top:35%;left:3%;animation-delay:-2s;animation-duration:9s"></div>
@@ -364,6 +389,12 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
         <button class="ob" data-p="high" onclick="setPri('high')">High</button>
         <button class="ob s" data-p="medium" onclick="setPri('medium')">Med</button>
         <button class="ob" data-p="low" onclick="setPri('low')">Low</button>
+      </div>
+      <div class="opt-grp">
+        <button class="ob" data-d="easy" onclick="setDiff('easy')">Easy</button>
+        <button class="ob s" data-d="medium" onclick="setDiff('medium')">★★</button>
+        <button class="ob" data-d="hard" onclick="setDiff('hard')">★★★</button>
+        <button class="ob" data-d="epic" onclick="setDiff('epic')">EPIC</button>
       </div>
       <span class="date-btn" id="dateBtnWrap">
         <span id="dateBtnLabel">Due date</span>
@@ -482,7 +513,9 @@ function fbListen(p,cb){if(db)db.ref(p).on('value',s=>cb(s.val()))}
 // ═══════════════════════════════════════════
 //  State
 // ═══════════════════════════════════════════
-let tasks={},expanded=null,fStatus='all',fCat='all',newCat='work',newPri='medium',sortBy='manual';
+let tasks={},expanded=null,fStatus='all',fCat='all',newCat='work',newPri='medium',newDiff='medium',sortBy='manual';
+// Difficulty point weights (used in dashboard + celebration intensity)
+const DIFF_WEIGHTS={easy:1,medium:2,hard:4,epic:8};
 
 function attachListeners(){
   fbListen('todo/tasks',val=>{tasks=val||{};renderTasks();if(currentView==='calendar')renderCalendar()});
@@ -499,6 +532,10 @@ function setPri(p){
   newPri=p;
   document.querySelectorAll('.input-opts .ob[data-p]').forEach(b=>b.classList.toggle('s',b.dataset.p===p));
 }
+function setDiff(d){
+  newDiff=d;
+  document.querySelectorAll('.input-opts .ob[data-d]').forEach(b=>b.classList.toggle('s',b.dataset.d===d));
+}
 function updateDateBtn(){
   const el=document.getElementById('newDue');
   const wrap=document.getElementById('dateBtnWrap');
@@ -512,7 +549,7 @@ function addTask(){
   const t=inp.value.trim();if(!t)return;
   const notes=document.getElementById('newNotes').value.trim();
   fbPush('todo/tasks',{
-    title:t,priority:newPri,category:newCat,
+    title:t,priority:newPri,category:newCat,difficulty:newDiff,progress:0,
     dueDate:document.getElementById('newDue').value||'',
     notes:notes,completed:false,completedAt:'',
     createdAt:new Date().toISOString(),order:Date.now()
@@ -521,10 +558,135 @@ function addTask(){
   document.getElementById('dateBtnWrap').classList.remove('has-date');
   document.getElementById('dateBtnLabel').textContent='Due date';
 }
-function toggleDone(id){const t=tasks[id];if(!t)return;fbSet(`todo/tasks/${id}/completed`,!t.completed);fbSet(`todo/tasks/${id}/completedAt`,!t.completed?new Date().toISOString():'')}
+function toggleDone(id){
+  const t=tasks[id];if(!t)return;
+  const wasDone=t.completed;
+  fbSet(`todo/tasks/${id}/completed`,!wasDone);
+  fbSet(`todo/tasks/${id}/completedAt`,!wasDone?new Date().toISOString():'');
+  if(!wasDone){
+    fbSet(`todo/tasks/${id}/progress`,100);
+    celebrate(t.difficulty||'medium',t.title);
+  }
+}
+function setProgress(id,val){
+  const v=Math.max(0,Math.min(100,Math.round(parseFloat(val)||0)));
+  fbSet(`todo/tasks/${id}/progress`,v);
+  // Auto-mark complete at 100
+  if(v>=100&&!tasks[id]?.completed){
+    const t=tasks[id];
+    fbSet(`todo/tasks/${id}/completed`,true);
+    fbSet(`todo/tasks/${id}/completedAt`,new Date().toISOString());
+    celebrate(t?.difficulty||'medium',t?.title);
+  } else if(v<100&&tasks[id]?.completed){
+    fbSet(`todo/tasks/${id}/completed`,false);
+    fbSet(`todo/tasks/${id}/completedAt`,'');
+  }
+}
 function updateTask(id,f,v){fbSet(`todo/tasks/${id}/${f}`,v)}
 function deleteTask(id){fbSet(`todo/tasks/${id}`,null);if(expanded===id)expanded=null}
 function toggleExpand(id){expanded=expanded===id?null:id;renderTasks()}
+
+// ═══════════════════════════════════════════
+//  Celebration animation (scaled by difficulty)
+// ═══════════════════════════════════════════
+const CELEB_PRESETS={
+  easy:{count:30,duration:1500,text:'Done',sub:'+ 1 PT',colors:['#4ade80','#22c55e','#a8a8b8']},
+  medium:{count:80,duration:2000,text:'Nice!',sub:'+ 2 PTS',colors:['#fbbf24','#f59e0b','#8B5CF6','#3B82F6']},
+  hard:{count:150,duration:2500,text:'Yes!',sub:'+ 4 PTS',colors:['#f97316','#ec4899','#8B5CF6','#3B82F6','#fbbf24']},
+  epic:{count:280,duration:3200,text:'LEGENDARY',sub:'+ 8 PTS · YOU ARE HIM',colors:['#ec4899','#f97316','#fbbf24','#34d399','#3B82F6','#8B5CF6','#f472b6']},
+};
+function celebrate(difficulty,title){
+  const cfg=CELEB_PRESETS[difficulty]||CELEB_PRESETS.medium;
+  const overlay=document.getElementById('celebOverlay');
+  const txt=document.getElementById('celebText');
+  txt.innerHTML=cfg.text+'<span class="celeb-sub">'+cfg.sub+'</span>';
+  // Restart animation
+  txt.style.animation='none';
+  void txt.offsetWidth;
+  txt.style.animation='';
+  overlay.classList.add('show');
+
+  const canvas=document.getElementById('celebCanvas');
+  const dpr=Math.min(window.devicePixelRatio,2);
+  canvas.width=window.innerWidth*dpr;
+  canvas.height=window.innerHeight*dpr;
+  canvas.style.width=window.innerWidth+'px';
+  canvas.style.height=window.innerHeight+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const W=window.innerWidth,H=window.innerHeight;
+
+  // Confetti particles
+  const parts=[];
+  for(let i=0;i<cfg.count;i++){
+    const angle=(Math.random()-0.5)*Math.PI*0.7-Math.PI/2;
+    const speed=(difficulty==='epic'?12:difficulty==='hard'?9:difficulty==='medium'?6:4)+Math.random()*6;
+    parts.push({
+      x:W/2+(Math.random()-0.5)*100,
+      y:H/2,
+      vx:Math.cos(angle)*speed*(Math.random()*2-1),
+      vy:Math.sin(angle)*speed-Math.random()*4,
+      gravity:0.18+Math.random()*0.1,
+      size:3+Math.random()*5,
+      color:cfg.colors[Math.floor(Math.random()*cfg.colors.length)],
+      rot:Math.random()*Math.PI*2,
+      vrot:(Math.random()-0.5)*0.4,
+      shape:Math.random()<0.4?'rect':'circle',
+      life:1
+    });
+  }
+
+  // Radial burst rings (epic only)
+  const rings=[];
+  if(difficulty==='hard'||difficulty==='epic'){
+    const ringCount=difficulty==='epic'?5:2;
+    for(let i=0;i<ringCount;i++) rings.push({r:0,maxR:Math.max(W,H)*0.6,color:cfg.colors[i%cfg.colors.length],delay:i*120,life:1});
+  }
+
+  const start=Date.now();
+  function frame(){
+    const elapsed=Date.now()-start;
+    ctx.clearRect(0,0,W,H);
+    // Rings
+    rings.forEach(ring=>{
+      if(elapsed<ring.delay)return;
+      const t=(elapsed-ring.delay)/1200;
+      if(t>1)return;
+      ring.r=ring.maxR*t;
+      ring.life=1-t;
+      ctx.strokeStyle=ring.color+Math.round(ring.life*120).toString(16).padStart(2,'0');
+      ctx.lineWidth=3*(1-t*0.5);
+      ctx.beginPath();ctx.arc(W/2,H/2,ring.r,0,Math.PI*2);ctx.stroke();
+    });
+    // Confetti
+    let alive=false;
+    parts.forEach(p=>{
+      if(p.life<=0)return;
+      p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;p.rot+=p.vrot;p.life-=0.008;
+      if(p.life>0&&p.y<H+20)alive=true;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot);
+      ctx.globalAlpha=Math.max(0,p.life);
+      ctx.fillStyle=p.color;
+      if(p.shape==='rect'){
+        ctx.fillRect(-p.size,-p.size*0.6,p.size*2,p.size*1.2);
+      } else {
+        ctx.beginPath();ctx.arc(0,0,p.size,0,Math.PI*2);ctx.fill();
+      }
+      ctx.restore();
+    });
+    ctx.globalAlpha=1;
+
+    if(elapsed<cfg.duration||alive){
+      requestAnimationFrame(frame);
+    } else {
+      overlay.classList.remove('show');
+      ctx.clearRect(0,0,W,H);
+    }
+  }
+  frame();
+}
 
 // ═══════════════════════════════════════════
 //  Render
@@ -533,33 +695,43 @@ function renderDash(){
   const el=document.getElementById('dash');
   const entries=Object.values(tasks);
   const total=entries.length;
-  const done=entries.filter(t=>t.completed).length;
-  const active=total-done;
-  const pct=total?Math.round(done/total*100):0;
   const today=new Date().toISOString().slice(0,10);
   const overdue=entries.filter(t=>!t.completed&&t.dueDate&&t.dueDate<today).length;
   const high=entries.filter(t=>!t.completed&&t.priority==='high').length;
-  const streak=calcStreak();
+
+  // Difficulty-weighted points (sums task weights × completion %)
+  let totalPts=0,donePts=0,activePts=0;
+  entries.forEach(t=>{
+    const w=DIFF_WEIGHTS[t.difficulty||'medium'];
+    const pct=t.completed?100:(parseFloat(t.progress)||0);
+    totalPts+=w;
+    donePts+=w*(pct/100);
+    if(!t.completed)activePts+=w*(1-pct/100);
+  });
+  const pctPts=totalPts?Math.round(donePts/totalPts*100):0;
+  const activeRoundedPts=Math.round(activePts*10)/10;
+  const donePtsRounded=Math.round(donePts*10)/10;
+
   el.innerHTML=`
     <div class="dash-card">
-      <div class="dash-val purple">${active}</div>
-      <div class="dash-label">Active</div>
-      <div class="dash-bar"><div class="dash-bar-fill" style="width:${total?active/total*100:0}%;background:var(--purple)"></div></div>
+      <div class="dash-val purple">${activeRoundedPts}</div>
+      <div class="dash-label">Active Pts</div>
+      <div class="dash-bar"><div class="dash-bar-fill" style="width:${totalPts?activePts/totalPts*100:0}%;background:var(--purple)"></div></div>
     </div>
     <div class="dash-card">
-      <div class="dash-val green">${pct}%</div>
-      <div class="dash-label">Done</div>
-      <div class="dash-bar"><div class="dash-bar-fill" style="width:${pct}%;background:#34d399"></div></div>
+      <div class="dash-val green">${pctPts}%</div>
+      <div class="dash-label">${donePtsRounded}/${totalPts} pts</div>
+      <div class="dash-bar"><div class="dash-bar-fill" style="width:${pctPts}%;background:#34d399"></div></div>
     </div>
     <div class="dash-card">
       <div class="dash-val pink">${overdue}</div>
       <div class="dash-label">Overdue</div>
-      <div class="dash-bar"><div class="dash-bar-fill" style="width:${active?overdue/active*100:0}%;background:var(--pink)"></div></div>
+      <div class="dash-bar"><div class="dash-bar-fill" style="width:${total?overdue/total*100:0}%;background:var(--pink)"></div></div>
     </div>
     <div class="dash-card">
       <div class="dash-val blue">${high}</div>
       <div class="dash-label">High Pri</div>
-      <div class="dash-bar"><div class="dash-bar-fill" style="width:${active?high/active*100:0}%;background:var(--blue)"></div></div>
+      <div class="dash-bar"><div class="dash-bar-fill" style="width:${total?high/total*100:0}%;background:var(--blue)"></div></div>
     </div>`;
 }
 function calcStreak(){
@@ -709,8 +881,16 @@ function initSisyphus(){
     const all=Object.values(tasks);
     const total=all.length;
     const done=all.filter(t=>t.completed).length;
-    const pct=total?done/total:0;
-    const allDone=total>0&&pct>=1;
+    // Weighted progress: harder tasks contribute more
+    let totalPts=0,donePts=0;
+    all.forEach(t=>{
+      const w=DIFF_WEIGHTS[t.difficulty||'medium'];
+      const p=t.completed?100:(parseFloat(t.progress)||0);
+      totalPts+=w;
+      donePts+=w*(p/100);
+    });
+    const pct=totalPts?donePts/totalPts:0;
+    const allDone=totalPts>0&&pct>=1;
 
     // Get mascot
     const curTheme=localStorage.getItem('oyt_theme')||'';
@@ -949,6 +1129,9 @@ function renderTasks(){
     const cc=t.category==='work'?'var(--accent2)':t.category==='project'?'var(--accent3)':'var(--accent1)';
     const rank=t.completed?'':String(i+1);
     const drag=!t.completed&&sortBy==='manual';
+    const diff=t.difficulty||'medium';
+    const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★'}[diff];
+    const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
     let h=`<div class="tc ${t.completed?'done':''}" style="animation-delay:${i*25}ms;border-left:3px solid ${cc}" ${drag?'draggable="true" ondragstart="dragStart(event,\''+id+'\')" ondragover="dragOver(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event,\''+id+'\')" ondragend="dragEnd(event)"':''}>
       <span class="t-rank">${rank}</span>
       <button class="ck" onclick="toggleDone('${id}')">${t.completed?'&#10003;':''}</button>
@@ -958,15 +1141,27 @@ function renderTasks(){
         <div class="tm">
           <span class="pd ${t.priority||'medium'}"></span>
           <span class="cat ${t.category||'personal'}">${t.category||'personal'}</span>
+          <span class="t-diff ${diff}">${diffStars}</span>
           ${t.dueDate?`<span class="dl ${od?'od':''}">${od?'Overdue':'Due'}: ${t.dueDate}</span>`:''}
-        </div>`;
+        </div>
+        ${!t.completed&&prog>0?`<div class="t-prog">
+          <div class="t-prog-bar"><div class="t-prog-fill" style="width:${prog}%"></div></div>
+          <span class="t-prog-val">${prog}%</span>
+        </div>`:''}`;
     if(exp){
       h+=`<div class="tex">
+        <input type="text" class="tex-title" placeholder="Title" value="${esc(t.title||'')}" onblur="updateTask('${id}','title',this.value)" onkeydown="if(event.key==='Enter'){this.blur();}">
         <textarea placeholder="Notes..." onblur="updateTask('${id}','notes',this.value)">${esc(t.notes||'')}</textarea>
         <div class="tex-row">
           <select onchange="updateTask('${id}','priority',this.value)">${['high','medium','low'].map(p=>`<option value="${p}" ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select>
           <select onchange="updateTask('${id}','category',this.value)">${['work','personal','project'].map(c=>`<option value="${c}" ${t.category===c?'selected':''}>${c}</option>`).join('')}</select>
+          <select onchange="updateTask('${id}','difficulty',this.value)">${['easy','medium','hard','epic'].map(d=>`<option value="${d}" ${diff===d?'selected':''}>${d}</option>`).join('')}</select>
           <input type="date" value="${t.dueDate||''}" onchange="updateTask('${id}','dueDate',this.value)">
+        </div>
+        <div class="tex-row" style="align-items:center;gap:10px">
+          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:600">Progress</span>
+          <input type="range" min="0" max="100" step="5" value="${prog}" oninput="this.nextElementSibling.textContent=this.value+'%'" onchange="setProgress('${id}',this.value)" style="flex:1;accent-color:var(--accent1)">
+          <span style="font-size:11px;font-weight:700;color:var(--accent1);min-width:36px;text-align:right">${prog}%</span>
         </div>
       </div>`}
     h+=`</div>
@@ -1026,7 +1221,7 @@ CAPABILITIES:
 
 COMMANDS (use code blocks to execute):
 \`\`\`task
-{"title":"...","priority":"high|medium|low","category":"work|personal|project","dueDate":"YYYY-MM-DD","notes":"..."}
+{"title":"...","priority":"high|medium|low","category":"work|personal|project","difficulty":"easy|medium|hard|epic","dueDate":"YYYY-MM-DD","notes":"..."}
 \`\`\`
 \`\`\`done
 {"taskId":"..."}
@@ -1065,7 +1260,7 @@ async function sendAlfred(){
         try{const e=JSON.parse(d);if(e.type==='content_block_delta'&&e.delta?.type==='text_delta'&&e.delta?.text){full+=e.delta.text;el.textContent=full.replace(/```(?:task|done|edit|sheet)\s*\n[\s\S]*?\n```/g,'');scrollAlf()}}catch{}}}
     el.classList.remove('str');alfHistory.push({role:'assistant',content:full});
     const tm=full.match(/```task\s*\n?([\s\S]*?)\n?```/);
-    if(tm){try{const c=JSON.parse(tm[1]);fbPush('todo/tasks',{title:c.title||'',priority:c.priority||'medium',category:c.category||'personal',dueDate:c.dueDate||'',notes:c.notes||'',completed:false,completedAt:'',createdAt:new Date().toISOString(),order:Date.now()})}catch{}}
+    if(tm){try{const c=JSON.parse(tm[1]);fbPush('todo/tasks',{title:c.title||'',priority:c.priority||'medium',category:c.category||'personal',difficulty:c.difficulty||'medium',progress:0,dueDate:c.dueDate||'',notes:c.notes||'',completed:false,completedAt:'',createdAt:new Date().toISOString(),order:Date.now()})}catch{}}
     const dm=full.match(/```done\s*\n?([\s\S]*?)\n?```/);
     if(dm){try{const c=JSON.parse(dm[1]);if(c.taskId){fbSet(`todo/tasks/${c.taskId}/completed`,true);fbSet(`todo/tasks/${c.taskId}/completedAt`,new Date().toISOString())}}catch{}}
     const em=full.match(/```edit\s*\n?([\s\S]*?)\n?```/);
@@ -1347,7 +1542,7 @@ function addTaskForDate(dateStr){
   const title=prompt('Task title:');
   if(!title)return;
   fbPush('todo/tasks',{
-    title,priority:'medium',category:'personal',dueDate:dateStr,
+    title,priority:'medium',category:'personal',difficulty:'medium',progress:0,dueDate:dateStr,
     notes:'',completed:false,completedAt:'',
     createdAt:new Date().toISOString(),order:Date.now()
   });
