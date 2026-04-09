@@ -322,11 +322,20 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .ab{height:130px;background:rgba(6,6,16,0.8);border-bottom:1px solid rgba(139,92,246,0.04);position:relative;overflow:hidden}
 #alfBrain{width:100%;height:100%;display:block}
 .am-wrap{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:5px;scrollbar-width:thin}
-.am{padding:7px 11px;border-radius:10px;font-size:12px;line-height:1.6;word-wrap:break-word;white-space:pre-wrap;animation:mi .25s var(--ease) both}
+.am{padding:7px 11px;border-radius:10px;font-size:12px;line-height:1.6;word-wrap:break-word;white-space:pre-wrap;animation:mi .3s var(--ease) both;position:relative}
 @keyframes mi{from{opacity:0;transform:translateY(4px)}}
 .am.u{background:var(--card-border);color:rgba(232,230,240,0.7);max-width:80%;margin-left:auto;border:1px solid var(--accent1-10)}
-.am.ai{color:rgba(200,195,220,0.65)}
-.am.ai.str{border-left:2px solid var(--card-hover);padding-left:10px}
+.am.ai{color:var(--text-body)}
+/* Streaming state — subtle accent tint + blinking caret */
+.am.ai.str{background:linear-gradient(90deg,var(--accent1-06) 0%,transparent 60%);padding-left:12px;border-radius:10px}
+.am.ai.str::after{content:'▎';display:inline-block;margin-left:2px;color:var(--accent1);animation:alfCaret 1s ease-in-out infinite;font-weight:300;vertical-align:baseline;transform:translateY(1px)}
+@keyframes alfCaret{0%,100%{opacity:.2}50%{opacity:1}}
+/* Thinking dots — shown before first token */
+.alf-dots{display:inline-flex;gap:5px;align-items:center;padding:3px 2px}
+.alf-dots span{width:6px;height:6px;border-radius:50%;background:var(--accent1);box-shadow:0 0 8px var(--accent1-10);animation:alfDot 1.3s ease-in-out infinite}
+.alf-dots span:nth-child(2){animation-delay:.15s}
+.alf-dots span:nth-child(3){animation-delay:.3s}
+@keyframes alfDot{0%,70%,100%{opacity:.25;transform:translateY(0) scale(.8)}35%{opacity:1;transform:translateY(-5px) scale(1)}}
 .ai-row{padding:10px 12px;display:flex;gap:8px;border-top:1px solid rgba(139,92,246,0.04);background:rgba(10,10,20,0.8)}
 .ai-row input{flex:1;background:rgba(255,255,255,0.02);border:1px solid var(--accent1-06);border-radius:10px;padding:10px 14px;font-size:12px;color:rgba(232,230,240,0.7);outline:none}
 .ai-row input::placeholder{color:var(--card-hover)}
@@ -1638,7 +1647,10 @@ async function sendAlfred(){
   const key=await getKey();if(!key)return;
   alfStreaming=true;
   appendMsg('u',msg);alfHistory.push({role:'user',content:msg});flashAlfBrain();
-  const el=appendMsg('ai','');el.classList.add('str');
+  // Thinking indicator — 3 bouncing dots until first token arrives
+  const el=appendMsg('ai','');
+  el.innerHTML='<span class="alf-dots"><span></span><span></span><span></span></span>';
+  let firstToken=true;
   try{
     const res=await fetch(ALF_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
       body:JSON.stringify({model:'MiniMax-M2.7',system:buildSys(),messages:alfHistory.slice(-12).filter(m=>m.role!=='system'),stream:true,max_tokens:500})});
@@ -1646,7 +1658,12 @@ async function sendAlfred(){
     const reader=res.body.getReader(),decoder=new TextDecoder();let full='',buf='';
     while(true){const{done,value}=await reader.read();if(done)break;buf+=decoder.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop()||'';
       for(const line of lines){if(!line.startsWith('data:'))continue;const d=line.slice(5).trim();if(!d)continue;
-        try{const e=JSON.parse(d);if(e.type==='content_block_delta'&&e.delta?.type==='text_delta'&&e.delta?.text){full+=e.delta.text;el.textContent=full.replace(/```(?:task|done|edit|sheet)\s*\n[\s\S]*?\n```/g,'');scrollAlf()}}catch{}}}
+        try{const e=JSON.parse(d);if(e.type==='content_block_delta'&&e.delta?.type==='text_delta'&&e.delta?.text){
+          if(firstToken){firstToken=false;el.innerHTML='';el.classList.add('str')}
+          full+=e.delta.text;
+          el.textContent=full.replace(/```(?:task|done|edit|sheet)\s*\n[\s\S]*?\n```/g,'');
+          scrollAlf();
+        }}catch{}}}
     el.classList.remove('str');alfHistory.push({role:'assistant',content:full});
     const tm=full.match(/```task\s*\n?([\s\S]*?)\n?```/);
     if(tm){try{const c=JSON.parse(tm[1]);fbPush('todo/tasks',{title:c.title||'',priority:c.priority||'medium',category:c.category||'personal',difficulty:c.difficulty||'medium',progress:0,dueDate:c.dueDate||'',notes:c.notes||'',completed:false,completedAt:'',createdAt:new Date().toISOString(),order:Date.now()})}catch{}}
@@ -1657,7 +1674,7 @@ async function sendAlfred(){
     const sm=full.match(/```sheet\s*\n?([\s\S]*?)\n?```/);
     if(sm){try{const c=JSON.parse(sm[1]);if(c.sheetId&&c.row)writeSheet(c.sheetId,c.tab||'Sheet1',c.row)}catch{}}
     el.textContent=full.replace(/```(?:task|done|edit|sheet)\s*\n[\s\S]*?\n```/g,'').trim();
-  }catch(e){el.classList.remove('str');el.textContent='Error: '+e.message}
+  }catch(e){el.classList.remove('str');el.innerHTML='';el.textContent='Error: '+e.message}
   alfStreaming=false;
 }
 function appendMsg(role,text){const c=document.getElementById('alfMsgs');const d=document.createElement('div');d.className='am '+(role==='u'?'u':'ai');d.textContent=text;c.appendChild(d);scrollAlf();return d}
