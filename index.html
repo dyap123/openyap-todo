@@ -156,7 +156,7 @@ input,select,textarea,button{font-family:inherit}
 .date-btn.has-date::before{filter:none;opacity:1}
 .date-btn input[type="date"]{display:none}
 /* ── Custom date picker popover ── */
-.dp-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:250;width:280px;background:linear-gradient(160deg,var(--panel-1),var(--panel-2));backdrop-filter:blur(24px);border:1.5px solid transparent;background-clip:padding-box;border-radius:18px;padding:14px;box-shadow:0 16px 48px rgba(0,0,0,0.5),0 0 48px var(--accent1-10),0 0 96px var(--accent1-06);animation:dpIn .3s var(--ease)}
+.dp-pop{position:fixed;z-index:9999;width:280px;background:linear-gradient(160deg,var(--panel-1),var(--panel-2));backdrop-filter:blur(24px);border:1.5px solid transparent;background-clip:padding-box;border-radius:18px;padding:14px;box-shadow:0 16px 48px rgba(0,0,0,0.5),0 0 48px var(--accent1-10),0 0 96px var(--accent1-06);animation:dpIn .3s var(--ease)}
 .dp-pop::before{content:'';position:absolute;inset:-1.5px;border-radius:18px;padding:1.5px;background:linear-gradient(135deg,var(--accent1),var(--accent3),var(--accent2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.55}
 @keyframes dpIn{from{opacity:0;transform:translateY(-8px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 .dp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;position:relative}
@@ -771,7 +771,17 @@ function toggleDatePicker(e){
   if(curVal){const d=new Date(curVal+'T00:00:00');dpMonth=d.getMonth();dpYear=d.getFullYear()}
   pop=document.createElement('div');
   pop.className='dp-pop';pop.id='datePickerPop';
-  document.getElementById('dateBtnWrap').appendChild(pop);
+  // Append to body (not the button) so stacking contexts can't hide it
+  document.body.appendChild(pop);
+  // Position relative to the button
+  const btn=document.getElementById('dateBtnWrap').getBoundingClientRect();
+  let left=btn.right-280;
+  if(left<8)left=8;
+  let top=btn.bottom+8;
+  // If not enough room below, flip above
+  if(top+360>window.innerHeight-8)top=btn.top-360-8;
+  pop.style.left=left+'px';
+  pop.style.top=top+'px';
   renderDatePicker();
   setTimeout(()=>document.addEventListener('click',dpClickOutside),50);
 }
@@ -1580,7 +1590,7 @@ function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace
 // ═══════════════════════════════════════════
 const ALF_URL='https://api.minimax.io/anthropic/v1/messages';
 let alfOpen=false,alfHistory=[],alfKey=null,alfStreaming=false;
-let alfNodes=[],alfBrainInit=false;
+let alfNodes=[],alfBrainInit=false,alfBrainRafId=null;
 
 async function getKey(){
   if(alfKey)return alfKey;
@@ -1594,7 +1604,10 @@ function toggleAlfred(){
   document.getElementById('alfredSidebar').classList.toggle('open',alfOpen);
   document.getElementById('alfredToggle').style.display=alfOpen?'none':'';
   document.body.style.marginRight=(alfOpen&&window.innerWidth>640)?'320px':'0';
-  if(alfOpen&&!alfBrainInit)initAlfBrain();
+  if(alfOpen){
+    if(!alfBrainInit)initAlfBrain();
+    else if(!alfBrainRafId)alfBrainRafId=requestAnimationFrame(alfBrainLoop);
+  }
 }
 function buildSys(){
   const today=new Date().toISOString().slice(0,10);
@@ -1702,10 +1715,12 @@ function initAlfBrain(){
       alfBaseSpeeds.push(ring.sp);
     }
   });
-  alfBrainLoop();
+  alfBrainRafId=requestAnimationFrame(alfBrainLoop);
 }
 function alfBrainLoop(){
   const c=document.getElementById('alfBrain');if(!c)return;
+  // Pause the loop entirely when sidebar is closed — saves CPU
+  if(!alfOpen){alfBrainRafId=null;return}
   const ctx=c.getContext('2d'),W=c.width,H=c.height,cx=W/2,cy=H/2;
   ctx.clearRect(0,0,W,H);
   const t=Date.now()*0.001;
@@ -1760,7 +1775,7 @@ function alfBrainLoop(){
   ctx.beginPath();ctx.arc(cx,cy,1.8*corePulse,0,Math.PI*2);ctx.fill();
   ctx.shadowBlur=0;ctx.globalAlpha=1;
   ctx.globalCompositeOperation='source-over';
-  requestAnimationFrame(alfBrainLoop);
+  alfBrainRafId=requestAnimationFrame(alfBrainLoop);
 }
 function flashAlfBrain(){alfNodes.forEach(n=>{n.glow=1})}
 
@@ -1882,6 +1897,9 @@ function switchView(v){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.getElementById('v-'+v)?.classList.add('active');
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase()===v));
+  // Pause Sisyphus loop when not on tasks view — saves CPU
+  if(v!=='tasks'&&sisAnim){cancelAnimationFrame(sisAnim);sisAnim=null}
+  if(v==='tasks')initSisyphus();
   if(v==='calendar')renderCalendar();
   if(v==='stats')renderStatsView();
 }
