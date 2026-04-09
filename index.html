@@ -290,7 +290,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .tex-row select,.tex-row input[type="date"]{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:5px 8px;font-size:11px;color:var(--text-body);outline:none}
 
 /* Dashboard Metrics */
-.dash{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.dash{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px}
+.dash-card.proud::before{opacity:.85!important;animation:proudPulse 2.8s ease-in-out infinite}
+@keyframes proudPulse{0%,100%{opacity:.55}50%{opacity:1}}
 .dash-card{position:relative;background:linear-gradient(135deg,var(--panel-1),var(--panel-2));backdrop-filter:blur(12px);border:1.5px solid transparent;background-clip:padding-box;border-radius:14px;padding:14px 12px;text-align:center;transition:transform .35s var(--ease),box-shadow .55s var(--ease)}
 /* Gradient border ring */
 .dash-card::before{content:'';position:absolute;inset:-1.5px;border-radius:14px;padding:1.5px;background:linear-gradient(135deg,var(--accent1),var(--accent3),var(--accent2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:0.35;transition:opacity .35s}
@@ -318,6 +320,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .stat-val{font-size:16px;font-weight:800;color:var(--text);line-height:1}
 .stat-desc{font-size:8px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
 .stats{margin-top:24px;text-align:center;font-size:10px;color:var(--card-hover);letter-spacing:1px;font-weight:600}
+@media(max-width:720px){.dash{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:500px){.dash{grid-template-columns:repeat(2,1fr)}}
 
 /* Alfred Sidebar */
@@ -744,12 +747,13 @@ function fbListen(p,cb){if(db)db.ref(p).on('value',s=>cb(s.val()))}
 // ═══════════════════════════════════════════
 //  State
 // ═══════════════════════════════════════════
-let tasks={},expanded=null,fStatus='all',fCat='all',newCat='work',newPri='medium',newDiff='medium',newRep='none',sortBy='manual',searchQuery='';
+let tasks={},taskHistory={},expanded=null,fStatus='all',fCat='all',newCat='work',newPri='medium',newDiff='medium',newRep='none',sortBy='manual',searchQuery='';
 // Difficulty point weights (used in dashboard + celebration intensity)
 const DIFF_WEIGHTS={easy:1,medium:2,hard:4,epic:8};
 
 function attachListeners(){
   fbListen('todo/tasks',val=>{tasks=val||{};renderTasks();if(currentView==='calendar')renderCalendar()});
+  fbListen('todo/history',val=>{taskHistory=val||{};renderDash();renderStatRow()});
 }
 
 // ═══════════════════════════════════════════
@@ -1258,7 +1262,7 @@ function playCompleteSound(difficulty){
 //  Render
 // ═══════════════════════════════════════════
 function renderDash(){
-  const el=document.getElementById('dash');
+  const el=document.getElementById('dash');if(!el)return;
   const entries=Object.values(tasks);
   const total=entries.length;
   const today=new Date().toISOString().slice(0,10);
@@ -1278,11 +1282,23 @@ function renderDash(){
   const activeRoundedPts=Math.round(activePts*10)/10;
   const donePtsRounded=Math.round(donePts*10)/10;
 
+  // Done Today — one-shot tasks completed today + recurring history entries today
+  let doneToday=entries.filter(t=>t.completed&&(t.completedAt||'').slice(0,10)===today).length;
+  Object.values(taskHistory||{}).forEach(h=>{if((h.completedAt||'').slice(0,10)===today)doneToday++});
+  // Daily goal for the progress bar — scales with effort
+  const dailyGoal=5;
+  const dailyPct=Math.min(100,Math.round(doneToday/dailyGoal*100));
+
   el.innerHTML=`
     <div class="dash-card">
       <div class="dash-val purple">${activeRoundedPts}</div>
       <div class="dash-label">Active Pts</div>
       <div class="dash-bar"><div class="dash-bar-fill" style="width:${totalPts?activePts/totalPts*100:0}%;background:var(--purple)"></div></div>
+    </div>
+    <div class="dash-card ${doneToday>0?'proud':''}">
+      <div class="dash-val ${doneToday>=dailyGoal?'green':'purple'}">${doneToday}</div>
+      <div class="dash-label">Done Today${doneToday>=dailyGoal?' 🔥':''}</div>
+      <div class="dash-bar"><div class="dash-bar-fill" style="width:${dailyPct}%;background:linear-gradient(90deg,var(--accent1),var(--accent3))"></div></div>
     </div>
     <div class="dash-card">
       <div class="dash-val green">${pctPts}%</div>
@@ -1589,6 +1605,9 @@ function initSisyphus(){
 }
 
 function renderTasks(){
+  // Preserve scroll position — avoids jumping to top when Firebase listener
+  // re-renders (e.g. after slider release triggers a task update)
+  const savedScroll=window.scrollY;
   renderDash();
   renderStatRow();
   initSisyphus();
@@ -1605,7 +1624,9 @@ function renderTasks(){
       <div class="empty-mascot">${m}</div>
       <div class="empty-bubble">${line}</div>
     </div>`;
-    stats.innerHTML='';return;
+    stats.innerHTML='';
+    if(savedScroll>0)window.scrollTo(0,savedScroll);
+    return;
   }
   let fl=entries;
   if(fStatus==='active')fl=fl.filter(([,t])=>!t.completed);
@@ -1620,6 +1641,7 @@ function renderTasks(){
   if(searchQuery&&!fl.length){
     list.innerHTML=`<div class="empty-state"><div class="empty-mascot">🔍</div><div class="empty-bubble">No tasks match "${esc(searchQuery)}"</div></div>`;
     stats.textContent='0 of '+entries.length+' matched';
+    if(savedScroll>0)window.scrollTo(0,savedScroll);
     return;
   }
   const today=new Date().toISOString().slice(0,10);
@@ -1678,6 +1700,8 @@ function renderTasks(){
     </div>`;return h}).join('');
   const total=entries.length,done=entries.filter(([,t])=>t.completed).length;
   stats.textContent=done+' of '+total+' completed';
+  // Restore scroll position so Firebase re-renders don't jump to top
+  if(savedScroll>0)window.scrollTo(0,savedScroll);
 }
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
