@@ -73,12 +73,13 @@ body.t-light .mascot-mini{filter:grayscale(0.7) brightness(0.7);opacity:0.06}
 body.t-light .stat-emoji{filter:grayscale(0.5) brightness(0.85)}
 body.t-light .bg-mesh::before{opacity:0.6}
 /* Light Sisyphus canvas */
-body.t-light #sisCanvas{background:linear-gradient(180deg,#e8e4f5 0%,#d8d0ee 60%,#cec3e8 100%) !important;border-color:rgba(124,58,237,0.18) !important;box-shadow:0 4px 20px rgba(124,58,237,0.08),inset 0 1px 0 rgba(255,255,255,0.6) !important}
-/* Sisyphus wrapper — adds breathing external halo like verdict-card */
+body.t-light #sisCanvas{background:linear-gradient(180deg,#e8e4f5 0%,#d8d0ee 60%,#cec3e8 100%) !important;border-color:rgba(124,58,237,0.18) !important;box-shadow:0 4px 20px rgba(124,58,237,0.2),0 0 32px rgba(124,58,237,0.15),0 0 72px rgba(124,58,237,0.08),inset 0 1px 0 rgba(255,255,255,0.6) !important;animation:sisGlowLight 4.5s ease-in-out infinite !important}
+@keyframes sisGlowLight{0%,100%{box-shadow:0 4px 20px rgba(124,58,237,0.15),0 0 32px rgba(124,58,237,0.12),0 0 72px rgba(124,58,237,0.06),inset 0 1px 0 rgba(255,255,255,0.6)}50%{box-shadow:0 4px 24px rgba(124,58,237,0.22),0 0 48px rgba(124,58,237,0.22),0 0 110px rgba(124,58,237,0.15),0 0 160px rgba(124,58,237,0.08),inset 0 1px 0 rgba(255,255,255,0.6)}}
+/* Sisyphus wrapper + canvas — lighter background, breathing external halo */
 .sis-wrap{position:relative;margin-bottom:12px}
-.sis-wrap::before{content:'';position:absolute;inset:-12px;border-radius:24px;background:radial-gradient(ellipse at center,var(--accent1) 0%,transparent 65%);opacity:.22;filter:blur(26px);pointer-events:none;z-index:-1;animation:sisHalo 4.5s ease-in-out infinite}
-@keyframes sisHalo{0%,100%{opacity:.18;transform:scale(1)}50%{opacity:.38;transform:scale(1.04)}}
-.sis-wrap:hover::before{animation-duration:2.5s}
+#sisCanvas{background:linear-gradient(180deg,#1f1b3a 0%,#1a162f 55%,#120f22 100%) !important;border-color:var(--card-hover) !important;box-shadow:0 6px 28px rgba(0,0,0,0.4),0 0 36px var(--accent1-10),0 0 84px var(--accent1-06),inset 0 1px 0 rgba(255,255,255,0.08) !important;animation:sisGlow 4.5s ease-in-out infinite}
+@keyframes sisGlow{0%,100%{box-shadow:0 6px 28px rgba(0,0,0,0.4),0 0 36px var(--accent1-10),0 0 84px var(--accent1-06),inset 0 1px 0 rgba(255,255,255,0.08)}50%{box-shadow:0 6px 32px rgba(0,0,0,0.4),0 0 56px var(--accent1-10),0 0 130px var(--accent1-10),0 0 200px var(--accent1-06),inset 0 1px 0 rgba(255,255,255,0.1)}}
+.sis-wrap:hover #sisCanvas{animation-duration:2.2s}
 
 /* Mascot — blended, subtle, alive */
 .mascot{position:fixed;bottom:20px;left:20px;font-size:32px;z-index:10;opacity:0.12;transition:all .4s var(--ease);cursor:pointer;filter:grayscale(0.5) brightness(0.7);animation:mascotFloat 5s ease-in-out infinite}
@@ -147,10 +148,34 @@ input,select,textarea,button{font-family:inherit}
 .add-btn:hover{background:linear-gradient(135deg,rgba(139,92,246,0.3),rgba(59,130,246,0.25));transform:translateY(-1px);box-shadow:0 4px 16px var(--card-hover)}
 
 /* Date button */
-.date-btn{padding:5px 12px;border-radius:12px;font-size:10px;font-weight:600;border:1px solid rgba(255,255,255,0.06);background:transparent;color:rgba(255,255,255,0.25);cursor:pointer;transition:all .15s;position:relative;display:inline-flex;align-items:center}
-.date-btn:hover{color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.12)}
-.date-btn.has-date{background:var(--accent1-10);border-color:var(--card-hover);color:var(--purple)}
-.date-btn input[type="date"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;pointer-events:auto;color-scheme:dark}
+.date-btn{padding:5px 12px;border-radius:12px;font-size:10px;font-weight:600;border:1px solid rgba(255,255,255,0.06);background:transparent;color:rgba(255,255,255,0.25);cursor:pointer;transition:all .15s;position:relative;display:inline-flex;align-items:center;gap:4px}
+.date-btn::before{content:'📅';font-size:11px;filter:grayscale(0.4);opacity:.7}
+.date-btn:hover{color:rgba(255,255,255,0.6);border-color:var(--card-hover);background:var(--accent1-06)}
+.date-btn.has-date{background:var(--accent1-10);border-color:var(--card-hover);color:var(--accent1)}
+.date-btn.has-date::before{filter:none;opacity:1}
+.date-btn input[type="date"]{display:none}
+/* ── Custom date picker popover ── */
+.dp-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:250;width:280px;background:linear-gradient(160deg,rgba(20,20,40,0.96),rgba(15,12,30,0.98));backdrop-filter:blur(24px);border:1.5px solid transparent;background-clip:padding-box;border-radius:18px;padding:14px;box-shadow:0 16px 48px rgba(0,0,0,0.5),0 0 48px var(--accent1-10),0 0 96px var(--accent1-06);animation:dpIn .3s var(--ease)}
+.dp-pop::before{content:'';position:absolute;inset:-1.5px;border-radius:18px;padding:1.5px;background:linear-gradient(135deg,var(--accent1),var(--accent3),var(--accent2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.55}
+@keyframes dpIn{from{opacity:0;transform:translateY(-8px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.dp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;position:relative}
+.dp-title{font-size:14px;font-weight:800;letter-spacing:-.3px;background:linear-gradient(135deg,var(--accent1),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.dp-nav{width:26px;height:26px;border-radius:8px;border:1px solid var(--card-border);background:var(--accent1-06);color:var(--accent1);font-size:14px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.dp-nav:hover{background:var(--accent1-10);border-color:var(--accent1);transform:scale(1.08)}
+.dp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:8px;position:relative}
+.dp-dow{font-size:8px;font-weight:700;text-transform:uppercase;color:var(--text-muted);text-align:center;padding:4px 0;letter-spacing:.5px}
+.dp-day{font-size:11px;font-weight:600;color:var(--text-body);aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;transition:all .15s var(--ease);border:1px solid transparent;position:relative}
+.dp-day:hover{background:var(--accent1-10);color:var(--accent1);border-color:var(--card-hover);transform:scale(1.06)}
+.dp-day.blank{cursor:default;pointer-events:none}
+.dp-day.today{color:var(--accent1);font-weight:800;background:var(--accent1-06)}
+.dp-day.today::after{content:'';position:absolute;bottom:2px;width:4px;height:4px;border-radius:50%;background:var(--accent1);box-shadow:0 0 6px var(--accent1)}
+.dp-day.selected{background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff;border-color:var(--accent1);box-shadow:0 2px 12px var(--accent1-10)}
+.dp-day.selected::after{background:#fff;box-shadow:0 0 6px #fff}
+.dp-day.past{opacity:.45}
+.dp-quick{display:flex;gap:4px;padding-top:10px;border-top:1px solid var(--card-border);position:relative}
+.dp-quick button{flex:1;padding:6px 4px;border-radius:8px;border:1px solid var(--card-border);background:rgba(255,255,255,0.03);color:var(--text-muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:all .2s;font-family:inherit}
+.dp-quick button:hover{background:var(--accent1-10);color:var(--accent1);border-color:var(--card-hover)}
+.dp-quick button.clear:hover{background:rgba(239,68,68,0.1);color:var(--red);border-color:rgba(239,68,68,0.3)}
 /* Theme native inputs */
 input[type="date"],select{color-scheme:dark}
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
@@ -550,9 +575,9 @@ body.t-light .stat-big{background:linear-gradient(135deg,rgba(255,255,255,0.95),
         <button class="ob" data-r="weekly" onclick="setRep('weekly')" title="Repeats every 7 days">↻ Weekly</button>
         <button class="ob" data-r="monthly" onclick="setRep('monthly')" title="Repeats every month">↻ Monthly</button>
       </div>
-      <span class="date-btn" id="dateBtnWrap" onclick="document.getElementById('newDue').showPicker&&document.getElementById('newDue').showPicker()">
+      <span class="date-btn" id="dateBtnWrap" onclick="toggleDatePicker(event)">
         <span id="dateBtnLabel">Due date</span>
-        <input type="date" id="newDue" onchange="updateDateBtn()" onclick="event.stopPropagation();this.showPicker&&this.showPicker()">
+        <input type="hidden" id="newDue">
       </span>
       <button class="add-btn" onclick="addTask()">Add</button>
     </div>
@@ -708,8 +733,91 @@ function updateDateBtn(){
   const el=document.getElementById('newDue');
   const wrap=document.getElementById('dateBtnWrap');
   const label=document.getElementById('dateBtnLabel');
-  if(el.value){wrap.classList.add('has-date');label.textContent=el.value}
+  if(el.value){
+    wrap.classList.add('has-date');
+    // Friendly label: "Apr 12" or "Today" / "Tomorrow"
+    const today=new Date().toISOString().slice(0,10);
+    const tomorrow=(()=>{const d=new Date();d.setDate(d.getDate()+1);return d.toISOString().slice(0,10)})();
+    if(el.value===today)label.textContent='Today';
+    else if(el.value===tomorrow)label.textContent='Tomorrow';
+    else{
+      const d=new Date(el.value+'T00:00:00');
+      label.textContent=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    }
+  }
   else{wrap.classList.remove('has-date');label.textContent='Due date'}
+}
+// ── Custom date picker ──
+let dpMonth=new Date().getMonth(),dpYear=new Date().getFullYear();
+function toggleDatePicker(e){
+  if(e)e.stopPropagation();
+  let pop=document.getElementById('datePickerPop');
+  if(pop){closeDatePicker();return}
+  const curVal=document.getElementById('newDue').value;
+  if(curVal){const d=new Date(curVal+'T00:00:00');dpMonth=d.getMonth();dpYear=d.getFullYear()}
+  pop=document.createElement('div');
+  pop.className='dp-pop';pop.id='datePickerPop';
+  document.getElementById('dateBtnWrap').appendChild(pop);
+  renderDatePicker();
+  setTimeout(()=>document.addEventListener('click',dpClickOutside),50);
+}
+function dpClickOutside(e){
+  if(!e.target.closest('#datePickerPop')&&!e.target.closest('#dateBtnWrap'))closeDatePicker();
+}
+function closeDatePicker(){
+  document.getElementById('datePickerPop')?.remove();
+  document.removeEventListener('click',dpClickOutside);
+}
+function renderDatePicker(){
+  const pop=document.getElementById('datePickerPop');if(!pop)return;
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const todayStr=new Date().toISOString().slice(0,10);
+  const tomorrowStr=(()=>{const d=new Date();d.setDate(d.getDate()+1);return d.toISOString().slice(0,10)})();
+  const nextWeek=(()=>{const d=new Date();d.setDate(d.getDate()+7);return d.toISOString().slice(0,10)})();
+  const selected=document.getElementById('newDue').value;
+  const first=new Date(dpYear,dpMonth,1);
+  const startDay=first.getDay();
+  const daysInMonth=new Date(dpYear,dpMonth+1,0).getDate();
+
+  let html=`<div class="dp-head">
+    <button class="dp-nav" onclick="dpNav(-1)">&larr;</button>
+    <div class="dp-title">${months[dpMonth]} ${dpYear}</div>
+    <button class="dp-nav" onclick="dpNav(1)">&rarr;</button>
+  </div>
+  <div class="dp-grid">
+    ${['S','M','T','W','T','F','S'].map(d=>`<div class="dp-dow">${d}</div>`).join('')}`;
+  for(let i=0;i<startDay;i++)html+=`<div class="dp-day blank"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=`${dpYear}-${String(dpMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=ds===todayStr;
+    const isSel=ds===selected;
+    const isPast=ds<todayStr;
+    html+=`<div class="dp-day ${isToday?'today':''} ${isSel?'selected':''} ${isPast?'past':''}" onclick="dpSelect('${ds}')">${d}</div>`;
+  }
+  html+=`</div>
+  <div class="dp-quick">
+    <button onclick="dpSelect('${todayStr}')">Today</button>
+    <button onclick="dpSelect('${tomorrowStr}')">Tmrw</button>
+    <button onclick="dpSelect('${nextWeek}')">+1wk</button>
+    <button class="clear" onclick="dpClear()">Clear</button>
+  </div>`;
+  pop.innerHTML=html;
+}
+function dpNav(dir){
+  dpMonth+=dir;
+  if(dpMonth<0){dpMonth=11;dpYear--}
+  if(dpMonth>11){dpMonth=0;dpYear++}
+  renderDatePicker();
+}
+function dpSelect(ds){
+  document.getElementById('newDue').value=ds;
+  updateDateBtn();
+  closeDatePicker();
+}
+function dpClear(){
+  document.getElementById('newDue').value='';
+  updateDateBtn();
+  closeDatePicker();
 }
 
 function addTask(){
@@ -1436,9 +1544,11 @@ function buildSys(){
   const overdue=active.filter(([,t])=>t.dueDate&&t.dueDate<today);
   const high=active.filter(([,t])=>t.priority==='high');
 
-  let s=`You are Alfred — a sharp, witty productivity partner for OpenYap Todo. Today is ${today}.
+  let s=`You are Alfred — a sharp productivity partner for OpenYap Todo. Today is ${today}.
 
-PERSONALITY: Direct, concise, opinionated about priorities. Give honest advice. When brainstorming, help the user break big ideas into actionable tasks. When asked for a summary, be structured (group by category, flag overdue, highlight blockers).
+STYLE: Extremely concise. Default to 1-3 short sentences. No preamble, no filler, no "Sure!" or "Of course!". If you can say it in one line, do. Use bullet points only when listing multiple items. Skip closing questions like "Let me know if...". Quality over quantity — every word earns its place. When taking an action (adding a task, marking done), confirm in under 10 words.
+
+PERSONALITY: Direct, opinionated about priorities. Honest. When brainstorming, help break ideas into tasks. When summarizing, be structured (group by category, flag overdue).
 
 CAPABILITIES:
 - Add tasks, mark done, edit any field
@@ -1480,7 +1590,7 @@ async function sendAlfred(){
   const el=appendMsg('ai','');el.classList.add('str');
   try{
     const res=await fetch(ALF_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-      body:JSON.stringify({model:'MiniMax-M2.7',system:buildSys(),messages:alfHistory.slice(-12).filter(m=>m.role!=='system'),stream:true,max_tokens:1200})});
+      body:JSON.stringify({model:'MiniMax-M2.7',system:buildSys(),messages:alfHistory.slice(-12).filter(m=>m.role!=='system'),stream:true,max_tokens:500})});
     if(!res.ok)throw new Error((await res.text()).slice(0,200));
     const reader=res.body.getReader(),decoder=new TextDecoder();let full='',buf='';
     while(true){const{done,value}=await reader.read();if(done)break;buf+=decoder.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop()||'';
@@ -1502,15 +1612,27 @@ async function sendAlfred(){
 function appendMsg(role,text){const c=document.getElementById('alfMsgs');const d=document.createElement('div');d.className='am '+(role==='u'?'u':'ai');d.textContent=text;c.appendChild(d);scrollAlf();return d}
 function scrollAlf(){const c=document.getElementById('alfMsgs');c.scrollTop=c.scrollHeight}
 
-// Alfred brain — clean minimal orbiting dots
+// Alfred brain — orbiting dots with bright core + streaming pulse
+let alfBaseSpeeds=[];
 function initAlfBrain(){
   alfBrainInit=true;const canvas=document.getElementById('alfBrain');
   const W=canvas.parentElement.clientWidth*2,H=canvas.parentElement.clientHeight*2;
   canvas.width=W;canvas.height=H;canvas.style.width=canvas.parentElement.clientWidth+'px';canvas.style.height=canvas.parentElement.clientHeight+'px';
-  // 3 concentric rings of dots
-  const colors=['#8B5CF6','#3B82F6','#ec4899'];
-  [{n:5,r:14,sp:.003,sz:1.8},{n:4,r:26,sp:-.002,sz:1.4},{n:3,r:36,sp:.0015,sz:1}].forEach((ring,ri)=>{
-    for(let i=0;i<ring.n;i++) alfNodes.push({angle:(i/ring.n)*Math.PI*2,r:ring.r,speed:ring.sp,size:ring.sz,color:colors[ri],glow:0});
+  // 3 concentric rings — scaled to canvas, more nodes, wider spread
+  const cx=W/2,cy=H/2;
+  const baseR=Math.min(cx,cy)*0.85;
+  const colors=['#A78BFA','#60A5FA','#F472B6'];
+  const rings=[
+    {n:6, rFrac:0.28, sp:.0030, sz:3.2},
+    {n:10,rFrac:0.58, sp:-.0018,sz:2.6},
+    {n:14,rFrac:0.92, sp:.0012, sz:2.0},
+  ];
+  alfNodes=[];alfBaseSpeeds=[];
+  rings.forEach((ring,ri)=>{
+    for(let i=0;i<ring.n;i++){
+      alfNodes.push({angle:(i/ring.n)*Math.PI*2+ri*0.3,r:baseR*ring.rFrac,speed:ring.sp,size:ring.sz,color:colors[ri],glow:0});
+      alfBaseSpeeds.push(ring.sp);
+    }
   });
   alfBrainLoop();
 }
@@ -1518,29 +1640,61 @@ function alfBrainLoop(){
   const c=document.getElementById('alfBrain');if(!c)return;
   const ctx=c.getContext('2d'),W=c.width,H=c.height,cx=W/2,cy=H/2;
   ctx.clearRect(0,0,W,H);
-  // Subtle ring outlines
-  [14,26,36].forEach(r=>{ctx.strokeStyle='rgba(139,92,246,0.04)';ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke()});
-  // Connections (only between adjacent rings)
-  ctx.lineWidth=0.5;
-  for(let i=0;i<alfNodes.length;i++){const a=alfNodes[i];a.angle+=a.speed;
+  const t=Date.now()*0.001;
+  // Always-on breathing brightness (0.7 - 1.0)
+  const baseBright=0.7+Math.sin(t*0.8)*0.15;
+  // Thinking pulse during streaming — much stronger rhythm
+  const thinking=alfStreaming?0.5+Math.abs(Math.sin(t*3.5))*0.5:1;
+  // Additive blending for the glow bloom
+  ctx.globalCompositeOperation='lighter';
+  // Subtle rings
+  const minR=Math.min(cx,cy)*0.85;
+  [0.28,0.58,0.92].forEach(f=>{
+    ctx.strokeStyle='rgba(139,92,246,0.05)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(cx,cy,minR*f,0,Math.PI*2);ctx.stroke();
+  });
+  // Connections between adjacent rings
+  ctx.lineWidth=0.8;
+  for(let i=0;i<alfNodes.length;i++){
+    const a=alfNodes[i];
+    // Speed up during streaming
+    a.angle+=a.speed*(alfStreaming?3.2:1);
     const ax=cx+Math.cos(a.angle)*a.r,ay=cy+Math.sin(a.angle)*a.r;
-    for(let j=i+1;j<alfNodes.length;j++){const b=alfNodes[j];
-      if(Math.abs(a.r-b.r)<15)continue; // skip same ring
+    for(let j=i+1;j<alfNodes.length;j++){
+      const b=alfNodes[j];
+      if(Math.abs(a.r-b.r)<20)continue;
       const bx=cx+Math.cos(b.angle)*b.r,by=cy+Math.sin(b.angle)*b.r;
       const d=Math.hypot(ax-bx,ay-by);
-      if(d<30){ctx.strokeStyle='rgba(139,92,246,'+((1-d/30)*.08).toFixed(3)+')';ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.stroke()}}
-    // Dot
-    const alpha=a.glow>0?1:.5;
-    if(a.glow>0){a.glow-=.008;ctx.shadowBlur=10;ctx.shadowColor=a.color}else{ctx.shadowBlur=0}
-    ctx.fillStyle=a.color;ctx.globalAlpha=alpha;
+      if(d<minR*0.6){
+        const alpha=(1-d/(minR*0.6))*0.18*thinking;
+        ctx.strokeStyle='rgba(167,139,250,'+alpha.toFixed(3)+')';
+        ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.stroke();
+      }
+    }
+    // Node with strong glow bloom
+    const bright=baseBright*thinking+(a.glow>0?a.glow*0.6:0);
+    if(a.glow>0)a.glow-=.008;
+    ctx.shadowBlur=18;ctx.shadowColor=a.color;
+    ctx.fillStyle=a.color;
+    ctx.globalAlpha=Math.min(bright,1);
     ctx.beginPath();ctx.arc(ax,ay,a.size,0,Math.PI*2);ctx.fill();
-    ctx.globalAlpha=1;ctx.shadowBlur=0;
+    // Outer soft halo
+    ctx.globalAlpha=Math.min(bright*0.35,0.55);
+    ctx.beginPath();ctx.arc(ax,ay,a.size*2.4,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;
   }
-  // Center dot
-  ctx.fillStyle='var(--card-hover)';ctx.beginPath();ctx.arc(cx,cy,3,0,Math.PI*2);ctx.fill();
+  // Center core — pulses with Alfred's heartbeat
+  const corePulse=1+Math.sin(t*2.2)*0.2+(alfStreaming?Math.abs(Math.sin(t*5))*0.4:0);
+  ctx.shadowBlur=25;ctx.shadowColor='#A78BFA';
+  ctx.fillStyle='#C4B5FD';ctx.globalAlpha=0.9;
+  ctx.beginPath();ctx.arc(cx,cy,4*corePulse,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.globalAlpha=1;
+  ctx.beginPath();ctx.arc(cx,cy,1.8*corePulse,0,Math.PI*2);ctx.fill();
+  ctx.shadowBlur=0;ctx.globalAlpha=1;
+  ctx.globalCompositeOperation='source-over';
   requestAnimationFrame(alfBrainLoop);
 }
-function flashAlfBrain(){alfNodes.forEach(n=>{n.glow=1;n.speed=n.speed>0?n.speed*4:-n.speed*4});setTimeout(()=>alfNodes.forEach((n,i)=>{const ring=i<5?0:i<9?1:2;n.speed=[.003,-.002,.0015][ring]}),2000)}
+function flashAlfBrain(){alfNodes.forEach(n=>{n.glow=1})}
 
 // ═══════════════════════════════════════════
 //  Google Sheets
