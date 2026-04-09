@@ -208,16 +208,10 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .t-diff{display:inline-flex;gap:1px;font-size:9px;line-height:1;letter-spacing:0;color:rgba(255,255,255,0.2)}
 .t-diff.easy{color:#4ade80}.t-diff.medium{color:#fbbf24}.t-diff.hard{color:#f97316}.t-diff.epic{color:var(--accent3)}
 /* Progress slider on task card */
-.t-prog{display:flex;align-items:center;gap:6px;margin-top:6px;padding:4px 0;touch-action:pan-y}
-.t-prog-bar{flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,0.06);overflow:hidden;cursor:ew-resize;position:relative;border:1px solid rgba(255,255,255,0.03);transition:height .2s var(--ease),border-color .2s}
-.t-prog-bar:hover{height:9px;border-color:var(--card-hover)}
-.t-prog-bar.dragging{height:9px;border-color:var(--accent1);box-shadow:0 0 12px var(--accent1-10)}
-.t-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent2),var(--accent1),var(--accent3));transition:width .25s var(--ease);position:relative;box-shadow:0 0 8px var(--accent1-10)}
-.t-prog-bar.dragging .t-prog-fill{transition:none}
-.t-prog-fill::after{content:'';position:absolute;right:0;top:-2px;bottom:-2px;width:3px;border-radius:2px;background:var(--accent1);box-shadow:0 0 8px var(--accent1);opacity:0;transition:opacity .2s}
-.t-prog-bar:hover .t-prog-fill::after,.t-prog-bar.dragging .t-prog-fill::after{opacity:1}
+.t-prog{display:flex;align-items:center;gap:6px;margin-top:6px;padding:2px 0;pointer-events:none}
+.t-prog-bar{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.05);overflow:hidden;position:relative;border:1px solid rgba(255,255,255,0.03)}
+.t-prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent1),var(--accent3));transition:width .35s var(--ease);box-shadow:0 0 6px var(--accent1-10)}
 .t-prog-val{font-size:9px;font-weight:700;color:var(--text-muted);min-width:28px;text-align:right;font-variant-numeric:tabular-nums}
-.t-prog-bar:hover~.t-prog-val,.t-prog-bar.dragging~.t-prog-val{color:var(--accent1)}
 .t-prog-input{width:100%;background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:8px;padding:5px 8px;color:var(--text-body);font-size:11px;outline:none}
 .t-prog-input:focus{border-color:var(--card-hover)}
 /* Celebration overlay */
@@ -1626,7 +1620,7 @@ function renderTasks(){
   if(searchQuery&&!fl.length){
     list.innerHTML=`<div class="empty-state"><div class="empty-mascot">🔍</div><div class="empty-bubble">No tasks match "${esc(searchQuery)}"</div></div>`;
     stats.textContent='0 of '+entries.length+' matched';
-    initProgressBars(list);return;
+    return;
   }
   const today=new Date().toISOString().slice(0,10);
   list.innerHTML=fl.map(([id,t],i)=>{
@@ -1651,8 +1645,8 @@ function renderTasks(){
           ${t.repeat&&t.repeat!=='none'?`<span class="t-repeat">${t.repeat}</span>`:''}
           ${t.dueDate?`<span class="dl ${od?'od':''}">${od?'Overdue':'Due'}: ${t.dueDate}</span>`:''}
         </div>
-        ${!t.completed?`<div class="t-prog">
-          <div class="t-prog-bar" data-id="${id}" draggable="false" title="Click or drag to set progress"><div class="t-prog-fill" style="width:${prog}%"></div></div>
+        ${!t.completed&&prog>0?`<div class="t-prog">
+          <div class="t-prog-bar"><div class="t-prog-fill" style="width:${prog}%"></div></div>
           <span class="t-prog-val">${prog}%</span>
         </div>`:''}`;
     if(exp){
@@ -1684,52 +1678,6 @@ function renderTasks(){
     </div>`;return h}).join('');
   const total=entries.length,done=entries.filter(([,t])=>t.completed).length;
   stats.textContent=done+' of '+total+' completed';
-  initProgressBars(list);
-}
-
-// Inline progress bar — click to set, drag to scrub
-function initProgressBars(root){
-  root.querySelectorAll('.t-prog-bar').forEach(bar=>{
-    const id=bar.dataset.id;if(!id)return;
-    const fill=bar.querySelector('.t-prog-fill');
-    const val=bar.parentElement.querySelector('.t-prog-val');
-    const getPct=(clientX)=>{
-      const r=bar.getBoundingClientRect();
-      const raw=(clientX-r.left)/r.width*100;
-      return Math.max(0,Math.min(100,Math.round(raw/5)*5));
-    };
-    const paint=(p)=>{fill.style.width=p+'%';if(val)val.textContent=p+'%'};
-    let dragging=false,lastPct=0;
-    const onDown=(e)=>{
-      e.preventDefault();e.stopPropagation();
-      dragging=true;
-      bar.classList.add('dragging');
-      lastPct=getPct(e.clientX??e.touches[0].clientX);
-      paint(lastPct);
-      document.addEventListener('mousemove',onMove);
-      document.addEventListener('mouseup',onUp);
-      document.addEventListener('touchmove',onMove,{passive:false});
-      document.addEventListener('touchend',onUp);
-    };
-    const onMove=(e)=>{
-      if(!dragging)return;
-      if(e.cancelable)e.preventDefault();
-      lastPct=getPct(e.clientX??e.touches[0].clientX);
-      paint(lastPct);
-    };
-    const onUp=()=>{
-      if(!dragging)return;
-      dragging=false;
-      bar.classList.remove('dragging');
-      document.removeEventListener('mousemove',onMove);
-      document.removeEventListener('mouseup',onUp);
-      document.removeEventListener('touchmove',onMove);
-      document.removeEventListener('touchend',onUp);
-      setProgress(id,lastPct);
-    };
-    bar.addEventListener('mousedown',onDown);
-    bar.addEventListener('touchstart',onDown,{passive:false});
-  });
 }
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
