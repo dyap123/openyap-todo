@@ -1761,10 +1761,14 @@ function toggleAlfred(){
     document.removeEventListener('pointerdown',alfOutsideClick);
   }
 }
+let alfLastOutsideTap=0;
 function alfOutsideClick(e){
   const sb=document.getElementById('alfredSidebar');
   const tg=document.getElementById('alfredToggle');
-  if(sb&&!sb.contains(e.target)&&tg&&!tg.contains(e.target))toggleAlfred();
+  if(!sb||sb.contains(e.target)||(tg&&tg.contains(e.target)))return;
+  const now=Date.now();
+  if(now-alfLastOutsideTap<450){alfLastOutsideTap=0;toggleAlfred()}
+  else alfLastOutsideTap=now;
 }
 function buildSys(){
   const today=new Date().toISOString().slice(0,10);
