@@ -1755,7 +1755,16 @@ function toggleAlfred(){
   if(alfOpen){
     if(!alfBrainInit)initAlfBrain();
     else if(!alfBrainRafId)alfBrainRafId=requestAnimationFrame(alfBrainLoop);
+    // Tap/click outside the sidebar to close
+    setTimeout(()=>document.addEventListener('pointerdown',alfOutsideClick),0);
+  }else{
+    document.removeEventListener('pointerdown',alfOutsideClick);
   }
+}
+function alfOutsideClick(e){
+  const sb=document.getElementById('alfredSidebar');
+  const tg=document.getElementById('alfredToggle');
+  if(sb&&!sb.contains(e.target)&&tg&&!tg.contains(e.target))toggleAlfred();
 }
 function buildSys(){
   const today=new Date().toISOString().slice(0,10);
