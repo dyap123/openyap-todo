@@ -6,6 +6,9 @@
 <title>OpenYap Todo</title>
 <meta name="theme-color" content="#0a0a14">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%E2%9C%93</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
@@ -173,6 +176,9 @@ input,select,textarea,button{font-family:inherit}
 .dp-day.selected{background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff;border-color:var(--accent1);box-shadow:0 2px 12px var(--accent1-10)}
 .dp-day.selected::after{background:#fff;box-shadow:0 0 6px #fff}
 .dp-day.past{opacity:.45}
+.dp-day.has-tasks{background:var(--accent1-06);border-color:var(--card-border)}
+.dp-day-count{position:absolute;top:1px;right:1px;font-size:7px;font-weight:800;color:var(--accent1);background:var(--accent1-10);border:1px solid var(--card-hover);border-radius:8px;min-width:12px;height:12px;padding:0 3px;display:flex;align-items:center;justify-content:center;line-height:1;pointer-events:none}
+.dp-day-count.overdue{color:var(--red);background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3)}
 .dp-quick{display:flex;gap:4px;padding-top:10px;border-top:1px solid var(--card-border);position:relative}
 .dp-quick button{flex:1;padding:6px 4px;border-radius:8px;border:1px solid var(--card-border);background:rgba(255,255,255,0.03);color:var(--text-muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:all .2s;font-family:inherit}
 .dp-quick button:hover{background:var(--accent1-10);color:var(--accent1);border-color:var(--card-hover)}
@@ -335,27 +341,32 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .am{padding:7px 11px;border-radius:10px;font-size:12px;line-height:1.6;word-wrap:break-word;white-space:pre-wrap;animation:mi .3s var(--ease) both;position:relative}
 @keyframes mi{from{opacity:0;transform:translateY(4px)}}
 .am.u{background:var(--card-border);color:rgba(232,230,240,0.7);max-width:80%;margin-left:auto;border:1px solid var(--accent1-10)}
-.am.ai{color:var(--text-body);background:linear-gradient(135deg,var(--accent1-06),transparent 80%);border:1px solid var(--card-border);border-left:2px solid var(--accent1-10);padding:10px 13px;max-width:92%;line-height:1.55;box-shadow:0 2px 12px rgba(0,0,0,0.12)}
+/* Alfred — plain text, futuristic font, no bubble */
+.am.ai{color:var(--text);font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;font-size:13px;line-height:1.6;letter-spacing:-.1px;background:none;border:none;padding:6px 4px 8px;max-width:100%}
 .am.ai p{margin:0 0 6px}
 .am.ai p:last-child{margin-bottom:0}
-.am.ai strong{color:var(--text);font-weight:700}
+.am.ai strong{color:var(--text);font-weight:700;letter-spacing:-.2px}
 .am.ai em{color:var(--accent1);font-style:italic}
-.am.ai code{background:rgba(255,255,255,0.06);color:var(--accent3);padding:1px 6px;border-radius:5px;font-family:'SF Mono','Menlo',monospace;font-size:10.5px;border:1px solid var(--card-border)}
-.am.ai pre{background:rgba(0,0,0,0.25);border:1px solid var(--card-border);border-radius:8px;padding:8px 10px;margin:6px 0;overflow-x:auto;font-family:'SF Mono','Menlo',monospace;font-size:10.5px;color:var(--accent1)}
-.am.ai pre code{background:none;border:none;padding:0;color:inherit}
+.am.ai code{font-family:'JetBrains Mono','SF Mono','Menlo',monospace;font-size:11px;color:var(--accent1);background:var(--accent1-06);padding:1px 5px;border-radius:4px}
+.am.ai pre{font-family:'JetBrains Mono','SF Mono','Menlo',monospace;font-size:11px;color:var(--text);background:rgba(0,0,0,0.22);border-left:2px solid var(--accent1);padding:8px 10px;margin:6px 0;overflow-x:auto;border-radius:4px}
+.am.ai pre code{background:none;padding:0;color:inherit}
 .am.ai ul,.am.ai ol{margin:4px 0 6px 18px;padding:0}
-.am.ai li{margin:2px 0;line-height:1.5}
-.am.ai ul li{list-style:disc;color:var(--text-body)}
+.am.ai li{margin:2px 0}
+.am.ai ul li{list-style:disc}
 .am.ai ol li{list-style:decimal}
 .am.ai ul li::marker,.am.ai ol li::marker{color:var(--accent1)}
-.am.ai h3,.am.ai h4{color:var(--text);font-weight:800;font-size:13px;margin:8px 0 4px;letter-spacing:-.2px}
+.am.ai h3,.am.ai h4{color:var(--text);font-weight:700;font-size:14px;margin:8px 0 4px;letter-spacing:-.3px}
 .am.ai h3:first-child,.am.ai h4:first-child{margin-top:0}
-.am.ai a{color:var(--accent2);text-decoration:underline;text-decoration-color:var(--accent1-10);text-underline-offset:2px}
+.am.ai a{color:var(--accent2);text-decoration:none;border-bottom:1px solid var(--accent1-10)}
+.am.ai a:hover{border-bottom-color:var(--accent1)}
 .am.ai hr{border:none;border-top:1px solid var(--card-border);margin:8px 0}
-/* Streaming state — subtle border accent + blinking caret */
-.am.ai.str{border-left-color:var(--accent1);box-shadow:0 2px 16px rgba(0,0,0,0.14),0 0 20px var(--accent1-06)}
-.am.ai.str .alf-caret{display:inline-block;width:2px;height:1em;margin-left:2px;background:var(--accent1);vertical-align:text-bottom;animation:alfCaret 1s ease-in-out infinite;border-radius:1px;box-shadow:0 0 6px var(--accent1)}
-@keyframes alfCaret{0%,100%{opacity:.2}50%{opacity:1}}
+/* Word-by-word reveal animation during streaming */
+.alf-word{display:inline-block;white-space:pre}
+.alf-word.reveal{animation:alfWord .4s cubic-bezier(0.16,1,0.3,1) both}
+@keyframes alfWord{0%{opacity:0;filter:blur(6px);transform:translateY(3px)}100%{opacity:1;filter:blur(0);transform:translateY(0)}}
+/* Streaming caret */
+.am.ai .alf-caret{display:inline-block;width:2px;height:1em;margin-left:2px;background:var(--accent1);vertical-align:text-bottom;animation:alfCaret 1s ease-in-out infinite;border-radius:1px;box-shadow:0 0 8px var(--accent1)}
+@keyframes alfCaret{0%,100%{opacity:.15}50%{opacity:1}}
 /* Thinking dots — shown before first token */
 .alf-dots{display:inline-flex;gap:5px;align-items:center;padding:3px 2px}
 .alf-dots span{width:6px;height:6px;border-radius:50%;background:var(--accent1);box-shadow:0 0 8px var(--accent1-10);animation:alfDot 1.3s ease-in-out infinite}
@@ -821,15 +832,17 @@ function toggleDatePicker(e){
   pop.className='dp-pop';pop.id='datePickerPop';
   // Append to body (not the button) so stacking contexts can't hide it
   document.body.appendChild(pop);
-  // Position relative to the button
+  // Always position BELOW the button with constrained max-height + scroll
   const btn=document.getElementById('dateBtnWrap').getBoundingClientRect();
   let left=btn.right-280;
   if(left<8)left=8;
-  let top=btn.bottom+8;
-  // If not enough room below, flip above
-  if(top+360>window.innerHeight-8)top=btn.top-360-8;
+  if(left+280>window.innerWidth-8)left=window.innerWidth-288;
+  const top=btn.bottom+8;
+  const maxH=Math.max(260,window.innerHeight-top-12);
   pop.style.left=left+'px';
   pop.style.top=top+'px';
+  pop.style.maxHeight=maxH+'px';
+  pop.style.overflowY='auto';
   renderDatePicker();
   setTimeout(()=>document.addEventListener('click',dpClickOutside),50);
 }
@@ -851,6 +864,14 @@ function renderDatePicker(){
   const startDay=first.getDay();
   const daysInMonth=new Date(dpYear,dpMonth+1,0).getDate();
 
+  // Build map of dates → active (non-completed) task count
+  const dayTasks={};
+  Object.values(tasks).forEach(t=>{
+    if(!t.dueDate||t.completed)return;
+    if(!dayTasks[t.dueDate])dayTasks[t.dueDate]=0;
+    dayTasks[t.dueDate]++;
+  });
+
   let html=`<div class="dp-head">
     <button class="dp-nav" onclick="dpNav(-1)">&larr;</button>
     <div class="dp-title">${months[dpMonth]} ${dpYear}</div>
@@ -864,7 +885,10 @@ function renderDatePicker(){
     const isToday=ds===todayStr;
     const isSel=ds===selected;
     const isPast=ds<todayStr;
-    html+=`<div class="dp-day ${isToday?'today':''} ${isSel?'selected':''} ${isPast?'past':''}" onclick="dpSelect('${ds}')">${d}</div>`;
+    const count=dayTasks[ds]||0;
+    const hasTasks=count>0?'has-tasks':'';
+    const badge=count?`<span class="dp-day-count ${isPast?'overdue':''}">${count}</span>`:'';
+    html+=`<div class="dp-day ${isToday?'today':''} ${isSel?'selected':''} ${isPast?'past':''} ${hasTasks}" onclick="dpSelect('${ds}')" title="${count?count+' task'+(count>1?'s':''):''}">${d}${badge}</div>`;
   }
   html+=`</div>
   <div class="dp-quick">
@@ -1787,7 +1811,7 @@ async function sendAlfred(){
   // Thinking indicator — 3 bouncing dots until first token arrives
   const el=appendMsg('ai','');
   el.innerHTML='<span class="alf-dots"><span></span><span></span><span></span></span>';
-  let firstToken=true;
+  let firstToken=true,prevWords=0;
   try{
     const res=await fetch(ALF_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
       body:JSON.stringify({model:'MiniMax-M2.7',system:buildSys(),messages:alfHistory.slice(-12).filter(m=>m.role!=='system'),stream:true,max_tokens:500})});
@@ -1799,13 +1823,13 @@ async function sendAlfred(){
           if(firstToken){firstToken=false;el.innerHTML='';el.classList.add('str')}
           full+=e.delta.text;
           const visible=full.replace(/```(?:task|done|edit|sheet)\s*\n[\s\S]*?\n```/g,'');
-          el.innerHTML=formatAlfMd(visible)+'<span class="alf-caret"></span>';
+          prevWords=renderAlfStreaming(el,visible,prevWords,true);
           scrollAlf();
         }}catch{}}}
     el.classList.remove('str');alfHistory.push({role:'assistant',content:full});
     // Final render without caret
     const finalVisible=full.replace(/```(?:task|done|edit|sheet)\s*\n[\s\S]*?\n```/g,'').trim();
-    el.innerHTML=formatAlfMd(finalVisible);
+    renderAlfStreaming(el,finalVisible,prevWords,false);
     const tm=full.match(/```task\s*\n?([\s\S]*?)\n?```/);
     if(tm){try{const c=JSON.parse(tm[1]);fbPush('todo/tasks',{title:c.title||'',priority:c.priority||'medium',category:c.category||'personal',difficulty:c.difficulty||'medium',progress:0,dueDate:c.dueDate||'',notes:c.notes||'',completed:false,completedAt:'',createdAt:new Date().toISOString(),order:Date.now()})}catch{}}
     const dm=full.match(/```done\s*\n?([\s\S]*?)\n?```/);
@@ -1819,6 +1843,41 @@ async function sendAlfred(){
 }
 function appendMsg(role,text){const c=document.getElementById('alfMsgs');const d=document.createElement('div');d.className='am '+(role==='u'?'u':'ai');if(role==='u')d.textContent=text;else d.innerHTML=text?formatAlfMd(text):'';c.appendChild(d);scrollAlf();return d}
 function scrollAlf(){const c=document.getElementById('alfMsgs');c.scrollTop=c.scrollHeight}
+
+// Render streaming text with word-level reveal animation.
+// Walks the formatted markdown DOM, wraps each word in a .alf-word span,
+// applies .reveal (fade+blur-in animation) only to words beyond `prevWords`.
+// Returns the new total word count so the next tick can skip animating them.
+function renderAlfStreaming(el,text,prevWords,showCaret){
+  el.innerHTML=formatAlfMd(text);
+  const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
+  const textNodes=[];let n;while((n=walker.nextNode()))textNodes.push(n);
+  let wordIdx=0;
+  textNodes.forEach(node=>{
+    const parts=node.textContent.split(/(\s+)/);
+    const frag=document.createDocumentFragment();
+    parts.forEach(part=>{
+      if(!part)return;
+      if(!/\S/.test(part)){frag.appendChild(document.createTextNode(part));return}
+      const span=document.createElement('span');
+      span.className='alf-word';
+      span.textContent=part;
+      if(wordIdx>=prevWords){
+        span.classList.add('reveal');
+        span.style.animationDelay=Math.min((wordIdx-prevWords)*18,300)+'ms';
+      }
+      frag.appendChild(span);
+      wordIdx++;
+    });
+    node.parentNode.replaceChild(frag,node);
+  });
+  if(showCaret){
+    const caret=document.createElement('span');
+    caret.className='alf-caret';
+    el.appendChild(caret);
+  }
+  return wordIdx;
+}
 
 // Minimal markdown → HTML for Alfred's replies. HTML escapes first, then
 // applies transforms. Supports: **bold**, *italic*, `code`, ```fenced code```,
