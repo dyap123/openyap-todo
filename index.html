@@ -107,8 +107,8 @@ input,select,textarea,button{font-family:inherit}
 
 /* Animated gradient mesh background */
 .bg-mesh{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.bg-mesh::before{content:'';position:absolute;width:150%;height:150%;top:-25%;left:-25%;background:radial-gradient(ellipse 600px 500px at 25% 35%,var(--glow2) 0%,transparent 70%),radial-gradient(ellipse 500px 600px at 75% 60%,var(--glow1) 0%,transparent 70%),radial-gradient(ellipse 500px 400px at 50% 80%,var(--glow3) 0%,transparent 70%);animation:meshDrift 20s ease-in-out infinite alternate}
-@keyframes meshDrift{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(-20px,15px) rotate(1.5deg)}100%{transform:translate(15px,-10px) rotate(-1deg)}}
+.bg-mesh::before{content:'';position:absolute;width:140%;height:140%;top:-20%;left:-20%;background:radial-gradient(ellipse 600px 500px at 25% 35%,var(--glow2) 0%,transparent 70%),radial-gradient(ellipse 500px 600px at 75% 60%,var(--glow1) 0%,transparent 70%),radial-gradient(ellipse 500px 400px at 50% 80%,var(--glow3) 0%,transparent 70%);will-change:transform;transform:translateZ(0);animation:meshDrift 60s linear infinite alternate}
+@keyframes meshDrift{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(-10px,6px,0)}}
 .bg-mesh::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:32px 32px}
 
 /* Gradient line accents */
@@ -222,6 +222,16 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .celeb-sub{display:block;font-size:14px;font-weight:600;color:rgba(255,255,255,0.5);letter-spacing:3px;text-transform:uppercase;margin-top:8px;-webkit-text-fill-color:rgba(255,255,255,0.5);background:none}
 @keyframes celebTextIn{0%{opacity:0;transform:translateX(-50%) translateY(20px) scale(0.8)}15%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.15)}30%{transform:translateX(-50%) translateY(0) scale(1)}80%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-20px) scale(1)}}
 
+/* Search */
+.search-wrap{position:relative;margin-bottom:10px;display:flex;align-items:center}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:12px;opacity:.5;pointer-events:none;filter:grayscale(.3)}
+.search-input{flex:1;padding:9px 34px 9px 34px;border-radius:12px;border:1px solid var(--card-border);background:var(--card);backdrop-filter:blur(10px);color:var(--text);font-size:12px;font-family:inherit;outline:none;transition:border-color .25s var(--ease),box-shadow .25s var(--ease),background .25s var(--ease)}
+.search-input::placeholder{color:var(--text-muted)}
+.search-input:focus{border-color:var(--accent1);background:var(--accent1-06);box-shadow:0 0 24px var(--accent1-10),0 2px 12px rgba(0,0,0,0.15)}
+.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;border:none;background:rgba(255,255,255,0.06);color:var(--text-muted);cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.search-clear:hover{background:var(--accent1-10);color:var(--accent1);transform:translateY(-50%) rotate(90deg)}
+/* Highlight matched text */
+.search-hl{background:var(--accent1-10);color:var(--accent1);font-weight:700;padding:0 1px;border-radius:2px;box-shadow:0 0 6px var(--accent1-10)}
 /* Filters */
 .filters{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap}
 .fp{padding:4px 12px;border-radius:14px;font-size:10px;font-weight:600;border:1px solid rgba(255,255,255,0.06);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;transition:all .15s}
@@ -325,10 +335,26 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .am{padding:7px 11px;border-radius:10px;font-size:12px;line-height:1.6;word-wrap:break-word;white-space:pre-wrap;animation:mi .3s var(--ease) both;position:relative}
 @keyframes mi{from{opacity:0;transform:translateY(4px)}}
 .am.u{background:var(--card-border);color:rgba(232,230,240,0.7);max-width:80%;margin-left:auto;border:1px solid var(--accent1-10)}
-.am.ai{color:var(--text-body)}
-/* Streaming state — subtle accent tint + blinking caret */
-.am.ai.str{background:linear-gradient(90deg,var(--accent1-06) 0%,transparent 60%);padding-left:12px;border-radius:10px}
-.am.ai.str::after{content:'▎';display:inline-block;margin-left:2px;color:var(--accent1);animation:alfCaret 1s ease-in-out infinite;font-weight:300;vertical-align:baseline;transform:translateY(1px)}
+.am.ai{color:var(--text-body);background:linear-gradient(135deg,var(--accent1-06),transparent 80%);border:1px solid var(--card-border);border-left:2px solid var(--accent1-10);padding:10px 13px;max-width:92%;line-height:1.55;box-shadow:0 2px 12px rgba(0,0,0,0.12)}
+.am.ai p{margin:0 0 6px}
+.am.ai p:last-child{margin-bottom:0}
+.am.ai strong{color:var(--text);font-weight:700}
+.am.ai em{color:var(--accent1);font-style:italic}
+.am.ai code{background:rgba(255,255,255,0.06);color:var(--accent3);padding:1px 6px;border-radius:5px;font-family:'SF Mono','Menlo',monospace;font-size:10.5px;border:1px solid var(--card-border)}
+.am.ai pre{background:rgba(0,0,0,0.25);border:1px solid var(--card-border);border-radius:8px;padding:8px 10px;margin:6px 0;overflow-x:auto;font-family:'SF Mono','Menlo',monospace;font-size:10.5px;color:var(--accent1)}
+.am.ai pre code{background:none;border:none;padding:0;color:inherit}
+.am.ai ul,.am.ai ol{margin:4px 0 6px 18px;padding:0}
+.am.ai li{margin:2px 0;line-height:1.5}
+.am.ai ul li{list-style:disc;color:var(--text-body)}
+.am.ai ol li{list-style:decimal}
+.am.ai ul li::marker,.am.ai ol li::marker{color:var(--accent1)}
+.am.ai h3,.am.ai h4{color:var(--text);font-weight:800;font-size:13px;margin:8px 0 4px;letter-spacing:-.2px}
+.am.ai h3:first-child,.am.ai h4:first-child{margin-top:0}
+.am.ai a{color:var(--accent2);text-decoration:underline;text-decoration-color:var(--accent1-10);text-underline-offset:2px}
+.am.ai hr{border:none;border-top:1px solid var(--card-border);margin:8px 0}
+/* Streaming state — subtle border accent + blinking caret */
+.am.ai.str{border-left-color:var(--accent1);box-shadow:0 2px 16px rgba(0,0,0,0.14),0 0 20px var(--accent1-06)}
+.am.ai.str .alf-caret{display:inline-block;width:2px;height:1em;margin-left:2px;background:var(--accent1);vertical-align:text-bottom;animation:alfCaret 1s ease-in-out infinite;border-radius:1px;box-shadow:0 0 6px var(--accent1)}
 @keyframes alfCaret{0%,100%{opacity:.2}50%{opacity:1}}
 /* Thinking dots — shown before first token */
 .alf-dots{display:inline-flex;gap:5px;align-items:center;padding:3px 2px}
@@ -611,6 +637,13 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
   <!-- Stats -->
   <div class="stat-row" id="statRow"></div>
 
+  <!-- Search -->
+  <div class="search-wrap">
+    <span class="search-icon">🔎</span>
+    <input type="text" id="searchInput" class="search-input" placeholder="Search tasks..." oninput="onSearchInput(this.value)" onkeydown="if(event.key==='Escape'){this.value='';onSearchInput('')}">
+    <button class="search-clear" id="searchClear" onclick="document.getElementById('searchInput').value='';onSearchInput('')" style="display:none">×</button>
+  </div>
+
   <!-- Filters -->
   <div class="filters" id="filters"></div>
 
@@ -706,7 +739,7 @@ function fbListen(p,cb){if(db)db.ref(p).on('value',s=>cb(s.val()))}
 // ═══════════════════════════════════════════
 //  State
 // ═══════════════════════════════════════════
-let tasks={},expanded=null,fStatus='all',fCat='all',newCat='work',newPri='medium',newDiff='medium',newRep='none',sortBy='manual';
+let tasks={},expanded=null,fStatus='all',fCat='all',newCat='work',newPri='medium',newDiff='medium',newRep='none',sortBy='manual',searchQuery='';
 // Difficulty point weights (used in dashboard + celebration intensity)
 const DIFF_WEIGHTS={easy:1,medium:2,hard:4,epic:8};
 
@@ -732,6 +765,21 @@ function setDiff(d){
 function setRep(r){
   newRep=r;
   document.querySelectorAll('.input-opts .ob[data-r]').forEach(b=>b.classList.toggle('s',b.dataset.r===r));
+}
+// Search — debounce-free, instant filter
+function onSearchInput(v){
+  searchQuery=(v||'').trim();
+  const clr=document.getElementById('searchClear');
+  if(clr)clr.style.display=searchQuery?'flex':'none';
+  renderTasks();
+}
+// Highlight matched substring in escaped text
+function highlightMatch(text){
+  if(!searchQuery)return esc(text||'');
+  const safe=esc(text||'');
+  // Escape regex special chars in query
+  const q=searchQuery.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return safe.replace(new RegExp('('+q+')','gi'),'<span class="search-hl">$1</span>');
 }
 // Advance a YYYY-MM-DD date string by the recurrence interval
 function nextDueDate(dateStr,repeat){
@@ -1039,6 +1087,8 @@ function celebrate(difficulty,title){
   void txt.offsetWidth;
   txt.style.animation='';
   overlay.classList.add('show');
+  // Fun sound
+  playCompleteSound(difficulty);
 
   const canvas=document.getElementById('celebCanvas');
   const dpr=Math.min(window.devicePixelRatio,2);
@@ -1050,7 +1100,7 @@ function celebrate(difficulty,title){
   ctx.scale(dpr,dpr);
   const W=window.innerWidth,H=window.innerHeight;
 
-  // Confetti particles
+  // Confetti particles — velocities tuned for 60fps base, deltaTime scales to any fps
   const parts=[];
   for(let i=0;i<cfg.count;i++){
     const angle=(Math.random()-0.5)*Math.PI*0.7-Math.PI/2;
@@ -1070,17 +1120,25 @@ function celebrate(difficulty,title){
     });
   }
 
-  // Radial burst rings (epic only)
+  // Radial burst rings
   const rings=[];
   if(difficulty==='hard'||difficulty==='epic'){
     const ringCount=difficulty==='epic'?5:2;
     for(let i=0;i<ringCount;i++) rings.push({r:0,maxR:Math.max(W,H)*0.6,color:cfg.colors[i%cfg.colors.length],delay:i*120,life:1});
   }
 
-  const start=Date.now();
-  function frame(){
-    const elapsed=Date.now()-start;
-    ctx.clearRect(0,0,W,H);
+  const start=performance.now();
+  let lastT=start;
+  function frame(now){
+    const elapsed=now-start;
+    // Clamp dt so tab-switches don't create huge jumps; 60fps base = 16.67ms
+    const dt=Math.min(40,now-lastT)/16.67;
+    lastT=now;
+    // Motion trail: fade existing pixels instead of clearing — gives a smooth streaky feel
+    ctx.globalCompositeOperation='destination-out';
+    ctx.fillStyle='rgba(0,0,0,0.28)';
+    ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='source-over';
     // Rings
     rings.forEach(ring=>{
       if(elapsed<ring.delay)return;
@@ -1088,29 +1146,37 @@ function celebrate(difficulty,title){
       if(t>1)return;
       ring.r=ring.maxR*t;
       ring.life=1-t;
-      ctx.strokeStyle=ring.color+Math.round(ring.life*120).toString(16).padStart(2,'0');
-      ctx.lineWidth=3*(1-t*0.5);
+      ctx.strokeStyle=ring.color+Math.round(ring.life*180).toString(16).padStart(2,'0');
+      ctx.lineWidth=4*(1-t*0.5);
       ctx.beginPath();ctx.arc(W/2,H/2,ring.r,0,Math.PI*2);ctx.stroke();
     });
-    // Confetti
+    // Confetti with dt-scaled physics
     let alive=false;
-    parts.forEach(p=>{
-      if(p.life<=0)return;
-      p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;p.rot+=p.vrot;p.life-=0.008;
+    for(let i=0;i<parts.length;i++){
+      const p=parts[i];
+      if(p.life<=0)continue;
+      p.x+=p.vx*dt;
+      p.y+=p.vy*dt;
+      p.vy+=p.gravity*dt;
+      p.rot+=p.vrot*dt;
+      p.life-=0.008*dt;
       if(p.life>0&&p.y<H+20)alive=true;
       ctx.save();
       ctx.translate(p.x,p.y);
       ctx.rotate(p.rot);
       ctx.globalAlpha=Math.max(0,p.life);
       ctx.fillStyle=p.color;
+      ctx.shadowColor=p.color;
+      ctx.shadowBlur=difficulty==='epic'?8:difficulty==='hard'?5:0;
       if(p.shape==='rect'){
         ctx.fillRect(-p.size,-p.size*0.6,p.size*2,p.size*1.2);
       } else {
         ctx.beginPath();ctx.arc(0,0,p.size,0,Math.PI*2);ctx.fill();
       }
       ctx.restore();
-    });
+    }
     ctx.globalAlpha=1;
+    ctx.shadowBlur=0;
 
     if(elapsed<cfg.duration||alive){
       requestAnimationFrame(frame);
@@ -1119,7 +1185,55 @@ function celebrate(difficulty,title){
       ctx.clearRect(0,0,W,H);
     }
   }
-  frame();
+  requestAnimationFrame(frame);
+}
+
+// ── WebAudio completion sound ─────────────────
+let audioCtx=null;
+function playCompleteSound(difficulty){
+  try{
+    if(!audioCtx){audioCtx=new(window.AudioContext||window.webkitAudioContext)()}
+    if(audioCtx.state==='suspended')audioCtx.resume();
+  }catch{return}
+  const ctx=audioCtx;
+  // C major arpeggios — E (329.63), G (392), C5 (523.25), E5 (659.25), G5 (783.99), C6 (1046.5)
+  const notes={
+    easy:[[523.25,0]],
+    medium:[[523.25,0],[659.25,0.08]],
+    hard:[[523.25,0],[659.25,0.08],[783.99,0.16]],
+    epic:[[392,0],[523.25,0.08],[659.25,0.16],[783.99,0.24],[1046.5,0.32]],
+  }[difficulty]||[[523.25,0],[659.25,0.08]];
+  const peak=difficulty==='epic'?0.18:difficulty==='hard'?0.15:0.12;
+  notes.forEach(([freq,delay])=>{
+    const t=ctx.currentTime+delay;
+    // Main sine voice
+    const osc=ctx.createOscillator(),g=ctx.createGain();
+    osc.type='sine';osc.frequency.value=freq;
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(peak,t+0.015);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.45);
+    osc.connect(g);g.connect(ctx.destination);
+    osc.start(t);osc.stop(t+0.5);
+    // Triangle harmonic for richness
+    const osc2=ctx.createOscillator(),g2=ctx.createGain();
+    osc2.type='triangle';osc2.frequency.value=freq*2;
+    g2.gain.setValueAtTime(0,t);
+    g2.gain.linearRampToValueAtTime(peak*0.3,t+0.02);
+    g2.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+    osc2.connect(g2);g2.connect(ctx.destination);
+    osc2.start(t);osc2.stop(t+0.35);
+  });
+  // Epic bass thump
+  if(difficulty==='epic'){
+    const bass=ctx.createOscillator(),bg=ctx.createGain();
+    bass.type='sine';bass.frequency.value=130.81; // C3
+    const t=ctx.currentTime;
+    bg.gain.setValueAtTime(0,t);
+    bg.gain.linearRampToValueAtTime(0.1,t+0.01);
+    bg.gain.exponentialRampToValueAtTime(0.001,t+0.7);
+    bass.connect(bg);bg.connect(ctx.destination);
+    bass.start(t);bass.stop(t+0.8);
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -1479,7 +1593,17 @@ function renderTasks(){
   if(fStatus==='active')fl=fl.filter(([,t])=>!t.completed);
   if(fStatus==='completed')fl=fl.filter(([,t])=>t.completed);
   if(fCat!=='all')fl=fl.filter(([,t])=>t.category===fCat);
+  if(searchQuery){
+    const q=searchQuery.toLowerCase();
+    fl=fl.filter(([,t])=>(t.title||'').toLowerCase().includes(q)||(t.notes||'').toLowerCase().includes(q));
+  }
   fl=sortTasks(fl);
+  // Empty search result state
+  if(searchQuery&&!fl.length){
+    list.innerHTML=`<div class="empty-state"><div class="empty-mascot">🔍</div><div class="empty-bubble">No tasks match "${esc(searchQuery)}"</div></div>`;
+    stats.textContent='0 of '+entries.length+' matched';
+    initProgressBars(list);return;
+  }
   const today=new Date().toISOString().slice(0,10);
   list.innerHTML=fl.map(([id,t],i)=>{
     const exp=expanded===id;
@@ -1494,8 +1618,8 @@ function renderTasks(){
       <span class="t-rank">${rank}</span>
       <button class="ck" onclick="toggleDone('${id}')">${t.completed?'&#10003;':''}</button>
       <div class="tb">
-        <div class="tt" onclick="toggleExpand('${id}')">${esc(t.title||'')}</div>
-        ${t.notes&&!exp?`<div class="t-notes">${esc(t.notes).slice(0,80)}${t.notes.length>80?'...':''}</div>`:''}
+        <div class="tt" onclick="toggleExpand('${id}')">${highlightMatch(t.title||'')}</div>
+        ${t.notes&&!exp?`<div class="t-notes">${highlightMatch((t.notes||'').slice(0,80))}${t.notes.length>80?'...':''}</div>`:''}
         <div class="tm">
           <span class="pd ${t.priority||'medium'}"></span>
           <span class="cat ${t.category||'personal'}">${t.category||'personal'}</span>
@@ -1674,10 +1798,14 @@ async function sendAlfred(){
         try{const e=JSON.parse(d);if(e.type==='content_block_delta'&&e.delta?.type==='text_delta'&&e.delta?.text){
           if(firstToken){firstToken=false;el.innerHTML='';el.classList.add('str')}
           full+=e.delta.text;
-          el.textContent=full.replace(/```(?:task|done|edit|sheet)\s*\n[\s\S]*?\n```/g,'');
+          const visible=full.replace(/```(?:task|done|edit|sheet)\s*\n[\s\S]*?\n```/g,'');
+          el.innerHTML=formatAlfMd(visible)+'<span class="alf-caret"></span>';
           scrollAlf();
         }}catch{}}}
     el.classList.remove('str');alfHistory.push({role:'assistant',content:full});
+    // Final render without caret
+    const finalVisible=full.replace(/```(?:task|done|edit|sheet)\s*\n[\s\S]*?\n```/g,'').trim();
+    el.innerHTML=formatAlfMd(finalVisible);
     const tm=full.match(/```task\s*\n?([\s\S]*?)\n?```/);
     if(tm){try{const c=JSON.parse(tm[1]);fbPush('todo/tasks',{title:c.title||'',priority:c.priority||'medium',category:c.category||'personal',difficulty:c.difficulty||'medium',progress:0,dueDate:c.dueDate||'',notes:c.notes||'',completed:false,completedAt:'',createdAt:new Date().toISOString(),order:Date.now()})}catch{}}
     const dm=full.match(/```done\s*\n?([\s\S]*?)\n?```/);
@@ -1686,12 +1814,51 @@ async function sendAlfred(){
     if(em){try{const c=JSON.parse(em[1]);if(c.taskId&&c.field)updateTask(c.taskId,c.field,c.value)}catch{}}
     const sm=full.match(/```sheet\s*\n?([\s\S]*?)\n?```/);
     if(sm){try{const c=JSON.parse(sm[1]);if(c.sheetId&&c.row)writeSheet(c.sheetId,c.tab||'Sheet1',c.row)}catch{}}
-    el.textContent=full.replace(/```(?:task|done|edit|sheet)\s*\n[\s\S]*?\n```/g,'').trim();
   }catch(e){el.classList.remove('str');el.innerHTML='';el.textContent='Error: '+e.message}
   alfStreaming=false;
 }
-function appendMsg(role,text){const c=document.getElementById('alfMsgs');const d=document.createElement('div');d.className='am '+(role==='u'?'u':'ai');d.textContent=text;c.appendChild(d);scrollAlf();return d}
+function appendMsg(role,text){const c=document.getElementById('alfMsgs');const d=document.createElement('div');d.className='am '+(role==='u'?'u':'ai');if(role==='u')d.textContent=text;else d.innerHTML=text?formatAlfMd(text):'';c.appendChild(d);scrollAlf();return d}
 function scrollAlf(){const c=document.getElementById('alfMsgs');c.scrollTop=c.scrollHeight}
+
+// Minimal markdown → HTML for Alfred's replies. HTML escapes first, then
+// applies transforms. Supports: **bold**, *italic*, `code`, ```fenced code```,
+// ### headings, - and 1. lists, links, paragraphs, line breaks.
+function formatAlfMd(text){
+  if(!text)return '';
+  // Escape HTML first
+  let h=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Fenced code blocks ```lang\n...\n```
+  h=h.replace(/```([a-z]*)\n?([\s\S]*?)```/g,(m,lang,code)=>'<pre><code>'+code.trim()+'</code></pre>');
+  // Inline code
+  h=h.replace(/`([^`\n]+)`/g,'<code>$1</code>');
+  // Headings
+  h=h.replace(/^###\s+(.+)$/gm,'<h4>$1</h4>');
+  h=h.replace(/^##\s+(.+)$/gm,'<h3>$1</h3>');
+  // Bold (before italic)
+  h=h.replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>');
+  // Italic *text* (not **)
+  h=h.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g,'$1<em>$2</em>');
+  // Links [text](url)
+  h=h.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  // Unordered list items
+  h=h.replace(/^(?:-|\*)\s+(.+)$/gm,'<li class="ul">$1</li>');
+  // Ordered list items
+  h=h.replace(/^\d+\.\s+(.+)$/gm,'<li class="ol">$1</li>');
+  // Wrap consecutive <li> into ul/ol
+  h=h.replace(/(?:<li class="ul">[\s\S]*?<\/li>\n?)+/g,m=>'<ul>'+m.replace(/ class="ul"/g,'')+'</ul>');
+  h=h.replace(/(?:<li class="ol">[\s\S]*?<\/li>\n?)+/g,m=>'<ol>'+m.replace(/ class="ol"/g,'')+'</ol>');
+  // Horizontal rule
+  h=h.replace(/^---+$/gm,'<hr>');
+  // Paragraphs: split on blank lines, wrap non-block chunks
+  h=h.split(/\n{2,}/).map(chunk=>{
+    const c=chunk.trim();
+    if(!c)return '';
+    // If already starts with a block element, leave it
+    if(/^<(h3|h4|ul|ol|pre|hr)/.test(c))return c;
+    return '<p>'+c.replace(/\n/g,'<br>')+'</p>';
+  }).join('');
+  return h;
+}
 
 // Alfred brain — orbiting dots with bright core + streaming pulse
 let alfBaseSpeeds=[];
