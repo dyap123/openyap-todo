@@ -362,8 +362,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .am.ai hr{border:none;border-top:1px solid var(--card-border);margin:8px 0}
 /* Word-by-word reveal animation during streaming */
 .alf-word{display:inline-block;white-space:pre}
-.alf-word.reveal{animation:alfWord .4s cubic-bezier(0.16,1,0.3,1) both}
-@keyframes alfWord{0%{opacity:0;filter:blur(6px);transform:translateY(3px)}100%{opacity:1;filter:blur(0);transform:translateY(0)}}
+.alf-word.reveal{animation:alfWord .7s cubic-bezier(0.16,1,0.3,1) both}
+@keyframes alfWord{0%{opacity:0;filter:blur(6px);transform:translateY(4px)}100%{opacity:1;filter:blur(0);transform:translateY(0)}}
 /* Streaming caret */
 .am.ai .alf-caret{display:inline-block;width:2px;height:1em;margin-left:2px;background:var(--accent1);vertical-align:text-bottom;animation:alfCaret 1s ease-in-out infinite;border-radius:1px;box-shadow:0 0 8px var(--accent1)}
 @keyframes alfCaret{0%,100%{opacity:.15}50%{opacity:1}}
@@ -1864,7 +1864,7 @@ function renderAlfStreaming(el,text,prevWords,showCaret){
       span.textContent=part;
       if(wordIdx>=prevWords){
         span.classList.add('reveal');
-        span.style.animationDelay=Math.min((wordIdx-prevWords)*18,300)+'ms';
+        span.style.animationDelay=Math.min((wordIdx-prevWords)*55,900)+'ms';
       }
       frag.appendChild(span);
       wordIdx++;
