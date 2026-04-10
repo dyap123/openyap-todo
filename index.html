@@ -1789,7 +1789,10 @@ function renderTasks(){
     const od=t.dueDate&&!t.completed&&t.dueDate<today;
     const cc=t.category==='work'?'var(--accent2)':t.category==='project'?'var(--accent3)':'var(--accent1)';
     const rank=t.completed?'':String(i+1);
-    const drag=!t.completed&&sortBy==='manual';
+    // Card is draggable for reorder ONLY when collapsed — when expanded the
+    // user is editing fields (esp. the progress range slider) and the parent
+    // drag would hijack mousedown events
+    const drag=!t.completed&&sortBy==='manual'&&!exp;
     const diff=t.difficulty||'medium';
     const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★'}[diff];
     const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
