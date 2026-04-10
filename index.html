@@ -1490,10 +1490,48 @@ function renderSortBar(){
 
 function sortTasks(fl){
   const priVal={high:0,medium:1,low:2};
+  const diffVal={epic:0,hard:1,medium:2,easy:3};
+  const today=new Date().toISOString().slice(0,10);
+  // Smart priority — multi-tier comparator with sensible tie-breakers:
+  //   1. Overdue (any priority) bubbles up first
+  //   2. Priority (high → low)
+  //   3. Has due date before no due date
+  //   4. Earlier due date first
+  //   5. Higher difficulty first (more weight = more impact)
+  //   6. Older order first (so the same list is stable across renders)
+  function smartCmp(a,b){
+    const ta=a[1],tb=b[1];
+    const aOver=ta.dueDate&&ta.dueDate<today?1:0;
+    const bOver=tb.dueDate&&tb.dueDate<today?1:0;
+    if(aOver!==bOver)return bOver-aOver;
+    const ap=priVal[ta.priority]??1,bp=priVal[tb.priority]??1;
+    if(ap!==bp)return ap-bp;
+    const aHas=ta.dueDate?1:0,bHas=tb.dueDate?1:0;
+    if(aHas!==bHas)return bHas-aHas;
+    if(aHas&&ta.dueDate!==tb.dueDate)return ta.dueDate.localeCompare(tb.dueDate);
+    const ad=diffVal[ta.difficulty]??2,bd=diffVal[tb.difficulty]??2;
+    if(ad!==bd)return ad-bd;
+    return (ta.order||0)-(tb.order||0);
+  }
   switch(sortBy){
-    case 'priority': fl.sort((a,b)=>(priVal[a[1].priority]||1)-(priVal[b[1].priority]||1)); break;
-    case 'due': fl.sort((a,b)=>{const ad=a[1].dueDate||'9',bd=b[1].dueDate||'9';return ad.localeCompare(bd)}); break;
-    case 'category': fl.sort((a,b)=>(a[1].category||'').localeCompare(b[1].category||'')); break;
+    case 'priority':
+      fl.sort(smartCmp); break;
+    case 'due':
+      // Tasks with a due date first (soonest top), then no-due tasks at the bottom
+      fl.sort((a,b)=>{
+        const ad=a[1].dueDate,bd=b[1].dueDate;
+        if(ad&&!bd)return -1;
+        if(!ad&&bd)return 1;
+        if(!ad&&!bd)return (a[1].order||0)-(b[1].order||0);
+        if(ad!==bd)return ad.localeCompare(bd);
+        // tie: higher priority first
+        return (priVal[a[1].priority]??1)-(priVal[b[1].priority]??1);
+      }); break;
+    case 'category':
+      fl.sort((a,b)=>{
+        const c=(a[1].category||'').localeCompare(b[1].category||'');
+        return c!==0?c:smartCmp(a,b);
+      }); break;
     case 'newest': fl.sort((a,b)=>(b[1].order||0)-(a[1].order||0)); break;
     case 'oldest': fl.sort((a,b)=>(a[1].order||0)-(b[1].order||0)); break;
     default: fl.sort((a,b)=>(a[1].order||0)-(b[1].order||0)); // manual = by order field
