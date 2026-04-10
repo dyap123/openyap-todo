@@ -959,6 +959,12 @@ function toggleDone(id){
   fbSet(`todo/tasks/${id}/completedAt`,!wasDone?new Date().toISOString():'');
   if(!wasDone){
     fbSet(`todo/tasks/${id}/progress`,100);
+    // Log to history so day-modal/per-day tracking works for one-shots too
+    fbPush('todo/history',{
+      taskId:id,title:t.title||'',difficulty:t.difficulty||'medium',
+      category:t.category||'personal',priority:t.priority||'medium',
+      notes:t.notes||'',completedAt:new Date().toISOString(),
+    });
     if(card){
       card.classList.add('celebrating');
       feedSisyphus(card,t.difficulty||'medium');
@@ -998,6 +1004,11 @@ function setProgress(id,val){
     const card=document.querySelector(`.tc .ck[onclick*="'${id}'"]`)?.closest('.tc');
     fbSet(`todo/tasks/${id}/completed`,true);
     fbSet(`todo/tasks/${id}/completedAt`,new Date().toISOString());
+    fbPush('todo/history',{
+      taskId:id,title:t?.title||'',difficulty:t?.difficulty||'medium',
+      category:t?.category||'personal',priority:t?.priority||'medium',
+      notes:t?.notes||'',completedAt:new Date().toISOString(),
+    });
     if(card){
       card.classList.add('celebrating');
       feedSisyphus(card,t?.difficulty||'medium');
@@ -1764,7 +1775,7 @@ function renderTasks(){
       <div class="empty-bubble">${line}</div>
     </div>`;
     stats.innerHTML='';
-    if(savedScroll>0)window.scrollTo(0,savedScroll);
+    if(savedScroll>0)requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo(0,savedScroll)));
     return;
   }
   let fl=entries;
@@ -1780,7 +1791,7 @@ function renderTasks(){
   if(searchQuery&&!fl.length){
     list.innerHTML=`<div class="empty-state"><div class="empty-mascot">🔍</div><div class="empty-bubble">No tasks match "${esc(searchQuery)}"</div></div>`;
     stats.textContent='0 of '+entries.length+' matched';
-    if(savedScroll>0)window.scrollTo(0,savedScroll);
+    if(savedScroll>0)requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo(0,savedScroll)));
     return;
   }
   const today=new Date().toISOString().slice(0,10);
@@ -2447,6 +2458,38 @@ function openDayModal(dateStr){
     });
     html+=`</div>`;
   }
+
+  // ── Completed on this day ──
+  // Pull from todo/history (recurring + one-shot completions are logged there).
+  const completedHere=Object.values(taskHistory||{})
+    .filter(h=>(h.completedAt||'').slice(0,10)===dateStr)
+    .sort((a,b)=>(b.completedAt||'').localeCompare(a.completedAt||''));
+  if(completedHere.length){
+    html+=`<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--card-border)">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent1);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+        <span style="font-size:12px">✓</span> Completed on this day · ${completedHere.length}
+      </div>
+      <div class="day-modal-tasks">`;
+    completedHere.forEach(h=>{
+      const cc=h.category==='work'?'var(--accent2)':h.category==='project'?'var(--accent3)':'var(--accent1)';
+      const diff=h.difficulty||'medium';
+      const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★'}[diff];
+      const time=new Date(h.completedAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+      html+=`<div class="tc done" style="border-left:3px solid ${cc};opacity:.78">
+        <div class="ck" style="border-color:${cc};background:${cc};color:#fff">&#10003;</div>
+        <div class="tb">
+          <div class="tt" style="font-size:13px">${esc(h.title||'(untitled)')}</div>
+          <div class="tm">
+            <span class="cat ${h.category||'personal'}">${h.category||'personal'}</span>
+            <span class="t-diff ${diff}">${diffStars}</span>
+            <span class="dl">${time}</span>
+          </div>
+        </div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  }
+
   html+=`<div class="day-modal-add-wrap">
       <input class="day-modal-add-input" id="dayModalAddInput" type="text" placeholder="+ Add a task for this day..." onkeydown="if(event.key==='Enter')dayModalAdd('${dateStr}')">
       <button class="day-modal-add-btn" onclick="dayModalAdd('${dateStr}')">Add</button>
