@@ -1777,7 +1777,7 @@ function initSisyphus(){
     ctx.beginPath();ctx.arc(-3,-4,2,0,Math.PI*2);ctx.fill();
     ctx.restore();
 
-    // ── Mascot ──
+    // ── Mascot (sprite or emoji fallback) ──
     mascotBob+=allDone?0.05:0.15;
     const mBob=Math.sin(mascotBob)*(allDone?1.5:2.5);
     const mLean=allDone?0:6;
@@ -1787,11 +1787,21 @@ function initSisyphus(){
     // Soft shadow
     ctx.fillStyle='rgba(0,0,0,0.2)';
     ctx.beginPath();ctx.ellipse(0,15,9,3,0,0,Math.PI*2);ctx.fill();
-    // Character
-    ctx.font='24px -apple-system,sans-serif';
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
-    ctx.fillText(mascot,0,0);
+    // Frame animation: cycle through 4 wingbot frames (~10fps)
+    sisTick++;
+    if(sisTick%6===0)sisFrame=(sisFrame+1)%4;
+    const spriteImg=sisFrames[sisFrame];
+    if(spriteImg&&spriteImg.complete&&spriteImg.naturalWidth){
+      // Draw sprite centered, scaled to ~30px wide (pixel art → crisp)
+      const sw=30,sh=spriteImg.naturalHeight/spriteImg.naturalWidth*sw;
+      ctx.imageSmoothingEnabled=false; // keep pixel art crisp
+      ctx.drawImage(spriteImg,-sw/2,-sh/2,sw,sh);
+    }else{
+      // Emoji fallback while sprites load
+      ctx.font='24px -apple-system,sans-serif';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(mascot,0,0);
+    }
     ctx.restore();
 
     // Creative progress label — changes with completion
@@ -1841,11 +1851,13 @@ function renderTasks(){
   const entries=Object.entries(tasks);
   if(!entries.length){
     const curTheme=localStorage.getItem('oyt_theme')||'';
-    const m=(THEMES[curTheme]||THEMES['']).mascot;
+    const th=THEMES[curTheme]||THEMES[''];
+    const sprSrc=th.sprite?SPRITE_BASE+th.sprite.corner:'';
+    const mascotEl=sprSrc?`<img src="${sprSrc}" style="width:64px;height:64px;image-rendering:pixelated" alt="">`:`<span>${th.mascot}</span>`;
     const lines=['The boulder awaits','Time to feed the mountain','Every legend starts with one task','Let\'s cook','What needs to be done?','The grind begins above'];
     const line=lines[Math.floor(Date.now()/8000)%lines.length];
     list.innerHTML=`<div class="empty-state">
-      <div class="empty-mascot">${m}</div>
+      <div class="empty-mascot">${mascotEl}</div>
       <div class="empty-bubble">${line}</div>
     </div>`;
     stats.innerHTML='';
@@ -2302,19 +2314,66 @@ document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sw
 // ═══════════════════════════════════════════
 //  Themes
 // ═══════════════════════════════════════════
+// Sprite paths for each theme — wingbot for Sisyphus (4 frames), cute robot for mascot corner
+const SPRITE_BASE='sprites/';
 const THEMES={
-  '':{mascot:'🤖',minis:['⚡','💜','🔮','🛸','🌌'],stats:{nodata:'🤖',streak:'⚡',early:'🚀',late:'🐌',time:'⏱️',him:'👑',locked:'🔥',solid:'💪',grind:'😤'}},
-  't-ocean':{mascot:'🐋',minis:['🐚','🌊','🐠','🦑','🧊'],stats:{nodata:'🧭',streak:'🐚',early:'🐬',late:'🐢',time:'⚓',him:'🔱',locked:'🦭',solid:'🐡',grind:'🦈'}},
-  't-forest':{mascot:'🦎',minis:['🍃','🌿','🍄','🦉','🐿️'],stats:{nodata:'🌱',streak:'🌳',early:'🐇',late:'🐛',time:'🍂',him:'🦁',locked:'🌲',solid:'🦉',grind:'🐺'}},
-  't-sunset':{mascot:'🦊',minis:['🌅','✨','🦩','🌵','🔥'],stats:{nodata:'🌅',streak:'☀️',early:'🦅',late:'🐾',time:'⏳',him:'🌟',locked:'🏜️',solid:'🦊',grind:'💥'}},
-  't-mono':{mascot:'🗿',minis:['♟️','🎲','🖤','♠️','🌑'],stats:{nodata:'📊',streak:'♟️',early:'♠️',late:'♣️',time:'⏲️',him:'🏛️',locked:'⚫',solid:'♦️',grind:'▪️'}},
-  't-sakura':{mascot:'🌸',minis:['🎀','💮','🦋','🧁','🎐'],stats:{nodata:'🌸',streak:'💗',early:'🦋',late:'🥀',time:'🎐',him:'💎',locked:'🌺',solid:'🌷',grind:'🧁'}},
-  't-light':{mascot:'☀️',minis:['☁️','🌤️','💎','🪶','✨'],stats:{nodata:'☀️',streak:'🔆',early:'🕊️',late:'🐢',time:'⏰',him:'🏆',locked:'⭐',solid:'👍',grind:'💪'}},
+  '':{mascot:'🤖',minis:['⚡','💜','🔮','🛸','🌌'],
+      sprite:{sis:'wingbot/2/',corner:'gunbot/purple.png'},
+      stats:{nodata:'🤖',streak:'⚡',early:'🚀',late:'🐌',time:'⏱️',him:'👑',locked:'🔥',solid:'💪',grind:'😤'}},
+  't-ocean':{mascot:'🐋',minis:['🐚','🌊','🐠','🦑','🧊'],
+      sprite:{sis:'wingbot/2/',corner:'clawbot/purple.png'},
+      stats:{nodata:'🧭',streak:'🐚',early:'🐬',late:'🐢',time:'⚓',him:'🔱',locked:'🦭',solid:'🐡',grind:'🦈'}},
+  't-forest':{mascot:'🦎',minis:['🍃','🌿','🍄','🦉','🐿️'],
+      sprite:{sis:'wingbot/4/',corner:'ballbot/green.png'},
+      stats:{nodata:'🌱',streak:'🌳',early:'🐇',late:'🐛',time:'🍂',him:'🦁',locked:'🌲',solid:'🦉',grind:'🐺'}},
+  't-sunset':{mascot:'🦊',minis:['🌅','✨','🦩','🌵','🔥'],
+      sprite:{sis:'wingbot/3/',corner:'gunbot/orange.png'},
+      stats:{nodata:'🌅',streak:'☀️',early:'🦅',late:'🐾',time:'⏳',him:'🌟',locked:'🏜️',solid:'🦊',grind:'💥'}},
+  't-mono':{mascot:'🗿',minis:['♟️','🎲','🖤','♠️','🌑'],
+      sprite:{sis:'wingbot/2/',corner:'blockbot/block.png'},
+      stats:{nodata:'📊',streak:'♟️',early:'♠️',late:'♣️',time:'⏲️',him:'🏛️',locked:'⚫',solid:'♦️',grind:'▪️'}},
+  't-sakura':{mascot:'🌸',minis:['🎀','💮','🦋','🧁','🎐'],
+      sprite:{sis:'wingbot/1/',corner:'ballbot/red.png'},
+      stats:{nodata:'🌸',streak:'💗',early:'🦋',late:'🥀',time:'🎐',him:'💎',locked:'🌺',solid:'🌷',grind:'🧁'}},
+  't-light':{mascot:'☀️',minis:['☁️','🌤️','💎','🪶','✨'],
+      sprite:{sis:'wingbot/4/',corner:'clawbot/green.png'},
+      stats:{nodata:'☀️',streak:'🔆',early:'🕊️',late:'🐢',time:'⏰',him:'🏆',locked:'⭐',solid:'👍',grind:'💪'}},
 };
+
+// Sprite image cache — preload wingbot frames + corner mascot per theme
+const spriteCache={};
+let sisFrames=[],sisFrame=0,sisTick=0;
+let cornerImg=null;
+function loadThemeSprites(themeKey){
+  const th=THEMES[themeKey]||THEMES[''];
+  if(!th.sprite)return;
+  // Sisyphus wingbot — 4 frames
+  sisFrames=[];
+  for(let i=1;i<=4;i++){
+    const src=SPRITE_BASE+th.sprite.sis+'wingbot'+i+'.png';
+    if(spriteCache[src]){sisFrames.push(spriteCache[src]);continue}
+    const img=new Image();img.src=src;
+    spriteCache[src]=img;sisFrames.push(img);
+  }
+  sisFrame=0;sisTick=0;
+  // Corner mascot
+  const csrc=SPRITE_BASE+th.sprite.corner;
+  if(spriteCache[csrc])cornerImg=spriteCache[csrc];
+  else{cornerImg=new Image();cornerImg.src=csrc;spriteCache[csrc]=cornerImg}
+  // Update the floating mascot element
+  const el=document.getElementById('mascot');
+  if(el){
+    if(cornerImg.complete&&cornerImg.naturalWidth){el.innerHTML='';el.style.backgroundImage='url('+csrc+')';el.style.backgroundSize='contain';el.style.backgroundRepeat='no-repeat';el.style.width='40px';el.style.height='40px';el.textContent=''}
+    else cornerImg.onload=()=>{el.innerHTML='';el.style.backgroundImage='url('+csrc+')';el.style.backgroundSize='contain';el.style.backgroundRepeat='no-repeat';el.style.width='40px';el.style.height='40px';el.textContent=''};
+  }
+}
+// Preload for current theme on startup
+loadThemeSprites(localStorage.getItem('oyt_theme')||'');
 
 function setTheme(t){
   document.body.className=t;
   localStorage.setItem('oyt_theme',t);
+  loadThemeSprites(t);
   const th=THEMES[t]||THEMES[''];
   document.getElementById('mascot').textContent=th.mascot;
   for(let i=0;i<5;i++){const el=document.getElementById('mm'+i);if(el)el.textContent=th.minis[i]||''}
