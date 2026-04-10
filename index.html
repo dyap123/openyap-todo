@@ -489,6 +489,40 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .day-modal-add-btn{padding:6px 14px;border-radius:10px;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff;border:none;font-weight:700;font-size:10px;cursor:pointer;transition:all .2s var(--ease);text-transform:uppercase;letter-spacing:.5px}
 .day-modal-add-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--accent1-10)}
 .day-modal-add-btn:active{transform:translateY(0)}
+/* View toggle (List ↔ Chart) */
+.day-view-toggle{display:inline-flex;background:rgba(255,255,255,0.04);border:1px solid var(--card-border);border-radius:10px;padding:3px;margin-bottom:14px;gap:2px}
+.day-view-toggle button{padding:5px 14px;border-radius:7px;border:none;background:transparent;color:var(--text-muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;font-family:inherit;transition:all .2s var(--ease);display:inline-flex;align-items:center;gap:4px}
+.day-view-toggle button.active{background:var(--accent1-10);color:var(--accent1);box-shadow:0 0 12px var(--accent1-10)}
+.day-view-toggle button:hover:not(.active){color:var(--text-body)}
+/* Chart blocks */
+.day-charts{display:flex;flex-direction:column;gap:14px;margin-bottom:14px}
+.day-chart-row{display:grid;grid-template-columns:1fr 1.4fr;gap:14px}
+@media(max-width:520px){.day-chart-row{grid-template-columns:1fr}}
+.day-chart-card{background:rgba(255,255,255,0.025);border:1px solid var(--card-border);border-radius:14px;padding:14px;position:relative}
+.day-chart-card .chart-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent1);margin-bottom:8px}
+.day-chart-empty{text-align:center;font-size:11px;color:var(--text-muted);font-style:italic;padding:18px 0}
+/* Donut */
+.donut-wrap{display:flex;align-items:center;gap:12px}
+.donut-svg{width:104px;height:104px;flex-shrink:0}
+.donut-center{font-size:22px;font-weight:900;fill:var(--text);text-anchor:middle;dominant-baseline:central}
+.donut-center-label{font-size:7px;font-weight:700;fill:var(--text-muted);text-anchor:middle;text-transform:uppercase;letter-spacing:1px}
+.donut-legend{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.donut-legend-item{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:600}
+.donut-legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.donut-legend-name{flex:1;text-transform:capitalize;color:var(--text-body)}
+.donut-legend-count{color:var(--text);font-weight:800;font-variant-numeric:tabular-nums}
+/* Difficulty stacked bar */
+.diff-bar-wrap{display:flex;flex-direction:column;gap:10px}
+.diff-bar-track{width:100%;height:30px;border-radius:8px;background:rgba(255,255,255,0.04);overflow:hidden;display:flex;border:1px solid var(--card-border)}
+.diff-bar-seg{display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#000;transition:flex .4s var(--ease);min-width:0;overflow:hidden;white-space:nowrap}
+.diff-bar-legend{display:flex;flex-wrap:wrap;gap:8px;font-size:9px}
+.diff-bar-legend-item{display:flex;align-items:center;gap:4px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+.diff-bar-legend-dot{width:8px;height:8px;border-radius:2px}
+/* Hourly timeline */
+.timeline-svg{width:100%;height:64px;display:block}
+.timeline-axis{stroke:rgba(255,255,255,0.08);stroke-width:1}
+.timeline-tick-label{font-size:7px;fill:var(--text-muted);font-weight:600;text-anchor:middle}
+.timeline-dot{filter:drop-shadow(0 0 4px currentColor)}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .cal-task{font-size:7px;font-weight:600;padding:2px 4px;border-radius:4px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
@@ -748,6 +782,8 @@ function fbListen(p,cb){if(db)db.ref(p).on('value',s=>cb(s.val()))}
 //  State
 // ═══════════════════════════════════════════
 let tasks={},taskHistory={},expanded=null,fStatus='all',fCat='all',newCat='work',newPri='medium',newDiff='medium',newRep='none',sortBy='manual',searchQuery='';
+let dayView=localStorage.getItem('oyt_day_view')||'chart';
+function setDayView(v,dateStr){dayView=v;localStorage.setItem('oyt_day_view',v);openDayModal(dateStr)}
 // Difficulty point weights (used in dashboard + celebration intensity)
 const DIFF_WEIGHTS={easy:1,medium:2,hard:4,epic:8};
 
@@ -2459,7 +2495,106 @@ function openDayModal(dateStr){
         <div class="day-stat"><div class="day-stat-val done">${done}</div><div class="day-stat-label">Done</div></div>
         <div class="day-stat"><div class="day-stat-val">${remaining}</div><div class="day-stat-label">Remaining</div></div>
         <div class="day-stat"><div class="day-stat-val ${overdueCount?'red':''}">${overdueCount}</div><div class="day-stat-label">Overdue</div></div>
+      </div>
+      <div class="day-view-toggle">
+        <button class="${dayView==='chart'?'active':''}" onclick="setDayView('chart','${dateStr}')">📊 Chart</button>
+        <button class="${dayView==='list'?'active':''}" onclick="setDayView('list','${dateStr}')">📋 List</button>
       </div>`;
+
+  // ── CHART VIEW ──
+  if(dayView==='chart'&&tEntries.length){
+    const cs=getComputedStyle(document.body);
+    const a1=cs.getPropertyValue('--accent1').trim()||'#8B5CF6';
+    const a2=cs.getPropertyValue('--accent2').trim()||'#3B82F6';
+    const a3=cs.getPropertyValue('--accent3').trim()||'#ec4899';
+    // Category buckets
+    const catColors={work:a2,personal:a1,project:a3};
+    const catCounts={work:0,personal:0,project:0};
+    tEntries.forEach(([,t])=>{const c=t.category||'personal';if(catCounts[c]!==undefined)catCounts[c]++});
+    // Difficulty buckets (count + weight)
+    const diffWeights={easy:1,medium:2,hard:4,epic:8};
+    const diffColors={easy:'#4ade80',medium:'#fbbf24',hard:'#f97316',epic:a3};
+    const diffCounts={easy:0,medium:0,hard:0,epic:0};
+    tEntries.forEach(([,t])=>{const d=t.difficulty||'medium';if(diffCounts[d]!==undefined)diffCounts[d]++});
+    const totalWeight=Object.entries(diffCounts).reduce((s,[d,n])=>s+n*diffWeights[d],0);
+    // Donut SVG
+    const r=42,strokeW=12,c=2*Math.PI*r;
+    let donut='<svg class="donut-svg" viewBox="0 0 104 104">';
+    donut+=`<circle cx="52" cy="52" r="${r}" stroke="rgba(255,255,255,0.06)" stroke-width="${strokeW}" fill="none"/>`;
+    let off=0;
+    Object.entries(catCounts).forEach(([cat,n])=>{
+      if(!n)return;
+      const len=n/total*c;
+      donut+=`<circle cx="52" cy="52" r="${r}" stroke="${catColors[cat]}" stroke-width="${strokeW}" fill="none" stroke-dasharray="${len.toFixed(2)} ${(c-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 52 52)" stroke-linecap="round"/>`;
+      off+=len;
+    });
+    donut+=`<text x="52" y="49" class="donut-center">${total}</text>`;
+    donut+=`<text x="52" y="64" class="donut-center-label">tasks</text>`;
+    donut+='</svg>';
+    // Donut legend
+    let donutLegend='<div class="donut-legend">';
+    Object.entries(catCounts).forEach(([cat,n])=>{
+      if(!n)return;
+      const pct=Math.round(n/total*100);
+      donutLegend+=`<div class="donut-legend-item"><span class="donut-legend-dot" style="background:${catColors[cat]}"></span><span class="donut-legend-name">${cat}</span><span class="donut-legend-count">${n} <span style="color:var(--text-muted);font-weight:600">·${pct}%</span></span></div>`;
+    });
+    donutLegend+='</div>';
+    // Difficulty stacked bar
+    let diffBar='<div class="diff-bar-track">';
+    const diffOrder=['easy','medium','hard','epic'];
+    diffOrder.forEach(d=>{
+      const n=diffCounts[d];if(!n)return;
+      const weight=n*diffWeights[d];
+      const flex=weight;
+      const label=n>0?`${n}`:'';
+      diffBar+=`<div class="diff-bar-seg" style="background:${diffColors[d]};flex:${flex} 1 0">${label}</div>`;
+    });
+    diffBar+='</div><div class="diff-bar-legend">';
+    diffOrder.forEach(d=>{
+      const n=diffCounts[d];
+      const weight=n*diffWeights[d];
+      diffBar+=`<div class="diff-bar-legend-item"${n?'':' style="opacity:.35"'}><span class="diff-bar-legend-dot" style="background:${diffColors[d]}"></span>${d}${n?' '+n+'×'+diffWeights[d]+'pt':''}</div>`;
+    });
+    diffBar+='</div>';
+    diffBar+=`<div style="font-size:8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-top:4px">Total weight: <span style="color:var(--accent1);font-size:11px">${totalWeight} pts</span></div>`;
+    // Hourly timeline (only if completions exist for this day)
+    const dayHistory=Object.values(taskHistory||{}).filter(h=>(h.completedAt||'').slice(0,10)===dateStr);
+    let timeline='';
+    if(dayHistory.length){
+      const W=440,H=64,padL=20,padR=12,padT=6,padB=18;
+      const innerW=W-padL-padR;
+      timeline+=`<svg class="timeline-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
+      // Axis
+      timeline+=`<line class="timeline-axis" x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}"/>`;
+      // Hour ticks every 4h
+      [0,4,8,12,16,20,24].forEach(h=>{
+        const x=padL+(h/24)*innerW;
+        timeline+=`<line class="timeline-axis" x1="${x}" y1="${H-padB}" x2="${x}" y2="${H-padB+3}"/>`;
+        const lbl=h===0?'12a':h===12?'12p':h<12?h+'a':(h-12)+'p';
+        if(h<24)timeline+=`<text class="timeline-tick-label" x="${x}" y="${H-4}">${lbl}</text>`;
+      });
+      // Dots
+      dayHistory.forEach(h=>{
+        const d=new Date(h.completedAt);
+        const hourFloat=d.getHours()+d.getMinutes()/60;
+        const x=padL+(hourFloat/24)*innerW;
+        const y=H-padB-Math.random()*22-4;
+        const col=catColors[h.category||'personal']||a1;
+        timeline+=`<circle class="timeline-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="${col}" style="color:${col}"/>`;
+      });
+      timeline+='</svg>';
+    }
+
+    html+='<div class="day-charts">';
+    html+='<div class="day-chart-row">';
+    html+=`<div class="day-chart-card"><div class="chart-label">Categories</div><div class="donut-wrap">${donut}${donutLegend}</div></div>`;
+    html+=`<div class="day-chart-card"><div class="chart-label">Difficulty Mix</div><div class="diff-bar-wrap">${diffBar}</div></div>`;
+    html+='</div>';
+    if(timeline){
+      html+=`<div class="day-chart-card"><div class="chart-label">Completions Today</div>${timeline}</div>`;
+    }
+    html+='</div>';
+  }
 
   if(!tEntries.length){
     const curTheme=localStorage.getItem('oyt_theme')||'';
@@ -2468,7 +2603,7 @@ function openDayModal(dateStr){
       <span class="day-modal-empty-emoji">${m}</span>
       <div class="day-modal-empty-text">Nothing on the books for this day</div>
     </div>`;
-  } else {
+  } else if(dayView==='list') {
     html+=`<div class="day-modal-tasks">`;
     tEntries.sort((a,b)=>{if(a[1].completed!==b[1].completed)return a[1].completed?1:-1;const pri={high:0,medium:1,low:2};return(pri[a[1].priority]||1)-(pri[b[1].priority]||1)});
     tEntries.forEach(([id,t])=>{
