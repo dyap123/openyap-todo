@@ -308,7 +308,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .dash-bar-fill{height:100%;border-radius:2px;transition:width .6s var(--ease)}
 /* Streak / Stats row */
 .stat-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.stat-chip{position:relative;background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--card-border);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;flex:1;min-width:140px;transition:transform .35s var(--ease),box-shadow .55s var(--ease),border-color .35s var(--ease)}
+.stat-chip{position:relative;background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--card-border);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;flex:1 1 170px;min-width:0;overflow:hidden;transition:transform .35s var(--ease),box-shadow .55s var(--ease),border-color .35s var(--ease)}
 /* External halo matching dash-card / verdict-card */
 .stat-chip::before{content:'';position:absolute;inset:-8px;border-radius:18px;background:radial-gradient(ellipse at center,var(--accent1) 0%,transparent 60%);opacity:0;filter:blur(20px);transition:opacity .55s var(--ease);pointer-events:none;z-index:-1}
 .stat-chip:hover::before{opacity:.3}
@@ -316,9 +316,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .stat-emoji{font-size:18px;filter:grayscale(0.5) brightness(0.8);opacity:0.6;transition:all .3s var(--ease);animation:statPulse 3s ease-in-out infinite}
 .stat-chip:hover .stat-emoji{filter:grayscale(0) brightness(1);opacity:1;transform:scale(1.15)}
 @keyframes statPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-.stat-info{display:flex;flex-direction:column}
-.stat-val{font-size:16px;font-weight:800;color:var(--text);line-height:1}
-.stat-desc{font-size:8px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.stat-info{display:flex;flex-direction:column;min-width:0;flex:1;overflow:hidden}
+.stat-val{font-size:14px;font-weight:800;color:var(--text);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-desc{font-size:8px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stats{margin-top:24px;text-align:center;font-size:10px;color:var(--card-hover);letter-spacing:1px;font-weight:600}
 @media(max-width:720px){.dash{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:500px){.dash{grid-template-columns:repeat(2,1fr)}}
