@@ -610,6 +610,94 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .tc.drag-over{border-top:2px solid var(--accent1);margin-top:-1px}
 
 @media(max-width:768px){.main{padding:12px 10px 80px}}
+
+/* ═══ Calendar Sort View ═══ */
+.cal-sort-wrap{margin-top:6px}
+.cal-sort-nav{display:flex;align-items:center;gap:8px;margin-bottom:10px;justify-content:center}
+.cal-sort-nav button{padding:4px 12px;border-radius:10px;font-size:10px;font-weight:700;border:1px solid var(--card-border);background:var(--card);color:var(--text-body);cursor:pointer;transition:all .18s var(--ease)}
+.cal-sort-nav button:hover{border-color:var(--accent1);color:var(--accent1)}
+.cal-sort-nav .cal-sort-label{font-size:11px;font-weight:700;color:var(--text);min-width:170px;text-align:center}
+.cal-sort-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-sort-col{min-height:80px;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:4px;transition:box-shadow .2s var(--ease)}
+.cal-sort-col:hover{box-shadow:0 0 16px rgba(var(--accent1-rgb,120,80,255),0.12)}
+.cal-sort-col.today{border-color:var(--accent1);box-shadow:0 0 12px rgba(var(--accent1-rgb,120,80,255),0.15)}
+.cal-sort-col-head{font-size:8px;font-weight:700;text-transform:uppercase;color:var(--text-muted);text-align:center;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.04);letter-spacing:.5px}
+.cal-sort-col-head .cal-sort-day-num{display:block;font-size:14px;color:var(--text);margin-top:1px}
+.cal-sort-col.today .cal-sort-col-head{color:var(--accent1)}
+.cal-sort-col.today .cal-sort-col-head .cal-sort-day-num{color:var(--accent1)}
+.cal-sort-task{display:flex;align-items:center;gap:5px;padding:5px 6px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:all .15s var(--ease);font-size:9px;color:var(--text-body);line-height:1.3}
+.cal-sort-task:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.1);transform:translateY(-1px)}
+.cal-sort-task.done{opacity:.35;text-decoration:line-through}
+.cal-sort-task .cst-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.cal-sort-task .cst-ck{width:14px;height:14px;border-radius:4px;border:1.5px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px;cursor:pointer;transition:all .15s}
+.cal-sort-task .cst-ck.checked{background:var(--accent1);border-color:var(--accent1);color:#000}
+.cal-sort-task .cst-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-sort-empty{font-size:8px;color:var(--text-muted);text-align:center;padding:8px 0;opacity:.5}
+.cal-sort-unscheduled{margin-top:12px;padding:10px;background:var(--card);border:1px solid var(--card-border);border-radius:12px}
+.cal-sort-unscheduled h4{font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:0 0 6px 0}
+.cal-sort-unscheduled .cal-sort-task{margin-bottom:3px}
+@media(max-width:600px){
+  .cal-sort-grid{grid-template-columns:1fr;gap:8px}
+  .cal-sort-col{flex-direction:column}
+  .cal-sort-col-head{text-align:left;display:flex;gap:6px;align-items:baseline;border-bottom:none;padding-bottom:2px}
+  .cal-sort-col-head .cal-sort-day-num{display:inline;font-size:12px}
+}
+
+/* ═══ Control Bar (compact filter/sort) ═══ */
+.control-bar{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.control-bar .search-input{flex:1;min-width:120px;padding:5px 10px 5px 28px;border-radius:10px;font-size:10px;background:var(--card);border:1px solid var(--card-border);color:var(--text);outline:none;transition:border-color .2s}
+.control-bar .search-input:focus{border-color:var(--accent1)}
+.control-bar .search-icon{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;opacity:.4;pointer-events:none}
+.ctrl-search-wrap{position:relative;flex:1;min-width:120px}
+.ctrl-pill{padding:4px 12px;border-radius:10px;font-size:9px;font-weight:600;border:1px solid var(--card-border);background:var(--card);color:var(--text-body);cursor:pointer;transition:all .18s var(--ease);white-space:nowrap;display:flex;align-items:center;gap:4px}
+.ctrl-pill:hover{border-color:var(--accent1);color:var(--accent1)}
+.ctrl-pill .ctrl-val{color:var(--accent1);font-weight:700}
+.ctrl-pill .ctrl-chev{font-size:7px;opacity:.5;transition:transform .2s}
+.ctrl-pill.open .ctrl-chev{transform:rotate(180deg)}
+.ctrl-pop{position:absolute;z-index:120;min-width:160px;padding:8px;border-radius:14px;background:rgba(18,18,28,0.92);border:1px solid var(--card-border);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);box-shadow:0 12px 40px rgba(0,0,0,0.6);display:none;flex-direction:column;gap:2px;animation:fadeIn .15s var(--ease)}
+.ctrl-pop.open{display:flex}
+.ctrl-pop-item{padding:6px 10px;border-radius:8px;font-size:10px;font-weight:500;color:var(--text-body);cursor:pointer;transition:all .12s;border:none;background:transparent;text-align:left;display:flex;align-items:center;gap:6px}
+.ctrl-pop-item:hover{background:rgba(255,255,255,0.06)}
+.ctrl-pop-item.active{color:var(--accent1);font-weight:700;background:var(--accent1-06)}
+.ctrl-pop-item .pop-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ctrl-pop-divider{height:1px;background:rgba(255,255,255,0.06);margin:3px 0}
+body.t-light .ctrl-pop{background:rgba(255,255,255,0.95);border-color:rgba(0,0,0,0.08)}
+body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ Command Center (collapsible dashboard) ═══ */
+.command-center{overflow:hidden;transition:max-height .35s var(--ease)}
+.cmd-collapsed{display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;cursor:pointer;transition:all .2s var(--ease);margin-bottom:10px}
+.cmd-collapsed:hover{border-color:var(--accent1);box-shadow:0 0 12px rgba(var(--accent1-rgb,120,80,255),0.1)}
+.cmd-mini-sis{width:64px;height:36px;border-radius:8px;overflow:hidden;flex-shrink:0;background:linear-gradient(180deg,#0f0f1c,#06060f)}
+.cmd-metrics{display:flex;gap:16px;flex:1;flex-wrap:wrap}
+.cmd-metric{display:flex;flex-direction:column;align-items:center}
+.cmd-metric-val{font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cmd-metric-lbl{font-size:7px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.cmd-chev{font-size:10px;color:var(--text-muted);transition:transform .3s var(--ease);flex-shrink:0}
+.cmd-collapsed:hover .cmd-chev{color:var(--accent1)}
+.command-center.expanded .cmd-collapsed .cmd-chev{transform:rotate(180deg)}
+.cmd-expanded{overflow:hidden;transition:max-height .35s var(--ease),opacity .25s}
+.command-center:not(.expanded) .cmd-expanded{max-height:0;opacity:0;pointer-events:none}
+.command-center.expanded .cmd-expanded{max-height:600px;opacity:1}
+
+/* ═══ Dashboard redesign (3 cards) ═══ */
+.dash-v2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.dash-v2-card{padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--card-border);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);position:relative;overflow:hidden;transition:all .2s var(--ease)}
+.dash-v2-card:hover{border-color:var(--accent1);transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.dash-v2-card .dv2-hero{font-size:28px;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.dash-v2-card .dv2-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-top:4px}
+.dash-v2-card .dv2-sub{font-size:9px;color:var(--text-muted);margin-top:6px;line-height:1.4}
+.dash-v2-card .dv2-sub b{color:var(--text-body);font-weight:700}
+.dash-v2-bar{height:3px;background:rgba(255,255,255,0.04);border-radius:2px;margin-top:8px;overflow:hidden}
+.dash-v2-bar-fill{height:100%;border-radius:2px;transition:width .4s var(--ease)}
+.dash-v2-spark{display:flex;align-items:flex-end;gap:2px;height:20px;margin-top:8px}
+.dash-v2-spark-bar{flex:1;border-radius:2px;background:var(--accent1);opacity:.5;transition:all .2s}
+.dash-v2-spark-bar.today-bar{opacity:1;background:linear-gradient(to top,var(--accent1),var(--accent2))}
+.dv2-overdue{color:var(--cat-work-fg,#ff6b6b)!important;font-weight:700!important}
+.dv2-verdict{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;background:linear-gradient(135deg,var(--accent1),var(--accent3,var(--accent2)));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:4px}
+@media(max-width:600px){.dash-v2{grid-template-columns:1fr}.cal-sort-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.dash-v2{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -696,29 +784,38 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
     </div>
   </div>
 
-  <!-- Dashboard -->
-  <div class="dash" id="dash"></div>
-
-  <!-- Sisyphus -->
-  <div class="sis-wrap">
-    <canvas id="sisCanvas" style="width:100%;height:88px;display:block;border-radius:14px;background:linear-gradient(180deg,#0f0f1c 0%,#0a0a16 60%,#06060f 100%);border:1px solid var(--card-border);box-shadow:0 4px 20px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04)"></canvas>
+  <!-- Command Center (collapsible) -->
+  <div class="command-center" id="cmdCenter">
+    <div class="cmd-collapsed" onclick="toggleCmd()">
+      <div class="cmd-mini-sis"><canvas id="miniSisCanvas" style="width:100%;height:100%;display:block"></canvas></div>
+      <div class="cmd-metrics" id="cmdMetrics"></div>
+      <span class="cmd-chev">▼</span>
+    </div>
+    <div class="cmd-expanded">
+      <div class="dash-v2" id="dash"></div>
+      <div class="sis-wrap">
+        <canvas id="sisCanvas" style="width:100%;height:88px;display:block;border-radius:14px;background:linear-gradient(180deg,#0f0f1c 0%,#0a0a16 60%,#06060f 100%);border:1px solid var(--card-border);box-shadow:0 4px 20px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04)"></canvas>
+      </div>
+    </div>
   </div>
 
-  <!-- Stats -->
-  <div class="stat-row" id="statRow"></div>
-
-  <!-- Search -->
-  <div class="search-wrap">
-    <span class="search-icon">🔎</span>
-    <input type="text" id="searchInput" class="search-input" placeholder="Search tasks..." oninput="onSearchInput(this.value)" onkeydown="if(event.key==='Escape'){this.value='';onSearchInput('')}">
-    <button class="search-clear" id="searchClear" onclick="document.getElementById('searchInput').value='';onSearchInput('')" style="display:none">×</button>
+  <!-- Control Bar (search + filter pill + sort pill) -->
+  <div class="control-bar" id="controlBar">
+    <div class="ctrl-search-wrap">
+      <span class="search-icon">🔎</span>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search tasks..." oninput="onSearchInput(this.value)" onkeydown="if(event.key==='Escape'){this.value='';onSearchInput('')}">
+    </div>
+    <button class="ctrl-pill" id="filterPill" onclick="toggleFilterPop()">
+      <span class="ctrl-val" id="filterPillLabel">All</span>
+      <span class="ctrl-chev">▼</span>
+    </button>
+    <div class="ctrl-pop" id="filterPop"></div>
+    <button class="ctrl-pill" id="sortPill" onclick="toggleSortPop()">
+      Sort: <span class="ctrl-val" id="sortPillLabel">Manual</span>
+      <span class="ctrl-chev">▼</span>
+    </button>
+    <div class="ctrl-pop" id="sortPop"></div>
   </div>
-
-  <!-- Filters -->
-  <div class="filters" id="filters"></div>
-
-  <!-- Sort -->
-  <div class="sort-bar" id="sortBar"></div>
 
   <!-- Task List -->
   <div class="task-list" id="taskList"></div>
@@ -811,13 +908,15 @@ function fbListen(p,cb){if(db)db.ref(p).on('value',s=>cb(s.val()))}
 // ═══════════════════════════════════════════
 let tasks={},taskHistory={},expanded=null,fStatus='all',fCat='all',newCat='work',newPri='medium',newDiff='medium',newRep='none',sortBy='manual',searchQuery='';
 let dayView=localStorage.getItem('oyt_day_view')||'chart';
+let calSortWeekOffset=0;
+let cmdExpanded=localStorage.getItem('oyt_cmd_expanded')==='1';
 function setDayView(v,dateStr){dayView=v;localStorage.setItem('oyt_day_view',v);openDayModal(dateStr)}
 // Difficulty point weights (used in dashboard + celebration intensity)
 const DIFF_WEIGHTS={easy:1,medium:2,hard:4,epic:8};
 
 function attachListeners(){
   fbListen('todo/tasks',val=>{tasks=val||{};renderTasks();if(currentView==='calendar')renderCalendar()});
-  fbListen('todo/history',val=>{taskHistory=val||{};renderDash();renderStatRow()});
+  fbListen('todo/history',val=>{taskHistory=val||{};renderDashV2();renderCmdMetrics()});
 }
 
 // ═══════════════════════════════════════════
@@ -1984,11 +2083,11 @@ function renderTasks(){
   // Preserve scroll position — avoids jumping to top when Firebase listener
   // re-renders (e.g. after slider release triggers a task update)
   const savedScroll=window.scrollY;
-  renderDash();
-  renderStatRow();
+  renderDashV2();
+  renderCmdMetrics();
+  updateControlBarLabels();
+  if(cmdExpanded){document.getElementById('cmdCenter')?.classList.add('expanded')}
   initSisyphus();
-  renderFilters();
-  renderSortBar();
   const list=document.getElementById('taskList'),stats=document.getElementById('stats');
   const entries=Object.entries(tasks);
   if(!entries.length){
@@ -2015,6 +2114,14 @@ function renderTasks(){
     fl=fl.filter(([,t])=>(t.title||'').toLowerCase().includes(q)||(t.notes||'').toLowerCase().includes(q));
   }
   fl=sortTasks(fl);
+  // Calendar sort view — render week grid instead of flat list
+  if(sortBy==='calendar'){
+    renderCalendarSort(fl);
+    const total=Object.entries(tasks).length,done=Object.entries(tasks).filter(([,t])=>t.completed).length;
+    document.getElementById('stats').textContent=done+' of '+total+' completed';
+    if(savedScroll>0)window.scrollTo(0,savedScroll);
+    return;
+  }
   // Empty search result state
   if(searchQuery&&!fl.length){
     list.innerHTML=`<div class="empty-state"><div class="empty-mascot">🔍</div><div class="empty-bubble">No tasks match "${esc(searchQuery)}"</div></div>`;
@@ -2092,6 +2199,249 @@ function fmtTime12(t){
   const [h,m]=t.split(':');
   const hr=parseInt(h)||0;
   return(hr>12?hr-12:hr||12)+':'+m+(hr>=12?' PM':' AM');
+}
+
+// ═══════════════════════════════════════════
+//  Command Center toggle
+// ═══════════════════════════════════════════
+function toggleCmd(){
+  cmdExpanded=!cmdExpanded;
+  localStorage.setItem('oyt_cmd_expanded',cmdExpanded?'1':'0');
+  const el=document.getElementById('cmdCenter');
+  if(cmdExpanded)el.classList.add('expanded');else el.classList.remove('expanded');
+  setTimeout(()=>initSisyphus(),380);
+}
+function renderCmdMetrics(){
+  const entries=Object.entries(tasks);
+  const active=entries.filter(([,t])=>!t.completed);
+  const today=new Date().toISOString().slice(0,10);
+  const doneToday=entries.filter(([,t])=>t.completed&&(t.completedAt||'').slice(0,10)===today).length;
+  const totalPts=entries.reduce((s,[,t])=>(s+(DIFF_WEIGHTS[t.difficulty||'medium']||2)),0);
+  const donePts=entries.filter(([,t])=>t.completed).reduce((s,[,t])=>(s+(DIFF_WEIGHTS[t.difficulty||'medium']||2)),0);
+  const pct=totalPts?Math.round(donePts/totalPts*100):0;
+  const overdue=active.filter(([,t])=>t.dueDate&&t.dueDate<today).length;
+  const el=document.getElementById('cmdMetrics');
+  if(!el)return;
+  el.innerHTML=`
+    <div class="cmd-metric"><span class="cmd-metric-val">${doneToday}</span><span class="cmd-metric-lbl">Done Today</span></div>
+    <div class="cmd-metric"><span class="cmd-metric-val">${pct}%</span><span class="cmd-metric-lbl">Progress</span></div>
+    <div class="cmd-metric"><span class="cmd-metric-val">${active.length}</span><span class="cmd-metric-lbl">Active</span></div>
+    ${overdue?`<div class="cmd-metric"><span class="cmd-metric-val dv2-overdue">${overdue}</span><span class="cmd-metric-lbl">Overdue</span></div>`:''}`;
+}
+
+// ═══════════════════════════════════════════
+//  Control Bar (filter/sort popovers)
+// ═══════════════════════════════════════════
+function closeAllPopovers(){
+  document.querySelectorAll('.ctrl-pop').forEach(p=>{p.classList.remove('open')});
+  document.querySelectorAll('.ctrl-pill').forEach(p=>{p.classList.remove('open')});
+}
+function toggleFilterPop(){
+  const pop=document.getElementById('filterPop');
+  const pill=document.getElementById('filterPill');
+  const wasOpen=pop.classList.contains('open');
+  closeAllPopovers();
+  if(wasOpen)return;
+  const entries=Object.entries(tasks);
+  const activeCount=entries.filter(([,t])=>!t.completed).length;
+  const doneCount=entries.filter(([,t])=>t.completed).length;
+  pop.innerHTML=`
+    <button class="ctrl-pop-item ${fStatus==='all'?'active':''}" onclick="fStatus='all';fCat='all';closeAllPopovers();renderTasks()">All (${entries.length})</button>
+    <button class="ctrl-pop-item ${fStatus==='active'?'active':''}" onclick="fStatus='active';closeAllPopovers();renderTasks()">Active (${activeCount})</button>
+    <button class="ctrl-pop-item ${fStatus==='completed'?'active':''}" onclick="fStatus='completed';closeAllPopovers();renderTasks()">Completed (${doneCount})</button>
+    <div class="ctrl-pop-divider"></div>
+    <button class="ctrl-pop-item ${fCat==='all'?'active':''}" onclick="fCat='all';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--text-muted)"></span>All Categories</button>
+    <button class="ctrl-pop-item ${fCat==='work'?'active':''}" onclick="fCat='work';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--cat-work-fg)"></span>Work</button>
+    <button class="ctrl-pop-item ${fCat==='personal'?'active':''}" onclick="fCat='personal';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--accent1)"></span>Personal</button>
+    <button class="ctrl-pop-item ${fCat==='project'?'active':''}" onclick="fCat='project';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--accent3,var(--accent2))"></span>Project</button>`;
+  const rect=pill.getBoundingClientRect();
+  pop.style.top=(rect.bottom+4)+'px';
+  pop.style.left=Math.max(4,rect.left)+'px';
+  pop.classList.add('open');
+  pill.classList.add('open');
+}
+function toggleSortPop(){
+  const pop=document.getElementById('sortPop');
+  const pill=document.getElementById('sortPill');
+  const wasOpen=pop.classList.contains('open');
+  closeAllPopovers();
+  if(wasOpen)return;
+  const sorts=[['manual','Manual'],['priority','Priority'],['due','Due Date'],['category','Category'],['newest','Newest'],['oldest','Oldest'],['calendar','📅 Calendar']];
+  pop.innerHTML=sorts.map(([k,l])=>`<button class="ctrl-pop-item ${sortBy===k?'active':''}" onclick="sortBy='${k}';calSortWeekOffset=0;closeAllPopovers();renderTasks()">${l}</button>`).join('');
+  const rect=pill.getBoundingClientRect();
+  pop.style.top=(rect.bottom+4)+'px';
+  pop.style.left=Math.max(4,rect.left)+'px';
+  pop.classList.add('open');
+  pill.classList.add('open');
+}
+function updateControlBarLabels(){
+  const fl=document.getElementById('filterPillLabel');
+  const sl=document.getElementById('sortPillLabel');
+  if(fl){
+    let lbl=fStatus==='all'?'All':fStatus==='active'?'Active':'Done';
+    if(fCat!=='all')lbl+=` · ${fCat}`;
+    fl.textContent=lbl;
+  }
+  if(sl){
+    const names={manual:'Manual',priority:'Priority',due:'Due Date',category:'Category',newest:'Newest',oldest:'Oldest',calendar:'Calendar'};
+    sl.textContent=names[sortBy]||sortBy;
+  }
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.ctrl-pill')&&!e.target.closest('.ctrl-pop'))closeAllPopovers();
+});
+
+// ═══════════════════════════════════════════
+//  Calendar Sort View (week grid)
+// ═══════════════════════════════════════════
+function getWeekDates(offset){
+  const now=new Date();
+  const day=now.getDay();
+  const mon=new Date(now);
+  mon.setDate(now.getDate()-(day===0?6:day-1)+offset*7);
+  const days=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(mon);
+    d.setDate(mon.getDate()+i);
+    days.push(d);
+  }
+  return days;
+}
+function renderCalendarSort(fl){
+  const list=document.getElementById('taskList');
+  const stats=document.getElementById('stats');
+  const days=getWeekDates(calSortWeekOffset);
+  const today=new Date().toISOString().slice(0,10);
+  const dayNames=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const weekLabel=`${monthNames[days[0].getMonth()]} ${days[0].getDate()} – ${monthNames[days[6].getMonth()]} ${days[6].getDate()}, ${days[6].getFullYear()}`;
+  const buckets={};
+  days.forEach(d=>{buckets[d.toISOString().slice(0,10)]=[]});
+  const unscheduled=[];
+  fl.forEach(([id,t])=>{
+    if(!t.dueDate){unscheduled.push([id,t]);return}
+    const ds=t.dueDate;
+    if(buckets[ds]!==undefined)buckets[ds].push([id,t]);
+  });
+  const priVal={high:0,medium:1,low:2};
+  const sortBucket=arr=>arr.sort((a,b)=>{
+    if(a[1].completed!==b[1].completed)return a[1].completed?1:-1;
+    return(priVal[a[1].priority]||1)-(priVal[b[1].priority]||1);
+  });
+  let h=`<div class="cal-sort-wrap">
+    <div class="cal-sort-nav">
+      <button onclick="calSortWeekOffset--;renderTasks()">◀</button>
+      <span class="cal-sort-label">${weekLabel}</span>
+      <button onclick="calSortWeekOffset++;renderTasks()">▶</button>
+      <button onclick="calSortWeekOffset=0;renderTasks()" style="margin-left:6px">Today</button>
+    </div>
+    <div class="cal-sort-grid">`;
+  days.forEach((d,i)=>{
+    const ds=d.toISOString().slice(0,10);
+    const isToday=ds===today;
+    const items=sortBucket(buckets[ds]||[]);
+    h+=`<div class="cal-sort-col ${isToday?'today':''}">
+      <div class="cal-sort-col-head">${dayNames[i]}<span class="cal-sort-day-num">${d.getDate()}</span></div>`;
+    if(!items.length){
+      h+=`<div class="cal-sort-empty">—</div>`;
+    }else{
+      items.forEach(([id,t])=>{
+        const cc=t.category==='work'?'var(--cat-work-fg)':t.category==='project'?'var(--accent3,var(--accent2))':'var(--accent1)';
+        const checked=t.completed;
+        h+=`<div class="cal-sort-task ${checked?'done':''}" onclick="toggleExpand('${id}')">
+          <span class="cst-ck ${checked?'checked':''}" onclick="event.stopPropagation();toggleDone('${id}')">${checked?'✓':''}</span>
+          <span class="cst-dot" style="background:${cc}"></span>
+          <span class="cst-title">${esc(t.title||'')}</span>
+        </div>`;
+      });
+    }
+    h+=`</div>`;
+  });
+  h+=`</div>`;
+  if(unscheduled.length){
+    h+=`<div class="cal-sort-unscheduled"><h4>Unscheduled (${unscheduled.length})</h4>`;
+    sortBucket(unscheduled).forEach(([id,t])=>{
+      const cc=t.category==='work'?'var(--cat-work-fg)':t.category==='project'?'var(--accent3,var(--accent2))':'var(--accent1)';
+      const checked=t.completed;
+      h+=`<div class="cal-sort-task ${checked?'done':''}" onclick="toggleExpand('${id}')">
+        <span class="cst-ck ${checked?'checked':''}" onclick="event.stopPropagation();toggleDone('${id}')">${checked?'✓':''}</span>
+        <span class="cst-dot" style="background:${cc}"></span>
+        <span class="cst-title">${esc(t.title||'')}</span>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+  h+=`</div>`;
+  list.innerHTML=h;
+  const total=Object.entries(tasks).length,done=Object.entries(tasks).filter(([,t])=>t.completed).length;
+  stats.textContent=done+' of '+total+' completed';
+}
+
+// ═══════════════════════════════════════════
+//  Dashboard V2 (3 cards: Progress, Today, Momentum)
+// ═══════════════════════════════════════════
+function renderDashV2(){
+  const el=document.getElementById('dash');
+  if(!el)return;
+  const entries=Object.entries(tasks);
+  const today=new Date().toISOString().slice(0,10);
+  const active=entries.filter(([,t])=>!t.completed);
+  const completed=entries.filter(([,t])=>t.completed);
+  const doneToday=completed.filter(([,t])=>(t.completedAt||'').slice(0,10)===today).length;
+  const totalPts=entries.reduce((s,[,t])=>(s+(DIFF_WEIGHTS[t.difficulty||'medium']||2)),0);
+  const donePts=completed.reduce((s,[,t])=>(s+(DIFF_WEIGHTS[t.difficulty||'medium']||2)),0);
+  const pct=totalPts?Math.round(donePts/totalPts*100):0;
+  const overdue=active.filter(([,t])=>t.dueDate&&t.dueDate<today).length;
+  const highPri=active.filter(([,t])=>t.priority==='high').length;
+  const dailyGoal=5;
+  // Sparkline: last 7 days done count
+  const spark=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    const cnt=completed.filter(([,t])=>(t.completedAt||'').slice(0,10)===ds).length;
+    spark.push({date:ds,count:cnt,isToday:ds===today});
+  }
+  const sparkMax=Math.max(1,...spark.map(s=>s.count));
+  // Streak
+  let streak=0;
+  for(let i=0;i<365;i++){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    if(completed.some(([,t])=>(t.completedAt||'').slice(0,10)===ds))streak++;else if(i>0)break;
+  }
+  // Verdict
+  const deadlines=completed.filter(([,t])=>t.dueDate);
+  const beatCount=deadlines.filter(([,t])=>(t.completedAt||'').slice(0,10)<=t.dueDate).length;
+  const beatPct=deadlines.length?Math.round(beatCount/deadlines.length*100):0;
+  const pools={him:['HIM','GOAT MODE','LEGENDARY'],locked:['LOCKED IN','ON FIRE','UNSTOPPABLE'],solid:['SOLID','CONSISTENT','RELIABLE'],grind:['KEEP GRINDING','ALMOST THERE','BUILDING'],nodata:['FRESH START','BLANK CANVAS','LOADING...']};
+  let tier='nodata';
+  if(deadlines.length>=3){
+    if(beatPct>=90)tier='him';else if(beatPct>=70)tier='locked';else if(beatPct>=50)tier='solid';else tier='grind';
+  }
+  const pool=pools[tier];
+  const verdict=pool[Math.floor(Date.now()/60000)%pool.length];
+
+  el.innerHTML=`
+    <div class="dash-v2-card">
+      <div class="dv2-hero">${pct}%</div>
+      <div class="dv2-label">Progress</div>
+      <div class="dv2-sub"><b>${donePts}</b> of <b>${totalPts}</b> pts completed</div>
+      <div class="dash-v2-bar"><div class="dash-v2-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--accent1),var(--accent2))"></div></div>
+      <div class="dash-v2-spark">${spark.map(s=>`<div class="dash-v2-spark-bar ${s.isToday?'today-bar':''}" style="height:${Math.max(2,s.count/sparkMax*100)}%"></div>`).join('')}</div>
+    </div>
+    <div class="dash-v2-card">
+      <div class="dv2-hero">${doneToday}</div>
+      <div class="dv2-label">Done Today${doneToday>=dailyGoal?' 🔥':''}</div>
+      <div class="dv2-sub"><b>${active.length}</b> active${overdue?` · <span class="dv2-overdue">${overdue} overdue</span>`:''}${highPri?` · <b>${highPri}</b> high pri`:''}</div>
+      <div class="dash-v2-bar"><div class="dash-v2-bar-fill" style="width:${Math.min(100,doneToday/dailyGoal*100)}%;background:linear-gradient(90deg,var(--accent2),var(--accent3,var(--accent1)))"></div></div>
+    </div>
+    <div class="dash-v2-card">
+      <div class="dv2-hero">${streak}</div>
+      <div class="dv2-label">Day Streak${streak<3?' 😴':streak>=7?' 🔥':''}</div>
+      <div class="dv2-verdict">${verdict}</div>
+      <div class="dv2-sub">${deadlines.length?`<b>${beatPct}%</b> deadlines met`:'No deadlines tracked yet'}</div>
+    </div>`;
 }
 
 // ═══════════════════════════════════════════
