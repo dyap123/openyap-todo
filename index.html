@@ -619,7 +619,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .cal-sort-nav .cal-sort-label{font-size:11px;font-weight:800;color:var(--text);min-width:0;text-align:center;letter-spacing:.3px;white-space:nowrap}
 .cal-sort-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;width:100%}
 .cal-sort-col{min-height:90px;min-width:0;background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:8px 5px;display:flex;flex-direction:column;gap:4px;transition:all .2s var(--ease);overflow:hidden}
-.cal-sort-col:hover{border-color:rgba(255,255,255,0.1);box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+.cal-sort-col:hover{border-color:var(--accent1);box-shadow:0 4px 20px rgba(0,0,0,0.25);transform:translateY(-2px)}
 .cal-sort-col.today{border-color:var(--accent1);background:linear-gradient(180deg,var(--accent1-06),transparent);box-shadow:0 0 16px rgba(var(--accent1-rgb,120,80,255),0.12)}
 .cal-sort-col.past{opacity:.6}
 .cal-sort-col-head{text-align:center;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.04);margin-bottom:2px}
@@ -2335,9 +2335,11 @@ function renderCalendarSort(fl){
   function taskCard(id,t){
     const cc=t.category==='work'?'var(--cat-work-fg)':t.category==='project'?'var(--accent3,var(--accent2))':'var(--accent1)';
     const checked=t.completed;
-    return `<div class="cal-sort-task ${checked?'done':''}" style="border-left-color:${cc}" onclick="toggleExpand('${id}')">
-      <span class="cst-ck ${checked?'checked':''}" onclick="event.stopPropagation();toggleDone('${id}')">${checked?'✓':''}</span>
+    const priDot=t.priority==='high'?'🔴':t.priority==='low'?'⚪':'';
+    return `<div class="cal-sort-task ${checked?'done':''}" style="border-left-color:${cc}">
+      ${priDot?`<span style="font-size:5px;flex-shrink:0">${priDot}</span>`:''}
       <span class="cst-title">${esc(t.title||'')}</span>
+      ${checked?'<span style="font-size:7px;opacity:.4">✓</span>':''}
     </div>`;
   }
   let h=`<div class="cal-sort-wrap">
@@ -2354,12 +2356,12 @@ function renderCalendarSort(fl){
     const isPast=ds<today;
     const items=sortBucket(buckets[ds]||[]);
     const activeItems=items.filter(([,t])=>!t.completed);
-    h+=`<div class="cal-sort-col ${isToday?'today':''}${isPast&&!isToday?' past':''}">
+    h+=`<div class="cal-sort-col ${isToday?'today':''}${isPast&&!isToday?' past':''}" onclick="openDayModal('${ds}')" style="cursor:pointer">
       <div class="cal-sort-col-head">
         <span class="cal-sort-day-name">${dayNames[i]}</span>
         <span class="cal-sort-day-num">${d.getDate()}</span>
       </div>`;
-    if(items.length) h+=`<div class="cal-sort-col-count">${activeItems.length} task${activeItems.length!==1?'s':''}</div>`;
+    if(items.length) h+=`<div class="cal-sort-col-count">${activeItems.length} task${activeItems.length!==1?'s':''} · tap to view</div>`;
     if(!items.length){
       h+=`<div class="cal-sort-empty">${isPast?'—':'no tasks'}</div>`;
     }else{
