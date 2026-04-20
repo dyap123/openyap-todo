@@ -612,49 +612,55 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 @media(max-width:768px){.main{padding:12px 10px 80px}}
 
 /* ═══ Calendar Sort View ═══ */
-.cal-sort-wrap{margin-top:6px}
-.cal-sort-nav{display:flex;align-items:center;gap:8px;margin-bottom:10px;justify-content:center}
-.cal-sort-nav button{padding:4px 12px;border-radius:10px;font-size:10px;font-weight:700;border:1px solid var(--card-border);background:var(--card);color:var(--text-body);cursor:pointer;transition:all .18s var(--ease)}
-.cal-sort-nav button:hover{border-color:var(--accent1);color:var(--accent1)}
-.cal-sort-nav .cal-sort-label{font-size:11px;font-weight:700;color:var(--text);min-width:170px;text-align:center}
-.cal-sort-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.cal-sort-col{min-height:80px;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:4px;transition:box-shadow .2s var(--ease)}
-.cal-sort-col:hover{box-shadow:0 0 16px rgba(var(--accent1-rgb,120,80,255),0.12)}
-.cal-sort-col.today{border-color:var(--accent1);box-shadow:0 0 12px rgba(var(--accent1-rgb,120,80,255),0.15)}
-.cal-sort-col-head{font-size:8px;font-weight:700;text-transform:uppercase;color:var(--text-muted);text-align:center;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.04);letter-spacing:.5px}
-.cal-sort-col-head .cal-sort-day-num{display:block;font-size:14px;color:var(--text);margin-top:1px}
-.cal-sort-col.today .cal-sort-col-head{color:var(--accent1)}
-.cal-sort-col.today .cal-sort-col-head .cal-sort-day-num{color:var(--accent1)}
-.cal-sort-task{display:flex;align-items:center;gap:5px;padding:5px 6px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:all .15s var(--ease);font-size:9px;color:var(--text-body);line-height:1.3}
-.cal-sort-task:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.1);transform:translateY(-1px)}
-.cal-sort-task.done{opacity:.35;text-decoration:line-through}
-.cal-sort-task .cst-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.cal-sort-task .cst-ck{width:14px;height:14px;border-radius:4px;border:1.5px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px;cursor:pointer;transition:all .15s}
+.cal-sort-wrap{margin-top:4px}
+.cal-sort-nav{display:flex;align-items:center;gap:6px;margin-bottom:12px;padding:8px 14px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;justify-content:center}
+.cal-sort-nav button{padding:5px 14px;border-radius:10px;font-size:10px;font-weight:700;border:1px solid var(--card-border);background:transparent;color:var(--text-body);cursor:pointer;transition:all .18s var(--ease)}
+.cal-sort-nav button:hover{border-color:var(--accent1);color:var(--accent1);background:var(--accent1-06)}
+.cal-sort-nav .cal-sort-label{font-size:12px;font-weight:800;color:var(--text);min-width:180px;text-align:center;letter-spacing:.3px}
+.cal-sort-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-sort-col{min-height:90px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:8px 6px;display:flex;flex-direction:column;gap:4px;transition:all .2s var(--ease)}
+.cal-sort-col:hover{border-color:rgba(255,255,255,0.1);box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+.cal-sort-col.today{border-color:var(--accent1);background:linear-gradient(180deg,var(--accent1-06),transparent);box-shadow:0 0 16px rgba(var(--accent1-rgb,120,80,255),0.12)}
+.cal-sort-col.past{opacity:.6}
+.cal-sort-col-head{text-align:center;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.04);margin-bottom:2px}
+.cal-sort-col-head .cal-sort-day-name{font-size:8px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.8px;display:block}
+.cal-sort-col-head .cal-sort-day-num{display:block;font-size:16px;font-weight:800;color:var(--text);margin-top:2px;line-height:1}
+.cal-sort-col.today .cal-sort-col-head .cal-sort-day-name{color:var(--accent1)}
+.cal-sort-col.today .cal-sort-col-head .cal-sort-day-num{background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cal-sort-col-count{font-size:7px;font-weight:600;color:var(--text-muted);text-align:center;margin-bottom:2px}
+.cal-sort-task{display:flex;align-items:center;gap:4px;padding:4px 5px;border-radius:8px;background:rgba(255,255,255,0.02);border-left:2px solid transparent;cursor:pointer;transition:all .15s var(--ease);font-size:9px;color:var(--text-body);line-height:1.3}
+.cal-sort-task:hover{background:rgba(255,255,255,0.06);transform:translateX(2px)}
+.cal-sort-task.done{opacity:.3;text-decoration:line-through}
+.cal-sort-task .cst-ck{width:12px;height:12px;border-radius:3px;border:1.5px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:7px;cursor:pointer;transition:all .15s}
 .cal-sort-task .cst-ck.checked{background:var(--accent1);border-color:var(--accent1);color:#000}
 .cal-sort-task .cst-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cal-sort-empty{font-size:8px;color:var(--text-muted);text-align:center;padding:8px 0;opacity:.5}
-.cal-sort-unscheduled{margin-top:12px;padding:10px;background:var(--card);border:1px solid var(--card-border);border-radius:12px}
-.cal-sort-unscheduled h4{font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:0 0 6px 0}
+.cal-sort-empty{font-size:8px;color:var(--text-muted);text-align:center;padding:12px 0;opacity:.4;font-style:italic}
+.cal-sort-unscheduled{margin-top:14px;padding:12px;background:var(--card);border:1px solid var(--card-border);border-radius:14px}
+.cal-sort-unscheduled h4{font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px 0;display:flex;align-items:center;gap:6px}
+.cal-sort-unscheduled h4::before{content:'';width:12px;height:1px;background:var(--text-muted);opacity:.3}
 .cal-sort-unscheduled .cal-sort-task{margin-bottom:3px}
 @media(max-width:600px){
-  .cal-sort-grid{grid-template-columns:1fr;gap:8px}
-  .cal-sort-col{flex-direction:column}
-  .cal-sort-col-head{text-align:left;display:flex;gap:6px;align-items:baseline;border-bottom:none;padding-bottom:2px}
-  .cal-sort-col-head .cal-sort-day-num{display:inline;font-size:12px}
+  .cal-sort-grid{grid-template-columns:1fr;gap:6px}
+  .cal-sort-col{min-height:auto;flex-direction:column;padding:8px 10px}
+  .cal-sort-col-head{text-align:left;display:flex;gap:8px;align-items:center;border-bottom:none;padding-bottom:0;margin-bottom:4px}
+  .cal-sort-col-head .cal-sort-day-name{display:inline;font-size:9px}
+  .cal-sort-col-head .cal-sort-day-num{display:inline;font-size:13px}
+  .cal-sort-col.past:not(.today){display:none}
 }
 
 /* ═══ Control Bar (compact filter/sort) ═══ */
-.control-bar{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.control-bar{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap;position:relative}
 .control-bar .search-input{flex:1;min-width:120px;padding:5px 10px 5px 28px;border-radius:10px;font-size:10px;background:var(--card);border:1px solid var(--card-border);color:var(--text);outline:none;transition:border-color .2s}
 .control-bar .search-input:focus{border-color:var(--accent1)}
 .control-bar .search-icon{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;opacity:.4;pointer-events:none}
 .ctrl-search-wrap{position:relative;flex:1;min-width:120px}
+.ctrl-pill-wrap{position:relative}
 .ctrl-pill{padding:4px 12px;border-radius:10px;font-size:9px;font-weight:600;border:1px solid var(--card-border);background:var(--card);color:var(--text-body);cursor:pointer;transition:all .18s var(--ease);white-space:nowrap;display:flex;align-items:center;gap:4px}
 .ctrl-pill:hover{border-color:var(--accent1);color:var(--accent1)}
 .ctrl-pill .ctrl-val{color:var(--accent1);font-weight:700}
 .ctrl-pill .ctrl-chev{font-size:7px;opacity:.5;transition:transform .2s}
 .ctrl-pill.open .ctrl-chev{transform:rotate(180deg)}
-.ctrl-pop{position:absolute;z-index:120;min-width:160px;padding:8px;border-radius:14px;background:rgba(18,18,28,0.92);border:1px solid var(--card-border);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);box-shadow:0 12px 40px rgba(0,0,0,0.6);display:none;flex-direction:column;gap:2px;animation:fadeIn .15s var(--ease)}
+.ctrl-pop{position:absolute;top:100%;right:0;margin-top:4px;z-index:120;min-width:160px;padding:8px;border-radius:14px;background:rgba(18,18,28,0.92);border:1px solid var(--card-border);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);box-shadow:0 12px 40px rgba(0,0,0,0.6);display:none;flex-direction:column;gap:2px;animation:fadeIn .15s var(--ease)}
 .ctrl-pop.open{display:flex}
 .ctrl-pop-item{padding:6px 10px;border-radius:8px;font-size:10px;font-weight:500;color:var(--text-body);cursor:pointer;transition:all .12s;border:none;background:transparent;text-align:left;display:flex;align-items:center;gap:6px}
 .ctrl-pop-item:hover{background:rgba(255,255,255,0.06)}
@@ -805,16 +811,20 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
       <span class="search-icon">🔎</span>
       <input type="text" id="searchInput" class="search-input" placeholder="Search tasks..." oninput="onSearchInput(this.value)" onkeydown="if(event.key==='Escape'){this.value='';onSearchInput('')}">
     </div>
-    <button class="ctrl-pill" id="filterPill" onclick="toggleFilterPop()">
-      <span class="ctrl-val" id="filterPillLabel">All</span>
-      <span class="ctrl-chev">▼</span>
-    </button>
-    <div class="ctrl-pop" id="filterPop"></div>
-    <button class="ctrl-pill" id="sortPill" onclick="toggleSortPop()">
-      Sort: <span class="ctrl-val" id="sortPillLabel">Manual</span>
-      <span class="ctrl-chev">▼</span>
-    </button>
-    <div class="ctrl-pop" id="sortPop"></div>
+    <div class="ctrl-pill-wrap">
+      <button class="ctrl-pill" id="filterPill" onclick="toggleFilterPop()">
+        <span class="ctrl-val" id="filterPillLabel">All</span>
+        <span class="ctrl-chev">▼</span>
+      </button>
+      <div class="ctrl-pop" id="filterPop"></div>
+    </div>
+    <div class="ctrl-pill-wrap">
+      <button class="ctrl-pill" id="sortPill" onclick="toggleSortPop()">
+        Sort: <span class="ctrl-val" id="sortPillLabel">Manual</span>
+        <span class="ctrl-chev">▼</span>
+      </button>
+      <div class="ctrl-pop" id="sortPop"></div>
+    </div>
   </div>
 
   <!-- Task List -->
@@ -2254,9 +2264,6 @@ function toggleFilterPop(){
     <button class="ctrl-pop-item ${fCat==='work'?'active':''}" onclick="fCat='work';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--cat-work-fg)"></span>Work</button>
     <button class="ctrl-pop-item ${fCat==='personal'?'active':''}" onclick="fCat='personal';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--accent1)"></span>Personal</button>
     <button class="ctrl-pop-item ${fCat==='project'?'active':''}" onclick="fCat='project';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--accent3,var(--accent2))"></span>Project</button>`;
-  const rect=pill.getBoundingClientRect();
-  pop.style.top=(rect.bottom+4)+'px';
-  pop.style.left=Math.max(4,rect.left)+'px';
   pop.classList.add('open');
   pill.classList.add('open');
 }
@@ -2268,9 +2275,6 @@ function toggleSortPop(){
   if(wasOpen)return;
   const sorts=[['manual','Manual'],['priority','Priority'],['due','Due Date'],['category','Category'],['newest','Newest'],['oldest','Oldest'],['calendar','📅 Calendar']];
   pop.innerHTML=sorts.map(([k,l])=>`<button class="ctrl-pop-item ${sortBy===k?'active':''}" onclick="sortBy='${k}';calSortWeekOffset=0;closeAllPopovers();renderTasks()">${l}</button>`).join('');
-  const rect=pill.getBoundingClientRect();
-  pop.style.top=(rect.bottom+4)+'px';
-  pop.style.left=Math.max(4,rect.left)+'px';
   pop.classList.add('open');
   pill.classList.add('open');
 }
@@ -2328,47 +2332,45 @@ function renderCalendarSort(fl){
     if(a[1].completed!==b[1].completed)return a[1].completed?1:-1;
     return(priVal[a[1].priority]||1)-(priVal[b[1].priority]||1);
   });
+  function taskCard(id,t){
+    const cc=t.category==='work'?'var(--cat-work-fg)':t.category==='project'?'var(--accent3,var(--accent2))':'var(--accent1)';
+    const checked=t.completed;
+    return `<div class="cal-sort-task ${checked?'done':''}" style="border-left-color:${cc}" onclick="toggleExpand('${id}')">
+      <span class="cst-ck ${checked?'checked':''}" onclick="event.stopPropagation();toggleDone('${id}')">${checked?'✓':''}</span>
+      <span class="cst-title">${esc(t.title||'')}</span>
+    </div>`;
+  }
   let h=`<div class="cal-sort-wrap">
     <div class="cal-sort-nav">
       <button onclick="calSortWeekOffset--;renderTasks()">◀</button>
       <span class="cal-sort-label">${weekLabel}</span>
       <button onclick="calSortWeekOffset++;renderTasks()">▶</button>
-      <button onclick="calSortWeekOffset=0;renderTasks()" style="margin-left:6px">Today</button>
+      <button onclick="calSortWeekOffset=0;renderTasks()" style="margin-left:4px">Today</button>
     </div>
     <div class="cal-sort-grid">`;
   days.forEach((d,i)=>{
     const ds=d.toISOString().slice(0,10);
     const isToday=ds===today;
+    const isPast=ds<today;
     const items=sortBucket(buckets[ds]||[]);
-    h+=`<div class="cal-sort-col ${isToday?'today':''}">
-      <div class="cal-sort-col-head">${dayNames[i]}<span class="cal-sort-day-num">${d.getDate()}</span></div>`;
+    const activeItems=items.filter(([,t])=>!t.completed);
+    h+=`<div class="cal-sort-col ${isToday?'today':''}${isPast&&!isToday?' past':''}">
+      <div class="cal-sort-col-head">
+        <span class="cal-sort-day-name">${dayNames[i]}</span>
+        <span class="cal-sort-day-num">${d.getDate()}</span>
+      </div>`;
+    if(items.length) h+=`<div class="cal-sort-col-count">${activeItems.length} task${activeItems.length!==1?'s':''}</div>`;
     if(!items.length){
-      h+=`<div class="cal-sort-empty">—</div>`;
+      h+=`<div class="cal-sort-empty">${isPast?'—':'no tasks'}</div>`;
     }else{
-      items.forEach(([id,t])=>{
-        const cc=t.category==='work'?'var(--cat-work-fg)':t.category==='project'?'var(--accent3,var(--accent2))':'var(--accent1)';
-        const checked=t.completed;
-        h+=`<div class="cal-sort-task ${checked?'done':''}" onclick="toggleExpand('${id}')">
-          <span class="cst-ck ${checked?'checked':''}" onclick="event.stopPropagation();toggleDone('${id}')">${checked?'✓':''}</span>
-          <span class="cst-dot" style="background:${cc}"></span>
-          <span class="cst-title">${esc(t.title||'')}</span>
-        </div>`;
-      });
+      items.forEach(([id,t])=>{h+=taskCard(id,t)});
     }
     h+=`</div>`;
   });
   h+=`</div>`;
   if(unscheduled.length){
-    h+=`<div class="cal-sort-unscheduled"><h4>Unscheduled (${unscheduled.length})</h4>`;
-    sortBucket(unscheduled).forEach(([id,t])=>{
-      const cc=t.category==='work'?'var(--cat-work-fg)':t.category==='project'?'var(--accent3,var(--accent2))':'var(--accent1)';
-      const checked=t.completed;
-      h+=`<div class="cal-sort-task ${checked?'done':''}" onclick="toggleExpand('${id}')">
-        <span class="cst-ck ${checked?'checked':''}" onclick="event.stopPropagation();toggleDone('${id}')">${checked?'✓':''}</span>
-        <span class="cst-dot" style="background:${cc}"></span>
-        <span class="cst-title">${esc(t.title||'')}</span>
-      </div>`;
-    });
+    h+=`<div class="cal-sort-unscheduled"><h4>Unscheduled · ${unscheduled.length}</h4>`;
+    sortBucket(unscheduled).forEach(([id,t])=>{h+=taskCard(id,t)});
     h+=`</div>`;
   }
   h+=`</div>`;
@@ -2434,7 +2436,7 @@ function renderDashV2(){
       <div class="dv2-hero">${doneToday}</div>
       <div class="dv2-label">Done Today${doneToday>=dailyGoal?' 🔥':''}</div>
       <div class="dv2-sub"><b>${active.length}</b> active${overdue?` · <span class="dv2-overdue">${overdue} overdue</span>`:''}${highPri?` · <b>${highPri}</b> high pri`:''}</div>
-      <div class="dash-v2-bar"><div class="dash-v2-bar-fill" style="width:${Math.min(100,doneToday/dailyGoal*100)}%;background:linear-gradient(90deg,var(--accent2),var(--accent3,var(--accent1)))"></div></div>
+      ${doneToday>0?`<div class="dash-v2-bar"><div class="dash-v2-bar-fill" style="width:${Math.min(100,doneToday/dailyGoal*100)}%;background:linear-gradient(90deg,var(--accent2),var(--accent3,var(--accent1)))"></div></div>`:''}
     </div>
     <div class="dash-v2-card">
       <div class="dv2-hero">${streak}</div>
