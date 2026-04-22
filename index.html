@@ -328,40 +328,86 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .t-from::before{content:'from ';opacity:0.6}
 
 /* ── RFI view ─────────────────────────────────────────────────────── */
-.rfi-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.rfi-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px;flex-wrap:wrap}
 .rfi-head h2{font-size:20px;font-weight:300;letter-spacing:.04em;color:var(--text);margin:0}
-.rfi-chips{display:flex;gap:6px;font-size:11px;color:var(--text-muted)}
-.rfi-chip{padding:4px 10px;border-radius:100px;background:var(--card);border:1px solid var(--card-border)}
-.rfi-chip.open{color:#fbbf24;border-color:rgba(251,191,36,0.3)}
-.rfi-chip.done{color:#34d399;border-color:rgba(52,211,153,0.3)}
-.rfi-new{background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s ease;letter-spacing:.04em;text-transform:uppercase}
-.rfi-new:hover{background:rgba(251,191,36,0.22)}
-.rfi-table{width:100%;background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);overflow:hidden}
-.rfi-row{display:grid;grid-template-columns:100px 1fr 90px 100px 44px;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--card-border);transition:background .15s ease}
-.rfi-row:last-child{border-bottom:none}
-.rfi-row:hover{background:var(--card-hover)}
-.rfi-row.done{opacity:.45}
-.rfi-row.done .rfi-subj{text-decoration:line-through;color:var(--text-muted)}
-.rfi-num{font-weight:800;font-size:12px;color:#fbbf24;letter-spacing:.04em;font-family:'SF Mono',Menlo,Consolas,monospace}
-.rfi-num-input{background:transparent;border:none;color:#fbbf24;font:inherit;width:100%;padding:2px 0;outline:none;border-bottom:1px dashed transparent}
-.rfi-num-input:hover,.rfi-num-input:focus{border-bottom-color:rgba(251,191,36,0.4)}
-.rfi-subj{font-size:13px;color:var(--text);line-height:1.35;min-width:0}
-.rfi-subj-input{background:transparent;border:none;color:var(--text);font:inherit;width:100%;padding:2px 0;outline:none;border-bottom:1px dashed transparent}
+.rfi-head-mid{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rfi-new{background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s ease;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.rfi-new:hover{background:rgba(251,191,36,0.22);transform:translateY(-1px)}
+
+/* Dashboard cards */
+.rfi-dash{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.rfi-dash-card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;transition:border-color .15s ease}
+.rfi-dash-card:hover{border-color:var(--card-hover)}
+.rfi-dash-card.accent{background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(251,191,36,0.02));border-color:rgba(251,191,36,0.25)}
+.rfi-dash-card.sent{background:linear-gradient(135deg,rgba(52,211,153,0.08),rgba(52,211,153,0.02));border-color:rgba(52,211,153,0.25)}
+.rfi-dash-card.danger{background:linear-gradient(135deg,rgba(239,68,68,0.1),rgba(239,68,68,0.02));border-color:rgba(239,68,68,0.25)}
+.rfi-dash-lbl{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted)}
+.rfi-dash-val{font-size:26px;font-weight:300;color:var(--text);letter-spacing:-.02em;line-height:1}
+.rfi-dash-card.accent .rfi-dash-val{color:#fbbf24}
+.rfi-dash-card.sent .rfi-dash-val{color:#34d399}
+.rfi-dash-card.danger .rfi-dash-val{color:#ef4444}
+.rfi-dash-sub{font-size:10px;color:var(--text-muted);margin-top:2px}
+
+.rfi-urgent{background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(251,191,36,0.02));border:1px solid rgba(251,191,36,0.25);border-radius:12px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.rfi-urgent-lbl{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#fbbf24}
+.rfi-urgent-body{flex:1;min-width:0}
+.rfi-urgent-title{font-size:13px;color:var(--text);font-weight:600}
+.rfi-urgent-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+.rfi-urgent-cta{background:rgba(251,191,36,0.18);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s ease;letter-spacing:.04em;text-transform:uppercase}
+.rfi-urgent-cta:hover{background:rgba(251,191,36,0.25)}
+
+.rfi-recipients{margin-bottom:14px}
+.rfi-recipients-lbl{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;display:block}
+.rfi-rec-pills{display:flex;gap:6px;flex-wrap:wrap}
+.rfi-rec-pill{background:var(--card);border:1px solid var(--card-border);color:var(--text-body);padding:4px 10px;border-radius:100px;font-size:11px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:all .15s ease}
+.rfi-rec-pill:hover{border-color:var(--card-hover);color:var(--text)}
+.rfi-rec-pill.active{background:rgba(251,191,36,0.18);color:#fbbf24;border-color:rgba(251,191,36,0.4)}
+.rfi-rec-pill .cnt{opacity:.65;font-size:10px;font-weight:700}
+
+/* Card grid */
+.rfi-list{display:flex;flex-direction:column;gap:10px}
+.rfi-card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;transition:all .15s ease;border-left:3px solid #fbbf24}
+.rfi-card:hover{border-color:var(--card-hover);box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+.rfi-card.sent{border-left-color:#34d399}
+.rfi-card.done{border-left-color:#34d399;opacity:.6}
+.rfi-card.done .rfi-subj-input{text-decoration:line-through;color:var(--text-muted)}
+
+.rfi-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.rfi-num-badge{background:rgba(251,191,36,0.14);color:#fbbf24;padding:4px 10px;border-radius:8px;font-weight:800;font-size:12px;letter-spacing:.04em;font-family:'SF Mono',Menlo,Consolas,monospace;flex-shrink:0}
+.rfi-num-input{background:transparent;border:none;color:inherit;font:inherit;width:78px;outline:none;letter-spacing:.04em}
+.rfi-num-input:focus{background:rgba(255,255,255,0.05);border-radius:4px}
+.rfi-subj-input{flex:1;min-width:150px;background:transparent;border:none;color:var(--text);font:500 14px/1.4 inherit;padding:4px 0;outline:none;border-bottom:1px dashed transparent}
 .rfi-subj-input:hover,.rfi-subj-input:focus{border-bottom-color:var(--card-border)}
-.rfi-status{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:8px;text-align:center}
-.rfi-status.open{background:rgba(251,191,36,0.12);color:#fbbf24}
-.rfi-status.done{background:rgba(52,211,153,0.12);color:#34d399}
-.rfi-due{font-size:11px;color:var(--text-muted);font-family:'SF Mono',Menlo,Consolas,monospace}
-.rfi-due-input{background:transparent;border:none;color:var(--text-muted);font:inherit;width:100%;outline:none}
-.rfi-actions{display:flex;gap:2px;justify-content:flex-end}
-.rfi-actions button{background:transparent;border:none;color:var(--text-muted);font-size:14px;cursor:pointer;padding:4px 6px;border-radius:6px;transition:all .15s ease}
-.rfi-actions button:hover{background:var(--card-hover);color:var(--text)}
-.rfi-actions button.rfi-del:hover{color:#ef4444}
-.rfi-notes{grid-column:1/-1;font-size:11px;color:var(--text-muted);padding:4px 0 0;white-space:pre-wrap;line-height:1.4}
-.rfi-empty{padding:40px 20px;text-align:center;color:var(--text-muted);font-size:13px}
+.rfi-subj-input::placeholder{color:var(--text-muted);font-style:italic;opacity:.6}
+
+.rfi-status-group{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.rfi-sent-toggle{display:inline-flex;align-items:center;gap:5px;background:var(--card-hover);padding:4px 10px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;border:1px solid transparent;transition:all .15s ease;color:var(--text-muted);user-select:none}
+.rfi-sent-toggle:hover{border-color:var(--card-border)}
+.rfi-sent-toggle.on{background:rgba(52,211,153,0.15);color:#34d399;border-color:rgba(52,211,153,0.4)}
+.rfi-sent-toggle input{display:none}
+
+.rfi-desc{background:rgba(0,0,0,0.15);border:1px solid var(--card-border);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--text-body);line-height:1.45;width:100%;resize:vertical;min-height:36px;max-height:200px;outline:none;font-family:inherit;transition:border-color .15s ease}
+.rfi-desc:focus{border-color:var(--card-hover)}
+.rfi-desc::placeholder{color:var(--text-muted);font-style:italic;opacity:.5}
+
+.rfi-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px}
+.rfi-meta-btn{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px dashed var(--card-border);color:var(--text-muted);padding:5px 10px;border-radius:8px;font-size:11px;cursor:pointer;transition:all .15s ease;font-family:inherit}
+.rfi-meta-btn:hover{border-color:var(--card-hover);color:var(--text-body);border-style:solid}
+.rfi-meta-btn.has-val{color:var(--text);border-style:solid;border-color:var(--card-hover)}
+.rfi-meta-btn.overdue{color:#ef4444;border-color:rgba(239,68,68,0.4)}
+.rfi-sendto-input{background:transparent;border:none;color:inherit;font:inherit;outline:none;min-width:60px;width:auto}
+
+.rfi-actions{display:flex;gap:4px;margin-left:auto}
+.rfi-actions button{background:transparent;border:1px solid transparent;color:var(--text-muted);font-size:13px;cursor:pointer;padding:4px 10px;border-radius:6px;transition:all .15s ease}
+.rfi-actions button:hover{background:var(--card-hover);color:var(--text);border-color:var(--card-border)}
+.rfi-actions button.rfi-del:hover{color:#ef4444;border-color:rgba(239,68,68,0.3)}
+
+.rfi-empty{padding:50px 20px;text-align:center;color:var(--text-muted);font-size:13px;background:var(--card);border:1px dashed var(--card-border);border-radius:12px}
+
 @media (max-width:620px){
-  .rfi-row{grid-template-columns:80px 1fr 70px 44px;gap:6px}
-  .rfi-due{display:none}
+  .rfi-dash{grid-template-columns:repeat(2,1fr)}
+  .rfi-top{gap:6px}
+  .rfi-num-input{width:70px}
 }
 .dl{font-size:10px;color:var(--text-muted)}
 .dl.od{color:var(--red)}
@@ -911,10 +957,23 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
 <div class="view" id="v-rfi">
   <div class="rfi-head">
     <h2>Requests For Information</h2>
-    <div class="rfi-chips" id="rfiChips"></div>
     <button class="rfi-new" onclick="newRFI()">+ New RFI</button>
   </div>
-  <div class="rfi-table" id="rfiList"></div>
+
+  <!-- Dashboard summary cards -->
+  <div class="rfi-dash" id="rfiDash"></div>
+
+  <!-- Urgent / next-to-send callout -->
+  <div id="rfiUrgent"></div>
+
+  <!-- Recipient filter pills -->
+  <div class="rfi-recipients" id="rfiRecipients" style="display:none">
+    <span class="rfi-recipients-lbl">Filter by recipient</span>
+    <div class="rfi-rec-pills" id="rfiRecPills"></div>
+  </div>
+
+  <!-- Card list -->
+  <div class="rfi-list" id="rfiList"></div>
 </div>
 
 <!-- Calendar View -->
@@ -3071,13 +3130,18 @@ function refreshFromSuggestions(){
   const dl=document.getElementById('fromSuggestions');
   if(!dl)return;
   const names=new Set();
-  Object.values(tasks).forEach(t=>{if((t.from||'').trim())names.add(t.from.trim())});
+  Object.values(tasks).forEach(t=>{
+    if((t.from||'').trim())names.add(t.from.trim());
+    if((t.sendTo||'').trim())names.add(t.sendTo.trim());
+  });
   dl.innerHTML=[...names].sort().map(n=>`<option value="${esc(n)}">`).join('');
 }
 
 // ═══════════════════════════════════════════
 //  RFI View
 // ═══════════════════════════════════════════
+let rfiRecFilter='all'; // 'all' | recipient name | '' (no recipient)
+
 function nextRfiNumber(){
   let max=0;
   Object.values(tasks).forEach(t=>{
@@ -3092,17 +3156,33 @@ function newRFI(){
   const num=nextRfiNumber();
   fbPush('todo/tasks',{
     title:'',category:'rfi',rfiNumber:num,priority:'medium',difficulty:'easy',progress:0,
-    dueDate:'',dueTime:'',repeat:'none',notes:'',completed:false,completedAt:'',
+    dueDate:'',dueTime:'',repeat:'none',notes:'',description:'',sendTo:'',sent:false,
+    completed:false,completedAt:'',
     createdAt:new Date().toISOString(),order:Date.now()
   });
-  // Firebase listener will re-render; focus the new subject input once it lands
   setTimeout(()=>{
-    const el=document.querySelector('.rfi-row[data-num="'+num+'"] .rfi-subj-input');
+    const el=document.querySelector('.rfi-card[data-num="'+num+'"] .rfi-subj-input');
     if(el){el.focus();el.scrollIntoView({behavior:'smooth',block:'center'})}
   },300);
 }
 function updateRFI(id,field,val){
   fbSet(`todo/tasks/${id}/${field}`,val);
+}
+function toggleRFISent(id){
+  const t=tasks[id];if(!t)return;
+  const now=!t.sent;
+  fbSet(`todo/tasks/${id}/sent`,now);
+  if(now){
+    fbSet(`todo/tasks/${id}/sentAt`,new Date().toISOString());
+    // Small success flash + satisfying chirp via existing celebrate
+    const card=document.querySelector('.rfi-card[data-id="'+id+'"]');
+    if(card){
+      card.style.transition='background .6s ease';
+      card.style.background='rgba(52,211,153,0.15)';
+      setTimeout(()=>{card.style.background=''},800);
+    }
+    setTimeout(()=>celebrate('easy',t.title||t.rfiNumber||'RFI'),120);
+  }
 }
 function toggleRFIDone(id){
   const t=tasks[id];if(!t)return;
@@ -3116,52 +3196,257 @@ function toggleRFIDone(id){
       title:t.title||t.rfiNumber||'RFI',difficulty:t.difficulty||'easy',
       category:'rfi',priority:t.priority||'medium',completedAt:new Date().toISOString()
     });
-    // Trigger celebration by finding the row's card-equivalent
-    const row=document.querySelector('.rfi-row[data-id="'+id+'"]');
-    if(row){
-      row.style.transition='background .6s ease';
-      row.style.background='rgba(52,211,153,0.15)';
-      setTimeout(()=>{row.style.background=''},800);
-    }
-    setTimeout(()=>celebrate('easy',t.title||t.rfiNumber||'RFI'),200);
+    setTimeout(()=>celebrate('medium',t.title||t.rfiNumber||'RFI'),120);
   }
 }
 function deleteRFI(id){
   if(!confirm('Delete this RFI?'))return;
   fbSet('todo/tasks/'+id,null);
 }
+function setRFIRecFilter(name){
+  rfiRecFilter=name;
+  renderRFI();
+}
+
+// Reusable styled date picker — opens anchored to a button, fires onPick(ds)
+let _rfiDpTarget=null,_rfiDpMonth=new Date().getMonth(),_rfiDpYear=new Date().getFullYear(),_rfiDpOnPick=null,_rfiDpCurrent='';
+function openRFIDatePicker(e,btnEl,currentDate,onPick){
+  e?.stopPropagation();
+  closeRFIDatePicker();
+  _rfiDpTarget=btnEl;_rfiDpOnPick=onPick;_rfiDpCurrent=currentDate||'';
+  if(currentDate){const d=new Date(currentDate+'T00:00:00');_rfiDpMonth=d.getMonth();_rfiDpYear=d.getFullYear();}
+  const pop=document.createElement('div');
+  pop.className='dp-pop';pop.id='rfiDatePickerPop';
+  document.body.appendChild(pop);
+  const r=btnEl.getBoundingClientRect();
+  let left=r.left;
+  if(left+280>window.innerWidth-8)left=window.innerWidth-288;
+  if(left<8)left=8;
+  const top=r.bottom+8;
+  const maxH=Math.max(260,window.innerHeight-top-12);
+  pop.style.left=left+'px';pop.style.top=top+'px';
+  pop.style.maxHeight=maxH+'px';pop.style.overflowY='auto';
+  renderRFIDatePicker();
+  setTimeout(()=>document.addEventListener('click',_rfiDpClickOutside),50);
+}
+function _rfiDpClickOutside(e){
+  if(!e.target.closest('#rfiDatePickerPop')&&!e.target.closest('.rfi-date-btn'))closeRFIDatePicker();
+}
+function closeRFIDatePicker(){
+  document.getElementById('rfiDatePickerPop')?.remove();
+  document.removeEventListener('click',_rfiDpClickOutside);
+  _rfiDpTarget=null;_rfiDpOnPick=null;
+}
+function renderRFIDatePicker(){
+  const pop=document.getElementById('rfiDatePickerPop');if(!pop)return;
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const todayStr=new Date().toISOString().slice(0,10);
+  const tomorrowStr=(()=>{const d=new Date();d.setDate(d.getDate()+1);return d.toISOString().slice(0,10)})();
+  const nextWeek=(()=>{const d=new Date();d.setDate(d.getDate()+7);return d.toISOString().slice(0,10)})();
+  const selected=_rfiDpCurrent;
+  const first=new Date(_rfiDpYear,_rfiDpMonth,1);
+  const startDay=first.getDay();
+  const daysInMonth=new Date(_rfiDpYear,_rfiDpMonth+1,0).getDate();
+  const dayTasks={};
+  Object.values(tasks).forEach(t=>{if(!t.dueDate||t.completed)return;if(!dayTasks[t.dueDate])dayTasks[t.dueDate]=0;dayTasks[t.dueDate]++});
+  let html=`<div class="dp-head">
+    <button class="dp-nav" onclick="rfiDpNav(-1)">&larr;</button>
+    <div class="dp-title">${months[_rfiDpMonth]} ${_rfiDpYear}</div>
+    <button class="dp-nav" onclick="rfiDpNav(1)">&rarr;</button>
+  </div>
+  <div class="dp-grid">
+    ${['S','M','T','W','T','F','S'].map(d=>`<div class="dp-dow">${d}</div>`).join('')}`;
+  for(let i=0;i<startDay;i++)html+=`<div class="dp-day blank"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=`${_rfiDpYear}-${String(_rfiDpMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=ds===todayStr;
+    const isSel=ds===selected;
+    const isPast=ds<todayStr;
+    const count=dayTasks[ds]||0;
+    const hasTasks=count>0?'has-tasks':'';
+    const badge=count?`<span class="dp-day-count ${isPast?'overdue':''}">${count}</span>`:'';
+    html+=`<div class="dp-day ${isToday?'today':''} ${isSel?'selected':''} ${isPast?'past':''} ${hasTasks}" onclick="rfiDpSelect('${ds}')">${d}${badge}</div>`;
+  }
+  html+=`</div>
+  <div class="dp-quick">
+    <button onclick="rfiDpSelect('${todayStr}')">Today</button>
+    <button onclick="rfiDpSelect('${tomorrowStr}')">Tmrw</button>
+    <button onclick="rfiDpSelect('${nextWeek}')">+1wk</button>
+    <button class="clear" onclick="rfiDpSelect('')">Clear</button>
+  </div>`;
+  pop.innerHTML=html;
+}
+function rfiDpNav(dir){
+  _rfiDpMonth+=dir;
+  if(_rfiDpMonth<0){_rfiDpMonth=11;_rfiDpYear--}
+  if(_rfiDpMonth>11){_rfiDpMonth=0;_rfiDpYear++}
+  renderRFIDatePicker();
+}
+function rfiDpSelect(ds){
+  if(_rfiDpOnPick)_rfiDpOnPick(ds);
+  closeRFIDatePicker();
+}
+
+// Format YYYY-MM-DD → "Apr 21" etc.
+function fmtRfiDate(ds){
+  if(!ds)return '';
+  const d=new Date(ds+'T00:00:00');
+  const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+  return mo+' '+d.getDate();
+}
+
+function rfiStats(){
+  const rfis=Object.entries(tasks).filter(([,t])=>t.category==='rfi');
+  const open=rfis.filter(([,t])=>!t.completed&&!t.sent).length;
+  const sent=rfis.filter(([,t])=>t.sent&&!t.completed).length;
+  const done=rfis.filter(([,t])=>t.completed).length;
+  const today=new Date().toISOString().slice(0,10);
+  const overdue=rfis.filter(([,t])=>!t.completed&&!t.sent&&t.dueDate&&t.dueDate<today).length;
+  const weekAhead=(()=>{const d=new Date();d.setDate(d.getDate()+7);return d.toISOString().slice(0,10)})();
+  const dueSoon=rfis.filter(([,t])=>!t.completed&&!t.sent&&t.dueDate&&t.dueDate<=weekAhead&&t.dueDate>=today).length;
+  return {rfis,open,sent,done,overdue,dueSoon,total:rfis.length};
+}
+function rfiRecipients(){
+  const m=new Map();
+  Object.values(tasks).forEach(t=>{
+    if(t.category!=='rfi'||t.completed)return;
+    const r=(t.sendTo||'').trim();
+    if(!r)return;
+    m.set(r,(m.get(r)||0)+1);
+  });
+  return [...m.entries()].sort((a,b)=>b[1]-a[1]);
+}
+
 function renderRFI(){
   const list=document.getElementById('rfiList');
-  const chips=document.getElementById('rfiChips');
   if(!list)return;
-  const rfis=Object.entries(tasks).filter(([,t])=>t.category==='rfi');
-  // Sort: open first, then by rfi number desc
-  rfis.sort((a,b)=>{
-    const ac=a[1].completed?1:0,bc=b[1].completed?1:0;
-    if(ac!==bc)return ac-bc;
+  const {rfis,open,sent,done,overdue,dueSoon,total}=rfiStats();
+
+  // ── Dashboard cards
+  const dashEl=document.getElementById('rfiDash');
+  if(dashEl){
+    dashEl.innerHTML=`
+      <div class="rfi-dash-card accent">
+        <div class="rfi-dash-lbl">To Send</div>
+        <div class="rfi-dash-val">${open}</div>
+        <div class="rfi-dash-sub">${dueSoon?dueSoon+' due this week':'no deadline soon'}</div>
+      </div>
+      <div class="rfi-dash-card sent">
+        <div class="rfi-dash-lbl">Sent · Awaiting</div>
+        <div class="rfi-dash-val">${sent}</div>
+        <div class="rfi-dash-sub">${sent?'waiting for reply':'none sent'}</div>
+      </div>
+      <div class="rfi-dash-card ${overdue?'danger':''}">
+        <div class="rfi-dash-lbl">Overdue</div>
+        <div class="rfi-dash-val">${overdue}</div>
+        <div class="rfi-dash-sub">${overdue?'act today':'all on track'}</div>
+      </div>
+      <div class="rfi-dash-card">
+        <div class="rfi-dash-lbl">Closed</div>
+        <div class="rfi-dash-val">${done}</div>
+        <div class="rfi-dash-sub">${total} total</div>
+      </div>`;
+  }
+
+  // ── Urgent "next to send" callout
+  const urgEl=document.getElementById('rfiUrgent');
+  if(urgEl){
+    // Find the most urgent unsent+open RFI
+    const today=new Date().toISOString().slice(0,10);
+    const urg=rfis
+      .filter(([,t])=>!t.completed&&!t.sent)
+      .sort((a,b)=>{
+        const ad=a[1].dueDate||'9999';
+        const bd=b[1].dueDate||'9999';
+        return ad.localeCompare(bd);
+      })[0];
+    if(urg){
+      const [uid,ut]=urg;
+      const od=ut.dueDate&&ut.dueDate<today;
+      const dueLbl=ut.dueDate?(od?'Overdue · ':'Due ')+fmtRfiDate(ut.dueDate):'No due date';
+      const sendTo=ut.sendTo?' → '+esc(ut.sendTo):'';
+      urgEl.innerHTML=`<div class="rfi-urgent">
+        <span class="rfi-urgent-lbl">Next up</span>
+        <div class="rfi-urgent-body">
+          <div class="rfi-urgent-title">${esc(ut.rfiNumber||'')} · ${esc(ut.title||'(no subject)')}</div>
+          <div class="rfi-urgent-meta">${dueLbl}${sendTo}</div>
+        </div>
+        <button class="rfi-urgent-cta" onclick="toggleRFISent('${uid}')">Mark Sent</button>
+      </div>`;
+    }else{
+      urgEl.innerHTML='';
+    }
+  }
+
+  // ── Recipient filter pills (only shown if recipients exist)
+  const recs=rfiRecipients();
+  const recsEl=document.getElementById('rfiRecipients');
+  const recPillsEl=document.getElementById('rfiRecPills');
+  if(recsEl&&recPillsEl){
+    if(recs.length){
+      recsEl.style.display='';
+      let pillsHtml=`<span class="rfi-rec-pill ${rfiRecFilter==='all'?'active':''}" onclick="setRFIRecFilter('all')">All</span>`;
+      recs.forEach(([n,c])=>{
+        const safe=esc(n);
+        pillsHtml+=`<span class="rfi-rec-pill ${rfiRecFilter===n?'active':''}" onclick="setRFIRecFilter('${safe.replace(/'/g,"\\'")}')">${safe} <span class="cnt">${c}</span></span>`;
+      });
+      recPillsEl.innerHTML=pillsHtml;
+    }else{
+      recsEl.style.display='none';
+    }
+  }
+
+  // ── List
+  let filtered=rfis;
+  if(rfiRecFilter!=='all'){
+    filtered=filtered.filter(([,t])=>(t.sendTo||'').trim()===rfiRecFilter);
+  }
+  // Sort: unsent first, then sent-waiting, then done. Within group by RFI number desc.
+  filtered.sort((a,b)=>{
+    const rank=t=>t.completed?2:(t.sent?1:0);
+    const ra=rank(a[1]),rb=rank(b[1]);
+    if(ra!==rb)return ra-rb;
     const an=parseInt((a[1].rfiNumber||'').match(/\d+/)?.[0]||'0',10);
     const bn=parseInt((b[1].rfiNumber||'').match(/\d+/)?.[0]||'0',10);
     return bn-an;
   });
-  const open=rfis.filter(([,t])=>!t.completed).length;
-  const done=rfis.filter(([,t])=>t.completed).length;
-  if(chips)chips.innerHTML=`<span class="rfi-chip open">${open} open</span><span class="rfi-chip done">${done} done</span>`;
-  if(!rfis.length){
-    list.innerHTML='<div class="rfi-empty">No RFIs yet. Click <b>+ New RFI</b> to start your list.</div>';
+
+  if(!filtered.length){
+    list.innerHTML=total?'<div class="rfi-empty">No RFIs match this filter.</div>':'<div class="rfi-empty">No RFIs yet. Click <b>+ New RFI</b> to start your list.</div>';
     return;
   }
-  list.innerHTML=rfis.map(([id,t])=>{
-    const done=!!t.completed;
-    return `<div class="rfi-row ${done?'done':''}" data-id="${id}" data-num="${esc(t.rfiNumber||'')}">
-      <div><input class="rfi-num-input" value="${esc(t.rfiNumber||'')}" onchange="updateRFI('${id}','rfiNumber',this.value)" spellcheck="false"></div>
-      <div class="rfi-subj"><input class="rfi-subj-input" placeholder="Subject…" value="${esc(t.title||'')}" onchange="updateRFI('${id}','title',this.value)"></div>
-      <div><span class="rfi-status ${done?'done':'open'}">${done?'Done':'Open'}</span></div>
-      <div class="rfi-due"><input class="rfi-due-input" type="date" value="${esc(t.dueDate||'')}" onchange="updateRFI('${id}','dueDate',this.value)"></div>
-      <div class="rfi-actions">
-        <button onclick="toggleRFIDone('${id}')" title="${done?'Mark open':'Mark done'}">${done?'↺':'✓'}</button>
-        <button class="rfi-del" onclick="deleteRFI('${id}')" title="Delete">×</button>
+  const today=new Date().toISOString().slice(0,10);
+  list.innerHTML=filtered.map(([id,t])=>{
+    const dn=!!t.completed;
+    const isSent=!!t.sent;
+    const od=t.dueDate&&!dn&&!isSent&&t.dueDate<today;
+    const dueLbl=t.dueDate?(od?'Overdue · ':'Due ')+fmtRfiDate(t.dueDate):'Set date';
+    const klass=dn?'done':(isSent?'sent':'');
+    return `<div class="rfi-card ${klass}" data-id="${id}" data-num="${esc(t.rfiNumber||'')}">
+      <div class="rfi-top">
+        <span class="rfi-num-badge"><input class="rfi-num-input" value="${esc(t.rfiNumber||'')}" onchange="updateRFI('${id}','rfiNumber',this.value)" spellcheck="false"></span>
+        <input class="rfi-subj-input" placeholder="Subject…" value="${esc(t.title||'')}" onchange="updateRFI('${id}','title',this.value)">
+        <div class="rfi-status-group">
+          <label class="rfi-sent-toggle ${isSent?'on':''}" onclick="event.preventDefault();toggleRFISent('${id}')">
+            <input type="checkbox" ${isSent?'checked':''}>
+            ${isSent?'Sent':'Send?'}
+          </label>
+        </div>
       </div>
-      ${t.notes?`<div class="rfi-notes">${esc(t.notes)}</div>`:''}
+      <textarea class="rfi-desc" placeholder="Description — what info do you need?" rows="2" onchange="updateRFI('${id}','description',this.value)">${esc(t.description||'')}</textarea>
+      <div class="rfi-meta">
+        <button class="rfi-meta-btn rfi-date-btn ${t.dueDate?'has-val':''} ${od?'overdue':''}" onclick="openRFIDatePicker(event,this,'${esc(t.dueDate||'')}',ds=>updateRFI('${id}','dueDate',ds))">
+          <span>📅</span><span>${dueLbl}</span>
+        </button>
+        <button class="rfi-meta-btn ${t.sendTo?'has-val':''}" onclick="this.querySelector('.rfi-sendto-input').focus()">
+          <span>→</span>
+          <input class="rfi-sendto-input" placeholder="Send to…" value="${esc(t.sendTo||'')}" onchange="updateRFI('${id}','sendTo',this.value);this.closest('.rfi-meta-btn').classList.toggle('has-val',!!this.value)" onclick="event.stopPropagation()" list="fromSuggestions">
+        </button>
+        <div class="rfi-actions">
+          <button onclick="toggleRFIDone('${id}')" title="${dn?'Reopen':'Close RFI'}">${dn?'↺ Reopen':'✓ Close'}</button>
+          <button class="rfi-del" onclick="deleteRFI('${id}')" title="Delete">×</button>
+        </div>
+      </div>
     </div>`;
   }).join('');
 }
