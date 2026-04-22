@@ -749,6 +749,51 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .cal-task.done{opacity:.3;text-decoration:line-through}
 
 /* Stats View */
+.wasted-wrap{max-width:720px;margin:0 auto;padding:20px 20px 100px;position:relative;z-index:1}
+.w-hero{background:linear-gradient(135deg,rgba(239,68,68,0.14),rgba(251,146,60,0.06));border:1px solid rgba(239,68,68,0.22);border-radius:18px;padding:22px 20px;margin-bottom:16px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+.w-hero-big .l{font-size:9px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#ef4444;margin-bottom:6px}
+.w-hero-big .v{font-size:46px;font-weight:200;color:var(--text);letter-spacing:-0.04em;line-height:1}
+.w-hero-big .s{font-size:11px;color:var(--text-muted);margin-top:4px}
+.w-hero-side{display:flex;flex-direction:column;gap:6px;min-width:140px;text-align:right}
+.w-hero-side .n{font-size:22px;font-weight:300;color:var(--text);line-height:1}
+.w-hero-side .m{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)}
+.w-add{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:14px;margin-bottom:16px;display:flex;flex-direction:column;gap:8px}
+.w-add-title{font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.w-add input[type="text"],.w-add textarea{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;font-family:inherit;width:100%;box-sizing:border-box}
+.w-add input[type="text"]:focus,.w-add textarea:focus{outline:0;border-color:var(--accent1)}
+.w-add textarea{resize:vertical;min-height:52px}
+.w-add-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.w-add-row .mins-wrap{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:4px 10px}
+.w-add-row .mins-wrap input{background:transparent;border:0;color:var(--text);font-size:13px;width:60px;padding:5px 0}
+.w-add-row .mins-wrap input:focus{outline:0}
+.w-add-row .mins-wrap .u{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:700}
+.w-add-row select{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;color:var(--text);font-size:12px;cursor:pointer}
+.w-add-btn{margin-left:auto;background:linear-gradient(135deg,var(--accent1),var(--accent2));border:0;border-radius:8px;color:#fff;font-weight:700;padding:10px 18px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:transform 0.1s ease,box-shadow 0.2s ease}
+.w-add-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px var(--accent1-10)}
+.w-add-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
+.w-filter{display:flex;gap:4px;margin-bottom:10px}
+.w-filter button{background:var(--card);border:1px solid var(--card-border);color:var(--text-muted);font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:5px 10px;border-radius:999px;cursor:pointer;transition:all 0.15s}
+.w-filter button.active{background:var(--accent1-10);color:var(--accent1);border-color:var(--card-hover)}
+.w-entry{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;transition:background 0.15s ease,border-color 0.15s ease}
+.w-entry:hover{background:var(--card-hover);border-color:rgba(239,68,68,0.2)}
+.w-entry-body{display:flex;flex-direction:column;gap:3px;min-width:0}
+.w-entry-title{font-size:13px;color:var(--text);font-weight:600}
+.w-entry-desc{font-size:12px;color:var(--text-body);font-style:italic;margin-top:1px}
+.w-entry-meta{font-size:10px;color:var(--text-muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:3px}
+.w-entry-mins{font-family:'SF Mono',Menlo,Consolas,monospace;font-size:16px;font-weight:700;color:#ef4444;white-space:nowrap}
+.w-entry-mins .u{font-size:9px;color:var(--text-muted);letter-spacing:0.1em;margin-left:2px;font-weight:500;text-transform:uppercase}
+.w-entry-actions{display:flex;gap:4px;margin-left:8px}
+.w-entry-actions button{background:transparent;border:0;color:var(--text-muted);font-size:16px;line-height:1;cursor:pointer;padding:4px 6px;border-radius:6px;transition:all 0.12s}
+.w-entry-actions .edit:hover{color:var(--accent1);background:var(--accent1-10)}
+.w-entry-actions .del:hover{color:#ef4444;background:rgba(239,68,68,0.1)}
+.w-entry.expanded{background:rgba(139,92,246,0.04);border-color:var(--accent1)}
+.w-entry.expanded .w-entry-title{color:var(--accent1)}
+.w-edit{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;margin-top:8px;padding-top:10px;border-top:1px solid var(--card-border)}
+.w-edit input,.w-edit textarea{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;color:var(--text);font-size:12px;font-family:inherit;width:100%;box-sizing:border-box}
+.w-empty{text-align:center;padding:44px 20px;color:var(--text-muted)}
+.w-empty .g{font-size:42px;opacity:0.35;margin-bottom:12px}
+.w-empty .t{font-weight:700;color:var(--text);margin-bottom:6px;font-size:15px}
+.w-empty .h{font-size:12px;max-width:340px;margin:0 auto;line-height:1.5}
 .stats-wrap{max-width:680px;margin:0 auto;padding:20px 20px 100px;position:relative;z-index:1}
 .stats-section{margin-bottom:20px}
 .stats-title{font-size:12px;font-weight:700;color:var(--accent1);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
@@ -946,6 +991,7 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
     <div style="display:flex;gap:3px">
       <button class="tab-btn active" onclick="switchView('tasks')">Tasks</button>
       <button class="tab-btn" onclick="switchView('rfi')">RFIs</button>
+      <button class="tab-btn" onclick="switchView('wasted')">Wasted</button>
       <button class="tab-btn" onclick="switchView('calendar')">Calendar</button>
       <button class="tab-btn" onclick="switchView('stats')">Stats</button>
     </div>
@@ -1107,6 +1153,11 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
   </div>
 </div>
 
+<!-- Wasted View -->
+<div class="view" id="v-wasted">
+  <div class="wasted-wrap" id="wastedView"></div>
+</div>
+
 <!-- Stats View -->
 <div class="view" id="v-stats">
   <div class="stats-wrap" id="statsView"></div>
@@ -1179,7 +1230,7 @@ function fbListen(p,cb){if(db)db.ref(p).on('value',s=>cb(s.val()))}
 // ═══════════════════════════════════════════
 //  State
 // ═══════════════════════════════════════════
-let tasks={},taskHistory={},expanded=null,fStatus='all',fCat='all',fFrom='all',newCat='work',newPri='medium',newDiff='medium',newRep='none',sortBy='manual',searchQuery='';
+let tasks={},taskHistory={},wastedLog={},expanded=null,wastedExpanded=null,wastedSort='recent',fStatus='all',fCat='all',fFrom='all',newCat='work',newPri='medium',newDiff='medium',newRep='none',sortBy='manual',searchQuery='';
 let focusOn=(localStorage.getItem('oyt_focus')||'1')==='1';
 let dayView=localStorage.getItem('oyt_day_view')||'chart';
 let calSortWeekOffset=0;
@@ -1189,8 +1240,9 @@ function setDayView(v,dateStr){dayView=v;localStorage.setItem('oyt_day_view',v);
 const DIFF_WEIGHTS={easy:1,medium:2,hard:4,epic:8};
 
 function attachListeners(){
-  fbListen('todo/tasks',val=>{tasks=val||{};renderTasks();if(currentView==='calendar')renderCalendar();if(currentView==='rfi')renderRFI()});
+  fbListen('todo/tasks',val=>{tasks=val||{};renderTasks();if(currentView==='calendar')renderCalendar();if(currentView==='rfi')renderRFI();if(currentView==='stats'&&statsSubView==='wasted')renderStatsView()});
   fbListen('todo/history',val=>{taskHistory=val||{};renderDashV2();renderCmdMetrics()});
+  fbListen('todo/wasted',val=>{wastedLog=val||{};if(currentView==='wasted')renderWasted();if(currentView==='stats'&&statsSubView==='wasted')renderStatsView()});
 }
 
 // ═══════════════════════════════════════════
@@ -3869,6 +3921,7 @@ function switchView(v){
   if(v==='rfi')setRFIView(rfiSubView);
   if(v==='calendar')renderCalendar();
   if(v==='stats')renderStatsView();
+  if(v==='wasted')renderWasted();
 }
 
 // ═══════════════════════════════════════════
@@ -4247,15 +4300,17 @@ function renderStatsView(){
 }
 
 function renderStatsWasted(){
-  const all=Object.values(tasks);
-  const wasted=Object.entries(tasks)
+  // Merge flagged tasks (legacy) and the standalone wasted log into one list for the aggregate view.
+  const flagged=Object.entries(tasks)
     .filter(([,t])=>(parseFloat(t.wastedMinutes)||0)>0 || (t.wastedResolution||'').trim())
-    .map(([id,t])=>({id,t,mins:parseFloat(t.wastedMinutes)||0}))
-    .sort((a,b)=>b.mins-a.mins);
+    .map(([id,t])=>({id,t,mins:parseFloat(t.wastedMinutes)||0,source:'task',title:t.title||'',desc:t.wastedResolution||'',category:t.category||'personal',date:(t.completedAt||'').slice(0,10)||t.dueDate||''}));
+  const standalone=Object.entries(wastedLog||{})
+    .map(([id,w])=>({id, t:w, mins:parseFloat(w.mins)||0, source:'log', title:w.title||'', desc:w.description||'', category:w.category||'', date:w.date||(w.createdAt||'').slice(0,10)}));
+  const wasted=[...flagged,...standalone].sort((a,b)=>b.mins-a.mins);
   const totalMins=wasted.reduce((s,w)=>s+w.mins,0);
   const totalHours=totalMins/60;
   const catSum={};
-  wasted.forEach(w=>{const c=w.t.category||'personal';catSum[c]=(catSum[c]||0)+w.mins});
+  wasted.forEach(w=>{const c=w.category||'personal';catSum[c]=(catSum[c]||0)+w.mins});
   const worstCat=Object.entries(catSum).sort((a,b)=>b[1]-a[1])[0];
 
   let body;
@@ -4297,18 +4352,21 @@ function renderStatsWasted(){
     <div class="stats-section">
       <div class="stats-title">Biggest Time Sinks</div>
       ${wasted.map(w=>{
-        const cat=w.t.category||'personal';
-        const resolved=(w.t.wastedResolution||'').trim();
-        const when=w.t.completedAt?w.t.completedAt.slice(0,10):(w.t.dueDate||'');
-        return `<div class="tw-row" onclick="toggleExpand('${w.id}');switchView('tasks');setTimeout(()=>{const el=document.querySelector('[onclick*=\\'${w.id}\\']');if(el)el.scrollIntoView({block:'center',behavior:'smooth'})},120)" style="cursor:pointer">
+        const cat=w.category||'personal';
+        const resolved=(w.desc||'').trim();
+        const isLog=w.source==='log';
+        const nav=isLog
+          ? `switchView('wasted');setTimeout(()=>toggleWastedExpand('${w.id}'),80)`
+          : `toggleExpand('${w.id}');switchView('tasks');setTimeout(()=>{const el=document.querySelector('[onclick*=\\'${w.id}\\']');if(el)el.scrollIntoView({block:'center',behavior:'smooth'})},120)`;
+        return `<div class="tw-row" onclick="${nav}" style="cursor:pointer">
           <div class="tw-row-body">
-            <div class="tw-row-title">${esc(w.t.title||'(untitled)')}</div>
+            <div class="tw-row-title">${esc(w.title||'(untitled)')}${isLog?' <span style="font-size:8px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase">· log</span>':''}</div>
             ${resolved?`<div class="tw-row-res">→ ${esc(resolved)}</div>`:''}
             <div class="tw-row-meta">
-              <span class="tw-cat-badge" style="background:${catBg(cat)};color:${catColor(cat)}">${cat}</span>
-              ${w.t.from?`<span>from ${esc(w.t.from)}</span>`:''}
-              ${when?`<span>${when}</span>`:''}
-              ${w.t.completed?'<span style="color:#34d399">✓ done</span>':'<span style="color:var(--text-muted)">open</span>'}
+              <span class="tw-cat-badge" style="background:${catBg(cat)};color:${catColor(cat)}">${cat||'uncat'}</span>
+              ${!isLog && w.t.from?`<span>from ${esc(w.t.from)}</span>`:''}
+              ${w.date?`<span>${w.date}</span>`:''}
+              ${!isLog?(w.t.completed?'<span style="color:#34d399">✓ done</span>':'<span style="color:var(--text-muted)">open</span>'):''}
             </div>
           </div>
           <div class="tw-row-mins">${fmtMins(w.mins)}<span class="u">wasted</span></div>
@@ -4466,6 +4524,155 @@ function renderStatsOverview(){
       </div>`).join('')
       :'<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px">No overdue tasks</div>'}
   </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  Wasted (standalone time-waste log)
+// ═══════════════════════════════════════════
+function fmtMinsShort(m){
+  m=Math.max(0,Math.round(m||0));
+  if(m>=60){const h=Math.floor(m/60),r=m%60;return h+'h'+(r?' '+r+'m':'')}
+  return m+'m';
+}
+
+function renderWasted(){
+  const el=document.getElementById('wastedView');
+  if(!el)return;
+  const entries=Object.entries(wastedLog)
+    .map(([id,w])=>({id, mins:parseFloat(w.mins)||0, title:w.title||'', description:w.description||'', category:w.category||'', date:w.date||(w.createdAt||'').slice(0,10), createdAt:w.createdAt||''}))
+    .sort((a,b)=>{
+      if(wastedSort==='biggest')return b.mins-a.mins;
+      if(wastedSort==='oldest')return (a.createdAt||'').localeCompare(b.createdAt||'');
+      return (b.createdAt||'').localeCompare(a.createdAt||''); // recent (default)
+    });
+  const total=entries.reduce((s,e)=>s+e.mins,0);
+  const catSum={};entries.forEach(e=>{const c=e.category||'uncategorized';catSum[c]=(catSum[c]||0)+e.mins});
+  const worst=Object.entries(catSum).sort((a,b)=>b[1]-a[1])[0];
+  const avg=entries.length?Math.round(total/entries.length):0;
+
+  const todayIso=new Date().toISOString().slice(0,10);
+
+  let html=`
+  <div class="w-hero">
+    <div class="w-hero-big">
+      <div class="l">Time Wasted</div>
+      <div class="v">${fmtMinsShort(total)}</div>
+      <div class="s">${entries.length} entr${entries.length===1?'y':'ies'}${worst?' · worst: '+esc(worst[0]):''} · ${avg}m avg</div>
+    </div>
+    <div class="w-hero-side">
+      <div><span class="n">${(total/60).toFixed(1)}</span> <span class="m">hrs</span></div>
+      <div><span class="n">${entries.filter(e=>e.category==='rfi').length}</span> <span class="m">rfi burns</span></div>
+    </div>
+  </div>
+
+  <div class="w-add">
+    <div class="w-add-title">Log a time-waster</div>
+    <input type="text" id="wAddTitle" placeholder="What was it? (e.g. RFI-012: fastener spec)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&event.target.value.trim()){document.getElementById('wAddDesc').focus();}">
+    <textarea id="wAddDesc" placeholder="Ended-up resolution — what it should have been (e.g. 5-min call to engineer)"></textarea>
+    <div class="w-add-row">
+      <div class="mins-wrap">
+        <input type="number" id="wAddMins" min="0" step="5" placeholder="0">
+        <span class="u">min wasted</span>
+      </div>
+      <select id="wAddCat">
+        <option value="work">Work</option>
+        <option value="project">Project</option>
+        <option value="rfi">RFI</option>
+        <option value="personal">Personal</option>
+        <option value="">Other</option>
+      </select>
+      <input type="date" id="wAddDate" value="${todayIso}" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;color:var(--text);font-size:12px;color-scheme:dark">
+      <button class="w-add-btn" onclick="addWasted()">＋ Add</button>
+    </div>
+  </div>
+
+  <div class="w-filter">
+    <button class="${wastedSort==='recent'?'active':''}" onclick="setWastedSort('recent')">Recent</button>
+    <button class="${wastedSort==='biggest'?'active':''}" onclick="setWastedSort('biggest')">Biggest</button>
+    <button class="${wastedSort==='oldest'?'active':''}" onclick="setWastedSort('oldest')">Oldest</button>
+  </div>`;
+
+  if(!entries.length){
+    html+=`<div class="w-empty">
+      <div class="g">⏱</div>
+      <div class="t">Nothing logged yet</div>
+      <div class="h">Use the form above to log any task that ate time it didn't need to. Keep it short — the point is to spot patterns.</div>
+    </div>`;
+  } else {
+    const catColor=c=>c==='work'?'var(--cat-work-fg)':c==='project'?'var(--cat-proj-fg)':c==='rfi'?'#fbbf24':c==='personal'?'var(--cat-pers-fg)':'var(--text-muted)';
+    const catBg=c=>c==='work'?'var(--cat-work-bg)':c==='project'?'var(--cat-proj-bg)':c==='rfi'?'rgba(251,191,36,0.1)':c==='personal'?'var(--cat-pers-bg)':'rgba(255,255,255,0.04)';
+    html+=entries.map(e=>{
+      const isEx=wastedExpanded===e.id;
+      const catLbl=e.category||'uncat';
+      return `<div class="w-entry${isEx?' expanded':''}">
+        <div class="w-entry-body" onclick="toggleWastedExpand('${e.id}')" style="cursor:pointer">
+          <div class="w-entry-title">${esc(e.title||'(untitled)')}</div>
+          ${e.description?`<div class="w-entry-desc">→ ${esc(e.description)}</div>`:''}
+          <div class="w-entry-meta">
+            <span style="font-size:8px;padding:2px 6px;border-radius:4px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;background:${catBg(e.category)};color:${catColor(e.category)}">${catLbl}</span>
+            ${e.date?`<span>${e.date}</span>`:''}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="w-entry-mins">${fmtMinsShort(e.mins)}<span class="u">wasted</span></div>
+          <div class="w-entry-actions">
+            <button class="edit" title="Edit" onclick="toggleWastedExpand('${e.id}')">✎</button>
+            <button class="del" title="Delete" onclick="deleteWasted('${e.id}')">×</button>
+          </div>
+        </div>
+        ${isEx?`<div class="w-edit">
+          <input type="text" value="${esc(e.title)}" placeholder="Task" onblur="updateWasted('${e.id}','title',this.value)">
+          <textarea placeholder="Ended-up resolution" onblur="updateWasted('${e.id}','description',this.value)">${esc(e.description)}</textarea>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:4px 10px">
+              <input type="number" min="0" step="5" value="${e.mins||''}" style="background:transparent;border:0;color:var(--text);font-size:12px;width:60px;padding:5px 0" onchange="updateWasted('${e.id}','mins',parseFloat(this.value)||0)">
+              <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:700">min</span>
+            </div>
+            <select onchange="updateWasted('${e.id}','category',this.value)" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:6px 10px;color:var(--text);font-size:11px;cursor:pointer">
+              ${['work','project','rfi','personal',''].map(c=>`<option value="${c}" ${e.category===c?'selected':''}>${c||'Other'}</option>`).join('')}
+            </select>
+            <input type="date" value="${e.date||''}" onchange="updateWasted('${e.id}','date',this.value)" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:6px 10px;color:var(--text);font-size:11px;color-scheme:dark">
+          </div>
+        </div>`:''}
+      </div>`;
+    }).join('');
+  }
+
+  el.innerHTML=html;
+}
+
+function setWastedSort(s){ wastedSort=s; renderWasted(); }
+function toggleWastedExpand(id){ wastedExpanded=wastedExpanded===id?null:id; renderWasted(); }
+
+function addWasted(){
+  const title=(document.getElementById('wAddTitle').value||'').trim();
+  const desc=(document.getElementById('wAddDesc').value||'').trim();
+  const mins=parseFloat(document.getElementById('wAddMins').value)||0;
+  const cat=document.getElementById('wAddCat').value;
+  const date=document.getElementById('wAddDate').value||new Date().toISOString().slice(0,10);
+  if(!title && !desc){
+    const el=document.getElementById('wAddTitle');if(el){el.style.borderColor='#ef4444';setTimeout(()=>el.style.borderColor='',1200)}
+    return;
+  }
+  fbPush('todo/wasted',{
+    title, description:desc, mins, category:cat, date,
+    createdAt:new Date().toISOString()
+  });
+  document.getElementById('wAddTitle').value='';
+  document.getElementById('wAddDesc').value='';
+  document.getElementById('wAddMins').value='';
+  // keep cat/date for rapid-fire entry
+}
+
+function updateWasted(id,field,value){
+  if(!wastedLog[id])return;
+  fbSet(`todo/wasted/${id}/${field}`,value);
+}
+
+function deleteWasted(id){
+  if(!confirm('Delete this entry?'))return;
+  fbSet(`todo/wasted/${id}`,null);
+  if(wastedExpanded===id)wastedExpanded=null;
 }
 
 // Init
