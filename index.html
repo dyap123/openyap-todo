@@ -327,6 +327,64 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .t-from{font-size:10px;color:var(--text-muted);font-weight:600;letter-spacing:.03em}
 .t-from::before{content:'from ';opacity:0.6}
 
+/* ── RFI sub-tabs + dashboard ────────────────────────────────────── */
+.rfi-subnav{display:flex;gap:4px;margin-bottom:16px;background:var(--card);border:1px solid var(--card-border);border-radius:100px;padding:4px;width:fit-content}
+.rfi-subnav button{background:transparent;border:none;color:var(--text-muted);font-size:12px;font-weight:700;padding:8px 20px;border-radius:100px;cursor:pointer;transition:all .15s ease;letter-spacing:.04em;font-family:inherit}
+.rfi-subnav button:hover{color:var(--text-body)}
+.rfi-subnav button.active{background:rgba(251,191,36,0.18);color:#fbbf24;box-shadow:inset 0 0 0 1px rgba(251,191,36,0.3)}
+
+.rfi-hero{background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(251,191,36,0.02));border:1px solid rgba(251,191,36,0.3);border-radius:14px;padding:20px 24px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+.rfi-hero-big{display:flex;flex-direction:column;gap:6px}
+.rfi-hero-lbl{font-size:10px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#fbbf24}
+.rfi-hero-val{font-size:54px;font-weight:200;color:var(--text);letter-spacing:-.04em;line-height:1}
+.rfi-hero-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
+.rfi-hero-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.rfi-hero-mini-card{background:rgba(0,0,0,0.15);border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.rfi-hero-mini-val{font-size:22px;font-weight:300;color:var(--text);line-height:1}
+.rfi-hero-mini-val.sent{color:#34d399}
+.rfi-hero-mini-val.danger{color:#ef4444}
+.rfi-hero-mini-lbl{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+
+.rfi-panel{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:14px 18px;margin-bottom:12px}
+.rfi-panel h3{font-size:10px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px}
+
+.rfi-two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.rfi-two-col .rfi-panel{margin-bottom:0}
+
+.rfi-leader{display:flex;flex-direction:column;gap:8px}
+.rfi-leader-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center}
+.rfi-leader-name{font-size:13px;color:var(--text);font-weight:600}
+.rfi-leader-bar{background:rgba(255,255,255,0.04);border-radius:4px;height:6px;width:100%;overflow:hidden;grid-column:1/-1;margin-top:2px}
+.rfi-leader-bar-fill{height:100%;background:linear-gradient(90deg,#fbbf24,#f59e0b);border-radius:4px;transition:width .3s}
+.rfi-leader-stat{font-size:11px;color:var(--text-muted);font-family:'SF Mono',Menlo,Consolas,monospace}
+.rfi-leader-stat .pct{color:#fbbf24;font-weight:700}
+
+.rfi-activity{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
+.rfi-activity-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:6px 8px;border-radius:8px;font-size:12px;transition:background .15s ease}
+.rfi-activity-row:hover{background:var(--card-hover)}
+.rfi-activity-dot{width:8px;height:8px;border-radius:50%}
+.rfi-activity-dot.sent{background:#34d399;box-shadow:0 0 6px rgba(52,211,153,0.4)}
+.rfi-activity-dot.closed{background:#fbbf24;box-shadow:0 0 6px rgba(251,191,36,0.4)}
+.rfi-activity-dot.opened{background:var(--accent1);box-shadow:0 0 6px var(--accent1-10)}
+.rfi-activity-text{min-width:0}
+.rfi-activity-action{font-weight:700;color:var(--text-body);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.rfi-activity-body{color:var(--text);font-size:12px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rfi-activity-when{font-size:10px;color:var(--text-muted);font-family:'SF Mono',Menlo,Consolas,monospace;white-space:nowrap}
+
+.rfi-week-bars{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;align-items:end;height:80px;margin-top:8px}
+.rfi-week-bar{background:linear-gradient(180deg,rgba(52,211,153,0.7),rgba(52,211,153,0.2));border-radius:4px 4px 0 0;min-height:2px;position:relative;transition:all .2s ease}
+.rfi-week-bar:hover{background:linear-gradient(180deg,rgba(52,211,153,0.9),rgba(52,211,153,0.4))}
+.rfi-week-bar[data-count="0"]{background:rgba(255,255,255,0.04)}
+.rfi-week-labels{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:4px;font-size:9px;color:var(--text-muted);text-align:center;letter-spacing:.05em}
+
+.rfi-aging{display:flex;flex-direction:column;gap:8px}
+.rfi-aging-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 10px;background:var(--card-hover);border-radius:8px;font-size:12px}
+.rfi-aging-row.old{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2)}
+.rfi-aging-num{font-family:'SF Mono',Menlo,Consolas,monospace;font-weight:800;font-size:11px;color:#fbbf24}
+.rfi-aging-title{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.rfi-aging-days{font-size:11px;color:var(--text-muted);font-family:'SF Mono',Menlo,Consolas,monospace;white-space:nowrap}
+.rfi-aging-days.old{color:#ef4444;font-weight:700}
+
 /* ── RFI view ─────────────────────────────────────────────────────── */
 .rfi-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px;flex-wrap:wrap}
 .rfi-head h2{font-size:20px;font-weight:300;letter-spacing:.04em;color:var(--text);margin:0}
@@ -960,20 +1018,28 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
     <button class="rfi-new" onclick="newRFI()">+ New RFI</button>
   </div>
 
-  <!-- Dashboard summary cards -->
-  <div class="rfi-dash" id="rfiDash"></div>
-
-  <!-- Urgent / next-to-send callout -->
-  <div id="rfiUrgent"></div>
-
-  <!-- Recipient filter pills -->
-  <div class="rfi-recipients" id="rfiRecipients" style="display:none">
-    <span class="rfi-recipients-lbl">Filter by recipient</span>
-    <div class="rfi-rec-pills" id="rfiRecPills"></div>
+  <div class="rfi-subnav">
+    <button id="rfiTabDash" class="active" onclick="setRFIView('dash')">Dashboard</button>
+    <button id="rfiTabList" onclick="setRFIView('list')">List</button>
   </div>
 
-  <!-- Card list -->
-  <div class="rfi-list" id="rfiList"></div>
+  <!-- Dashboard sub-view -->
+  <div id="rfiDashView"></div>
+
+  <!-- List sub-view -->
+  <div id="rfiListView" style="display:none">
+    <!-- Urgent / next-to-send callout -->
+    <div id="rfiUrgent"></div>
+
+    <!-- Recipient filter pills -->
+    <div class="rfi-recipients" id="rfiRecipients" style="display:none">
+      <span class="rfi-recipients-lbl">Filter by recipient</span>
+      <div class="rfi-rec-pills" id="rfiRecPills"></div>
+    </div>
+
+    <!-- Card list -->
+    <div class="rfi-list" id="rfiList"></div>
+  </div>
 </div>
 
 <!-- Calendar View -->
@@ -2268,6 +2334,9 @@ function renderTasks(){
   refreshFromSuggestions();
 
   let fl=entries;
+  // RFIs live on the RFI tab only — they still count in stats via todo/history.
+  // Exception: if user explicitly filters to rfi, show them here too.
+  if(fCat!=='rfi')fl=fl.filter(([,t])=>t.category!=='rfi');
   if(fStatus==='active')fl=fl.filter(([,t])=>!t.completed);
   if(fStatus==='completed')fl=fl.filter(([,t])=>t.completed);
   if(fCat!=='all')fl=fl.filter(([,t])=>t.category===fCat);
@@ -2656,10 +2725,19 @@ function alfOutsideClick(e){
 function buildSys(){
   const today=new Date().toISOString().slice(0,10);
   const entries=Object.entries(tasks);
-  const active=entries.filter(([,t])=>!t.completed);
-  const done=entries.filter(([,t])=>t.completed);
+  const nonRfi=entries.filter(([,t])=>t.category!=='rfi');
+  const active=nonRfi.filter(([,t])=>!t.completed);
+  const done=nonRfi.filter(([,t])=>t.completed);
   const overdue=active.filter(([,t])=>t.dueDate&&t.dueDate<today);
   const high=active.filter(([,t])=>t.priority==='high');
+
+  // RFIs are tracked separately in the RFI tab
+  const rfiAll=entries.filter(([,t])=>t.category==='rfi');
+  const rfiOpen=rfiAll.filter(([,t])=>!t.completed&&!t.sent);
+  const rfiSent=rfiAll.filter(([,t])=>t.sent&&!t.completed);
+  const rfiClosed=rfiAll.filter(([,t])=>t.completed);
+  const rfiOverdue=rfiOpen.filter(([,t])=>t.dueDate&&t.dueDate<today);
+  const nextRfiNum=(()=>{let m=0;rfiAll.forEach(([,t])=>{const n=(t.rfiNumber||'').match(/(\\d+)/);if(n){const v=parseInt(n[1],10);if(v>m)m=v}});return 'RFI-'+String(m+1).padStart(3,'0');})();
 
   let s=`You are Alfred — a sharp productivity partner for OpenYap Todo. Today is ${today}.
 
@@ -2669,32 +2747,54 @@ PERSONALITY: Direct, opinionated about priorities. Honest. When brainstorming, h
 
 CAPABILITIES:
 - Add tasks, mark done, edit any field
+- Create + manage RFIs (separate from tasks — they live in the RFIs tab)
 - Give daily summaries and priority recommendations
 - Help reorganize priorities based on deadlines and importance
 - Break brainstorming ideas into concrete tasks
 - When user says "summarize" or "what should I focus on", give a structured overview
 
+RFI NOTES:
+- RFIs are Requests For Information the user needs to send to their boss / architect / GC. They have: rfiNumber (RFI-NNN), title (subject), description (what info is needed), sendTo (who it goes to), dueDate, sent (boolean), completed (boolean = closed).
+- Next available number: ${nextRfiNum}
+- To CREATE an RFI, use the \`rfi\` block below — if user doesn't specify a number, use ${nextRfiNum} automatically.
+- To MARK AN RFI SENT (not the same as closing), use the \`rfi-sent\` block.
+- To CLOSE an RFI (fully done, reply received, dropped), use the \`done\` block with the task id.
+- When the user says "new rfi", "draft an rfi", "log an rfi for X", create one. When they say "mark RFI-007 sent" or "sent it to Rei", flip sent. When they say "close" or "done" for an RFI, mark completed.
+
 COMMANDS (use code blocks to execute):
 \`\`\`task
 {"title":"...","priority":"high|medium|low","category":"work|personal|project","difficulty":"easy|medium|hard|epic","dueDate":"YYYY-MM-DD","notes":"..."}
+\`\`\`
+\`\`\`rfi
+{"rfiNumber":"RFI-012","title":"Subject — what you're asking","description":"Detail about what info you need","sendTo":"Rei","dueDate":"YYYY-MM-DD"}
+\`\`\`
+\`\`\`rfi-sent
+{"taskId":"...","sent":true}
 \`\`\`
 \`\`\`done
 {"taskId":"..."}
 \`\`\`
 \`\`\`edit
-{"taskId":"...","field":"title|priority|category|dueDate|notes","value":"..."}
+{"taskId":"...","field":"title|priority|category|dueDate|notes|rfiNumber|description|sendTo|sent","value":"..."}
 \`\`\`
 \`\`\`sheet
 {"sheetId":"GOOGLE_SHEET_ID","tab":"Sheet1","row":["col1","col2","col3"]}
 \`\`\`
 Use the sheet command when the user wants to log something to a Google Sheet. Ask for the sheet ID if not provided.
 
-STATS: ${active.length} active, ${done.length} completed, ${overdue.length} overdue, ${high.length} high priority
+STATS: ${active.length} active tasks, ${done.length} completed, ${overdue.length} overdue, ${high.length} high priority
+RFIS: ${rfiOpen.length} to send, ${rfiSent.length} sent·waiting, ${rfiOverdue.length} overdue, ${rfiClosed.length} closed
 
 ACTIVE TASKS:\n`;
-  if(active.length)active.forEach(([id,t])=>{s+=`- ${t.title} [${t.priority}/${t.category}${t.dueDate?' due:'+t.dueDate:''}${t.notes?' — '+t.notes.slice(0,60):''}] id:${id}\n`});
+  if(active.length)active.forEach(([id,t])=>{s+=`- ${t.title} [${t.priority}/${t.category}${t.dueDate?' due:'+t.dueDate:''}${t.from?' from:'+t.from:''}${t.notes?' — '+t.notes.slice(0,60):''}] id:${id}\n`});
   else s+='(none)\n';
   if(overdue.length){s+='\nOVERDUE:\n';overdue.forEach(([id,t])=>{s+=`- ${t.title} (was due ${t.dueDate}) id:${id}\n`})}
+  if(rfiOpen.length||rfiSent.length){
+    s+='\nOPEN RFIS (to send):\n';
+    if(rfiOpen.length)rfiOpen.forEach(([id,t])=>{s+=`- ${t.rfiNumber||'?'} · ${t.title||'(no subject)'}${t.sendTo?' → '+t.sendTo:''}${t.dueDate?' due:'+t.dueDate:''} id:${id}\n`});
+    else s+='(none to send)\n';
+    if(rfiSent.length){s+='\nSENT · AWAITING REPLY:\n';rfiSent.forEach(([id,t])=>{s+=`- ${t.rfiNumber||'?'} · ${t.title||''}${t.sendTo?' → '+t.sendTo:''} id:${id}\n`})}
+  }
   if(done.length){s+=`\nRECENTLY COMPLETED (${done.length}):\n`;done.slice(0,5).forEach(([id,t])=>{s+=`- ${t.title}\n`})}
   return s;
 }
@@ -2727,14 +2827,14 @@ async function sendAlfred(){
         try{const e=JSON.parse(d);if(e.type==='content_block_delta'&&e.delta?.type==='text_delta'&&e.delta?.text){
           if(firstToken){firstToken=false;el.innerHTML='';el.classList.add('str')}
           full+=e.delta.text;
-          pendingVisible=full.replace(/```(?:task|done|edit|sheet)\s*\n[\s\S]*?\n```/g,'');
+          pendingVisible=full.replace(/```(?:task|done|edit|sheet|rfi|rfi-sent)\s*\n[\s\S]*?\n```/g,'');
           if(!pendingRaf)pendingRaf=requestAnimationFrame(flushRender);
         }}catch{}}}
     // Flush any pending render before finalizing
     if(pendingRaf){cancelAnimationFrame(pendingRaf);flushRender()}
     el.classList.remove('str');alfHistory.push({role:'assistant',content:full});
     // Final render without caret
-    const finalVisible=full.replace(/```(?:task|done|edit|sheet)\s*\n[\s\S]*?\n```/g,'').trim();
+    const finalVisible=full.replace(/```(?:task|done|edit|sheet|rfi|rfi-sent)\s*\n[\s\S]*?\n```/g,'').trim();
     renderAlfStreaming(el,finalVisible,prevWords,false);
     const tm=full.match(/```task\s*\n?([\s\S]*?)\n?```/);
     if(tm){try{const c=JSON.parse(tm[1]);fbPush('todo/tasks',{title:c.title||'',priority:c.priority||'medium',category:c.category||'personal',difficulty:c.difficulty||'medium',progress:0,dueDate:c.dueDate||'',notes:c.notes||'',completed:false,completedAt:'',createdAt:new Date().toISOString(),order:Date.now()})}catch{}}
@@ -2742,6 +2842,33 @@ async function sendAlfred(){
     if(dm){try{const c=JSON.parse(dm[1]);if(c.taskId){fbSet(`todo/tasks/${c.taskId}/completed`,true);fbSet(`todo/tasks/${c.taskId}/completedAt`,new Date().toISOString())}}catch{}}
     const em=full.match(/```edit\s*\n?([\s\S]*?)\n?```/);
     if(em){try{const c=JSON.parse(em[1]);if(c.taskId&&c.field)updateTask(c.taskId,c.field,c.value)}catch{}}
+    // ── RFI commands ──
+    const rm=full.match(/```rfi\s*\n?([\s\S]*?)\n?```/);
+    if(rm){
+      try{
+        const c=JSON.parse(rm[1]);
+        const num=c.rfiNumber||nextRfiNumber();
+        fbPush('todo/tasks',{
+          title:c.title||'',category:'rfi',rfiNumber:num,priority:c.priority||'medium',
+          difficulty:'easy',progress:0,
+          dueDate:c.dueDate||'',dueTime:'',repeat:'none',
+          notes:'',description:c.description||'',sendTo:c.sendTo||'',sent:false,
+          completed:false,completedAt:'',
+          createdAt:new Date().toISOString(),order:Date.now()
+        });
+      }catch{}
+    }
+    const rs=full.match(/```rfi-sent\s*\n?([\s\S]*?)\n?```/);
+    if(rs){
+      try{
+        const c=JSON.parse(rs[1]);
+        if(c.taskId){
+          const now=c.sent!==false;
+          fbSet(`todo/tasks/${c.taskId}/sent`,now);
+          if(now)fbSet(`todo/tasks/${c.taskId}/sentAt`,new Date().toISOString());
+        }
+      }catch{}
+    }
     const sm=full.match(/```sheet\s*\n?([\s\S]*?)\n?```/);
     if(sm){try{const c=JSON.parse(sm[1]);if(c.sheetId&&c.row)writeSheet(c.sheetId,c.tab||'Sheet1',c.row)}catch{}}
   }catch(e){el.classList.remove('str');el.innerHTML='';el.textContent='Error: '+e.message}
@@ -3141,6 +3268,16 @@ function refreshFromSuggestions(){
 //  RFI View
 // ═══════════════════════════════════════════
 let rfiRecFilter='all'; // 'all' | recipient name | '' (no recipient)
+let rfiSubView=localStorage.getItem('oyt_rfi_view')||'dash'; // 'dash' | 'list'
+function setRFIView(v){
+  rfiSubView=v;
+  localStorage.setItem('oyt_rfi_view',v);
+  document.getElementById('rfiTabDash')?.classList.toggle('active',v==='dash');
+  document.getElementById('rfiTabList')?.classList.toggle('active',v==='list');
+  document.getElementById('rfiDashView').style.display=v==='dash'?'':'none';
+  document.getElementById('rfiListView').style.display=v==='list'?'':'none';
+  renderRFI();
+}
 
 function nextRfiNumber(){
   let max=0;
@@ -3317,36 +3454,190 @@ function rfiRecipients(){
   return [...m.entries()].sort((a,b)=>b[1]-a[1]);
 }
 
+function renderRFIDashboard(){
+  const el=document.getElementById('rfiDashView');
+  if(!el)return;
+  const {rfis,open,sent,done,overdue,dueSoon,total}=rfiStats();
+  const today=new Date();today.setHours(0,0,0,0);
+
+  // ── Next-up RFI
+  const nextUp=rfis
+    .filter(([,t])=>!t.completed&&!t.sent)
+    .sort((a,b)=>(a[1].dueDate||'9999').localeCompare(b[1].dueDate||'9999'))[0];
+
+  // ── Recipient leaderboard
+  const recipients=new Map();
+  rfis.forEach(([,t])=>{
+    const r=(t.sendTo||'').trim()||'(no recipient)';
+    if(!recipients.has(r))recipients.set(r,{total:0,open:0,sent:0,done:0});
+    const rec=recipients.get(r);
+    rec.total++;
+    if(t.completed)rec.done++;
+    else if(t.sent)rec.sent++;
+    else rec.open++;
+  });
+  const leaderboard=[...recipients.entries()].sort((a,b)=>b[1].total-a[1].total).slice(0,5);
+  const maxRec=Math.max(1,...leaderboard.map(([,r])=>r.total));
+
+  // ── Recent activity (last 10 events: sent + closed)
+  const activity=[];
+  rfis.forEach(([id,t])=>{
+    if(t.sent&&t.sentAt)activity.push({ts:t.sentAt,type:'sent',id,t});
+    if(t.completed&&t.completedAt)activity.push({ts:t.completedAt,type:'closed',id,t});
+    if(t.createdAt)activity.push({ts:t.createdAt,type:'opened',id,t});
+  });
+  activity.sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
+  const recent=activity.slice(0,10);
+
+  // ── Weekly throughput (last 8 weeks, count of RFIs closed)
+  const weeks=[];
+  for(let w=7;w>=0;w--){
+    const start=new Date(today);start.setDate(today.getDate()-today.getDay()-(w*7));
+    const end=new Date(start);end.setDate(start.getDate()+7);
+    const count=rfis.filter(([,t])=>{
+      if(!t.completedAt)return false;
+      const d=new Date(t.completedAt);
+      return d>=start&&d<end;
+    }).length;
+    weeks.push({count,label:(start.getMonth()+1)+'/'+start.getDate()});
+  }
+  const maxWeek=Math.max(1,...weeks.map(w=>w.count));
+
+  // ── Aging open RFIs (oldest first)
+  const openRfis=rfis.filter(([,t])=>!t.completed);
+  const aged=openRfis
+    .filter(([,t])=>t.createdAt)
+    .map(([id,t])=>{
+      const d=new Date(t.createdAt);
+      const days=Math.floor((today-d)/86400000);
+      return {id,t,days};
+    })
+    .sort((a,b)=>b.days-a.days)
+    .slice(0,5);
+
+  // ── Build HTML
+  el.innerHTML=`
+    <div class="rfi-hero">
+      <div class="rfi-hero-big">
+        <div class="rfi-hero-lbl">Open RFIs</div>
+        <div class="rfi-hero-val">${open+sent}</div>
+        <div class="rfi-hero-sub">${open} to send · ${sent} waiting for reply${overdue?' · <span style="color:#ef4444;font-weight:700">'+overdue+' overdue</span>':''}</div>
+      </div>
+      <div class="rfi-hero-mini">
+        <div class="rfi-hero-mini-card">
+          <div class="rfi-hero-mini-val">${open}</div>
+          <div class="rfi-hero-mini-lbl">To Send</div>
+        </div>
+        <div class="rfi-hero-mini-card">
+          <div class="rfi-hero-mini-val sent">${sent}</div>
+          <div class="rfi-hero-mini-lbl">Awaiting</div>
+        </div>
+        <div class="rfi-hero-mini-card">
+          <div class="rfi-hero-mini-val${overdue?' danger':''}">${overdue}</div>
+          <div class="rfi-hero-mini-lbl">Overdue</div>
+        </div>
+      </div>
+    </div>
+
+    ${nextUp?(()=>{
+      const [uid,ut]=nextUp;
+      const od=ut.dueDate&&ut.dueDate<today.toISOString().slice(0,10);
+      const dueLbl=ut.dueDate?(od?'Overdue · ':'Due ')+fmtRfiDate(ut.dueDate):'No due date set';
+      const sendTo=ut.sendTo?' → '+esc(ut.sendTo):'';
+      return `<div class="rfi-urgent">
+        <span class="rfi-urgent-lbl">Next up</span>
+        <div class="rfi-urgent-body">
+          <div class="rfi-urgent-title">${esc(ut.rfiNumber||'')} · ${esc(ut.title||'(no subject)')}</div>
+          <div class="rfi-urgent-meta">${dueLbl}${sendTo}</div>
+        </div>
+        <button class="rfi-urgent-cta" onclick="toggleRFISent('${uid}')">Mark Sent</button>
+      </div>`;
+    })():''}
+
+    <div class="rfi-two-col">
+      <div class="rfi-panel">
+        <h3>Recipient Leaderboard</h3>
+        ${leaderboard.length?`<div class="rfi-leader">${leaderboard.map(([name,r])=>`
+          <div class="rfi-leader-row">
+            <div class="rfi-leader-name">${esc(name)}</div>
+            <div class="rfi-leader-stat">${r.open}<span style="color:var(--text-muted)"> open</span> · ${r.sent}<span style="color:var(--text-muted)"> waiting</span></div>
+            <div class="rfi-leader-stat"><span class="pct">${r.total}</span></div>
+            <div class="rfi-leader-bar"><div class="rfi-leader-bar-fill" style="width:${Math.round(r.total/maxRec*100)}%"></div></div>
+          </div>`).join('')}</div>`:'<div style="color:var(--text-muted);font-size:12px">No RFIs with recipients yet.</div>'}
+      </div>
+
+      <div class="rfi-panel">
+        <h3>Weekly Closed · Last 8 Weeks</h3>
+        <div class="rfi-week-bars">
+          ${weeks.map(w=>`<div class="rfi-week-bar" data-count="${w.count}" style="height:${Math.round(w.count/maxWeek*100)}%" title="${w.count} closed"></div>`).join('')}
+        </div>
+        <div class="rfi-week-labels">
+          ${weeks.map(w=>`<div>${w.label}</div>`).join('')}
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:10px;text-align:right">
+          Total closed: <span style="color:#34d399;font-weight:700">${done}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rfi-two-col">
+      <div class="rfi-panel">
+        <h3>Oldest Open</h3>
+        ${aged.length?`<div class="rfi-aging">${aged.map(a=>{
+          const old=a.days>=14;
+          return `<div class="rfi-aging-row${old?' old':''}" onclick="setRFIView('list')" style="cursor:pointer">
+            <span class="rfi-aging-num">${esc(a.t.rfiNumber||'?')}</span>
+            <span class="rfi-aging-title">${esc(a.t.title||'(no subject)')}</span>
+            <span class="rfi-aging-days${old?' old':''}">${a.days}d</span>
+          </div>`;
+        }).join('')}</div>`:'<div style="color:var(--text-muted);font-size:12px">No open RFIs — you\\'re clear.</div>'}
+      </div>
+
+      <div class="rfi-panel">
+        <h3>Recent Activity</h3>
+        ${recent.length?`<div class="rfi-activity">${recent.map(ev=>{
+          const when=fmtActivityWhen(ev.ts);
+          const label=ev.type==='sent'?'Sent':ev.type==='closed'?'Closed':'Created';
+          return `<div class="rfi-activity-row">
+            <span class="rfi-activity-dot ${ev.type}"></span>
+            <div class="rfi-activity-text">
+              <div class="rfi-activity-action">${label}</div>
+              <div class="rfi-activity-body">${esc(ev.t.rfiNumber||'')} · ${esc(ev.t.title||'(no subject)')}</div>
+            </div>
+            <span class="rfi-activity-when">${when}</span>
+          </div>`;
+        }).join('')}</div>`:'<div style="color:var(--text-muted);font-size:12px">No activity yet — create your first RFI.</div>'}
+      </div>
+    </div>
+  `;
+}
+
+function fmtActivityWhen(iso){
+  if(!iso)return '';
+  const d=new Date(iso);
+  const diffMs=Date.now()-d.getTime();
+  const diffDays=Math.floor(diffMs/86400000);
+  const diffHrs=Math.floor(diffMs/3600000);
+  if(diffDays>=7)return fmtRfiDate(iso.slice(0,10));
+  if(diffDays>=1)return diffDays+'d ago';
+  if(diffHrs>=1)return diffHrs+'h ago';
+  const diffMin=Math.max(1,Math.floor(diffMs/60000));
+  return diffMin+'m ago';
+}
+
 function renderRFI(){
+  // Apply the currently-selected sub-view and delegate accordingly
+  const dashEl=document.getElementById('rfiDashView');
+  const listEl=document.getElementById('rfiListView');
+  if(dashEl)dashEl.style.display=rfiSubView==='dash'?'':'none';
+  if(listEl)listEl.style.display=rfiSubView==='list'?'':'none';
+  if(rfiSubView==='dash'){
+    renderRFIDashboard();
+    return;
+  }
   const list=document.getElementById('rfiList');
   if(!list)return;
   const {rfis,open,sent,done,overdue,dueSoon,total}=rfiStats();
-
-  // ── Dashboard cards
-  const dashEl=document.getElementById('rfiDash');
-  if(dashEl){
-    dashEl.innerHTML=`
-      <div class="rfi-dash-card accent">
-        <div class="rfi-dash-lbl">To Send</div>
-        <div class="rfi-dash-val">${open}</div>
-        <div class="rfi-dash-sub">${dueSoon?dueSoon+' due this week':'no deadline soon'}</div>
-      </div>
-      <div class="rfi-dash-card sent">
-        <div class="rfi-dash-lbl">Sent · Awaiting</div>
-        <div class="rfi-dash-val">${sent}</div>
-        <div class="rfi-dash-sub">${sent?'waiting for reply':'none sent'}</div>
-      </div>
-      <div class="rfi-dash-card ${overdue?'danger':''}">
-        <div class="rfi-dash-lbl">Overdue</div>
-        <div class="rfi-dash-val">${overdue}</div>
-        <div class="rfi-dash-sub">${overdue?'act today':'all on track'}</div>
-      </div>
-      <div class="rfi-dash-card">
-        <div class="rfi-dash-lbl">Closed</div>
-        <div class="rfi-dash-val">${done}</div>
-        <div class="rfi-dash-sub">${total} total</div>
-      </div>`;
-  }
 
   // ── Urgent "next to send" callout
   const urgEl=document.getElementById('rfiUrgent');
@@ -3463,7 +3754,7 @@ function switchView(v){
   // Pause Sisyphus loop when not on tasks view — saves CPU
   if(v!=='tasks'&&sisAnim){cancelAnimationFrame(sisAnim);sisAnim=null}
   if(v==='tasks')initSisyphus();
-  if(v==='rfi')renderRFI();
+  if(v==='rfi')setRFIView(rfiSubView);
   if(v==='calendar')renderCalendar();
   if(v==='stats')renderStatsView();
 }
