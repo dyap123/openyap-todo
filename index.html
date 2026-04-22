@@ -378,12 +378,34 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .rfi-week-labels{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:4px;font-size:9px;color:var(--text-muted);text-align:center;letter-spacing:.05em}
 
 .rfi-aging{display:flex;flex-direction:column;gap:8px}
-.rfi-aging-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 10px;background:var(--card-hover);border-radius:8px;font-size:12px}
+.rfi-aging-row{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;padding:8px 10px;background:var(--card-hover);border-radius:8px;font-size:12px;transition:background .15s ease,border-color .15s ease}
+.rfi-aging-row:hover{background:var(--accent1-10)}
 .rfi-aging-row.old{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2)}
+.rfi-aging-row.old:hover{background:rgba(239,68,68,0.14)}
+.rfi-aging-row .rfi-aging-main{display:contents;cursor:pointer}
 .rfi-aging-num{font-family:'SF Mono',Menlo,Consolas,monospace;font-weight:800;font-size:11px;color:#fbbf24}
 .rfi-aging-title{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .rfi-aging-days{font-size:11px;color:var(--text-muted);font-family:'SF Mono',Menlo,Consolas,monospace;white-space:nowrap}
 .rfi-aging-days.old{color:#ef4444;font-weight:700}
+.rfi-aging-actions{display:flex;gap:4px;align-items:center}
+.rfi-inline-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:4px 8px;border-radius:6px;border:1px solid transparent;background:rgba(255,255,255,0.04);color:var(--text-muted);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all .15s ease;white-space:nowrap;min-height:24px}
+.rfi-inline-btn:hover{background:rgba(255,255,255,0.08);color:var(--text)}
+.rfi-inline-btn.send{color:#34d399}
+.rfi-inline-btn.send:hover{background:rgba(52,211,153,0.12);border-color:rgba(52,211,153,0.35);color:#34d399}
+.rfi-inline-btn.send.on{background:rgba(52,211,153,0.14);border-color:rgba(52,211,153,0.35);color:#34d399}
+.rfi-inline-btn.close{color:#a0a0b0}
+.rfi-inline-btn.close:hover{background:rgba(139,92,246,0.14);border-color:rgba(139,92,246,0.35);color:var(--accent1)}
+.rfi-inline-btn svg{width:12px;height:12px}
+.rfi-urgent-actions{display:flex;gap:6px}
+.rfi-triage-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;background:var(--card);border:1px solid var(--card-border);border-radius:999px;font-size:11px;font-weight:600;color:var(--text);letter-spacing:.02em}
+.rfi-triage-dot{width:8px;height:8px;border-radius:50%;background:var(--accent1)}
+.rfi-triage-dot.tosend{background:#fbbf24}
+.rfi-triage-dot.awaiting{background:#34d399}
+.rfi-triage-dot.overdue{background:#ef4444}
+.rfi-triage-chip button{background:transparent;border:0;color:var(--text-muted);font-size:14px;line-height:1;cursor:pointer;padding:0 2px;margin-left:2px}
+.rfi-triage-chip button:hover{color:var(--text)}
+.rfi-hero-mini-card{transition:border-color .15s ease,transform .15s ease,background .15s ease}
+.rfi-hero-mini-card:hover{border-color:var(--card-hover);transform:translateY(-1px);background:rgba(0,0,0,0.25)}
 
 /* ── RFI view ─────────────────────────────────────────────────────── */
 .rfi-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px;flex-wrap:wrap}
@@ -1028,6 +1050,9 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
 
   <!-- List sub-view -->
   <div id="rfiListView" style="display:none">
+    <!-- Active triage chip (set when you jump from a dashboard mini-card) -->
+    <div id="rfiFilterChip" style="display:none;margin-bottom:10px"></div>
+
     <!-- Urgent / next-to-send callout -->
     <div id="rfiUrgent"></div>
 
@@ -3268,7 +3293,30 @@ function refreshFromSuggestions(){
 //  RFI View
 // ═══════════════════════════════════════════
 let rfiRecFilter='all'; // 'all' | recipient name | '' (no recipient)
+let rfiListFilter='all'; // 'all' | 'tosend' | 'awaiting' | 'overdue' — set by dashboard mini-card clicks
+let rfiFocusId=null; // when jumping from dashboard, scroll/highlight this id once
 let rfiSubView=localStorage.getItem('oyt_rfi_view')||'dash'; // 'dash' | 'list'
+function jumpRFIFilter(kind){
+  rfiListFilter=kind||'all';
+  setRFIView('list');
+  // Scroll the list to top so the filter lands cleanly in view
+  setTimeout(()=>document.getElementById('rfiListView')?.scrollIntoView({behavior:'smooth',block:'start'}),60);
+}
+function clearRFIListFilter(){ rfiListFilter='all'; renderRFI(); }
+function openRFIInList(id){
+  rfiFocusId=id;
+  setRFIView('list');
+  setTimeout(()=>{
+    const el=document.querySelector('.rfi-card[data-id="'+id+'"]');
+    if(el){
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+      el.style.transition='box-shadow .5s ease';
+      el.style.boxShadow='0 0 0 2px rgba(251,191,36,0.55)';
+      setTimeout(()=>el.style.boxShadow='',1200);
+    }
+    rfiFocusId=null;
+  },120);
+}
 function setRFIView(v){
   rfiSubView=v;
   localStorage.setItem('oyt_rfi_view',v);
@@ -3524,15 +3572,15 @@ function renderRFIDashboard(){
         <div class="rfi-hero-sub">${open} to send · ${sent} waiting for reply${overdue?' · <span style="color:#ef4444;font-weight:700">'+overdue+' overdue</span>':''}</div>
       </div>
       <div class="rfi-hero-mini">
-        <div class="rfi-hero-mini-card">
+        <div class="rfi-hero-mini-card" onclick="jumpRFIFilter('tosend')" style="cursor:pointer" title="Show RFIs that still need to be sent">
           <div class="rfi-hero-mini-val">${open}</div>
           <div class="rfi-hero-mini-lbl">To Send</div>
         </div>
-        <div class="rfi-hero-mini-card">
+        <div class="rfi-hero-mini-card" onclick="jumpRFIFilter('awaiting')" style="cursor:pointer" title="Show sent RFIs still open">
           <div class="rfi-hero-mini-val sent">${sent}</div>
           <div class="rfi-hero-mini-lbl">Awaiting</div>
         </div>
-        <div class="rfi-hero-mini-card">
+        <div class="rfi-hero-mini-card" onclick="jumpRFIFilter('overdue')" style="cursor:pointer" title="Show open RFIs past due date">
           <div class="rfi-hero-mini-val${overdue?' danger':''}">${overdue}</div>
           <div class="rfi-hero-mini-lbl">Overdue</div>
         </div>
@@ -3544,13 +3592,18 @@ function renderRFIDashboard(){
       const od=ut.dueDate&&ut.dueDate<today.toISOString().slice(0,10);
       const dueLbl=ut.dueDate?(od?'Overdue · ':'Due ')+fmtRfiDate(ut.dueDate):'No due date set';
       const sendTo=ut.sendTo?' → '+esc(ut.sendTo):'';
+      const sentOn=!!ut.sent;
+      const sendLbl=sentOn?'Sent ✓':'Mark Sent';
       return `<div class="rfi-urgent">
         <span class="rfi-urgent-lbl">Next up</span>
         <div class="rfi-urgent-body">
           <div class="rfi-urgent-title">${esc(ut.rfiNumber||'')} · ${esc(ut.title||'(no subject)')}</div>
           <div class="rfi-urgent-meta">${dueLbl}${sendTo}</div>
         </div>
-        <button class="rfi-urgent-cta" onclick="toggleRFISent('${uid}')">Mark Sent</button>
+        <div class="rfi-urgent-actions">
+          <button class="rfi-urgent-cta" onclick="toggleRFISent('${uid}')">${sendLbl}</button>
+          <button class="rfi-inline-btn close" onclick="toggleRFIDone('${uid}')" title="Close RFI"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 8 7 12 13 4"/></svg>Close</button>
+        </div>
       </div>`;
     })():''}
 
@@ -3585,10 +3638,18 @@ function renderRFIDashboard(){
         <h3>Oldest Open</h3>
         ${aged.length?`<div class="rfi-aging">${aged.map(a=>{
           const old=a.days>=14;
-          return `<div class="rfi-aging-row${old?' old':''}" onclick="setRFIView('list')" style="cursor:pointer">
-            <span class="rfi-aging-num">${esc(a.t.rfiNumber||'?')}</span>
-            <span class="rfi-aging-title">${esc(a.t.title||'(no subject)')}</span>
-            <span class="rfi-aging-days${old?' old':''}">${a.days}d</span>
+          const sentOn=!!a.t.sent;
+          const sendTitle=sentOn?'Unmark sent':'Mark sent';
+          return `<div class="rfi-aging-row${old?' old':''}" data-id="${a.id}">
+            <span class="rfi-aging-main" onclick="openRFIInList('${a.id}')" title="Open in list">
+              <span class="rfi-aging-num">${esc(a.t.rfiNumber||'?')}</span>
+              <span class="rfi-aging-title">${esc(a.t.title||'(no subject)')}</span>
+              <span class="rfi-aging-days${old?' old':''}">${a.days}d</span>
+            </span>
+            <span class="rfi-aging-actions">
+              <button class="rfi-inline-btn send${sentOn?' on':''}" onclick="event.stopPropagation();toggleRFISent('${a.id}')" title="${sendTitle}"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8l5 2 7-7-5 12-2-4z"/></svg>${sentOn?'Sent':'Send'}</button>
+              <button class="rfi-inline-btn close" onclick="event.stopPropagation();toggleRFIDone('${a.id}')" title="Close RFI"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 8 7 12 13 4"/></svg>Close</button>
+            </span>
           </div>`;
         }).join('')}</div>`:'<div style="color:var(--text-muted);font-size:12px">No open RFIs — you’re clear.</div>'}
       </div>
@@ -3691,6 +3752,23 @@ function renderRFI(){
   let filtered=rfis;
   if(rfiRecFilter!=='all'){
     filtered=filtered.filter(([,t])=>(t.sendTo||'').trim()===rfiRecFilter);
+  }
+  // Triage filter set by dashboard mini-card clicks
+  if(rfiListFilter!=='all'){
+    const todayStr=new Date().toISOString().slice(0,10);
+    if(rfiListFilter==='tosend')   filtered=filtered.filter(([,t])=>!t.completed&&!t.sent);
+    if(rfiListFilter==='awaiting') filtered=filtered.filter(([,t])=>!t.completed&& t.sent);
+    if(rfiListFilter==='overdue')  filtered=filtered.filter(([,t])=>!t.completed&&t.dueDate&&t.dueDate<todayStr);
+  }
+  // Active triage chip above the list
+  const chipEl=document.getElementById('rfiFilterChip');
+  if(chipEl){
+    if(rfiListFilter==='all'){chipEl.style.display='none';chipEl.innerHTML='';}
+    else{
+      const chipLbl={tosend:'To Send',awaiting:'Awaiting reply',overdue:'Overdue'}[rfiListFilter]||rfiListFilter;
+      chipEl.style.display='';
+      chipEl.innerHTML=`<span class="rfi-triage-chip"><span class="rfi-triage-dot ${rfiListFilter}"></span>${chipLbl}<button onclick="clearRFIListFilter()" aria-label="Clear filter">×</button></span>`;
+    }
   }
   // Sort: unsent first, then sent-waiting, then done. Within group by RFI number desc.
   filtered.sort((a,b)=>{
