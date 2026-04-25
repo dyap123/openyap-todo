@@ -280,17 +280,22 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .next-pour-widget{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .next-pour-notes{width:100%;min-height:96px;background:var(--card-hover);border:1px solid transparent;border-radius:10px;padding:8px 10px;font:12px/1.5 inherit;color:inherit;resize:vertical;transition:border-color .15s}
 .next-pour-notes:focus{outline:none;border-color:var(--accent1-06)}
-.routine-header{display:flex;align-items:center;justify-content:space-between;padding:0 4px}
+.routine-card{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.routine-header{display:flex;align-items:center;justify-content:space-between}
 .rs-section-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}
-.rs-progress{font-size:10px;color:var(--text-muted);font-variant-numeric:tabular-nums}
-.routine-list{display:flex;flex-direction:column;gap:6px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:10px}
-.r-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--card-hover);border:1px solid transparent;cursor:pointer;transition:background .15s,border-color .15s}
-.r-item:hover{border-color:var(--accent1-06)}
-.r-item .ck{width:18px;height:18px;border-radius:6px;border:1.5px solid var(--card-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
-.r-item.done .ck{background:var(--accent1);border-color:var(--accent1);color:#000}
-.r-item.done .r-title{color:var(--text-muted);text-decoration:line-through}
-.r-title{font-size:12px;line-height:1.3;flex:1;min-width:0;word-wrap:break-word}
-.r-empty{font-size:11px;color:var(--text-muted);padding:8px 4px;text-align:center}
+.rs-progress{font-size:11px;color:var(--accent1);font-variant-numeric:tabular-nums;font-weight:600}
+.rs-bar-track{height:3px;background:var(--card-hover);border-radius:2px;overflow:hidden}
+.rs-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent1),var(--accent2,var(--accent1)));border-radius:2px;transition:width .35s var(--ease,ease)}
+.routine-list{display:flex;flex-direction:column;gap:2px}
+.r-item{display:flex;align-items:center;gap:11px;padding:9px 4px;border-radius:8px;cursor:pointer;transition:background .12s,padding-left .15s;user-select:none;-webkit-tap-highlight-color:transparent}
+.r-item:hover{background:var(--card-hover);padding-left:8px}
+.r-item:active{transform:scale(0.99)}
+.r-item .ck{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--card-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#000;transition:background .18s var(--ease,ease),border-color .18s var(--ease,ease),transform .18s var(--ease,ease)}
+.r-item:hover .ck{border-color:var(--accent1)}
+.r-item.done .ck{background:var(--accent1);border-color:var(--accent1);transform:scale(1.05)}
+.r-item.done .r-title{color:var(--text-muted);text-decoration:line-through;text-decoration-thickness:1px;text-decoration-color:rgba(255,255,255,0.25)}
+.r-title{font-size:13px;line-height:1.35;flex:1;min-width:0;word-wrap:break-word;transition:color .18s}
+.r-empty{font-size:11px;color:var(--text-muted);padding:14px 4px;text-align:center;line-height:1.5}
 @media(max-width:900px){
   .tasks-grid{grid-template-columns:1fr}
   .routine-side{position:static}
@@ -819,7 +824,17 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .w-empty .h{font-size:12px;max-width:340px;margin:0 auto;line-height:1.5}
 .stats-wrap{max-width:680px;margin:0 auto;padding:20px 20px 100px;position:relative;z-index:1}
 .stats-section{margin-bottom:20px}
-.stats-title{font-size:12px;font-weight:700;color:var(--accent1);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.stats-title{font-size:12px;font-weight:700;color:var(--accent1);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.at-count{font-size:10px;color:var(--text-muted);background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:1px 8px;letter-spacing:0;font-weight:600}
+.at-list{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:6px;max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.at-list::-webkit-scrollbar{width:6px}
+.at-list::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:3px}
+.at-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;transition:background .12s}
+.at-row:hover{background:var(--card-hover)}
+.at-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;box-shadow:0 0 6px currentColor;opacity:0.8}
+.at-title{flex:1;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.at-date{font-size:10px;color:var(--text-muted);font-variant-numeric:tabular-nums;white-space:nowrap;flex-shrink:0}
+.at-time{opacity:0.5}
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .stat-big{position:relative;background:linear-gradient(135deg,var(--panel-1),var(--panel-2));backdrop-filter:blur(12px);border:1.5px solid transparent;background-clip:padding-box;border-radius:14px;padding:18px 16px;text-align:center;overflow:hidden;transition:all .3s var(--ease)}
 .stat-big::before{content:'';position:absolute;inset:-1.5px;border-radius:14px;padding:1.5px;background:linear-gradient(135deg,var(--accent1),var(--accent3),var(--accent2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:0.4;transition:opacity .3s}
@@ -1110,11 +1125,14 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
         <div class="rs-section-label">Next Pour</div>
         <textarea id="nextPourNotes" class="next-pour-notes" placeholder="Notes for next pour..." oninput="onNextPourInput()"></textarea>
       </div>
-      <div class="routine-header">
-        <div class="rs-section-label">↻ Daily Routine</div>
-        <div class="rs-progress" id="rsProgress"></div>
+      <div class="routine-card">
+        <div class="routine-header">
+          <div class="rs-section-label">↻ Daily Routine</div>
+          <div class="rs-progress" id="rsProgress"></div>
+        </div>
+        <div class="rs-bar-track"><div class="rs-bar-fill" id="rsBar"></div></div>
+        <div class="routine-list" id="routineList"></div>
       </div>
-      <div class="routine-list" id="routineList"></div>
     </aside>
   </div>
 </div><!-- /tasks -->
@@ -1253,7 +1271,7 @@ const DIFF_WEIGHTS={easy:1,medium:2,hard:4,epic:8};
 
 function attachListeners(){
   fbListen('todo/tasks',val=>{tasks=val||{};renderTasks();if(currentView==='calendar')renderCalendar();if(currentView==='rfi')renderRFI()});
-  fbListen('todo/history',val=>{taskHistory=val||{};renderDashV2();renderCmdMetrics()});
+  fbListen('todo/history',val=>{taskHistory=val||{};renderDashV2();renderCmdMetrics();if(currentView==='stats')renderStatsView()});
   fbListen('todo/wasted',val=>{wastedLog=val||{};if(currentView==='wasted')renderWasted()});
   attachNextPourListener();
 }
@@ -2420,6 +2438,29 @@ function initSisyphus(){
   draw();
 }
 
+// Routine checklist — checks key on today's LA date; midnight PST/PDT resets implicitly
+function todayPST(){
+  return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+}
+function toggleRoutine(id){
+  const t=tasks[id];if(!t)return;
+  const today=todayPST();
+  const isDone=(t.routineCheckedDate||'')===today;
+  fbSet(`todo/tasks/${id}/routineCheckedDate`,isDone?'':today);
+  // Stamp history on check so routine ticks count toward all-time totals + Sisyphus
+  if(!isDone){
+    fbPush('todo/history',{
+      title:t.title||'',difficulty:t.difficulty||'easy',category:'routine',
+      priority:t.priority||'medium',completedAt:new Date().toISOString()
+    });
+  }
+}
+let _lastRoutineDate=todayPST();
+setInterval(()=>{
+  const d=todayPST();
+  if(d!==_lastRoutineDate){_lastRoutineDate=d;renderRoutineList()}
+},60000);
+
 let _nextPourSaveTimer=null;
 function onNextPourInput(){
   const el=document.getElementById('nextPourNotes');
@@ -2436,22 +2477,28 @@ function attachNextPourListener(){
 function renderRoutineList(){
   const list=document.getElementById('routineList');
   const prog=document.getElementById('rsProgress');
+  const bar=document.getElementById('rsBar');
   if(!list)return;
+  const today=todayPST();
   const items=Object.entries(tasks).filter(([,t])=>t.category==='routine');
   items.sort((a,b)=>(a[1].order||0)-(b[1].order||0));
   if(!items.length){
-    list.innerHTML='<div class="r-empty">No routine items yet</div>';
+    list.innerHTML='<div class="r-empty">No routine items yet — add one with the ↻ Routine button</div>';
     if(prog)prog.textContent='';
+    if(bar)bar.style.width='0%';
     return;
   }
-  const done=items.filter(([,t])=>t.completed).length;
+  const done=items.filter(([,t])=>(t.routineCheckedDate||'')===today).length;
+  const pct=Math.round(done/items.length*100);
   if(prog)prog.textContent=`${done}/${items.length}`;
-  list.innerHTML=items.map(([id,t])=>`
-    <div class="r-item ${t.completed?'done':''}" onclick="toggleDone('${id}')">
-      <div class="ck">${t.completed?'✓':''}</div>
+  if(bar)bar.style.width=pct+'%';
+  list.innerHTML=items.map(([id,t])=>{
+    const checked=(t.routineCheckedDate||'')===today;
+    return `<div class="r-item ${checked?'done':''}" onclick="toggleRoutine('${id}')">
+      <div class="ck">${checked?'<svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 8 7 12 13 4"/></svg>':''}</div>
       <div class="r-title">${esc(t.title||'')}</div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 function renderTasks(){
   // Preserve scroll position — avoids jumping to top when Firebase listener
@@ -4398,12 +4445,18 @@ function renderStatsOverview(){
   const pool=VERDICT_POOL[tier];
   const verdict=pool[Math.floor(Math.random()*pool.length)];
 
+  // All-time completions sourced from history (covers recurring + routine + one-shots)
+  const histEntries=Object.entries(taskHistory||{})
+    .map(([id,h])=>({id,...h}))
+    .sort((a,b)=>(b.completedAt||'').localeCompare(a.completedAt||''));
+  const allTimeCount=histEntries.length;
+
   return `
   <div class="stats-section">
     <div class="stats-title">Overview</div>
     <div class="stats-grid">
       <div class="stat-big"><div class="stat-big-val">${all.length}</div><div class="stat-big-label">Total Tasks</div></div>
-      <div class="stat-big"><div class="stat-big-val">${done.length}</div><div class="stat-big-label">Completed</div></div>
+      <div class="stat-big"><div class="stat-big-val">${allTimeCount}</div><div class="stat-big-label">All-Time Done</div></div>
       <div class="stat-big"><div class="stat-big-val">${active.length}</div><div class="stat-big-label">Active</div></div>
     </div>
   </div>
@@ -4454,6 +4507,24 @@ function renderStatsOverview(){
       <div class="stat-big"><div class="stat-big-val">${active.filter(t=>t.priority==='medium').length}</div><div class="stat-big-label">Medium Active</div></div>
       <div class="stat-big"><div class="stat-big-val">${active.filter(t=>t.priority==='low').length}</div><div class="stat-big-label">Low Active</div></div>
     </div>
+  </div>
+
+  <div class="stats-section">
+    <div class="stats-title">All-Time Completions <span class="at-count">${allTimeCount}</span></div>
+    ${allTimeCount?`<div class="at-list">
+      ${histEntries.map(h=>{
+        const dt=h.completedAt?new Date(h.completedAt):null;
+        const dateStr=dt?dt.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'2-digit'}):'';
+        const timeStr=dt?dt.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}):'';
+        const cat=h.category||'personal';
+        const catColor=cat==='work'?'var(--accent2)':cat==='project'?'var(--accent3,var(--accent2))':cat==='rfi'?'#fbbf24':cat==='routine'?'#22d3ee':'var(--accent1)';
+        return `<div class="at-row">
+          <span class="at-dot" style="background:${catColor}"></span>
+          <span class="at-title">${esc(h.title||'')}</span>
+          <span class="at-date">${dateStr}<span class="at-time"> ${timeStr}</span></span>
+        </div>`;
+      }).join('')}
+    </div>`:'<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px">No completions logged yet</div>'}
   </div>
 
   <div class="stats-section">
