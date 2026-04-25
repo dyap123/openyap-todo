@@ -278,7 +278,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .tasks-main{min-width:0}
 .routine-side{display:flex;flex-direction:column;gap:12px;position:sticky;top:12px}
 .next-pour-widget{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
-.next-pour-body{display:flex;flex-direction:column;gap:6px}
+.next-pour-notes{width:100%;min-height:96px;background:var(--card-hover);border:1px solid transparent;border-radius:10px;padding:8px 10px;font:12px/1.5 inherit;color:inherit;resize:vertical;transition:border-color .15s}
+.next-pour-notes:focus{outline:none;border-color:var(--accent1-06)}
 .routine-header{display:flex;align-items:center;justify-content:space-between;padding:0 4px}
 .rs-section-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}
 .rs-progress{font-size:10px;color:var(--text-muted);font-variant-numeric:tabular-nums}
@@ -1104,12 +1105,10 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
       <div class="stats" id="stats"></div>
     </div>
     <aside class="routine-side" id="routineSide">
-      <!-- Next Pour widget — placeholder for user to fill in (read from cup-dashboard RTDB) -->
+      <!-- Next Pour widget — free-form notes, auto-saves to Firebase -->
       <div class="next-pour-widget" id="nextPourWidget">
         <div class="rs-section-label">Next Pour</div>
-        <div class="next-pour-body">
-          <div style="font-size:11px;color:var(--text-muted);line-height:1.5">Widget placeholder. Wire this to cup-dashboard RTDB <code>pours-user</code>.</div>
-        </div>
+        <textarea id="nextPourNotes" class="next-pour-notes" placeholder="Notes for next pour..." oninput="onNextPourInput()"></textarea>
       </div>
       <div class="routine-header">
         <div class="rs-section-label">↻ Daily Routine</div>
@@ -1256,6 +1255,7 @@ function attachListeners(){
   fbListen('todo/tasks',val=>{tasks=val||{};renderTasks();if(currentView==='calendar')renderCalendar();if(currentView==='rfi')renderRFI()});
   fbListen('todo/history',val=>{taskHistory=val||{};renderDashV2();renderCmdMetrics()});
   fbListen('todo/wasted',val=>{wastedLog=val||{};if(currentView==='wasted')renderWasted()});
+  attachNextPourListener();
 }
 
 // ═══════════════════════════════════════════
@@ -2420,6 +2420,19 @@ function initSisyphus(){
   draw();
 }
 
+let _nextPourSaveTimer=null;
+function onNextPourInput(){
+  const el=document.getElementById('nextPourNotes');
+  if(!el)return;
+  clearTimeout(_nextPourSaveTimer);
+  _nextPourSaveTimer=setTimeout(()=>fbSet('todo/nextPour/notes',el.value),400);
+}
+function attachNextPourListener(){
+  fbListen('todo/nextPour/notes',(val)=>{
+    const el=document.getElementById('nextPourNotes');
+    if(el && document.activeElement!==el) el.value=val||'';
+  });
+}
 function renderRoutineList(){
   const list=document.getElementById('routineList');
   const prog=document.getElementById('rsProgress');
