@@ -277,7 +277,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .tasks-grid{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
 .tasks-main{min-width:0}
 .routine-side{display:flex;flex-direction:column;gap:12px;position:sticky;top:12px}
-.next-pour-widget{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.next-pour-widget{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.next-pour-date-wrap{position:relative;cursor:pointer;padding:6px 2px}
+.next-pour-date{font-size:18px;font-weight:800;letter-spacing:-0.3px;background:linear-gradient(135deg,var(--accent1),var(--accent3,var(--accent2,var(--accent1))));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block}
+.next-pour-date.unset{color:var(--text-muted);background:none;-webkit-text-fill-color:initial;font-weight:600;font-size:14px;letter-spacing:0}
+.next-pour-date-input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
 .next-pour-notes{width:100%;min-height:96px;background:var(--card-hover);border:1px solid transparent;border-radius:10px;padding:8px 10px;font:12px/1.5 inherit;color:inherit;resize:vertical;transition:border-color .15s}
 .next-pour-notes:focus{outline:none;border-color:var(--accent1-06)}
 .routine-card{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
@@ -1120,9 +1124,13 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
       <div class="stats" id="stats"></div>
     </div>
     <aside class="routine-side" id="routineSide">
-      <!-- Next Pour widget — free-form notes, auto-saves to Firebase -->
+      <!-- Next Pour widget — date + free-form notes, auto-saves to Firebase -->
       <div class="next-pour-widget" id="nextPourWidget">
         <div class="rs-section-label">Next Pour</div>
+        <div class="next-pour-date-wrap" onclick="document.getElementById('nextPourDate').showPicker?document.getElementById('nextPourDate').showPicker():document.getElementById('nextPourDate').focus()">
+          <span class="next-pour-date" id="nextPourDateLabel">Set date</span>
+          <input type="date" id="nextPourDate" class="next-pour-date-input" onchange="onNextPourDateChange()">
+        </div>
         <textarea id="nextPourNotes" class="next-pour-notes" placeholder="Notes for next pour..." oninput="onNextPourInput()"></textarea>
       </div>
       <div class="routine-card">
@@ -2468,10 +2476,33 @@ function onNextPourInput(){
   clearTimeout(_nextPourSaveTimer);
   _nextPourSaveTimer=setTimeout(()=>fbSet('todo/nextPour/notes',el.value),400);
 }
+function fmtNextPourDate(iso){
+  if(!iso)return 'Set date';
+  const d=new Date(iso+'T00:00:00');
+  if(isNaN(d))return 'Set date';
+  return d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+}
+function applyNextPourDate(iso){
+  const lbl=document.getElementById('nextPourDateLabel');
+  const inp=document.getElementById('nextPourDate');
+  if(lbl){lbl.textContent=fmtNextPourDate(iso);lbl.classList.toggle('unset',!iso)}
+  if(inp)inp.value=iso||'';
+}
+function onNextPourDateChange(){
+  const inp=document.getElementById('nextPourDate');
+  if(!inp)return;
+  const v=inp.value||'';
+  applyNextPourDate(v);
+  fbSet('todo/nextPour/date',v);
+}
 function attachNextPourListener(){
   fbListen('todo/nextPour/notes',(val)=>{
     const el=document.getElementById('nextPourNotes');
     if(el && document.activeElement!==el) el.value=val||'';
+  });
+  fbListen('todo/nextPour/date',(val)=>{
+    const inp=document.getElementById('nextPourDate');
+    if(inp && document.activeElement!==inp) applyNextPourDate(val||'');
   });
 }
 function renderRoutineList(){
