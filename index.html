@@ -273,6 +273,28 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .fp{padding:4px 12px;border-radius:14px;font-size:10px;font-weight:600;border:1px solid rgba(255,255,255,0.06);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;transition:all .15s}
 .fp:hover{color:rgba(255,255,255,0.4)}
 
+/* Tasks + Routine sidebar layout */
+.tasks-grid{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+.tasks-main{min-width:0}
+.routine-side{display:flex;flex-direction:column;gap:12px;position:sticky;top:12px}
+.next-pour-widget{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.next-pour-body{display:flex;flex-direction:column;gap:6px}
+.routine-header{display:flex;align-items:center;justify-content:space-between;padding:0 4px}
+.rs-section-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}
+.rs-progress{font-size:10px;color:var(--text-muted);font-variant-numeric:tabular-nums}
+.routine-list{display:flex;flex-direction:column;gap:6px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:10px}
+.r-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--card-hover);border:1px solid transparent;cursor:pointer;transition:background .15s,border-color .15s}
+.r-item:hover{border-color:var(--accent1-06)}
+.r-item .ck{width:18px;height:18px;border-radius:6px;border:1.5px solid var(--card-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.r-item.done .ck{background:var(--accent1);border-color:var(--accent1);color:#000}
+.r-item.done .r-title{color:var(--text-muted);text-decoration:line-through}
+.r-title{font-size:12px;line-height:1.3;flex:1;min-width:0;word-wrap:break-word}
+.r-empty{font-size:11px;color:var(--text-muted);padding:8px 4px;text-align:center}
+@media(max-width:900px){
+  .tasks-grid{grid-template-columns:1fr}
+  .routine-side{position:static}
+}
+
 /* Task Cards */
 .task-list{display:flex;flex-direction:column;gap:10px}
 .tc{position:relative;background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--accent1-06);border-radius:14px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;transition:transform .35s var(--ease),border-color .35s var(--ease),box-shadow .55s var(--ease),backdrop-filter .35s var(--ease);animation:ti .35s var(--ease) both}
@@ -998,6 +1020,7 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
         <button class="ob s" data-c="work" onclick="setCat('work')">Work</button>
         <button class="ob" data-c="personal" onclick="setCat('personal')">Personal</button>
         <button class="ob" data-c="project" onclick="setCat('project')">Project</button>
+        <button class="ob" data-c="routine" onclick="setCat('routine')">↻ Routine</button>
       </div>
       <div class="opt-grp">
         <button class="ob" data-p="high" onclick="setPri('high')">High</button>
@@ -1074,9 +1097,27 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
   <!-- Requester pill strip -->
   <div class="req-strip" id="reqStrip"></div>
 
-  <!-- Task List -->
-  <div class="task-list" id="taskList"></div>
-  <div class="stats" id="stats"></div>
+  <!-- Task List + Daily Routine sidebar -->
+  <div class="tasks-grid">
+    <div class="tasks-main">
+      <div class="task-list" id="taskList"></div>
+      <div class="stats" id="stats"></div>
+    </div>
+    <aside class="routine-side" id="routineSide">
+      <!-- Next Pour widget — placeholder for user to fill in (read from cup-dashboard RTDB) -->
+      <div class="next-pour-widget" id="nextPourWidget">
+        <div class="rs-section-label">Next Pour</div>
+        <div class="next-pour-body">
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.5">Widget placeholder. Wire this to cup-dashboard RTDB <code>pours-user</code>.</div>
+        </div>
+      </div>
+      <div class="routine-header">
+        <div class="rs-section-label">↻ Daily Routine</div>
+        <div class="rs-progress" id="rsProgress"></div>
+      </div>
+      <div class="routine-list" id="routineList"></div>
+    </aside>
+  </div>
 </div><!-- /tasks -->
 
 <!-- RFI View -->
@@ -2379,10 +2420,31 @@ function initSisyphus(){
   draw();
 }
 
+function renderRoutineList(){
+  const list=document.getElementById('routineList');
+  const prog=document.getElementById('rsProgress');
+  if(!list)return;
+  const items=Object.entries(tasks).filter(([,t])=>t.category==='routine');
+  items.sort((a,b)=>(a[1].order||0)-(b[1].order||0));
+  if(!items.length){
+    list.innerHTML='<div class="r-empty">No routine items yet</div>';
+    if(prog)prog.textContent='';
+    return;
+  }
+  const done=items.filter(([,t])=>t.completed).length;
+  if(prog)prog.textContent=`${done}/${items.length}`;
+  list.innerHTML=items.map(([id,t])=>`
+    <div class="r-item ${t.completed?'done':''}" onclick="toggleDone('${id}')">
+      <div class="ck">${t.completed?'✓':''}</div>
+      <div class="r-title">${esc(t.title||'')}</div>
+    </div>
+  `).join('');
+}
 function renderTasks(){
   // Preserve scroll position — avoids jumping to top when Firebase listener
   // re-renders (e.g. after slider release triggers a task update)
   const savedScroll=window.scrollY;
+  renderRoutineList();
   renderDashV2();
   renderCmdMetrics();
   updateControlBarLabels();
@@ -2414,6 +2476,8 @@ function renderTasks(){
   // RFIs live on the RFI tab only — they still count in stats via todo/history.
   // Exception: if user explicitly filters to rfi, show them here too.
   if(fCat!=='rfi')fl=fl.filter(([,t])=>t.category!=='rfi');
+  // Routine items live in the daily-routine sidebar. Same exception as RFIs.
+  if(fCat!=='routine')fl=fl.filter(([,t])=>t.category!=='routine');
   if(fStatus==='active')fl=fl.filter(([,t])=>!t.completed);
   if(fStatus==='completed')fl=fl.filter(([,t])=>t.completed);
   if(fCat!=='all')fl=fl.filter(([,t])=>t.category===fCat);
@@ -2577,7 +2641,8 @@ function toggleFilterPop(){
     <button class="ctrl-pop-item ${fCat==='work'?'active':''}" onclick="fCat='work';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--cat-work-fg)"></span>Work</button>
     <button class="ctrl-pop-item ${fCat==='personal'?'active':''}" onclick="fCat='personal';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--accent1)"></span>Personal</button>
     <button class="ctrl-pop-item ${fCat==='project'?'active':''}" onclick="fCat='project';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--accent3,var(--accent2))"></span>Project</button>
-    <button class="ctrl-pop-item ${fCat==='rfi'?'active':''}" onclick="fCat='rfi';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:#fbbf24"></span>RFI</button>`;
+    <button class="ctrl-pop-item ${fCat==='rfi'?'active':''}" onclick="fCat='rfi';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:#fbbf24"></span>RFI</button>
+    <button class="ctrl-pop-item ${fCat==='routine'?'active':''}" onclick="fCat='routine';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:#22d3ee"></span>Routine</button>`;
   pop.classList.add('open');
   pill.classList.add('open');
 }
