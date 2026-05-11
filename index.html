@@ -383,9 +383,24 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
   80%{opacity:1;transform:translateY(-10px)scale(1)}
   100%{transform:translateY(-22px)scale(0.96);opacity:0}
 }
+/* Centered encouragement word — randomized text + points sub */
+.celeb-word{position:fixed;top:38%;left:50%;font-family:var(--font-en);font-size:clamp(28px,5vw,52px);font-weight:900;letter-spacing:-0.02em;text-align:center;background:linear-gradient(135deg,var(--accent1),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:0 0 24px var(--glow-pink);pointer-events:none;z-index:9998;will-change:transform,opacity;animation:celebWord 1.2s cubic-bezier(.16,1,.3,1) forwards;line-height:1.0;white-space:nowrap}
+.celeb-word .sub{display:block;font-size:0.30em;font-weight:600;letter-spacing:0.20em;text-transform:uppercase;color:var(--text-muted);-webkit-text-fill-color:var(--text-muted);background:none;margin-top:6px;text-shadow:none}
+.celeb-word-easy{background:linear-gradient(135deg,#4ade80,#86efac);-webkit-background-clip:text;background-clip:text;text-shadow:0 0 18px rgba(74,222,128,0.5)}
+.celeb-word-hard{background:linear-gradient(135deg,#f97316,#ff2e88);-webkit-background-clip:text;background-clip:text;text-shadow:0 0 22px rgba(249,115,22,0.5)}
+.celeb-word-epic{background:linear-gradient(135deg,#ff2e88,#c026d3,#00e5ff);-webkit-background-clip:text;background-clip:text;text-shadow:0 0 26px var(--glow-pink)}
+.celeb-word-super_epic{background:linear-gradient(135deg,#ff2e88,#ffd600,#00e5ff,#c026d3);background-size:200% 200%;-webkit-background-clip:text;background-clip:text;text-shadow:0 0 32px var(--glow-pink),0 0 64px rgba(0,229,255,0.5);font-size:clamp(36px,6.5vw,72px);animation:celebWord 1.5s cubic-bezier(.16,1,.3,1) forwards,celebWordHue 1.5s linear forwards}
+@keyframes celebWord{
+  0%{opacity:0;transform:translate(-50%,-30%)scale(0.6)}
+  18%{opacity:1;transform:translate(-50%,-50%)scale(1.12)}
+  32%{transform:translate(-50%,-50%)scale(1)}
+  75%{opacity:1;transform:translate(-50%,-55%)scale(1)}
+  100%{opacity:0;transform:translate(-50%,-68%)scale(0.94)}
+}
+@keyframes celebWordHue{0%{background-position:0% 50%}100%{background-position:200% 50%}}
 /* Reduced motion: keep the card ring + scale but skip particle bursts entirely */
 @media (prefers-reduced-motion: reduce){
-  .celeb-spark,.celeb-ring,.celeb-flash{display:none}
+  .celeb-spark,.celeb-ring,.celeb-flash,.celeb-word{display:none}
 }
 /* Empty state */
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;animation:emptyIn .5s var(--ease)}
@@ -1018,7 +1033,34 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
 .tasks-top{display:flex;gap:14px;align-items:stretch;margin-bottom:14px}
 .daily-host{width:min(360px,34%);flex-shrink:0}
 @media (max-width:900px){.tasks-top{flex-direction:column}.daily-host{width:100%}}
-.cmd-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px;flex:1;width:100%;align-items:stretch}
+.cmd-metrics{display:flex;flex-direction:column;gap:10px;flex:1;width:100%;min-width:0}
+.cmd-strip-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.cmd-charts{display:grid;grid-template-columns:minmax(180px,1.5fr) minmax(180px,1.6fr) minmax(64px,0.7fr);gap:14px;padding-top:10px;border-top:1px solid var(--card-border)}
+.cmd-chart{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cmd-chart-label{font-size:9px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.cmd-chart-label b{color:var(--text);font-weight:700;font-family:var(--font-mono);font-size:10px}
+/* 7-day sparkline */
+.cmd-sparkline{display:flex;align-items:flex-end;gap:4px;height:38px;padding:1px 0}
+.cmd-sparkline-bar{flex:1;background:linear-gradient(180deg,var(--accent2),rgba(0,229,255,0.22));border-radius:2px 2px 0 0;min-height:3px;position:relative;transition:height .5s var(--ease);cursor:default}
+.cmd-sparkline-bar.today{background:linear-gradient(180deg,var(--accent1),rgba(255,46,136,0.4));box-shadow:0 0 8px var(--glow-pink)}
+.cmd-sparkline-bar.zero{background:rgba(255,255,255,0.04);box-shadow:none}
+.cmd-sparkline-bar::after{content:attr(data-dow);position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:8px;color:var(--text-muted);opacity:0.55}
+.cmd-sparkline-wrap{padding-bottom:12px}
+/* Difficulty mix bar (active tasks) */
+.cmd-mixbar{display:flex;height:24px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,0.03);border:1px solid var(--card-border)}
+.cmd-mixbar-seg{transition:flex .4s var(--ease);position:relative}
+.cmd-mixbar-seg span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-mono);font-size:9.5px;font-weight:700;color:rgba(0,0,0,0.7);letter-spacing:0.04em}
+.cmd-mixbar-empty{flex:1;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);opacity:0.5}
+.cmd-mix-legend{display:flex;gap:8px;font-family:var(--font-mono);font-size:9px;color:var(--text-muted);margin-top:4px;flex-wrap:wrap}
+.cmd-mix-legend span{display:inline-flex;align-items:center;gap:3px}
+.cmd-mix-legend i{display:inline-block;width:7px;height:7px;border-radius:2px}
+/* Radial progress ring */
+.cmd-ring{width:64px;height:64px;position:relative;margin:0 auto}
+.cmd-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.cmd-ring-bg{stroke:rgba(255,255,255,0.07);fill:none;stroke-width:6}
+.cmd-ring-fill{stroke:url(#cmdRingGrad);fill:none;stroke-width:6;stroke-linecap:round;filter:drop-shadow(0 0 4px var(--glow-pink));transition:stroke-dashoffset .8s var(--ease)}
+.cmd-ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.02em}
+@media (max-width:900px){.cmd-charts{grid-template-columns:1fr;gap:10px}}
 .cmd-metric{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:10px;transition:border-color .2s var(--ease),background .2s var(--ease);min-width:0}
 .cmd-metric:hover{background:rgba(255,255,255,0.04)}
 .cmd-metric .material-symbols-outlined{font-size:20px;flex-shrink:0;opacity:0.85;font-variation-settings:'wght' 400}
@@ -1729,6 +1771,13 @@ const CELEB_CFG={
   super_epic:{count:32, rings:3, dist:[90,180], size:[8,14], duration:1100},
 };
 const CELEB_PALETTE=['#ff2e88','#00e5ff','#c026d3','#ffd600','#4ade80','#ff4d6d'];
+const CELEB_WORDS={
+  easy:['Done.','Nice','Crossed off','Tick','Easy.','Cleared','One down','Yay'],
+  medium:['Nice!','Got it','Boom','Yes!','Crisp','Locked in','Clean','Solid'],
+  hard:['Crushing it','Nailed it','Powerful','Yes!','No flinch','Heavy lift','Reps','Big one'],
+  epic:['LEGENDARY','EPIC','Absolute unit','UNSTOPPABLE','SHEEEESH','Built different','Diff','Cracked'],
+  super_epic:['GODLIKE','MYTHIC','TRANSCENDENT','YOU ARE HIM','INHUMAN','SUPER EPIC','ASCENDED','NO LAW'],
+};
 function playCelebrate(card,difficulty){
   const cfg=CELEB_CFG[difficulty]||CELEB_CFG.medium;
   if(card){
@@ -1773,14 +1822,16 @@ function playCelebrate(card,difficulty){
       setTimeout(()=>{if(ring.parentNode)ring.remove()},cfg.duration+600);
     }
   }
-  // SUPER EPIC bonus: a "+16 SUPER EPIC" flash above the card.
-  if(difficulty==='super_epic'&&card){
-    const flash=document.createElement('div');
-    flash.className='celeb-flash';
-    flash.textContent='+16 · SUPER EPIC';
-    card.appendChild(flash);
-    setTimeout(()=>{if(flash.parentNode)flash.remove()},900);
-  }
+  // Randomized word of encouragement flashed mid-screen.
+  const wordPool=CELEB_WORDS[difficulty]||CELEB_WORDS.medium;
+  const wordEl=document.createElement('div');
+  wordEl.className='celeb-word celeb-word-'+(difficulty||'medium');
+  const wordText=wordPool[Math.floor(Math.random()*wordPool.length)];
+  const pts=DIFF_WEIGHTS[difficulty]||2;
+  wordEl.innerHTML=`${wordText}<span class="sub">+${pts} pt${pts===1?'':'s'}${difficulty==='super_epic'?' · SUPER EPIC':''}</span>`;
+  document.body.appendChild(wordEl);
+  wordEl.addEventListener('animationend',()=>wordEl.remove(),{once:true});
+  setTimeout(()=>{if(wordEl.parentNode)wordEl.remove()},1500);
   try{playCompleteSound(difficulty||'medium')}catch(e){}
 }
 
@@ -2452,15 +2503,71 @@ function renderCmdMetrics(){
     }
   }
   const tile=(cls,ico,val,lbl,extra='')=>`<div class="cmd-metric ${cls}"><span class="material-symbols-outlined">${ico}</span><div class="cmd-metric-body"><span class="cmd-metric-val">${val}</span><span class="cmd-metric-lbl">${lbl}</span>${extra}</div></div>`;
-  const el=document.getElementById('cmdMetrics');
-  if(!el)return;
-  el.innerHTML=
+  const tilesHTML=
     tile('m-done','check_circle',doneToday,'Done Today')+
     tile('m-prog','trending_up',pct+'%','Progress',`<div class="cmd-metric-bar"><div class="cmd-metric-bar-fill" style="width:${pct}%"></div></div>`)+
     tile('m-streak','local_fire_department',streak,'Streak')+
     tile('m-active','radio_button_unchecked',active.length,'Active')+
     tile('m-week','calendar_month',weekAhead,'This Week')+
     (overdue?tile('m-overdue','warning',overdue,'Overdue'):'');
+  // 7-day completion sparkline — counts both task.completedAt today and the
+  // history log so recurring task instances are reflected.
+  const dows=['S','M','T','W','T','F','S'];
+  const sparkData=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    let c=entries.filter(([,t])=>t.completed&&(t.completedAt||'').slice(0,10)===ds).length;
+    Object.values(taskHistory||{}).forEach(h=>{if((h.completedAt||'').slice(0,10)===ds)c++});
+    sparkData.push({ds,c,isToday:ds===today,dow:dows[d.getDay()]});
+  }
+  const sparkMax=Math.max(1,...sparkData.map(s=>s.c));
+  const sparkTotal=sparkData.reduce((s,d)=>s+d.c,0);
+  const sparkHTML=sparkData.map(s=>{
+    const h=Math.round((s.c/sparkMax)*100);
+    return `<div class="cmd-sparkline-bar ${s.isToday?'today':''} ${s.c===0?'zero':''}" data-dow="${s.dow}" style="height:${Math.max(h,3)}%" title="${s.ds}: ${s.c} done"></div>`;
+  }).join('');
+  // Difficulty mix bar — share of ACTIVE tasks across the 5 tiers.
+  const diffCnt={easy:0,medium:0,hard:0,epic:0,super_epic:0};
+  active.forEach(([,t])=>{const d=t.difficulty||'medium';if(diffCnt[d]!==undefined)diffCnt[d]++});
+  const diffColors={easy:'#4ade80',medium:'#fbbf24',hard:'#f97316',epic:'#c026d3',super_epic:'#ff2e88'};
+  const diffLabels={easy:'easy',medium:'med',hard:'hard',epic:'epic',super_epic:'super'};
+  const diffTotal=Object.values(diffCnt).reduce((a,b)=>a+b,0);
+  const mixSegs=Object.entries(diffCnt).filter(([,n])=>n>0)
+    .map(([d,n])=>`<div class="cmd-mixbar-seg" style="flex:${n};background:${diffColors[d]}" title="${d}: ${n}">${n/diffTotal>=0.10?`<span>${n}</span>`:''}</div>`).join('');
+  const mixBarHTML=diffTotal?mixSegs:`<div class="cmd-mixbar-empty">No active tasks</div>`;
+  const mixLegendHTML=diffTotal?Object.entries(diffCnt).filter(([,n])=>n>0)
+    .map(([d])=>`<span><i style="background:${diffColors[d]}"></i>${diffLabels[d]}</span>`).join(''):'';
+  // Radial progress ring (overall points completion).
+  const R=24, CIRC=2*Math.PI*R, OFF=CIRC*(1-pct/100);
+  const ringHTML=`
+    <svg viewBox="0 0 60 60">
+      <defs><linearGradient id="cmdRingGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#ff2e88"/><stop offset="100%" stop-color="#00e5ff"/>
+      </linearGradient></defs>
+      <circle class="cmd-ring-bg" cx="30" cy="30" r="${R}"></circle>
+      <circle class="cmd-ring-fill" cx="30" cy="30" r="${R}" stroke-dasharray="${CIRC.toFixed(2)}" stroke-dashoffset="${OFF.toFixed(2)}"></circle>
+    </svg>
+    <div class="cmd-ring-text">${pct}%</div>`;
+  const el=document.getElementById('cmdMetrics');
+  if(!el)return;
+  el.innerHTML=`
+    <div class="cmd-strip-tiles">${tilesHTML}</div>
+    <div class="cmd-charts">
+      <div class="cmd-chart">
+        <div class="cmd-chart-label"><span>Last 7 days</span><b>${sparkTotal} done</b></div>
+        <div class="cmd-sparkline-wrap"><div class="cmd-sparkline">${sparkHTML}</div></div>
+      </div>
+      <div class="cmd-chart">
+        <div class="cmd-chart-label"><span>Active by difficulty</span><b>${diffTotal} task${diffTotal===1?'':'s'}</b></div>
+        <div class="cmd-mixbar">${mixBarHTML}</div>
+        <div class="cmd-mix-legend">${mixLegendHTML}</div>
+      </div>
+      <div class="cmd-chart" style="align-items:center">
+        <div class="cmd-chart-label" style="justify-content:center"><span>Total</span></div>
+        <div class="cmd-ring">${ringHTML}</div>
+      </div>
+    </div>`;
 }
 
 // ═══════════════════════════════════════════
