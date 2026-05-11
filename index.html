@@ -240,6 +240,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .ob.s[data-d="medium"]{background:rgba(251,191,36,0.12);border-color:rgba(251,191,36,0.3);color:#fbbf24}
 .ob.s[data-d="hard"]{background:rgba(249,115,22,0.12);border-color:rgba(249,115,22,0.3);color:#f97316}
 .ob.s[data-d="epic"]{background:rgba(236,72,153,0.15);border-color:rgba(236,72,153,0.35);color:var(--accent3)}
+.ob.s[data-d="super_epic"]{background:linear-gradient(135deg,rgba(255,46,136,0.18),rgba(0,229,255,0.16),rgba(255,214,0,0.16));border-color:var(--accent1);color:#fff;text-shadow:0 0 8px var(--glow-pink)}
 .ob.s[data-r="none"]{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5)}
 .ob.s[data-r="daily"],.ob.s[data-r="weekly"],.ob.s[data-r="monthly"]{background:var(--accent1-10);border-color:var(--card-hover);color:var(--accent1)}
 .ob[data-r]:not(.s):hover{color:var(--accent1)}
@@ -247,7 +248,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .t-repeat::before{content:'↻';font-size:10px}
 /* Difficulty stars on task card */
 .t-diff{display:inline-flex;gap:1px;font-size:9px;line-height:1;letter-spacing:0;color:rgba(255,255,255,0.2)}
-.t-diff.easy{color:#4ade80}.t-diff.medium{color:#fbbf24}.t-diff.hard{color:#f97316}.t-diff.epic{color:var(--accent3)}
+.t-diff.easy{color:#4ade80}.t-diff.medium{color:#fbbf24}.t-diff.hard{color:#f97316}.t-diff.epic{color:var(--accent3)}.t-diff.super_epic{background:linear-gradient(135deg,#ff2e88,#00e5ff,#ffd600);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:800}
 /* Progress slider on task card */
 .t-prog{display:flex;align-items:center;gap:6px;margin-top:6px;padding:2px 0;pointer-events:none}
 .t-prog-bar{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.05);overflow:hidden;position:relative;border:1px solid rgba(255,255,255,0.03)}
@@ -337,7 +338,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .tc:hover{border-color:var(--accent1);box-shadow:0 8px 20px rgba(0,0,0,0.40),0 0 0 1px var(--accent1-10),0 0 18px var(--accent1-10);transform:translateY(-1px)}
 /* Completion — lean CSS-only sequence, no canvas, no filter:blur.
    0–120ms scale pulse → 120–300ms neon ring pulse → 300–700ms fade + slide. */
-.tc.celebrating{will-change:transform,opacity;animation:tcCelebrate 700ms var(--ease) forwards;overflow:hidden}
+.tc.celebrating{will-change:transform,opacity;animation:tcCelebrate 700ms var(--ease) forwards;overflow:visible}
 .tc.celebrating::after{content:'';position:absolute;inset:0;border-radius:14px;pointer-events:none;box-shadow:inset 0 0 0 1px var(--accent1),0 0 18px var(--glow-pink);animation:tcRing 700ms var(--ease) forwards;z-index:4}
 .tc.celebrating .ck{background:var(--accent1);border-color:var(--accent1);color:#fff;box-shadow:0 0 12px var(--glow-pink);animation:ckPop .25s var(--ease) forwards}
 @keyframes tcCelebrate{
@@ -357,6 +358,34 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
   0%{transform:scale(1)}
   45%{transform:scale(1.18)}
   100%{transform:scale(1)}
+}
+/* Completion particles — spawned via JS, each carries its own --angle/--dist/--sz */
+.celeb-spark{position:absolute;top:20px;left:36px;width:var(--sz,6px);height:var(--sz,6px);border-radius:50%;pointer-events:none;z-index:6;opacity:0;will-change:transform,opacity;animation-name:sparkOut;animation-fill-mode:forwards;animation-timing-function:cubic-bezier(.16,1,.3,1)}
+.celeb-spark.sq{border-radius:1px;transform-origin:center center}
+@keyframes sparkOut{
+  0%{transform:rotate(var(--angle))translateX(0)scale(0.4);opacity:0}
+  18%{transform:rotate(var(--angle))translateX(12px)scale(1.15);opacity:1}
+  70%{opacity:0.9}
+  100%{transform:rotate(var(--angle))translateX(var(--dist))scale(0)rotate(180deg);opacity:0}
+}
+/* Fullscreen ring burst — for hard/epic/super_epic completions */
+.celeb-ring{position:fixed;top:50%;left:50%;width:60px;height:60px;border-radius:50%;border:2px solid var(--accent1);margin:-30px 0 0 -30px;pointer-events:none;z-index:9999;will-change:transform,opacity;animation-name:celebRing;animation-fill-mode:forwards;animation-timing-function:cubic-bezier(.22,1,.36,1);opacity:0}
+@keyframes celebRing{
+  0%{transform:scale(0);opacity:0.95}
+  100%{transform:scale(28);opacity:0}
+}
+/* SUPER EPIC flash badge */
+.celeb-flash{position:absolute;top:-32px;right:8px;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#ff2e88,#c026d3,#00e5ff,#ffd600);background-size:200% 200%;-webkit-background-clip:padding-box;background-clip:padding-box;padding:5px 12px;border-radius:999px;pointer-events:none;z-index:8;box-shadow:0 0 18px var(--glow-pink),0 0 36px rgba(0,229,255,0.35);will-change:transform,opacity;animation:celebFlash 900ms cubic-bezier(.16,1,.3,1) forwards}
+@keyframes celebFlash{
+  0%{transform:translateY(8px)scale(0.6);opacity:0}
+  20%{transform:translateY(0)scale(1.08);opacity:1}
+  35%{transform:translateY(-4px)scale(1)}
+  80%{opacity:1;transform:translateY(-10px)scale(1)}
+  100%{transform:translateY(-22px)scale(0.96);opacity:0}
+}
+/* Reduced motion: keep the card ring + scale but skip particle bursts entirely */
+@media (prefers-reduced-motion: reduce){
+  .celeb-spark,.celeb-ring,.celeb-flash{display:none}
 }
 /* Empty state */
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;animation:emptyIn .5s var(--ease)}
@@ -989,10 +1018,28 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
 .tasks-top{display:flex;gap:14px;align-items:stretch;margin-bottom:14px}
 .daily-host{width:min(360px,34%);flex-shrink:0}
 @media (max-width:900px){.tasks-top{flex-direction:column}.daily-host{width:100%}}
-.cmd-metrics{display:flex;gap:16px;flex:1;flex-wrap:wrap}
-.cmd-metric{display:flex;flex-direction:column;align-items:center}
-.cmd-metric-val{font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.cmd-metric-lbl{font-size:7px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.cmd-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px;flex:1;width:100%;align-items:stretch}
+.cmd-metric{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:10px;transition:border-color .2s var(--ease),background .2s var(--ease);min-width:0}
+.cmd-metric:hover{background:rgba(255,255,255,0.04)}
+.cmd-metric .material-symbols-outlined{font-size:20px;flex-shrink:0;opacity:0.85;font-variation-settings:'wght' 400}
+.cmd-metric-body{display:flex;flex-direction:column;min-width:0;line-height:1.1}
+.cmd-metric-val{font-size:22px;font-weight:800;letter-spacing:-0.02em;font-family:var(--font-en);background:none;-webkit-text-fill-color:initial;color:var(--text);line-height:1}
+.cmd-metric-lbl{font-size:9.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmd-metric-bar{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:4px;overflow:hidden;width:100%}
+.cmd-metric-bar-fill{height:100%;background:var(--accent2);box-shadow:0 0 6px var(--glow-cyan);transition:width .5s var(--ease)}
+.cmd-metric.m-done{border-color:rgba(255,46,136,0.25)}
+.cmd-metric.m-done .material-symbols-outlined,.cmd-metric.m-done .cmd-metric-val{color:var(--accent1);text-shadow:0 0 8px var(--glow-pink)}
+.cmd-metric.m-prog{border-color:rgba(0,229,255,0.22)}
+.cmd-metric.m-prog .material-symbols-outlined,.cmd-metric.m-prog .cmd-metric-val{color:var(--accent2);text-shadow:0 0 8px var(--glow-cyan)}
+.cmd-metric.m-streak{border-color:rgba(255,214,0,0.25)}
+.cmd-metric.m-streak .material-symbols-outlined,.cmd-metric.m-streak .cmd-metric-val{color:var(--yellow);text-shadow:0 0 8px rgba(255,214,0,0.35)}
+.cmd-metric.m-active{border-color:rgba(192,38,211,0.25)}
+.cmd-metric.m-active .material-symbols-outlined,.cmd-metric.m-active .cmd-metric-val{color:var(--accent3);text-shadow:0 0 8px var(--glow-magenta)}
+.cmd-metric.m-week{border-color:rgba(0,229,255,0.16)}
+.cmd-metric.m-week .material-symbols-outlined,.cmd-metric.m-week .cmd-metric-val{color:var(--accent2);text-shadow:0 0 6px var(--glow-cyan);opacity:0.92}
+.cmd-metric.m-overdue{border-color:rgba(255,77,109,0.32);background:rgba(255,77,109,0.04)}
+.cmd-metric.m-overdue .material-symbols-outlined,.cmd-metric.m-overdue .cmd-metric-val{color:var(--red);text-shadow:0 0 8px rgba(255,77,109,0.45)}
+@media (max-width:760px){.cmd-metrics{grid-template-columns:repeat(3,1fr);gap:6px}.cmd-metric{padding:6px 8px}.cmd-metric-val{font-size:18px}.cmd-metric .material-symbols-outlined{font-size:18px}}
 
 /* ═══ Dashboard redesign (3 cards) ═══ */
 .dash-v2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
@@ -1078,6 +1125,7 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
         <button class="ob s" data-d="medium" onclick="setDiff('medium')">★★</button>
         <button class="ob" data-d="hard" onclick="setDiff('hard')">★★★</button>
         <button class="ob" data-d="epic" onclick="setDiff('epic')">EPIC</button>
+        <button class="ob" data-d="super_epic" onclick="setDiff('super_epic')">SUPER EPIC</button>
       </div>
       <div class="opt-grp">
         <button class="ob s" data-r="none" onclick="setRep('none')" title="No repeat">Once</button>
@@ -1269,7 +1317,7 @@ let calSortWeekOffset=0;
 // cmdExpanded removed — Sisyphus collapse mechanism deleted; cmd-metrics is now a flat strip
 function setDayView(v,dateStr){dayView=v;localStorage.setItem('oyt_day_view',v);openDayModal(dateStr)}
 // Difficulty point weights (used in dashboard + celebration intensity)
-const DIFF_WEIGHTS={easy:1,medium:2,hard:4,epic:8};
+const DIFF_WEIGHTS={easy:1,medium:2,hard:4,epic:8,super_epic:16};
 
 function attachListeners(){
   fbListen('todo/tasks',val=>{tasks=val||{};renderTasks();if(currentView==='calendar')renderCalendar();if(currentView==='rfi')renderRFI()});
@@ -1593,7 +1641,8 @@ function toggleDone(id){
   const t=tasks[id];if(!t)return;
   const wasDone=t.completed;
   // Find the card element BEFORE Firebase rerender clears it
-  const card=document.querySelector(`.tc .ck[onclick*="'${id}'"]`)?.closest('.tc');
+  const card=document.querySelector(`.tc .ck[onclick*="'${id}'"]`)?.closest('.tc')
+            ||document.querySelector(`.dc-row .dc-ck[onclick*="'${id}'"]`)?.closest('.dc-row');
   const rep=t.repeat||'none';
   // Recurring + completing → log instance, then reset + advance due date
   if(!wasDone&&rep!=='none'){
@@ -1630,7 +1679,8 @@ function setProgress(id,val){
   // Recurring tasks: hitting 100 → reset + advance, log completion
   if(v>=100&&!t?.completed&&rep!=='none'){
     const nd=nextDueDate(t.dueDate||new Date().toISOString().slice(0,10),rep);
-    const card=document.querySelector(`.tc .ck[onclick*="'${id}'"]`)?.closest('.tc');
+    const card=document.querySelector(`.tc .ck[onclick*="'${id}'"]`)?.closest('.tc')
+            ||document.querySelector(`.dc-row .dc-ck[onclick*="'${id}'"]`)?.closest('.dc-row');
     fbPush('todo/history',{
       title:t.title||'',difficulty:t.difficulty||'medium',category:t.category||'personal',
       priority:t.priority||'medium',completedAt:new Date().toISOString()
@@ -1645,7 +1695,8 @@ function setProgress(id,val){
   fbSet(`todo/tasks/${id}/progress`,v);
   // Auto-mark complete at 100 (one-shot tasks)
   if(v>=100&&!tasks[id]?.completed){
-    const card=document.querySelector(`.tc .ck[onclick*="'${id}'"]`)?.closest('.tc');
+    const card=document.querySelector(`.tc .ck[onclick*="'${id}'"]`)?.closest('.tc')
+            ||document.querySelector(`.dc-row .dc-ck[onclick*="'${id}'"]`)?.closest('.dc-row');
     fbSet(`todo/tasks/${id}/completed`,true);
     fbSet(`todo/tasks/${id}/completedAt`,new Date().toISOString());
     fbPush('todo/history',{
@@ -1664,15 +1715,71 @@ function deleteTask(id){fbSet(`todo/tasks/${id}`,null);if(expanded===id)expanded
 function toggleExpand(id){expanded=expanded===id?null:id;renderTasks()}
 
 // ═══════════════════════════════════════════
-//  Lean completion animation — CSS-only on the card itself.
-//  Replaces the old feedSisyphus particle feeder + fullscreen confetti
-//  canvas. Just adds .celebrating to the card; the CSS keyframes handle
-//  the visuals. Plays the existing completion sound for audio feedback.
+//  Completion animation — CSS keyframes + spawned CSS particles.
+//  No canvas, no rAF, no filter:blur. Each particle is a <span> with
+//  per-instance --angle / --dist / --color vars driving a single
+//  GPU-cheap transform animation. Particles + (optional) fullscreen
+//  rings are removed when their animation ends.
 // ═══════════════════════════════════════════
+const CELEB_CFG={
+  easy:      {count:5,  rings:0, dist:[36,60],  size:[4,7],  duration:600},
+  medium:    {count:9,  rings:0, dist:[48,80],  size:[5,8],  duration:700},
+  hard:      {count:14, rings:1, dist:[60,100], size:[6,10], duration:800},
+  epic:      {count:20, rings:2, dist:[70,130], size:[7,12], duration:950},
+  super_epic:{count:32, rings:3, dist:[90,180], size:[8,14], duration:1100},
+};
+const CELEB_PALETTE=['#ff2e88','#00e5ff','#c026d3','#ffd600','#4ade80','#ff4d6d'];
 function playCelebrate(card,difficulty){
+  const cfg=CELEB_CFG[difficulty]||CELEB_CFG.medium;
   if(card){
     card.classList.add('celebrating');
-    setTimeout(()=>card.classList.remove('celebrating'),720);
+    // Anchor for absolute-positioned particles
+    if(getComputedStyle(card).position==='static')card.style.position='relative';
+    const baseAngle=Math.random()*360;
+    for(let i=0;i<cfg.count;i++){
+      const sp=document.createElement('span');
+      sp.className='celeb-spark';
+      const angle=baseAngle + (360/cfg.count)*i + (Math.random()-0.5)*18;
+      const dist=cfg.dist[0]+Math.random()*(cfg.dist[1]-cfg.dist[0]);
+      const size=cfg.size[0]+Math.random()*(cfg.size[1]-cfg.size[0]);
+      const color=CELEB_PALETTE[(i+Math.floor(Math.random()*CELEB_PALETTE.length))%CELEB_PALETTE.length];
+      const shape=Math.random()<0.35?'sq':'dot';
+      sp.classList.add(shape==='sq'?'sq':'dot');
+      sp.style.setProperty('--angle',angle+'deg');
+      sp.style.setProperty('--dist',dist+'px');
+      sp.style.setProperty('--sz',size+'px');
+      sp.style.background=color;
+      sp.style.boxShadow=`0 0 6px ${color}`;
+      sp.style.animationDelay=(i*10)+'ms';
+      sp.style.animationDuration=cfg.duration+'ms';
+      card.appendChild(sp);
+      // Auto-cleanup
+      sp.addEventListener('animationend',()=>sp.remove(),{once:true});
+      setTimeout(()=>{if(sp.parentNode)sp.remove()},cfg.duration+300);
+    }
+    setTimeout(()=>card.classList.remove('celebrating'),Math.max(720,cfg.duration));
+  }
+  // Fullscreen ring bursts for higher difficulties.
+  if(cfg.rings){
+    const ringColors=['#ff2e88','#00e5ff','#ffd600','#c026d3'];
+    for(let i=0;i<cfg.rings;i++){
+      const ring=document.createElement('div');
+      ring.className='celeb-ring';
+      ring.style.borderColor=ringColors[i%ringColors.length];
+      ring.style.animationDelay=(i*120)+'ms';
+      ring.style.animationDuration=(cfg.duration+200)+'ms';
+      document.body.appendChild(ring);
+      ring.addEventListener('animationend',()=>ring.remove(),{once:true});
+      setTimeout(()=>{if(ring.parentNode)ring.remove()},cfg.duration+600);
+    }
+  }
+  // SUPER EPIC bonus: a "+16 SUPER EPIC" flash above the card.
+  if(difficulty==='super_epic'&&card){
+    const flash=document.createElement('div');
+    flash.className='celeb-flash';
+    flash.textContent='+16 · SUPER EPIC';
+    card.appendChild(flash);
+    setTimeout(()=>{if(flash.parentNode)flash.remove()},900);
   }
   try{playCompleteSound(difficulty||'medium')}catch(e){}
 }
@@ -1846,7 +1953,7 @@ function playCompleteSound(difficulty){
   idx=idx%MEME_SOUNDS.length;
   const fn=MEME_SOUNDS[idx];
   // Loudness scales with difficulty
-  const gain={easy:0.85,medium:1.0,hard:1.2,epic:1.5}[difficulty]||1.0;
+  const gain={easy:0.85,medium:1.0,hard:1.2,epic:1.5,super_epic:1.8}[difficulty]||1.0;
   try{fn(ctx,gain)}catch(e){console.warn('sound failed',e)}
   localStorage.setItem('oyt_sound_idx',String((idx+1)%MEME_SOUNDS.length));
   // Epic: also stack a vine boom underneath whatever the cycle plays
@@ -2164,7 +2271,7 @@ function renderTasks(){
     // drag would hijack mousedown events
     const drag=!t.completed&&sortBy==='manual'&&!exp;
     const diff=t.difficulty||'medium';
-    const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★'}[diff];
+    const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★',super_epic:'★★★★★'}[diff];
     const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
     let h=`<div class="tc ${t.completed?'done':''}" style="animation-delay:${i*25}ms;border-left:3px solid ${cc}" ${drag?'draggable="true" ondragstart="dragStart(event,\''+id+'\')" ondragover="dragOver(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event,\''+id+'\')" ondragend="dragEnd(event)"':''}>
       <span class="t-rank">${rank}</span>
@@ -2191,7 +2298,7 @@ function renderTasks(){
         <div class="tex-row">
           <select onchange="updateTask('${id}','priority',this.value)">${['high','medium','low'].map(p=>`<option value="${p}" ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select>
           <select onchange="updateTask('${id}','category',this.value)">${['work','personal','project','rfi'].map(c=>`<option value="${c}" ${t.category===c?'selected':''}>${c}</option>`).join('')}</select>
-          <select onchange="updateTask('${id}','difficulty',this.value)">${['easy','medium','hard','epic'].map(d=>`<option value="${d}" ${diff===d?'selected':''}>${d}</option>`).join('')}</select>
+          <select onchange="updateTask('${id}','difficulty',this.value)">${['easy','medium','hard','epic','super_epic'].map(d=>`<option value="${d}" ${diff===d?'selected':''}>${d.replace('_',' ')}</option>`).join('')}</select>
           <select onchange="updateTask('${id}','repeat',this.value)" title="Repeat">${[['none','No repeat'],['daily','↻ Daily'],['weekly','↻ Weekly'],['monthly','↻ Monthly']].map(([v,lb])=>`<option value="${v}" ${(t.repeat||'none')===v?'selected':''}>${lb}</option>`).join('')}</select>
           <input type="date" value="${t.dueDate||''}" onchange="updateTask('${id}','dueDate',this.value)">
           <input type="time" value="${t.dueTime||''}" onchange="updateTask('${id}','dueTime',this.value)" style="width:90px">
@@ -2241,7 +2348,7 @@ function renderTasks(){
         <div class="tex-row">
           <select onchange="updateTask('${id}','priority',this.value)">${['high','medium','low'].map(p=>`<option value="${p}" ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select>
           <select onchange="updateTask('${id}','category',this.value)">${['work','personal','project','rfi'].map(c=>`<option value="${c}" ${t.category===c?'selected':''}>${c}</option>`).join('')}</select>
-          <select onchange="updateTask('${id}','difficulty',this.value)">${['easy','medium','hard','epic'].map(d=>`<option value="${d}" ${diff===d?'selected':''}>${d}</option>`).join('')}</select>
+          <select onchange="updateTask('${id}','difficulty',this.value)">${['easy','medium','hard','epic','super_epic'].map(d=>`<option value="${d}" ${diff===d?'selected':''}>${d.replace('_',' ')}</option>`).join('')}</select>
           <select onchange="updateTask('${id}','repeat',this.value)" title="Repeat">${[['none','No repeat'],['daily','↻ Daily'],['weekly','↻ Weekly'],['monthly','↻ Monthly']].map(([v,lb])=>`<option value="${v}" ${(t.repeat||'none')===v?'selected':''}>${lb}</option>`).join('')}</select>
         </div>
       </div>`;
@@ -2322,18 +2429,38 @@ function renderCmdMetrics(){
   const entries=Object.entries(tasks);
   const active=entries.filter(([,t])=>!t.completed);
   const today=new Date().toISOString().slice(0,10);
-  const doneToday=entries.filter(([,t])=>t.completed&&(t.completedAt||'').slice(0,10)===today).length;
+  const wk=new Date();wk.setDate(wk.getDate()+7);const weekCutoff=wk.toISOString().slice(0,10);
+  // Count history events too — completed-then-reset recurring tasks count toward "Done Today".
+  let doneToday=entries.filter(([,t])=>t.completed&&(t.completedAt||'').slice(0,10)===today).length;
+  Object.values(taskHistory||{}).forEach(h=>{if((h.completedAt||'').slice(0,10)===today)doneToday++});
   const totalPts=entries.reduce((s,[,t])=>(s+(DIFF_WEIGHTS[t.difficulty||'medium']||2)),0);
   const donePts=entries.filter(([,t])=>t.completed).reduce((s,[,t])=>(s+(DIFF_WEIGHTS[t.difficulty||'medium']||2)),0);
   const pct=totalPts?Math.round(donePts/totalPts*100):0;
   const overdue=active.filter(([,t])=>t.dueDate&&t.dueDate<today).length;
+  const weekAhead=active.filter(([,t])=>t.dueDate&&t.dueDate>=today&&t.dueDate<=weekCutoff).length;
+  // Streak = consecutive days (counting back from today) with >=1 completion (history OR task completedAt).
+  const dayHas=ds=>{
+    if(entries.some(([,t])=>t.completed&&(t.completedAt||'').slice(0,10)===ds))return true;
+    return Object.values(taskHistory||{}).some(h=>(h.completedAt||'').slice(0,10)===ds);
+  };
+  let streak=0;{
+    const d=new Date();
+    for(let i=0;i<365;i++){
+      const ds=d.toISOString().slice(0,10);
+      if(dayHas(ds))streak++;else if(i>0)break;
+      d.setDate(d.getDate()-1);
+    }
+  }
+  const tile=(cls,ico,val,lbl,extra='')=>`<div class="cmd-metric ${cls}"><span class="material-symbols-outlined">${ico}</span><div class="cmd-metric-body"><span class="cmd-metric-val">${val}</span><span class="cmd-metric-lbl">${lbl}</span>${extra}</div></div>`;
   const el=document.getElementById('cmdMetrics');
   if(!el)return;
-  el.innerHTML=`
-    <div class="cmd-metric"><span class="cmd-metric-val">${doneToday}</span><span class="cmd-metric-lbl">Done Today</span></div>
-    <div class="cmd-metric"><span class="cmd-metric-val">${pct}%</span><span class="cmd-metric-lbl">Progress</span></div>
-    <div class="cmd-metric"><span class="cmd-metric-val">${active.length}</span><span class="cmd-metric-lbl">Active</span></div>
-    ${overdue?`<div class="cmd-metric"><span class="cmd-metric-val dv2-overdue">${overdue}</span><span class="cmd-metric-lbl">Overdue</span></div>`:''}`;
+  el.innerHTML=
+    tile('m-done','check_circle',doneToday,'Done Today')+
+    tile('m-prog','trending_up',pct+'%','Progress',`<div class="cmd-metric-bar"><div class="cmd-metric-bar-fill" style="width:${pct}%"></div></div>`)+
+    tile('m-streak','local_fire_department',streak,'Streak')+
+    tile('m-active','radio_button_unchecked',active.length,'Active')+
+    tile('m-week','calendar_month',weekAhead,'This Week')+
+    (overdue?tile('m-overdue','warning',overdue,'Overdue'):'');
 }
 
 // ═══════════════════════════════════════════
@@ -3827,9 +3954,9 @@ function openDayModal(dateStr){
     const catCounts={work:0,personal:0,project:0};
     tEntries.forEach(([,t])=>{const c=t.category||'personal';if(catCounts[c]!==undefined)catCounts[c]++});
     // Difficulty buckets (count + weight)
-    const diffWeights={easy:1,medium:2,hard:4,epic:8};
-    const diffColors={easy:'#4ade80',medium:'#fbbf24',hard:'#f97316',epic:a3};
-    const diffCounts={easy:0,medium:0,hard:0,epic:0};
+    const diffWeights={easy:1,medium:2,hard:4,epic:8,super_epic:16};
+    const diffColors={easy:'#4ade80',medium:'#fbbf24',hard:'#f97316',epic:a3,super_epic:'#ffd600'};
+    const diffCounts={easy:0,medium:0,hard:0,epic:0,super_epic:0};
     tEntries.forEach(([,t])=>{const d=t.difficulty||'medium';if(diffCounts[d]!==undefined)diffCounts[d]++});
     const totalWeight=Object.entries(diffCounts).reduce((s,[d,n])=>s+n*diffWeights[d],0);
     // Donut SVG
@@ -3856,7 +3983,7 @@ function openDayModal(dateStr){
     donutLegend+='</div>';
     // Difficulty stacked bar
     let diffBar='<div class="diff-bar-track">';
-    const diffOrder=['easy','medium','hard','epic'];
+    const diffOrder=['easy','medium','hard','epic','super_epic'];
     diffOrder.forEach(d=>{
       const n=diffCounts[d];if(!n)return;
       const weight=n*diffWeights[d];
@@ -3925,7 +4052,7 @@ function openDayModal(dateStr){
       const cc=t.category==='work'?'var(--accent2)':t.category==='project'?'var(--accent3)':t.category==='rfi'?'#fbbf24':'var(--accent1)';
       const od=!t.completed&&dateStr<today;
       const diff=t.difficulty||'medium';
-      const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★'}[diff];
+      const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★',super_epic:'★★★★★'}[diff];
       html+=`<div class="tc ${t.completed?'done':''}" style="border-left:3px solid ${cc}">
         <button class="ck" onclick="toggleDone('${id}');setTimeout(()=>openDayModal('${dateStr}'),100)">${t.completed?'&#10003;':''}</button>
         <div class="tb">
@@ -3962,7 +4089,7 @@ function openDayModal(dateStr){
     completedHere.forEach(h=>{
       const cc=h.category==='work'?'var(--accent2)':h.category==='project'?'var(--accent3)':'var(--accent1)';
       const diff=h.difficulty||'medium';
-      const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★'}[diff];
+      const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★',super_epic:'★★★★★'}[diff];
       const time=new Date(h.completedAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
       html+=`<div class="tc done" style="border-left:3px solid ${cc};opacity:.78">
         <div class="ck" style="border-color:${cc};background:${cc};color:#fff">&#10003;</div>
