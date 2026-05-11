@@ -276,33 +276,41 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 /* Task Cards */
 .task-list{display:flex;flex-direction:column;gap:10px}
 
-/* Daily Checklist — recurring="daily" tasks live here, separate from the kanban. */
-.daily-checklist{background:var(--card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--card-border);border-radius:14px;padding:14px 18px 12px;margin-bottom:18px;box-shadow:0 4px 18px rgba(0,0,0,0.25),0 0 0 1px rgba(255,46,136,0.04)}
-.dc-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,46,136,0.15)}
-.dc-title{font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent1);text-shadow:0 0 8px var(--glow-pink);display:flex;align-items:baseline}
-.dc-title .cn{font-size:11px;letter-spacing:0.04em;text-transform:none;font-weight:500}
-.dc-count{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);background:rgba(255,255,255,0.04);border:1px solid var(--card-border);border-radius:999px;padding:2px 9px;min-width:34px;text-align:center}
-.dc-rows{display:flex;flex-direction:column;gap:2px}
-.dc-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:7px 6px;border-radius:8px;transition:background .15s var(--ease)}
-.dc-row:hover{background:rgba(255,46,136,0.05)}
-.dc-row.expanded{background:rgba(255,46,136,0.06);grid-template-columns:auto 1fr auto;grid-template-rows:auto auto}
+/* Daily Checklist — slim collapsible side-card sitting next to the metrics strip. */
+.daily-checklist{background:var(--card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--card-border);border-radius:14px;padding:10px 14px;height:100%;display:flex;flex-direction:column}
+.dc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;user-select:none}
+.dc-head:hover .dc-title{color:var(--accent1)}
+.dc-title{font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);display:flex;align-items:baseline;transition:color .15s var(--ease)}
+.dc-title .cn{font-size:10px;letter-spacing:0.04em;text-transform:none;font-weight:500;color:var(--text-muted);text-shadow:none;margin-left:5px}
+.dc-head-right{display:flex;align-items:center;gap:8px}
+.dc-count{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);padding:1px 7px;border:1px solid var(--card-border);border-radius:999px;min-width:32px;text-align:center}
+.dc-chev{font-size:9px;color:var(--text-muted);transition:transform .25s var(--ease)}
+.daily-checklist.collapsed .dc-chev{transform:rotate(-90deg)}
+.dc-body{overflow:hidden;transition:max-height .3s var(--ease),opacity .2s var(--ease),margin .25s var(--ease);margin-top:8px;max-height:600px;opacity:1}
+.daily-checklist.collapsed .dc-body{max-height:0;opacity:0;margin-top:0;pointer-events:none}
+.dc-rows{display:flex;flex-direction:column;gap:1px;max-height:280px;overflow-y:auto;padding-right:2px}
+.dc-rows::-webkit-scrollbar{width:6px}
+.dc-rows::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:3px}
+.dc-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:5px 4px;border-radius:6px;transition:background .15s var(--ease)}
+.dc-row:hover{background:rgba(255,46,136,0.04)}
+.dc-row.expanded{background:rgba(255,46,136,0.05);grid-template-rows:auto auto}
 .dc-row .tex{grid-column:1 / -1;margin-top:6px}
-.dc-ck{appearance:none;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--card-border);background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:transparent;cursor:pointer;flex-shrink:0;transition:all .2s var(--ease);padding:0;line-height:1}
-.dc-ck:hover{border-color:var(--accent1);box-shadow:0 0 8px var(--glow-pink)}
-.dc-row.done .dc-ck{background:var(--accent1);border-color:var(--accent1);color:#fff;box-shadow:0 0 12px var(--glow-pink)}
-.dc-row-title{font-size:13.5px;color:var(--text);cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dc-ck{appearance:none;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--card-border);background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:transparent;cursor:pointer;flex-shrink:0;transition:all .2s var(--ease);padding:0;line-height:1}
+.dc-ck:hover{border-color:var(--accent1)}
+.dc-row.done .dc-ck{background:var(--accent1);border-color:var(--accent1);color:#fff}
+.dc-row-title{font-size:12.5px;color:var(--text);cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dc-row.done .dc-row-title{text-decoration:line-through;color:var(--text-muted);opacity:0.55}
-.dc-actions{display:flex;gap:2px;opacity:0;transition:opacity .15s var(--ease)}
+.dc-actions{display:flex;gap:1px;opacity:0;transition:opacity .15s var(--ease)}
 .dc-row:hover .dc-actions,.dc-row.expanded .dc-actions{opacity:1}
-.dc-actions button{background:transparent;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:3px 6px;border-radius:4px;transition:all .15s var(--ease);line-height:1}
-.dc-actions button:hover{color:var(--accent1);background:rgba(255,46,136,0.10)}
-.dc-actions button.del:hover{color:var(--red);background:rgba(255,77,109,0.10)}
-.dc-empty{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);opacity:0.55;padding:10px 6px;text-align:center}
-.dc-add{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 6px 2px;border-top:1px dashed var(--card-border)}
-.dc-add input{flex:1;background:transparent;border:none;outline:none;font-size:13.5px;color:var(--text);font-family:var(--font-en);padding:4px 0}
-.dc-add input::placeholder{color:var(--text-muted);opacity:0.50}
-.dc-add-btn{background:rgba(255,46,136,0.12);border:1px solid var(--accent1);color:var(--accent1);font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:5px 12px;border-radius:999px;cursor:pointer;transition:all .2s var(--ease);font-family:var(--font-mono)}
-.dc-add-btn:hover{background:var(--accent1);color:#08020f;box-shadow:0 0 14px var(--glow-pink)}
+.dc-actions button{background:transparent;border:none;color:var(--text-muted);font-size:11px;cursor:pointer;padding:2px 5px;border-radius:4px;transition:all .15s var(--ease);line-height:1}
+.dc-actions button:hover{color:var(--accent1);background:rgba(255,46,136,0.08)}
+.dc-actions button.del:hover{color:var(--red);background:rgba(255,77,109,0.08)}
+.dc-empty{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);opacity:0.5;padding:8px 4px;text-align:center}
+.dc-add{display:flex;align-items:center;gap:6px;margin-top:6px;padding:6px 4px 0;border-top:1px dashed var(--card-border)}
+.dc-add input{flex:1;background:transparent;border:none;outline:none;font-size:12.5px;color:var(--text);font-family:var(--font-en);padding:2px 0;min-width:0}
+.dc-add input::placeholder{color:var(--text-muted);opacity:0.45}
+.dc-add-btn{background:transparent;border:1px solid var(--card-border);color:var(--text-muted);font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;cursor:pointer;transition:all .2s var(--ease);font-family:var(--font-mono)}
+.dc-add-btn:hover{border-color:var(--accent1);color:var(--accent1)}
 
 /* Kanban grouping — Today / This Week / Later / Done columns side-by-side on desktop. */
 .kanban{display:grid;grid-template-columns:repeat(4,minmax(280px,1fr));gap:18px;margin-top:8px}
@@ -977,7 +985,10 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 
 /* ═══ Command Center (collapsible dashboard) ═══ */
-.cmd-strip{display:flex;align-items:center;padding:10px 14px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;margin-bottom:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.cmd-strip{display:flex;align-items:center;padding:10px 14px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);min-height:54px;flex:1;min-width:0}
+.tasks-top{display:flex;gap:14px;align-items:stretch;margin-bottom:14px}
+.daily-host{width:min(360px,34%);flex-shrink:0}
+@media (max-width:900px){.tasks-top{flex-direction:column}.daily-host{width:100%}}
 .cmd-metrics{display:flex;gap:16px;flex:1;flex-wrap:wrap}
 .cmd-metric{display:flex;flex-direction:column;align-items:center}
 .cmd-metric-val{font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -1091,8 +1102,11 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
     </div>
   </div>
 
-  <!-- Stats strip — flat, no longer a collapse target. Sisyphus removed. -->
-  <div class="cmd-strip"><div class="cmd-metrics" id="cmdMetrics"></div></div>
+  <!-- Top strip: metrics on the left + slim daily checklist on the right. -->
+  <div class="tasks-top">
+    <div class="cmd-strip"><div class="cmd-metrics" id="cmdMetrics"></div></div>
+    <aside class="daily-host" id="dailyChecklist"></aside>
+  </div>
 
   <!-- Control Bar (search + filter pill + sort pill) -->
   <div class="control-bar" id="controlBar">
@@ -1531,6 +1545,14 @@ function tpClear(){
   updateTimeBtn();
   closeTimePicker();
 }
+// Collapse/expand the daily checklist; state persists via localStorage.
+function toggleDailyChecklist(){
+  const card=document.getElementById('dailyChecklistCard');
+  if(!card)return;
+  card.classList.toggle('collapsed');
+  localStorage.setItem('oyt_daily_collapsed',card.classList.contains('collapsed')?'1':'0');
+}
+
 // Quick-add a daily-recurring task from the Daily Checklist input.
 function addDailyTask(){
   const inp=document.getElementById('dcAddInput');
@@ -2227,15 +2249,21 @@ function renderTasks(){
     h+=`</div>`;
     return h;
   };
-  const dailyHTML=`<div class="daily-checklist">
-    <div class="dc-head">
-      <div class="dc-title">Daily Checklist<span class="cn">每日清单</span></div>
-      <div class="dc-count">${dailyDoneCount}/${dailyTasks.length}</div>
+  const dailyCollapsed=localStorage.getItem('oyt_daily_collapsed')==='1';
+  const dailyHTML=`<div class="daily-checklist ${dailyCollapsed?'collapsed':''}" id="dailyChecklistCard">
+    <div class="dc-head" onclick="toggleDailyChecklist()">
+      <div class="dc-title">Daily<span class="cn">每日</span></div>
+      <div class="dc-head-right">
+        <span class="dc-count">${dailyDoneCount}/${dailyTasks.length}</span>
+        <span class="dc-chev">&#9662;</span>
+      </div>
     </div>
-    <div class="dc-rows">${dailyTasks.length?dailyTasks.map(renderDailyRow).join(''):`<div class="dc-empty">No daily tasks yet · 暂无每日任务</div>`}</div>
-    <div class="dc-add">
-      <input id="dcAddInput" type="text" placeholder="Add daily task… · 添加每日任务" onkeydown="if(event.key==='Enter')addDailyTask()">
-      <button class="dc-add-btn" onclick="addDailyTask()">+ Add</button>
+    <div class="dc-body">
+      <div class="dc-rows">${dailyTasks.length?dailyTasks.map(renderDailyRow).join(''):`<div class="dc-empty">No daily tasks yet · 暂无每日任务</div>`}</div>
+      <div class="dc-add">
+        <input id="dcAddInput" type="text" placeholder="Add daily task…" onkeydown="if(event.key==='Enter')addDailyTask()" onclick="event.stopPropagation()">
+        <button class="dc-add-btn" onclick="event.stopPropagation();addDailyTask()">+ Add</button>
+      </div>
     </div>
   </div>`;
   // Group remaining tasks into Today / This Week / Later / Done.
@@ -2266,7 +2294,9 @@ function renderTasks(){
     ['later','Later','之后'],
     ['done','Done','完成'],
   ];
-  list.innerHTML=dailyHTML+`<div class="kanban">${cols.map(([key,en,cn])=>`
+  const dailyHost=document.getElementById('dailyChecklist');
+  if(dailyHost)dailyHost.innerHTML=dailyHTML;
+  list.innerHTML=`<div class="kanban">${cols.map(([key,en,cn])=>`
     <section class="kc" data-col="${key}">
       <header class="kc-head"><h3>${en}<span class="cn">${cn}</span></h3><span class="kc-count">${buckets[key].length}</span></header>
       <div class="task-list">${buckets[key].length
