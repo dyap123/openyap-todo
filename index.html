@@ -276,6 +276,34 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 /* Task Cards */
 .task-list{display:flex;flex-direction:column;gap:10px}
 
+/* Daily Checklist — recurring="daily" tasks live here, separate from the kanban. */
+.daily-checklist{background:var(--card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--card-border);border-radius:14px;padding:14px 18px 12px;margin-bottom:18px;box-shadow:0 4px 18px rgba(0,0,0,0.25),0 0 0 1px rgba(255,46,136,0.04)}
+.dc-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,46,136,0.15)}
+.dc-title{font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent1);text-shadow:0 0 8px var(--glow-pink);display:flex;align-items:baseline}
+.dc-title .cn{font-size:11px;letter-spacing:0.04em;text-transform:none;font-weight:500}
+.dc-count{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);background:rgba(255,255,255,0.04);border:1px solid var(--card-border);border-radius:999px;padding:2px 9px;min-width:34px;text-align:center}
+.dc-rows{display:flex;flex-direction:column;gap:2px}
+.dc-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:7px 6px;border-radius:8px;transition:background .15s var(--ease)}
+.dc-row:hover{background:rgba(255,46,136,0.05)}
+.dc-row.expanded{background:rgba(255,46,136,0.06);grid-template-columns:auto 1fr auto;grid-template-rows:auto auto}
+.dc-row .tex{grid-column:1 / -1;margin-top:6px}
+.dc-ck{appearance:none;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--card-border);background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:transparent;cursor:pointer;flex-shrink:0;transition:all .2s var(--ease);padding:0;line-height:1}
+.dc-ck:hover{border-color:var(--accent1);box-shadow:0 0 8px var(--glow-pink)}
+.dc-row.done .dc-ck{background:var(--accent1);border-color:var(--accent1);color:#fff;box-shadow:0 0 12px var(--glow-pink)}
+.dc-row-title{font-size:13.5px;color:var(--text);cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dc-row.done .dc-row-title{text-decoration:line-through;color:var(--text-muted);opacity:0.55}
+.dc-actions{display:flex;gap:2px;opacity:0;transition:opacity .15s var(--ease)}
+.dc-row:hover .dc-actions,.dc-row.expanded .dc-actions{opacity:1}
+.dc-actions button{background:transparent;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:3px 6px;border-radius:4px;transition:all .15s var(--ease);line-height:1}
+.dc-actions button:hover{color:var(--accent1);background:rgba(255,46,136,0.10)}
+.dc-actions button.del:hover{color:var(--red);background:rgba(255,77,109,0.10)}
+.dc-empty{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);opacity:0.55;padding:10px 6px;text-align:center}
+.dc-add{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 6px 2px;border-top:1px dashed var(--card-border)}
+.dc-add input{flex:1;background:transparent;border:none;outline:none;font-size:13.5px;color:var(--text);font-family:var(--font-en);padding:4px 0}
+.dc-add input::placeholder{color:var(--text-muted);opacity:0.50}
+.dc-add-btn{background:rgba(255,46,136,0.12);border:1px solid var(--accent1);color:var(--accent1);font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:5px 12px;border-radius:999px;cursor:pointer;transition:all .2s var(--ease);font-family:var(--font-mono)}
+.dc-add-btn:hover{background:var(--accent1);color:#08020f;box-shadow:0 0 14px var(--glow-pink)}
+
 /* Kanban grouping — Today / This Week / Later / Done columns side-by-side on desktop. */
 .kanban{display:grid;grid-template-columns:repeat(4,minmax(280px,1fr));gap:18px;margin-top:8px}
 .kc{display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -1503,6 +1531,21 @@ function tpClear(){
   updateTimeBtn();
   closeTimePicker();
 }
+// Quick-add a daily-recurring task from the Daily Checklist input.
+function addDailyTask(){
+  const inp=document.getElementById('dcAddInput');
+  if(!inp)return;
+  const title=inp.value.trim();if(!title)return;
+  fbPush('todo/tasks',{
+    title,priority:'medium',category:'personal',difficulty:'easy',
+    repeat:'daily',progress:0,completed:false,completedAt:'',
+    dueDate:new Date().toISOString().slice(0,10),
+    dueTime:'',notes:'',from:'',
+    createdAt:new Date().toISOString(),order:Date.now()
+  });
+  inp.value='';
+}
+
 function addTask(){
   const inp=document.getElementById('newTask');
   const t=inp.value.trim();if(!t)return;
@@ -2150,7 +2193,52 @@ function renderTasks(){
     </div>`;
     return h;
   };
-  // Group filtered + sorted tasks into Today / This Week / Later / Done.
+  // Daily checklist — recurring="daily" tasks live in a dedicated panel above
+  // the kanban. A daily task is "done for today" when the recurring branch in
+  // toggleDone has advanced its dueDate past today.
+  const dailyTasks=fl.filter(([,t])=>t.repeat==='daily');
+  const regularTasks=fl.filter(([,t])=>t.repeat!=='daily');
+  const dailyDoneToday=([id,t])=>!!(t.dueDate && t.dueDate>today);
+  const dailyDoneCount=dailyTasks.filter(dailyDoneToday).length;
+  const renderDailyRow=([id,t])=>{
+    const done=dailyDoneToday([id,t]);
+    const exp=expanded===id;
+    const diff=t.difficulty||'medium';
+    const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
+    let h=`<div class="dc-row ${done?'done':''} ${exp?'expanded':''}">
+      <button class="dc-ck" onclick="toggleDone('${id}')" title="Mark done for today">${done?'&#10003;':''}</button>
+      <div class="dc-row-title" onclick="toggleExpand('${id}')">${esc(t.title||'')}</div>
+      <div class="dc-actions">
+        <button onclick="event.stopPropagation();toggleExpand('${id}')" title="Edit">&#9998;</button>
+        <button class="del" onclick="event.stopPropagation();deleteTask('${id}')" title="Delete">&times;</button>
+      </div>`;
+    if(exp){
+      h+=`<div class="tex">
+        <input type="text" class="tex-title" placeholder="Title" value="${esc(t.title||'')}" onblur="updateTask('${id}','title',this.value)" onkeydown="if(event.key==='Enter'){this.blur();}">
+        <textarea placeholder="Notes..." onblur="updateTask('${id}','notes',this.value)">${esc(t.notes||'')}</textarea>
+        <div class="tex-row">
+          <select onchange="updateTask('${id}','priority',this.value)">${['high','medium','low'].map(p=>`<option value="${p}" ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select>
+          <select onchange="updateTask('${id}','category',this.value)">${['work','personal','project','rfi'].map(c=>`<option value="${c}" ${t.category===c?'selected':''}>${c}</option>`).join('')}</select>
+          <select onchange="updateTask('${id}','difficulty',this.value)">${['easy','medium','hard','epic'].map(d=>`<option value="${d}" ${diff===d?'selected':''}>${d}</option>`).join('')}</select>
+          <select onchange="updateTask('${id}','repeat',this.value)" title="Repeat">${[['none','No repeat'],['daily','↻ Daily'],['weekly','↻ Weekly'],['monthly','↻ Monthly']].map(([v,lb])=>`<option value="${v}" ${(t.repeat||'none')===v?'selected':''}>${lb}</option>`).join('')}</select>
+        </div>
+      </div>`;
+    }
+    h+=`</div>`;
+    return h;
+  };
+  const dailyHTML=`<div class="daily-checklist">
+    <div class="dc-head">
+      <div class="dc-title">Daily Checklist<span class="cn">每日清单</span></div>
+      <div class="dc-count">${dailyDoneCount}/${dailyTasks.length}</div>
+    </div>
+    <div class="dc-rows">${dailyTasks.length?dailyTasks.map(renderDailyRow).join(''):`<div class="dc-empty">No daily tasks yet · 暂无每日任务</div>`}</div>
+    <div class="dc-add">
+      <input id="dcAddInput" type="text" placeholder="Add daily task… · 添加每日任务" onkeydown="if(event.key==='Enter')addDailyTask()">
+      <button class="dc-add-btn" onclick="addDailyTask()">+ Add</button>
+    </div>
+  </div>`;
+  // Group remaining tasks into Today / This Week / Later / Done.
   // Bucketing rules:
   //   Today   — due today, overdue, or no due AND priority==='high'
   //   Week    — due > today AND due <= today+7d, or no due AND priority==='medium'
@@ -2158,7 +2246,7 @@ function renderTasks(){
   //   Done    — anything t.completed
   const wk=new Date();wk.setDate(wk.getDate()+7);const weekCutoff=wk.toISOString().slice(0,10);
   const buckets={today:[],week:[],later:[],done:[]};
-  fl.forEach(([id,t])=>{
+  regularTasks.forEach(([id,t])=>{
     if(t.completed){buckets.done.push([id,t]);return}
     const due=t.dueDate||'';
     if(due){
@@ -2178,7 +2266,7 @@ function renderTasks(){
     ['later','Later','之后'],
     ['done','Done','完成'],
   ];
-  list.innerHTML=`<div class="kanban">${cols.map(([key,en,cn])=>`
+  list.innerHTML=dailyHTML+`<div class="kanban">${cols.map(([key,en,cn])=>`
     <section class="kc" data-col="${key}">
       <header class="kc-head"><h3>${en}<span class="cn">${cn}</span></h3><span class="kc-count">${buckets[key].length}</span></header>
       <div class="task-list">${buckets[key].length
