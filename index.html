@@ -4,29 +4,35 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OpenYap Todo</title>
-<meta name="theme-color" content="#0a0a14">
+<meta name="theme-color" content="#08020f">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%E2%9C%93</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200..400,0..1,0&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
 :root {
-  --bg:#111122;--card:rgba(20,20,40,0.7);
-  --panel-1:rgba(20,20,40,0.8);--panel-2:rgba(15,12,30,0.85);
-  --accent1:#8B5CF6;--accent2:#3B82F6;--accent3:#ec4899;
-  --accent1-10:rgba(139,92,246,0.10);--accent1-06:rgba(139,92,246,0.06);
-  --card-border:rgba(139,92,246,0.08);--card-hover:rgba(139,92,246,0.18);
-  --red:#ef4444;--yellow:#eab308;--gray:#64748b;--text:#e8e6f0;--text-body:#b0adc0;--text-muted:#666;
-  --border:rgba(255,255,255,0.07);--radius:16px;--ease:cubic-bezier(0.16,1,0.3,1);
-  --blue:var(--accent2);--pink:var(--accent3);--purple:var(--accent1);
-  --glow1:rgba(139,92,246,0.09);--glow2:rgba(59,130,246,0.08);--glow3:rgba(236,72,153,0.06);
-  --bg:#0e0e1a;--body-bg:linear-gradient(160deg,#111122 0%,#161428 40%,#1a1230 70%,#141020 100%);
-  --hdr-bg:rgba(17,17,34,0.88);--sidebar-bg:rgba(17,17,34,0.95);
-  --cat-work-bg:rgba(59,130,246,0.1);--cat-work-fg:rgba(59,130,246,0.7);
-  --cat-pers-bg:rgba(139,92,246,0.1);--cat-pers-fg:rgba(139,92,246,0.7);
-  --cat-proj-bg:rgba(236,72,153,0.1);--cat-proj-fg:rgba(236,72,153,0.7);
+  /* Chongqing — neon hot-pink + cyan + magenta over deep navy. */
+  --bg:#08020f;--card:rgba(20,8,32,0.55);
+  --panel-1:rgba(28,10,42,0.72);--panel-2:rgba(16,6,26,0.85);
+  --accent1:#ff2e88;--accent2:#00e5ff;--accent3:#c026d3;
+  --accent1-10:rgba(255,46,136,0.10);--accent1-06:rgba(255,46,136,0.06);
+  --card-border:rgba(255,46,136,0.14);--card-hover:rgba(255,46,136,0.26);
+  --red:#ff4d6d;--yellow:#ffd600;--gray:#7a6a92;--text:#f6f0ff;--text-body:#c8b8e0;--text-muted:#8a7aa8;
+  --border:rgba(255,46,136,0.08);--radius:14px;--ease:cubic-bezier(0.16,1,0.3,1);
+  --blue:var(--accent2);--pink:var(--accent1);--purple:var(--accent3);
+  --glow1:rgba(255,46,136,0.16);--glow2:rgba(0,229,255,0.12);--glow3:rgba(192,38,211,0.10);
+  --glow-pink:rgba(255,46,136,0.45);--glow-cyan:rgba(0,229,255,0.40);--glow-magenta:rgba(192,38,211,0.35);
+  --body-bg:radial-gradient(ellipse 1200px 800px at 22% 18%,rgba(255,46,136,0.10),transparent 60%),radial-gradient(ellipse 1100px 900px at 78% 70%,rgba(0,229,255,0.08),transparent 65%),radial-gradient(ellipse 900px 700px at 50% 95%,rgba(192,38,211,0.07),transparent 60%),linear-gradient(160deg,#0a0210 0%,#0e041a 40%,#100620 70%,#08020f 100%);
+  --hdr-bg:rgba(10,4,20,0.82);--sidebar-bg:rgba(12,4,22,0.92);
+  --cat-work-bg:rgba(0,229,255,0.12);--cat-work-fg:rgba(0,229,255,0.85);
+  --cat-pers-bg:rgba(255,46,136,0.12);--cat-pers-fg:rgba(255,46,136,0.85);
+  --cat-proj-bg:rgba(192,38,211,0.12);--cat-proj-fg:rgba(192,38,211,0.85);
+  --font-en:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;
+  --font-cn:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono',ui-monospace,monospace;
 }
 /* ── Themes ── */
 body.t-ocean{--bg:#0a1520;--card:rgba(10,22,36,0.7);--panel-1:rgba(12,25,40,0.8);--panel-2:rgba(8,18,30,0.88);--accent1:#0ea5e9;--accent2:#f97316;--accent3:#06b6d4;--accent1-10:rgba(14,165,233,0.1);--accent1-06:rgba(14,165,233,0.06);--card-border:rgba(14,165,233,0.06);--card-hover:rgba(14,165,233,0.12);--text:#e0eef4;--text-body:#a8bcc8;--text-muted:#5a7080;--glow1:rgba(14,165,233,0.09);--glow2:rgba(249,115,22,0.07);--glow3:rgba(6,182,212,0.06);--body-bg:linear-gradient(160deg,#0c1520 0%,#101e2a 40%,#0a1a28 70%,#0e1420 100%);--hdr-bg:rgba(12,21,32,0.88);--sidebar-bg:rgba(12,21,32,0.95);--cat-work-bg:rgba(249,115,22,0.1);--cat-work-fg:rgba(249,115,22,0.6);--cat-pers-bg:rgba(14,165,233,0.1);--cat-pers-fg:rgba(14,165,233,0.6);--cat-proj-bg:rgba(6,182,212,0.1);--cat-proj-fg:rgba(6,182,212,0.6)}
@@ -69,21 +75,13 @@ body.t-light .empty-bubble::before{background:rgba(255,255,255,0.78)}
 body.t-light .ai-row input{color:var(--text)}
 body.t-light .am.user{color:var(--text)}
 body.t-light #alfredSidebar{background:rgba(246,245,251,0.95)}
-body.t-light #celebText{filter:drop-shadow(0 4px 24px rgba(124,58,237,0.3))}
-body.t-light .celeb-sub{color:rgba(0,0,0,0.55)}
 body.t-light .mascot{filter:grayscale(0.4) brightness(0.85);opacity:0.18}
 body.t-light .mascot:hover{filter:grayscale(0) brightness(1);opacity:0.7}
 body.t-light .mascot-mini{filter:grayscale(0.7) brightness(0.7);opacity:0.06}
 body.t-light .stat-emoji{filter:grayscale(0.5) brightness(0.85)}
 body.t-light .bg-mesh::before{opacity:0.6}
 /* Light Sisyphus canvas */
-body.t-light #sisCanvas{background:linear-gradient(180deg,#e8e4f5 0%,#d8d0ee 60%,#cec3e8 100%) !important;border-color:rgba(124,58,237,0.18) !important;box-shadow:0 4px 20px rgba(124,58,237,0.2),0 0 32px rgba(124,58,237,0.15),0 0 72px rgba(124,58,237,0.08),inset 0 1px 0 rgba(255,255,255,0.6) !important;animation:sisGlowLight 9s ease-in-out infinite !important}
-@keyframes sisGlowLight{0%,100%{box-shadow:0 4px 20px rgba(124,58,237,0.15),0 0 32px rgba(124,58,237,0.12),0 0 72px rgba(124,58,237,0.06),inset 0 1px 0 rgba(255,255,255,0.6)}50%{box-shadow:0 4px 24px rgba(124,58,237,0.22),0 0 48px rgba(124,58,237,0.22),0 0 110px rgba(124,58,237,0.15),0 0 160px rgba(124,58,237,0.08),inset 0 1px 0 rgba(255,255,255,0.6)}}
-/* Sisyphus wrapper + canvas — nearly transparent, body-bg shows through */
-.sis-wrap{position:relative;margin-bottom:12px}
-#sisCanvas{background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.22)) !important;border-color:var(--card-border) !important;box-shadow:0 4px 18px rgba(0,0,0,0.22),0 0 30px var(--accent1-10),0 0 72px var(--accent1-06),inset 0 1px 0 rgba(255,255,255,0.04) !important;animation:sisGlow 9s ease-in-out infinite;backdrop-filter:blur(2px)}
-@keyframes sisGlow{0%,100%{box-shadow:0 4px 18px rgba(0,0,0,0.22),0 0 30px var(--accent1-10),0 0 72px var(--accent1-06),inset 0 1px 0 rgba(255,255,255,0.04)}50%{box-shadow:0 4px 22px rgba(0,0,0,0.22),0 0 50px var(--accent1-10),0 0 120px var(--accent1-10),0 0 180px var(--accent1-06),inset 0 1px 0 rgba(255,255,255,0.06)}}
-.sis-wrap:hover #sisCanvas{animation-duration:3s}
+/* Sisyphus canvas + sis-wrap removed — see <div class="cmd-strip"> in markup */
 
 /* Mascot — blended, subtle, alive (ambient motion calmed) */
 .mascot{position:fixed;bottom:20px;left:20px;font-size:32px;z-index:10;opacity:0.1;transition:all .4s var(--ease);cursor:pointer;filter:grayscale(0.5) brightness(0.7);animation:mascotFloat 7s ease-in-out infinite}
@@ -96,13 +94,12 @@ body.t-light #sisCanvas{background:linear-gradient(180deg,#e8e4f5 0%,#d8d0ee 60%
 @keyframes miniPop{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.6) rotate(-15deg)}60%{transform:scale(1.4) rotate(10deg)}100%{transform:scale(1.3) rotate(0)}}
 
 /* Motion modes — "calm" is default; "lively" restores original pace; prefers-reduced-motion zeroes ambient loops */
-html[data-motion="lively"] #sisCanvas{animation-duration:4.5s !important}
 html[data-motion="lively"] .mascot{animation-duration:5s !important;opacity:0.12}
 html[data-motion="lively"] .mascot-mini{animation-duration:8s !important;opacity:0.05}
 html[data-motion="lively"] .bg-mesh::before{animation-duration:60s !important}
 html[data-motion="lively"] .glow-line.mid{animation-duration:4s !important}
 @media (prefers-reduced-motion: reduce){
-  #sisCanvas,.mascot,.mascot-mini,.bg-mesh::before,.glow-line.mid{animation:none !important}
+  .mascot,.mascot-mini,.bg-mesh::before,.glow-line.mid{animation:none !important}
   .sync-dot{animation-duration:4s !important}
 }
 
@@ -115,8 +112,16 @@ html[data-motion="lively"] .glow-line.mid{animation-duration:4s !important}
 .theme-dot.active{border-color:var(--accent1);box-shadow:0 0 8px rgba(255,255,255,0.1)}
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{background:var(--bg,#0a0a14)}
-body{background:var(--body-bg);color:var(--text-body);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;transition:margin-right .3s var(--ease);overflow-x:hidden}
+html{background:var(--bg,#08020f)}
+body{background:var(--body-bg);color:var(--text-body);font-family:var(--font-en);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;transition:margin-right .3s var(--ease);overflow-x:hidden;position:relative}
+/* Vertical Chinese signage decorations behind content (Chongqing nightscape vibe) */
+body::before{content:'任务';position:fixed;top:8vh;left:2vw;font-family:var(--font-cn);font-weight:700;font-size:clamp(120px,18vw,260px);line-height:0.92;color:transparent;-webkit-text-stroke:1px rgba(255,46,136,0.10);opacity:0.55;writing-mode:vertical-rl;letter-spacing:0.1em;pointer-events:none;z-index:0;text-shadow:0 0 30px rgba(255,46,136,0.05);user-select:none}
+body::after{content:'今日';position:fixed;bottom:6vh;right:2vw;font-family:var(--font-cn);font-weight:700;font-size:clamp(110px,16vw,220px);line-height:0.92;color:transparent;-webkit-text-stroke:1px rgba(0,229,255,0.10);opacity:0.45;writing-mode:vertical-rl;letter-spacing:0.1em;pointer-events:none;z-index:0;text-shadow:0 0 30px rgba(0,229,255,0.05);user-select:none}
+@media (max-width:900px){body::before,body::after{display:none}}
+/* Bilingual EN/中文 utility — append to any label */
+.cn{font-family:var(--font-cn);color:var(--accent1);font-weight:500;letter-spacing:0.04em;text-shadow:0 0 8px var(--glow-pink);margin-left:6px}
+.cn-cyan{color:var(--accent2);text-shadow:0 0 8px var(--glow-cyan)}
+.mono{font-family:var(--font-mono)}
 ::selection{background:var(--card-hover)}
 input,select,textarea,button{font-family:inherit}
 
@@ -134,7 +139,7 @@ input,select,textarea,button{font-family:inherit}
 
 /* Header */
 .header{position:sticky;top:0;z-index:50;background:var(--hdr-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--card-border)}
-.header-inner{max-width:680px;margin:0 auto;padding:0 20px;height:48px;display:flex;align-items:center;justify-content:space-between}
+.header-inner{max-width:min(1500px,95vw);margin:0 auto;padding:0 28px;height:48px;display:flex;align-items:center;justify-content:space-between}
 .app-title{font-weight:300;font-size:11px;letter-spacing:.3em;color:var(--accent1);opacity:0.6;text-transform:uppercase}
 .header-right{display:flex;gap:8px;align-items:center}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--accent1);box-shadow:0 0 8px var(--accent1-10);animation:syncPulse 2s ease-in-out infinite}
@@ -142,7 +147,7 @@ input,select,textarea,button{font-family:inherit}
 .sync-label{font-size:9px;color:var(--accent1);opacity:0.3;letter-spacing:1px;font-weight:600}
 
 /* Main */
-.main{max-width:680px;margin:0 auto;padding:20px 20px 100px;position:relative;z-index:1}
+.main{max-width:min(1500px,95vw);margin:0 auto;padding:20px 28px 100px;position:relative;z-index:1}
 
 /* Input Card */
 .input-card{background:var(--card);backdrop-filter:blur(16px);border:1px solid var(--card-border);border-radius:var(--radius);padding:16px;margin-bottom:20px;transition:border-color .3s}
@@ -251,12 +256,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .t-prog-input{width:100%;background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:8px;padding:5px 8px;color:var(--text-body);font-size:11px;outline:none}
 .t-prog-input:focus{border-color:var(--card-hover)}
 /* Celebration overlay */
-#celebOverlay{position:fixed;inset:0;z-index:9999;pointer-events:none;display:none}
-#celebOverlay.show{display:block}
-#celebCanvas{position:absolute;inset:0;width:100%;height:100%}
-.celeb-text{position:absolute;top:35%;left:50%;transform:translateX(-50%);font-size:48px;font-weight:900;letter-spacing:-1.5px;background:linear-gradient(135deg,var(--accent1),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;animation:celebTextIn 2.2s var(--ease) both;text-shadow:0 0 40px rgba(139,92,246,0.4);filter:drop-shadow(0 4px 24px rgba(0,0,0,0.6))}
-.celeb-sub{display:block;font-size:14px;font-weight:600;color:rgba(255,255,255,0.5);letter-spacing:3px;text-transform:uppercase;margin-top:8px;-webkit-text-fill-color:rgba(255,255,255,0.5);background:none}
-@keyframes celebTextIn{0%{opacity:0;transform:translateX(-50%) translateY(20px) scale(0.8)}15%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.15)}30%{transform:translateX(-50%) translateY(0) scale(1)}80%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-20px) scale(1)}}
+<!-- celebOverlay/celebCanvas/celebText/celeb-sub/celebTextIn removed; new lean CSS celebration lives on .tc.celebrating -->
 
 /* Search */
 .search-wrap{position:relative;margin-bottom:10px;display:flex;align-items:center}
@@ -275,14 +275,53 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 
 /* Task Cards */
 .task-list{display:flex;flex-direction:column;gap:10px}
-.tc{position:relative;background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--accent1-06);border-radius:14px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;transition:transform .35s var(--ease),border-color .35s var(--ease),box-shadow .55s var(--ease),backdrop-filter .35s var(--ease);animation:ti .35s var(--ease) both}
+
+/* Kanban grouping — Today / This Week / Later / Done columns side-by-side on desktop. */
+.kanban{display:grid;grid-template-columns:repeat(4,minmax(280px,1fr));gap:18px;margin-top:8px}
+.kc{display:flex;flex-direction:column;gap:10px;min-width:0}
+.kc-head{display:flex;align-items:baseline;justify-content:space-between;padding:0 4px 10px;border-bottom:1px solid var(--card-border);margin-bottom:6px}
+.kc-head h3{font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text);display:flex;align-items:baseline}
+.kc-head .cn{font-size:12px;font-weight:500;letter-spacing:0.04em;text-transform:none}
+.kc-count{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);background:rgba(255,255,255,0.04);border:1px solid var(--card-border);border-radius:999px;padding:2px 9px;min-width:24px;text-align:center}
+.kc[data-col="today"] .kc-head{border-bottom-color:rgba(255,46,136,0.30);box-shadow:0 1px 0 0 rgba(255,46,136,0.12)}
+.kc[data-col="today"] .kc-head h3{color:var(--accent1);text-shadow:0 0 8px var(--glow-pink)}
+.kc[data-col="week"] .kc-head{border-bottom-color:rgba(0,229,255,0.28)}
+.kc[data-col="week"] .kc-head h3{color:var(--accent2);text-shadow:0 0 8px var(--glow-cyan)}
+.kc[data-col="later"] .kc-head{border-bottom-color:rgba(192,38,211,0.28)}
+.kc[data-col="later"] .kc-head h3{color:var(--accent3);text-shadow:0 0 8px var(--glow-magenta)}
+.kc[data-col="done"] .kc-head{border-bottom-color:rgba(255,214,0,0.24)}
+.kc[data-col="done"] .kc-head h3{color:var(--yellow);text-shadow:0 0 8px rgba(255,214,0,0.30)}
+.kc-empty{font-size:12px;font-family:var(--font-mono);color:var(--text-muted);opacity:0.6;padding:24px 8px;text-align:center;border:1px dashed var(--card-border);border-radius:10px;background:rgba(255,255,255,0.015)}
+.kc-empty .cn{display:block;margin-top:4px;color:inherit;text-shadow:none;opacity:0.7}
+@media(max-width:1100px){.kanban{grid-template-columns:repeat(2,minmax(280px,1fr));gap:14px}}
+@media(max-width:640px){.kanban{grid-template-columns:1fr;gap:12px}}
+.tc{position:relative;background:var(--card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--card-border);border-radius:14px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;transition:transform .25s var(--ease),border-color .25s var(--ease),box-shadow .35s var(--ease),opacity .35s var(--ease);animation:ti .35s var(--ease) both}
 /* External halo — sits BEHIND the card, same approach as the verdict card */
-.tc::before{content:'';position:absolute;inset:-8px;border-radius:20px;background:radial-gradient(ellipse at center,var(--accent1) 0%,transparent 60%);opacity:0;filter:blur(22px);transition:opacity .55s var(--ease);pointer-events:none;z-index:-1}
-.tc:hover::before{opacity:.35}
-.tc:hover{border-color:var(--accent1);box-shadow:0 10px 32px rgba(0,0,0,0.4),0 0 36px var(--accent1-10),0 0 72px var(--accent1-06),0 0 110px var(--accent1-06),inset 0 1px 0 rgba(255,255,255,0.06);transform:translateY(-2px) scale(1.006);backdrop-filter:blur(18px)}
-@keyframes shine{0%{transform:translateX(-100%) skewX(-15deg)}100%{transform:translateX(200%) skewX(-15deg)}}
-.tc.celebrating{box-shadow:0 0 30px var(--accent1-10),0 0 60px var(--accent1-10),0 0 100px var(--accent1-10);overflow:hidden}
-.tc.celebrating::after{content:'';position:absolute;top:0;bottom:0;left:0;width:60%;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.22) 50%,transparent 70%);pointer-events:none;animation:shine 0.9s var(--ease) both;z-index:5}
+/* Hover — single-layer neon outline + lift. No filter:blur (GPU-cheap). */
+.tc:hover{border-color:var(--accent1);box-shadow:0 8px 20px rgba(0,0,0,0.40),0 0 0 1px var(--accent1-10),0 0 18px var(--accent1-10);transform:translateY(-1px)}
+/* Completion — lean CSS-only sequence, no canvas, no filter:blur.
+   0–120ms scale pulse → 120–300ms neon ring pulse → 300–700ms fade + slide. */
+.tc.celebrating{will-change:transform,opacity;animation:tcCelebrate 700ms var(--ease) forwards;overflow:hidden}
+.tc.celebrating::after{content:'';position:absolute;inset:0;border-radius:14px;pointer-events:none;box-shadow:inset 0 0 0 1px var(--accent1),0 0 18px var(--glow-pink);animation:tcRing 700ms var(--ease) forwards;z-index:4}
+.tc.celebrating .ck{background:var(--accent1);border-color:var(--accent1);color:#fff;box-shadow:0 0 12px var(--glow-pink);animation:ckPop .25s var(--ease) forwards}
+@keyframes tcCelebrate{
+  0%{transform:translateY(-1px) scale(1);opacity:1}
+  18%{transform:scale(0.985);opacity:1}
+  35%{transform:scale(1.012);opacity:1}
+  55%{transform:scale(1) translateX(0);opacity:1}
+  100%{transform:scale(1) translateX(8px);opacity:0.55}
+}
+@keyframes tcRing{
+  0%{opacity:0}
+  18%{opacity:1}
+  60%{opacity:1}
+  100%{opacity:0}
+}
+@keyframes ckPop{
+  0%{transform:scale(1)}
+  45%{transform:scale(1.18)}
+  100%{transform:scale(1)}
+}
 /* Empty state */
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;animation:emptyIn .5s var(--ease)}
 @keyframes emptyIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -794,7 +833,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .w-empty .g{font-size:42px;opacity:0.35;margin-bottom:12px}
 .w-empty .t{font-weight:700;color:var(--text);margin-bottom:6px;font-size:15px}
 .w-empty .h{font-size:12px;max-width:340px;margin:0 auto;line-height:1.5}
-.stats-wrap{max-width:680px;margin:0 auto;padding:20px 20px 100px;position:relative;z-index:1}
+.stats-wrap{max-width:min(1500px,95vw);margin:0 auto;padding:20px 28px 100px;position:relative;z-index:1}
 .stats-section{margin-bottom:20px}
 .stats-title{font-size:12px;font-weight:700;color:var(--accent1);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -910,20 +949,11 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 
 /* ═══ Command Center (collapsible dashboard) ═══ */
-.command-center{overflow:hidden;transition:max-height .35s var(--ease)}
-.cmd-collapsed{display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;cursor:pointer;transition:all .2s var(--ease);margin-bottom:10px}
-.cmd-collapsed:hover{border-color:var(--accent1);box-shadow:0 0 12px rgba(var(--accent1-rgb,120,80,255),0.1)}
-.cmd-mini-sis{width:64px;height:36px;border-radius:8px;overflow:hidden;flex-shrink:0;background:linear-gradient(180deg,#0f0f1c,#06060f)}
+.cmd-strip{display:flex;align-items:center;padding:10px 14px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;margin-bottom:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .cmd-metrics{display:flex;gap:16px;flex:1;flex-wrap:wrap}
 .cmd-metric{display:flex;flex-direction:column;align-items:center}
 .cmd-metric-val{font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .cmd-metric-lbl{font-size:7px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
-.cmd-chev{font-size:10px;color:var(--text-muted);transition:transform .3s var(--ease);flex-shrink:0}
-.cmd-collapsed:hover .cmd-chev{color:var(--accent1)}
-.command-center.expanded .cmd-collapsed .cmd-chev{transform:rotate(180deg)}
-.cmd-expanded{overflow:hidden;transition:max-height .35s var(--ease),opacity .25s}
-.command-center:not(.expanded) .cmd-expanded{max-height:0;opacity:0;pointer-events:none}
-.command-center.expanded .cmd-expanded{max-height:600px;opacity:1}
 
 /* ═══ Dashboard redesign (3 cards) ═══ */
 .dash-v2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
@@ -949,7 +979,7 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
 <div class="bg-mesh"></div>
 <div class="glow-line top"></div>
 <div class="glow-line mid"></div>
-<div id="celebOverlay"><canvas id="celebCanvas"></canvas><div id="celebText" class="celeb-text"></div></div>
+<!-- celebOverlay removed — see .tc.celebrating in <style> for the lean replacement -->
 <div class="mascot" id="mascot"></div>
 <div class="mascot-mini mm" id="mm0" style="top:12%;right:5%"></div>
 <div class="mascot-mini mm" id="mm1" style="top:35%;left:3%;animation-delay:-2s;animation-duration:9s"></div>
@@ -1033,20 +1063,8 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
     </div>
   </div>
 
-  <!-- Command Center (collapsible) -->
-  <div class="command-center" id="cmdCenter">
-    <div class="cmd-collapsed" onclick="toggleCmd()">
-      <div class="cmd-mini-sis"><canvas id="miniSisCanvas" style="width:100%;height:100%;display:block"></canvas></div>
-      <div class="cmd-metrics" id="cmdMetrics"></div>
-      <span class="cmd-chev">▼</span>
-    </div>
-    <div class="cmd-expanded">
-      <div class="dash-v2" id="dash"></div>
-      <div class="sis-wrap">
-        <canvas id="sisCanvas" style="width:100%;height:88px;display:block;border-radius:14px;background:linear-gradient(180deg,#0f0f1c 0%,#0a0a16 60%,#06060f 100%);border:1px solid var(--card-border);box-shadow:0 4px 20px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04)"></canvas>
-      </div>
-    </div>
-  </div>
+  <!-- Stats strip — flat, no longer a collapse target. Sisyphus removed. -->
+  <div class="cmd-strip"><div class="cmd-metrics" id="cmdMetrics"></div></div>
 
   <!-- Control Bar (search + filter pill + sort pill) -->
   <div class="control-bar" id="controlBar">
@@ -1206,7 +1224,7 @@ let tasks={},taskHistory={},wastedLog={},expanded=null,wastedExpanded=null,waste
 let focusOn=(localStorage.getItem('oyt_focus')||'1')==='1';
 let dayView=localStorage.getItem('oyt_day_view')||'chart';
 let calSortWeekOffset=0;
-let cmdExpanded=localStorage.getItem('oyt_cmd_expanded')==='1';
+// cmdExpanded removed — Sisyphus collapse mechanism deleted; cmd-metrics is now a flat strip
 function setDayView(v,dateStr){dayView=v;localStorage.setItem('oyt_day_view',v);openDayModal(dateStr)}
 // Difficulty point weights (used in dashboard + celebration intensity)
 const DIFF_WEIGHTS={easy:1,medium:2,hard:4,epic:8};
@@ -1524,12 +1542,7 @@ function toggleDone(id){
     fbSet(`todo/tasks/${id}/progress`,0);
     fbSet(`todo/tasks/${id}/completed`,false);
     fbSet(`todo/tasks/${id}/completedAt`,'');
-    if(card){
-      card.classList.add('celebrating');
-      feedSisyphus(card,t.difficulty||'medium');
-      setTimeout(()=>card.classList.remove('celebrating'),900);
-    }
-    setTimeout(()=>celebrate(t.difficulty||'medium',t.title),650);
+    playCelebrate(card,t.difficulty||'medium');
     return;
   }
   fbSet(`todo/tasks/${id}/completed`,!wasDone);
@@ -1542,13 +1555,7 @@ function toggleDone(id){
       category:t.category||'personal',priority:t.priority||'medium',
       notes:t.notes||'',completedAt:new Date().toISOString(),
     });
-    if(card){
-      card.classList.add('celebrating');
-      feedSisyphus(card,t.difficulty||'medium');
-      setTimeout(()=>card.classList.remove('celebrating'),900);
-    }
-    // Delay celebrate so the trail can complete first
-    setTimeout(()=>celebrate(t.difficulty||'medium',t.title),650);
+    playCelebrate(card,t.difficulty||'medium');
   }
 }
 function setProgress(id,val){
@@ -1567,12 +1574,7 @@ function setProgress(id,val){
     fbSet(`todo/tasks/${id}/progress`,0);
     fbSet(`todo/tasks/${id}/completed`,false);
     fbSet(`todo/tasks/${id}/completedAt`,'');
-    if(card){
-      card.classList.add('celebrating');
-      feedSisyphus(card,t.difficulty||'medium');
-      setTimeout(()=>card.classList.remove('celebrating'),900);
-    }
-    setTimeout(()=>celebrate(t.difficulty||'medium',t.title),650);
+    playCelebrate(card,t.difficulty||'medium');
     return;
   }
   fbSet(`todo/tasks/${id}/progress`,v);
@@ -1586,12 +1588,7 @@ function setProgress(id,val){
       category:t?.category||'personal',priority:t?.priority||'medium',
       notes:t?.notes||'',completedAt:new Date().toISOString(),
     });
-    if(card){
-      card.classList.add('celebrating');
-      feedSisyphus(card,t?.difficulty||'medium');
-      setTimeout(()=>card.classList.remove('celebrating'),900);
-    }
-    setTimeout(()=>celebrate(t?.difficulty||'medium',t?.title),650);
+    playCelebrate(card,t?.difficulty||'medium');
   } else if(v<100&&tasks[id]?.completed){
     fbSet(`todo/tasks/${id}/completed`,false);
     fbSet(`todo/tasks/${id}/completedAt`,'');
@@ -1602,200 +1599,17 @@ function deleteTask(id){fbSet(`todo/tasks/${id}`,null);if(expanded===id)expanded
 function toggleExpand(id){expanded=expanded===id?null:id;renderTasks()}
 
 // ═══════════════════════════════════════════
-//  Feeder trail — particles fly from task → Sisyphus
+//  Lean completion animation — CSS-only on the card itself.
+//  Replaces the old feedSisyphus particle feeder + fullscreen confetti
+//  canvas. Just adds .celebrating to the card; the CSS keyframes handle
+//  the visuals. Plays the existing completion sound for audio feedback.
 // ═══════════════════════════════════════════
-function feedSisyphus(cardEl,difficulty){
-  const sisCanvas=document.getElementById('sisCanvas');
-  if(!sisCanvas||!cardEl)return;
-  const card=cardEl.getBoundingClientRect();
-  const sis=sisCanvas.getBoundingClientRect();
-  const overlay=document.getElementById('celebOverlay');
-  const canvas=document.getElementById('celebCanvas');
-  const dpr=Math.min(window.devicePixelRatio,2);
-  canvas.width=window.innerWidth*dpr;
-  canvas.height=window.innerHeight*dpr;
-  canvas.style.width=window.innerWidth+'px';
-  canvas.style.height=window.innerHeight+'px';
-  const ctx=canvas.getContext('2d');
-  ctx.scale(dpr,dpr);
-  overlay.classList.add('show');
-
-  const cs=getComputedStyle(document.body);
-  const a1=cs.getPropertyValue('--accent1').trim()||'#8B5CF6';
-  const a2=cs.getPropertyValue('--accent2').trim()||'#3B82F6';
-  const a3=cs.getPropertyValue('--accent3').trim()||'#ec4899';
-  const colors=[a1,a2,a3,a1,a2];
-
-  const startX=card.left+card.width/2;
-  const startY=card.top+card.height/2;
-  const endX=sis.left+sis.width*0.5;
-  const endY=sis.top+sis.height*0.7;
-  const count={easy:8,medium:14,hard:22,epic:34}[difficulty]||14;
-  const parts=[];
-  for(let i=0;i<count;i++){
-    parts.push({
-      x:startX+(Math.random()-0.5)*card.width*0.6,
-      y:startY+(Math.random()-0.5)*8,
-      tx:endX+(Math.random()-0.5)*30,
-      ty:endY+(Math.random()-0.5)*10,
-      size:2+Math.random()*3,
-      color:colors[Math.floor(Math.random()*colors.length)],
-      life:1,
-      delay:i*0.025,
-      progress:0,
-      curve:0.4+Math.random()*0.6,
-    });
+function playCelebrate(card,difficulty){
+  if(card){
+    card.classList.add('celebrating');
+    setTimeout(()=>card.classList.remove('celebrating'),720);
   }
-  const start=Date.now();
-  function frame(){
-    const elapsed=(Date.now()-start)/1000;
-    let alive=false;
-    parts.forEach(p=>{
-      if(elapsed<p.delay)return;
-      p.progress=Math.min(1,(elapsed-p.delay)/0.7);
-      if(p.progress<1)alive=true;
-      // Bezier-ish arc
-      const t=p.progress;
-      const ease=1-Math.pow(1-t,3);
-      const midX=(p.x+p.tx)/2;
-      const midY=Math.min(p.y,p.ty)-60*p.curve;
-      const x=(1-ease)*(1-ease)*p.x+2*(1-ease)*ease*midX+ease*ease*p.tx;
-      const y=(1-ease)*(1-ease)*p.y+2*(1-ease)*ease*midY+ease*ease*p.ty;
-      const fade=t<0.7?1:Math.max(0,1-(t-0.7)/0.3);
-      ctx.globalAlpha=fade*0.85;
-      ctx.shadowBlur=8;ctx.shadowColor=p.color;
-      ctx.fillStyle=p.color;
-      ctx.beginPath();ctx.arc(x,y,p.size*(1-t*0.3),0,Math.PI*2);ctx.fill();
-      ctx.shadowBlur=0;
-    });
-    ctx.globalAlpha=1;
-    if(alive){
-      requestAnimationFrame(frame);
-    }
-    // Don't clear canvas here — celebrate() may also be running
-  }
-  // Start trail with a tiny delay so card celebrating class kicks in first
-  setTimeout(frame,30);
-}
-
-// ═══════════════════════════════════════════
-//  Celebration animation (scaled by difficulty)
-// ═══════════════════════════════════════════
-const CELEB_PRESETS={
-  easy:{count:30,duration:1500,text:'Done',sub:'+ 1 PT',colors:['#4ade80','#22c55e','#a8a8b8']},
-  medium:{count:80,duration:2000,text:'Nice!',sub:'+ 2 PTS',colors:['#fbbf24','#f59e0b','#8B5CF6','#3B82F6']},
-  hard:{count:150,duration:2500,text:'Yes!',sub:'+ 4 PTS',colors:['#f97316','#ec4899','#8B5CF6','#3B82F6','#fbbf24']},
-  epic:{count:280,duration:3200,text:'LEGENDARY',sub:'+ 8 PTS · YOU ARE HIM',colors:['#ec4899','#f97316','#fbbf24','#34d399','#3B82F6','#8B5CF6','#f472b6']},
-};
-function celebrate(difficulty,title){
-  const cfg=CELEB_PRESETS[difficulty]||CELEB_PRESETS.medium;
-  const overlay=document.getElementById('celebOverlay');
-  const txt=document.getElementById('celebText');
-  txt.innerHTML=cfg.text+'<span class="celeb-sub">'+cfg.sub+'</span>';
-  // Restart animation
-  txt.style.animation='none';
-  void txt.offsetWidth;
-  txt.style.animation='';
-  overlay.classList.add('show');
-  // Fun sound
-  playCompleteSound(difficulty);
-
-  const canvas=document.getElementById('celebCanvas');
-  const dpr=Math.min(window.devicePixelRatio,2);
-  canvas.width=window.innerWidth*dpr;
-  canvas.height=window.innerHeight*dpr;
-  canvas.style.width=window.innerWidth+'px';
-  canvas.style.height=window.innerHeight+'px';
-  const ctx=canvas.getContext('2d');
-  ctx.scale(dpr,dpr);
-  const W=window.innerWidth,H=window.innerHeight;
-
-  // Confetti particles — velocities tuned for 60fps base, deltaTime scales to any fps
-  const parts=[];
-  for(let i=0;i<cfg.count;i++){
-    const angle=(Math.random()-0.5)*Math.PI*0.7-Math.PI/2;
-    const speed=(difficulty==='epic'?12:difficulty==='hard'?9:difficulty==='medium'?6:4)+Math.random()*6;
-    parts.push({
-      x:W/2+(Math.random()-0.5)*100,
-      y:H/2,
-      vx:Math.cos(angle)*speed*(Math.random()*2-1),
-      vy:Math.sin(angle)*speed-Math.random()*4,
-      gravity:0.18+Math.random()*0.1,
-      size:3+Math.random()*5,
-      color:cfg.colors[Math.floor(Math.random()*cfg.colors.length)],
-      rot:Math.random()*Math.PI*2,
-      vrot:(Math.random()-0.5)*0.4,
-      shape:Math.random()<0.4?'rect':'circle',
-      life:1
-    });
-  }
-
-  // Radial burst rings
-  const rings=[];
-  if(difficulty==='hard'||difficulty==='epic'){
-    const ringCount=difficulty==='epic'?5:2;
-    for(let i=0;i<ringCount;i++) rings.push({r:0,maxR:Math.max(W,H)*0.6,color:cfg.colors[i%cfg.colors.length],delay:i*120,life:1});
-  }
-
-  const start=performance.now();
-  let lastT=start;
-  function frame(now){
-    const elapsed=now-start;
-    // Clamp dt so tab-switches don't create huge jumps; 60fps base = 16.67ms
-    const dt=Math.min(40,now-lastT)/16.67;
-    lastT=now;
-    // Motion trail: fade existing pixels instead of clearing — gives a smooth streaky feel
-    ctx.globalCompositeOperation='destination-out';
-    ctx.fillStyle='rgba(0,0,0,0.28)';
-    ctx.fillRect(0,0,W,H);
-    ctx.globalCompositeOperation='source-over';
-    // Rings
-    rings.forEach(ring=>{
-      if(elapsed<ring.delay)return;
-      const t=(elapsed-ring.delay)/1200;
-      if(t>1)return;
-      ring.r=ring.maxR*t;
-      ring.life=1-t;
-      ctx.strokeStyle=ring.color+Math.round(ring.life*180).toString(16).padStart(2,'0');
-      ctx.lineWidth=4*(1-t*0.5);
-      ctx.beginPath();ctx.arc(W/2,H/2,ring.r,0,Math.PI*2);ctx.stroke();
-    });
-    // Confetti with dt-scaled physics
-    let alive=false;
-    for(let i=0;i<parts.length;i++){
-      const p=parts[i];
-      if(p.life<=0)continue;
-      p.x+=p.vx*dt;
-      p.y+=p.vy*dt;
-      p.vy+=p.gravity*dt;
-      p.rot+=p.vrot*dt;
-      p.life-=0.008*dt;
-      if(p.life>0&&p.y<H+20)alive=true;
-      ctx.save();
-      ctx.translate(p.x,p.y);
-      ctx.rotate(p.rot);
-      ctx.globalAlpha=Math.max(0,p.life);
-      ctx.fillStyle=p.color;
-      ctx.shadowColor=p.color;
-      ctx.shadowBlur=difficulty==='epic'?8:difficulty==='hard'?5:0;
-      if(p.shape==='rect'){
-        ctx.fillRect(-p.size,-p.size*0.6,p.size*2,p.size*1.2);
-      } else {
-        ctx.beginPath();ctx.arc(0,0,p.size,0,Math.PI*2);ctx.fill();
-      }
-      ctx.restore();
-    }
-    ctx.globalAlpha=1;
-    ctx.shadowBlur=0;
-
-    if(elapsed<cfg.duration||alive){
-      requestAnimationFrame(frame);
-    } else {
-      overlay.classList.remove('show');
-      ctx.clearRect(0,0,W,H);
-    }
-  }
-  requestAnimationFrame(frame);
+  try{playCompleteSound(difficulty||'medium')}catch(e){}
 }
 
 // ── WebAudio meme sound bank ──────────────────────
@@ -2200,184 +2014,7 @@ function renderStatRow(){
     </div>`;
 }
 
-// ═══════════════════════════════════════════
-//  Sisyphus Animation
-// ═══════════════════════════════════════════
-let sisAnim=null;
-function initSisyphus(){
-  const canvas=document.getElementById('sisCanvas');
-  if(!canvas)return;
-  const dpr=Math.min(window.devicePixelRatio,2);
-  const W=canvas.parentElement.clientWidth;
-  canvas.width=W*dpr;canvas.height=88*dpr;
-  canvas.style.width=W+'px';canvas.style.height='88px';
-
-  let boulderAngle=0;
-  let mascotBob=0;
-
-  function draw(){
-    const ctx=canvas.getContext('2d');
-    const w=canvas.width,h=canvas.height;
-    ctx.clearRect(0,0,w,h);
-    ctx.save();
-    ctx.scale(dpr,dpr);
-    const cw=W,ch=88;
-
-    // Theme colors from CSS variables — read EARLY so we can use them throughout
-    const cs=getComputedStyle(document.body);
-    const a1=cs.getPropertyValue('--accent1').trim()||'#8B5CF6';
-    const a2=cs.getPropertyValue('--accent2').trim()||'#3B82F6';
-    const a3=cs.getPropertyValue('--accent3').trim()||'#ec4899';
-    const isLight=cs.getPropertyValue('--is-light').trim()==='1';
-    // In light mode, use dark ink for hill/text/dust; in dark mode use white
-    const ink=isLight?'rgba(40,30,70,':'rgba(255,255,255,';
-    const inkLite=isLight?'rgba(80,60,120,':'rgba(255,255,255,';
-
-    const all=Object.values(tasks);
-    const total=all.length;
-    const done=all.filter(t=>t.completed).length;
-    // Weighted progress: harder tasks contribute more
-    let totalPts=0,donePts=0;
-    all.forEach(t=>{
-      const w=DIFF_WEIGHTS[t.difficulty||'medium'];
-      const p=t.completed?100:(parseFloat(t.progress)||0);
-      totalPts+=w;
-      donePts+=w*(p/100);
-    });
-    const pct=totalPts?donePts/totalPts:0;
-    const allDone=totalPts>0&&pct>=1;
-
-    // Get mascot
-    const curTheme=localStorage.getItem('oyt_theme')||'';
-    const mascot=(THEMES[curTheme]||THEMES['']).mascot;
-
-    const time=Date.now()*.001;
-
-    // ── Hill ──
-    const hillStartX=30;
-    const hillEndX=cw-40;
-    const hillBottomY=ch-16;
-    const hillTopY=24;
-    const hillLen=hillEndX-hillStartX;
-
-    // Slope — single clean line
-    ctx.strokeStyle=ink+(isLight?'0.4)':'0.28)');
-    ctx.lineWidth=2;
-    ctx.lineCap='round';
-    ctx.beginPath();
-    ctx.moveTo(hillStartX,hillBottomY);
-    ctx.lineTo(hillEndX,hillTopY);
-    ctx.stroke();
-
-    // Summit flag at top — only one flag
-    const flagX=hillEndX;
-    const flagY=hillTopY;
-    ctx.strokeStyle=allDone?a1:ink+(isLight?'0.35)':'0.2)');
-    ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.moveTo(flagX,flagY);ctx.lineTo(flagX,flagY-16);ctx.stroke();
-    // Flag pennant
-    ctx.fillStyle=allDone?a1:ink+(isLight?'0.4)':'0.25)');
-    if(allDone){ctx.shadowBlur=12;ctx.shadowColor=a1}
-    ctx.beginPath();ctx.moveTo(flagX,flagY-16);ctx.lineTo(flagX+10,flagY-13);ctx.lineTo(flagX,flagY-10);ctx.closePath();ctx.fill();
-    ctx.shadowBlur=0;
-
-    // ── Boulder + Mascot positions ──
-    // Add some left padding so boulder starts visible at 0%
-    const startOffset=20;
-    const usableLen=hillLen-startOffset;
-    const bx2=hillStartX+startOffset+pct*usableLen;
-    const by2=hillBottomY-(startOffset+pct*usableLen)*((hillBottomY-hillTopY)/hillLen);
-
-    // ── Boulder — stone with subtle accent glow ──
-    boulderAngle+=allDone?0:0.05;
-    const boulderR=11;
-    ctx.save();
-    ctx.translate(bx2+18,by2-boulderR-2);
-    // Soft accent glow halo (not rotated so it doesn't shimmer weirdly)
-    const halo=ctx.createRadialGradient(0,0,boulderR*0.5,0,0,boulderR*2.2);
-    halo.addColorStop(0,a1+'55');
-    halo.addColorStop(0.5,a1+'1a');
-    halo.addColorStop(1,a1+'00');
-    ctx.fillStyle=halo;
-    ctx.beginPath();ctx.arc(0,0,boulderR*2.2,0,Math.PI*2);ctx.fill();
-    // Soft shadow under boulder
-    ctx.fillStyle='rgba(0,0,0,0.3)';
-    ctx.beginPath();ctx.ellipse(0,boulderR+2,boulderR*0.9,2.5,0,0,Math.PI*2);ctx.fill();
-    // Now rotate for the stone itself
-    ctx.rotate(boulderAngle);
-    // Stone body — radial gradient gray
-    const stoneCol=isLight?['#9b95ae','#6b6582','#4a4560']:['#6c6680','#4a4458','#2a2535'];
-    const bg=ctx.createRadialGradient(-3,-3,1,0,0,boulderR);
-    bg.addColorStop(0,stoneCol[0]);
-    bg.addColorStop(0.55,stoneCol[1]);
-    bg.addColorStop(1,stoneCol[2]);
-    ctx.fillStyle=bg;
-    ctx.beginPath();ctx.arc(0,0,boulderR,0,Math.PI*2);ctx.fill();
-    // Single highlight to read as 3D
-    ctx.fillStyle='rgba(255,255,255,0.22)';
-    ctx.beginPath();ctx.arc(-3,-4,2,0,Math.PI*2);ctx.fill();
-    ctx.restore();
-
-    // ── Mascot (sprite or emoji fallback) ──
-    mascotBob+=allDone?0.05:0.15;
-    const mBob=Math.sin(mascotBob)*(allDone?1.5:2.5);
-    const mLean=allDone?0:6;
-    ctx.save();
-    ctx.translate(bx2-2,by2-6+mBob);
-    ctx.rotate(mLean*Math.PI/180);
-    // Soft shadow
-    ctx.fillStyle='rgba(0,0,0,0.2)';
-    ctx.beginPath();ctx.ellipse(0,15,9,3,0,0,Math.PI*2);ctx.fill();
-    // Frame animation: cycle through 4 wingbot frames (~10fps)
-    sisTick++;
-    if(sisTick%6===0)sisFrame=(sisFrame+1)%4;
-    const spriteImg=sisFrames[sisFrame];
-    if(spriteImg&&spriteImg.complete&&spriteImg.naturalWidth){
-      // Draw sprite centered, scaled to ~30px wide (pixel art → crisp)
-      const sw=30,sh=spriteImg.naturalHeight/spriteImg.naturalWidth*sw;
-      ctx.imageSmoothingEnabled=false; // keep pixel art crisp
-      ctx.drawImage(spriteImg,-sw/2,-sh/2,sw,sh);
-    }else{
-      // Emoji fallback while sprites load
-      ctx.font='24px -apple-system,sans-serif';
-      ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(mascot,0,0);
-    }
-    ctx.restore();
-
-    // Creative progress label — changes with completion
-    const msgs={
-      0:['THE BOULDER AWAITS','EVERY EMPIRE STARTS WITH ONE STEP','GREATNESS IS A DECISION','TIME TO COOK','THE GRIND BEGINS'],
-      10:['BARELY MOVING','WARMING UP','ONE STEP AT A TIME','BABY STEPS','THE JOURNEY IS LONG'],
-      25:['QUARTER WAY THERE','BUILDING MOMENTUM','PICKING UP STEAM','THE BOULDER LEARNS YOUR NAME','GRINDING'],
-      40:['HALFWAY-ISH','THE MIDDLE IS THE HARDEST','PUSH PUSH PUSH','SWEAT EQUITY','LOCKED IN'],
-      50:['HALFWAY UP THE MOUNTAIN','THE PEAK IS IN SIGHT','FINDING THE RHYTHM','UNSTOPPABLE','MIDPOINT MOMENTUM'],
-      65:['MORE THAN HALF DONE','ALMOST OVER THE HILL','CLOSING IN','THE END IS NIGH','GETTING TASTY'],
-      80:['HOME STRETCH','SO CLOSE','SUMMIT VISIBLE','ONE LAST PUSH','VICTORY APPROACHES'],
-      90:['ALMOST THERE','FINAL ASCENT','SO. CLOSE.','LITERALLY ONE INCH LEFT','HE IS HIM'],
-      100:['ALL TASKS DONE — YOU ARE HIM','THE BOULDER RESTS','LEGEND','MOUNTAIN CONQUERED','ABSOLUTE UNIT']
-    };
-    const buckets=[100,90,80,65,50,40,25,10,0];
-    const bucket=buckets.find(b=>pct*100>=b)??0;
-    const arr=msgs[bucket];
-    // Stable per-render-cycle pick (changes every ~3s)
-    const idx=Math.floor(Date.now()/3000)%arr.length;
-    ctx.fillStyle=a1+'ee';
-    ctx.font='700 9px -apple-system,sans-serif';
-    ctx.textAlign='left';
-    ctx.fillText(arr[idx],10,ch-5);
-    // Percentage on the right
-    ctx.fillStyle=a1+'bb';
-    ctx.font='700 9px -apple-system,sans-serif';
-    ctx.textAlign='right';
-    ctx.fillText(Math.round(pct*100)+'% / '+done+' of '+total,cw-10,ch-5);
-
-    ctx.restore();
-    sisAnim=requestAnimationFrame(draw);
-  }
-  if(sisAnim)cancelAnimationFrame(sisAnim);
-  draw();
-}
+// Sisyphus canvas + rAF loop removed — see <div class="cmd-strip"> in markup
 
 function renderTasks(){
   // Preserve scroll position — avoids jumping to top when Firebase listener
@@ -2386,8 +2023,7 @@ function renderTasks(){
   renderDashV2();
   renderCmdMetrics();
   updateControlBarLabels();
-  if(cmdExpanded){document.getElementById('cmdCenter')?.classList.add('expanded')}
-  initSisyphus();
+  // (Sisyphus + collapse mechanism removed)
   const list=document.getElementById('taskList'),stats=document.getElementById('stats');
   const entries=Object.entries(tasks);
   if(!entries.length){
@@ -2451,7 +2087,9 @@ function renderTasks(){
     return;
   }
   const today=new Date().toISOString().slice(0,10);
-  list.innerHTML=fl.map(([id,t],i)=>{
+  // Render a single task card. Pulled out of the kanban builder so each
+  // bucket can call it with its own index.
+  const renderCard=(id,t,i)=>{
     const exp=expanded===id;
     const od=t.dueDate&&!t.completed&&t.dueDate<today;
     const cc=t.category==='work'?'var(--accent2)':t.category==='project'?'var(--accent3)':t.category==='rfi'?'#fbbf24':'var(--accent1)';
@@ -2509,7 +2147,44 @@ function renderTasks(){
         <button class="tab" onclick="toggleExpand('${id}')">${exp?'&minus;':'&#9998;'}</button>
         <button class="tab del" onclick="deleteTask('${id}')">&times;</button>
       </div>
-    </div>`;return h}).join('');
+    </div>`;
+    return h;
+  };
+  // Group filtered + sorted tasks into Today / This Week / Later / Done.
+  // Bucketing rules:
+  //   Today   — due today, overdue, or no due AND priority==='high'
+  //   Week    — due > today AND due <= today+7d, or no due AND priority==='medium'
+  //   Later   — due > today+7d, or no due AND priority==='low'
+  //   Done    — anything t.completed
+  const wk=new Date();wk.setDate(wk.getDate()+7);const weekCutoff=wk.toISOString().slice(0,10);
+  const buckets={today:[],week:[],later:[],done:[]};
+  fl.forEach(([id,t])=>{
+    if(t.completed){buckets.done.push([id,t]);return}
+    const due=t.dueDate||'';
+    if(due){
+      if(due<=today)buckets.today.push([id,t]);
+      else if(due<=weekCutoff)buckets.week.push([id,t]);
+      else buckets.later.push([id,t]);
+    }else{
+      const p=t.priority||'medium';
+      if(p==='high')buckets.today.push([id,t]);
+      else if(p==='low')buckets.later.push([id,t]);
+      else buckets.week.push([id,t]);
+    }
+  });
+  const cols=[
+    ['today','Today','今日'],
+    ['week','This Week','本周'],
+    ['later','Later','之后'],
+    ['done','Done','完成'],
+  ];
+  list.innerHTML=`<div class="kanban">${cols.map(([key,en,cn])=>`
+    <section class="kc" data-col="${key}">
+      <header class="kc-head"><h3>${en}<span class="cn">${cn}</span></h3><span class="kc-count">${buckets[key].length}</span></header>
+      <div class="task-list">${buckets[key].length
+        ? buckets[key].map(([id,t],i)=>renderCard(id,t,i)).join('')
+        : `<div class="kc-empty">Nothing here<span class="cn">空空如也</span></div>`}</div>
+    </section>`).join('')}</div>`;
   const total=entries.length,done=entries.filter(([,t])=>t.completed).length;
   stats.textContent=done+' of '+total+' completed';
   // Restore scroll position so Firebase re-renders don't jump to top
@@ -2524,16 +2199,7 @@ function fmtTime12(t){
   return(hr>12?hr-12:hr||12)+':'+m+(hr>=12?' PM':' AM');
 }
 
-// ═══════════════════════════════════════════
-//  Command Center toggle
-// ═══════════════════════════════════════════
-function toggleCmd(){
-  cmdExpanded=!cmdExpanded;
-  localStorage.setItem('oyt_cmd_expanded',cmdExpanded?'1':'0');
-  const el=document.getElementById('cmdCenter');
-  if(cmdExpanded)el.classList.add('expanded');else el.classList.remove('expanded');
-  setTimeout(()=>initSisyphus(),380);
-}
+// (toggleCmd removed — collapse mechanism deleted with Sisyphus)
 function renderCmdMetrics(){
   const entries=Object.entries(tasks);
   const active=entries.filter(([,t])=>!t.completed);
@@ -3194,44 +2860,34 @@ document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sw
 const SPRITE_BASE='sprites/';
 const THEMES={
   '':{mascot:'🤖',minis:['⚡','💜','🔮','🛸','🌌'],
-      sprite:{sis:'wingbot/2/',corner:'gunbot/purple.png'},
+      sprite:{corner:'gunbot/purple.png'},
       stats:{nodata:'🤖',streak:'⚡',early:'🚀',late:'🐌',time:'⏱️',him:'👑',locked:'🔥',solid:'💪',grind:'😤'}},
   't-ocean':{mascot:'🐋',minis:['🐚','🌊','🐠','🦑','🧊'],
-      sprite:{sis:'wingbot/2/',corner:'clawbot/purple.png'},
+      sprite:{corner:'clawbot/purple.png'},
       stats:{nodata:'🧭',streak:'🐚',early:'🐬',late:'🐢',time:'⚓',him:'🔱',locked:'🦭',solid:'🐡',grind:'🦈'}},
   't-forest':{mascot:'🦎',minis:['🍃','🌿','🍄','🦉','🐿️'],
-      sprite:{sis:'wingbot/4/',corner:'ballbot/green.png'},
+      sprite:{corner:'ballbot/green.png'},
       stats:{nodata:'🌱',streak:'🌳',early:'🐇',late:'🐛',time:'🍂',him:'🦁',locked:'🌲',solid:'🦉',grind:'🐺'}},
   't-sunset':{mascot:'🦊',minis:['🌅','✨','🦩','🌵','🔥'],
-      sprite:{sis:'wingbot/3/',corner:'gunbot/orange.png'},
+      sprite:{corner:'gunbot/orange.png'},
       stats:{nodata:'🌅',streak:'☀️',early:'🦅',late:'🐾',time:'⏳',him:'🌟',locked:'🏜️',solid:'🦊',grind:'💥'}},
   't-mono':{mascot:'🗿',minis:['♟️','🎲','🖤','♠️','🌑'],
-      sprite:{sis:'wingbot/2/',corner:'blockbot/block.png'},
+      sprite:{corner:'blockbot/block.png'},
       stats:{nodata:'📊',streak:'♟️',early:'♠️',late:'♣️',time:'⏲️',him:'🏛️',locked:'⚫',solid:'♦️',grind:'▪️'}},
   't-sakura':{mascot:'🌸',minis:['🎀','💮','🦋','🧁','🎐'],
-      sprite:{sis:'wingbot/1/',corner:'ballbot/red.png'},
+      sprite:{corner:'ballbot/red.png'},
       stats:{nodata:'🌸',streak:'💗',early:'🦋',late:'🥀',time:'🎐',him:'💎',locked:'🌺',solid:'🌷',grind:'🧁'}},
   't-light':{mascot:'☀️',minis:['☁️','🌤️','💎','🪶','✨'],
-      sprite:{sis:'wingbot/4/',corner:'clawbot/green.png'},
+      sprite:{corner:'clawbot/green.png'},
       stats:{nodata:'☀️',streak:'🔆',early:'🕊️',late:'🐢',time:'⏰',him:'🏆',locked:'⭐',solid:'👍',grind:'💪'}},
 };
 
-// Sprite image cache — preload wingbot frames + corner mascot per theme
+// Sprite image cache — corner mascot per theme (Sisyphus wingbot loader removed)
 const spriteCache={};
-let sisFrames=[],sisFrame=0,sisTick=0;
 let cornerImg=null;
 function loadThemeSprites(themeKey){
   const th=THEMES[themeKey]||THEMES[''];
   if(!th.sprite)return;
-  // Sisyphus wingbot — 4 frames
-  sisFrames=[];
-  for(let i=1;i<=4;i++){
-    const src=SPRITE_BASE+th.sprite.sis+'wingbot'+i+'.png';
-    if(spriteCache[src]){sisFrames.push(spriteCache[src]);continue}
-    const img=new Image();img.src=src;
-    spriteCache[src]=img;sisFrames.push(img);
-  }
-  sisFrame=0;sisTick=0;
   // Corner mascot
   const csrc=SPRITE_BASE+th.sprite.corner;
   if(spriteCache[csrc])cornerImg=spriteCache[csrc];
@@ -3881,9 +3537,7 @@ function switchView(v){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.getElementById('v-'+v)?.classList.add('active');
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().includes(v)));
-  // Pause Sisyphus loop when not on tasks view — saves CPU
-  if(v!=='tasks'&&sisAnim){cancelAnimationFrame(sisAnim);sisAnim=null}
-  if(v==='tasks')initSisyphus();
+  // (Sisyphus rAF pause/resume removed)
   if(v==='rfi')setRFIView(rfiSubView);
   if(v==='calendar')renderCalendar();
   if(v==='stats')renderStatsView();
