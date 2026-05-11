@@ -1035,7 +1035,10 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
 @media (max-width:900px){.tasks-top{flex-direction:column}.daily-host{width:100%}}
 .cmd-metrics{display:flex;flex-direction:column;gap:10px;flex:1;width:100%;min-width:0}
 .cmd-strip-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
-.cmd-charts{display:grid;grid-template-columns:minmax(180px,1.5fr) minmax(180px,1.6fr) minmax(64px,0.7fr);gap:14px;padding-top:10px;border-top:1px solid var(--card-border)}
+.cmd-charts{display:flex;flex-direction:column;gap:12px;padding-top:10px;border-top:1px solid var(--card-border)}
+.cmd-chart-row{display:grid;gap:14px}
+.cmd-chart-row.top{grid-template-columns:minmax(220px,1.4fr) minmax(200px,1.2fr) minmax(64px,0.55fr)}
+.cmd-chart-row.bot{grid-template-columns:1fr 1fr}
 .cmd-chart{display:flex;flex-direction:column;gap:6px;min-width:0}
 .cmd-chart-label{font-size:9px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .cmd-chart-label b{color:var(--text);font-weight:700;font-family:var(--font-mono);font-size:10px}
@@ -1060,7 +1063,14 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
 .cmd-ring-bg{stroke:rgba(255,255,255,0.07);fill:none;stroke-width:6}
 .cmd-ring-fill{stroke:url(#cmdRingGrad);fill:none;stroke-width:6;stroke-linecap:round;filter:drop-shadow(0 0 4px var(--glow-pink));transition:stroke-dashoffset .8s var(--ease)}
 .cmd-ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.02em}
-@media (max-width:900px){.cmd-charts{grid-template-columns:1fr;gap:10px}}
+/* Recent activity feed */
+.cmd-activity{display:flex;flex-direction:column;gap:3px;padding:2px 0;max-height:88px;overflow:hidden}
+.cmd-activity-row{display:flex;align-items:center;gap:8px;font-size:11.5px;line-height:1.25;padding:2px 0;color:var(--text)}
+.cmd-activity-row .ico{color:var(--accent1);font-size:13px;flex-shrink:0;line-height:1;width:14px;text-align:center}
+.cmd-activity-row .title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.cmd-activity-row .time{font-family:var(--font-mono);font-size:9.5px;color:var(--text-muted);flex-shrink:0;letter-spacing:0.04em}
+.cmd-activity-empty{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);opacity:0.5;padding:6px 0}
+@media (max-width:900px){.cmd-chart-row.top,.cmd-chart-row.bot{grid-template-columns:1fr;gap:10px}}
 .cmd-metric{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:10px;transition:border-color .2s var(--ease),background .2s var(--ease);min-width:0}
 .cmd-metric:hover{background:rgba(255,255,255,0.04)}
 .cmd-metric .material-symbols-outlined{font-size:20px;flex-shrink:0;opacity:0.85;font-variation-settings:'wght' 400}
@@ -2538,6 +2548,35 @@ function renderCmdMetrics(){
   const mixBarHTML=diffTotal?mixSegs:`<div class="cmd-mixbar-empty">No active tasks</div>`;
   const mixLegendHTML=diffTotal?Object.entries(diffCnt).filter(([,n])=>n>0)
     .map(([d])=>`<span><i style="background:${diffColors[d]}"></i>${diffLabels[d]}</span>`).join(''):'';
+  // Recent activity feed — last 4 completions across one-shot tasks + history.
+  const allDone=[];
+  entries.forEach(([id,t])=>{if(t.completed&&t.completedAt)allDone.push({title:t.title||'(untitled)',when:t.completedAt,diff:t.difficulty||'medium'})});
+  Object.values(taskHistory||{}).forEach(h=>{if(h.completedAt)allDone.push({title:h.title||'(untitled)',when:h.completedAt,diff:h.difficulty||'medium'})});
+  allDone.sort((a,b)=>b.when.localeCompare(a.when));
+  const rel=iso=>{
+    const now=Date.now(),then=new Date(iso).getTime();
+    if(isNaN(then))return '';
+    const s=Math.max(0,Math.round((now-then)/1000));
+    if(s<60)return s+'s';
+    if(s<3600)return Math.round(s/60)+'m';
+    if(s<86400)return Math.round(s/3600)+'h';
+    return Math.round(s/86400)+'d';
+  };
+  const recent=allDone.slice(0,4);
+  const activityHTML=recent.length
+    ? recent.map(r=>`<div class="cmd-activity-row"><span class="ico">&#10003;</span><span class="title" title="${esc(r.title)}">${esc(r.title)}</span><span class="time">${rel(r.when)}</span></div>`).join('')
+    : `<div class="cmd-activity-empty">No completions yet · 暂无记录</div>`;
+  // Category mix bar (active tasks).
+  const catCnt={work:0,personal:0,project:0,rfi:0};
+  active.forEach(([,t])=>{const c=t.category||'personal';if(catCnt[c]!==undefined)catCnt[c]++});
+  const catColors={work:'#00e5ff',personal:'#ff2e88',project:'#c026d3',rfi:'#fbbf24'};
+  const catLabels={work:'work',personal:'pers',project:'proj',rfi:'rfi'};
+  const catTotal=Object.values(catCnt).reduce((a,b)=>a+b,0);
+  const catSegs=Object.entries(catCnt).filter(([,n])=>n>0)
+    .map(([c,n])=>`<div class="cmd-mixbar-seg" style="flex:${n};background:${catColors[c]}" title="${c}: ${n}">${n/catTotal>=0.10?`<span>${n}</span>`:''}</div>`).join('');
+  const catBarHTML=catTotal?catSegs:`<div class="cmd-mixbar-empty">No active tasks</div>`;
+  const catLegendHTML=catTotal?Object.entries(catCnt).filter(([,n])=>n>0)
+    .map(([c])=>`<span><i style="background:${catColors[c]}"></i>${catLabels[c]}</span>`).join(''):'';
   // Radial progress ring (overall points completion).
   const R=24, CIRC=2*Math.PI*R, OFF=CIRC*(1-pct/100);
   const ringHTML=`
@@ -2554,18 +2593,31 @@ function renderCmdMetrics(){
   el.innerHTML=`
     <div class="cmd-strip-tiles">${tilesHTML}</div>
     <div class="cmd-charts">
-      <div class="cmd-chart">
-        <div class="cmd-chart-label"><span>Last 7 days</span><b>${sparkTotal} done</b></div>
-        <div class="cmd-sparkline-wrap"><div class="cmd-sparkline">${sparkHTML}</div></div>
+      <div class="cmd-chart-row top">
+        <div class="cmd-chart">
+          <div class="cmd-chart-label"><span>Last 7 days</span><b>${sparkTotal} done</b></div>
+          <div class="cmd-sparkline-wrap"><div class="cmd-sparkline">${sparkHTML}</div></div>
+        </div>
+        <div class="cmd-chart">
+          <div class="cmd-chart-label"><span>Recent activity</span><b>${allDone.length} total</b></div>
+          <div class="cmd-activity">${activityHTML}</div>
+        </div>
+        <div class="cmd-chart" style="align-items:center">
+          <div class="cmd-chart-label" style="justify-content:center"><span>Total</span></div>
+          <div class="cmd-ring">${ringHTML}</div>
+        </div>
       </div>
-      <div class="cmd-chart">
-        <div class="cmd-chart-label"><span>Active by difficulty</span><b>${diffTotal} task${diffTotal===1?'':'s'}</b></div>
-        <div class="cmd-mixbar">${mixBarHTML}</div>
-        <div class="cmd-mix-legend">${mixLegendHTML}</div>
-      </div>
-      <div class="cmd-chart" style="align-items:center">
-        <div class="cmd-chart-label" style="justify-content:center"><span>Total</span></div>
-        <div class="cmd-ring">${ringHTML}</div>
+      <div class="cmd-chart-row bot">
+        <div class="cmd-chart">
+          <div class="cmd-chart-label"><span>Active by difficulty</span><b>${diffTotal} task${diffTotal===1?'':'s'}</b></div>
+          <div class="cmd-mixbar">${mixBarHTML}</div>
+          <div class="cmd-mix-legend">${mixLegendHTML}</div>
+        </div>
+        <div class="cmd-chart">
+          <div class="cmd-chart-label"><span>Active by category</span><b>${catTotal} task${catTotal===1?'':'s'}</b></div>
+          <div class="cmd-mixbar">${catBarHTML}</div>
+          <div class="cmd-mix-legend">${catLegendHTML}</div>
+        </div>
       </div>
     </div>`;
 }
