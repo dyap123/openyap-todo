@@ -848,6 +848,22 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .day-modal-add-btn{padding:6px 14px;border-radius:10px;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff;border:none;font-weight:700;font-size:10px;cursor:pointer;transition:all .2s var(--ease);text-transform:uppercase;letter-spacing:.5px}
 .day-modal-add-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--accent1-10)}
 .day-modal-add-btn:active{transform:translateY(0)}
+/* Task detail modal — read view of a single task's notes (reuses .day-modal shell) */
+.tm-modal-title{font-size:20px;font-weight:800;letter-spacing:-.4px;line-height:1.25;color:var(--text);padding-right:12px;word-break:break-word}
+.tm-modal-title.done{text-decoration:line-through;opacity:.55}
+.tm-modal-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 4px}
+.tm-modal-section-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin:18px 0 8px}
+.tm-modal-notes{background:rgba(255,255,255,0.03);border:1px solid var(--card-border);border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.6;color:var(--text-body);white-space:pre-wrap;word-break:break-word;max-height:46vh;overflow-y:auto}
+.tm-modal-notes a{color:var(--accent1);text-decoration:underline;word-break:break-all}
+.tm-modal-notes-empty{background:rgba(255,255,255,0.02);border:1px dashed var(--card-border);border-radius:14px;padding:24px 16px;text-align:center;font-size:12px;color:var(--text-muted)}
+.tm-modal-prog{margin-top:14px}
+.tm-modal-prog-bar{height:8px;border-radius:6px;background:rgba(255,255,255,0.06);overflow:hidden}
+.tm-modal-prog-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent1),var(--accent2))}
+.tm-modal-foot{display:flex;gap:10px;margin-top:20px}
+.tm-modal-btn{flex:1;padding:11px 16px;border-radius:12px;border:1px solid var(--card-border);background:rgba(255,255,255,0.04);color:var(--text);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s var(--ease);display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.tm-modal-btn:hover{border-color:var(--card-hover);background:rgba(255,255,255,0.07);transform:translateY(-1px)}
+.tm-modal-btn.primary{background:linear-gradient(135deg,var(--accent1),var(--accent2));border-color:transparent;color:#fff}
+.tm-modal-btn.primary:hover{box-shadow:0 6px 20px var(--accent1-10)}
 /* View toggle (List ↔ Chart) */
 .day-view-toggle{display:inline-flex;background:rgba(255,255,255,0.04);border:1px solid var(--card-border);border-radius:10px;padding:3px;margin-bottom:14px;gap:2px}
 .day-view-toggle button{padding:5px 14px;border-radius:7px;border:none;background:transparent;color:var(--text-muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;font-family:inherit;transition:all .2s var(--ease);display:inline-flex;align-items:center;gap:4px}
@@ -2626,8 +2642,8 @@ function renderTasks(){
       <span class="t-rank">${rank}</span>
       <button class="ck" onclick="toggleDone('${id}')">${t.completed?'&#10003;':''}</button>
       <div class="tb">
-        <div class="tt" onclick="toggleExpand('${id}')">${highlightMatch(t.title||'')}</div>
-        ${t.notes&&!exp?`<div class="t-notes">${highlightMatch((t.notes||'').slice(0,80))}${t.notes.length>80?'...':''}</div>`:''}
+        <div class="tt" onclick="openTaskModal('${id}')" title="View details">${highlightMatch(t.title||'')}</div>
+        ${t.notes&&!exp?`<div class="t-notes" onclick="openTaskModal('${id}')" style="cursor:pointer">${highlightMatch((t.notes||'').slice(0,80))}${t.notes.length>80?'...':''}</div>`:''}
         <div class="tm">
           <span class="pd ${t.priority||'medium'}"></span>
           <span class="cat ${t.category||'personal'}">${t.category||'personal'}</span>
@@ -2685,7 +2701,7 @@ function renderTasks(){
     const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
     let h=`<div class="dc-row ${done?'done':''} ${exp?'expanded':''}">
       <button class="dc-ck" onclick="toggleDone('${id}')" title="Mark done for today">${done?'&#10003;':''}</button>
-      <div class="dc-row-title" onclick="toggleExpand('${id}')">${esc(t.title||'')}</div>
+      <div class="dc-row-title" onclick="openTaskModal('${id}')" title="View details">${esc(t.title||'')}</div>
       <div class="dc-actions">
         <button onclick="event.stopPropagation();toggleExpand('${id}')" title="Edit">&#9998;</button>
         <button class="del" onclick="event.stopPropagation();deleteTask('${id}')" title="Delete">&times;</button>
@@ -5115,6 +5131,64 @@ function dayModalAdd(dateStr){
 
 function closeDayModal(){
   document.getElementById('dayModal')?.remove();
+}
+
+// Turn bare URLs in notes into clickable links (after HTML-escaping)
+function linkifyNotes(s){
+  return esc(s).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+}
+// Read-only popup so notes are visible without entering edit mode
+function openTaskModal(id){
+  closeTaskModal();
+  const t=tasks[id];
+  if(!t)return;
+  const today=new Date().toISOString().slice(0,10);
+  const od=t.dueDate&&!t.completed&&t.dueDate<today;
+  const diff=t.difficulty||'medium';
+  const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★',super_epic:'★★★★★'}[diff];
+  const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
+  const meta=`<div class="tm-modal-meta">
+      <span class="pd ${t.priority||'medium'}"></span>
+      <span class="cat ${t.category||'personal'}">${t.category||'personal'}</span>
+      <span class="t-diff ${diff}">${diffStars}</span>
+      ${t.repeat&&t.repeat!=='none'?`<span class="t-repeat">${t.repeat}</span>`:''}
+      ${t.from?`<span class="t-from">${esc(t.from)}</span>`:''}
+      ${t.dueDate?`<span class="dl ${od?'od':''}">${od?'Overdue':'Due'}: ${t.dueDate}${t.dueTime?' '+fmtTime12(t.dueTime):''}</span>`:''}
+    </div>`;
+  const notes=(t.notes||'').trim();
+  const notesBlock=notes
+    ? `<div class="tm-modal-section-label">Notes</div><div class="tm-modal-notes">${linkifyNotes(notes)}</div>`
+    : `<div class="tm-modal-notes-empty">No notes yet — tap Edit to add some.</div>`;
+  const progBlock=(!t.completed&&prog>0)
+    ? `<div class="tm-modal-prog"><div class="tm-modal-prog-bar"><div class="tm-modal-prog-fill" style="width:${prog}%"></div></div></div>`
+    : '';
+  const html=`<div class="day-modal" id="taskModal" onclick="if(event.target===this)closeTaskModal()">
+    <div class="day-modal-card" style="max-width:560px">
+      <div class="day-modal-head">
+        <div class="tm-modal-title ${t.completed?'done':''}">${esc(t.title||'(untitled)')}</div>
+        <button class="day-modal-x" onclick="closeTaskModal()" title="Close">&times;</button>
+      </div>
+      ${meta}
+      ${progBlock}
+      ${notesBlock}
+      <div class="tm-modal-foot">
+        <button class="tm-modal-btn" onclick="toggleDone('${id}');closeTaskModal()">${t.completed?'↩ Mark active':'✓ Mark done'}</button>
+        <button class="tm-modal-btn primary" onclick="closeTaskModal();editFromModal('${id}')">✎ Edit</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
+  document.addEventListener('keydown',taskModalEsc);
+}
+function taskModalEsc(e){if(e.key==='Escape')closeTaskModal()}
+function closeTaskModal(){
+  document.getElementById('taskModal')?.remove();
+  document.removeEventListener('keydown',taskModalEsc);
+}
+// Open the inline editor for a task, then scroll it into view
+function editFromModal(id){
+  expanded=id;renderTasks();
+  setTimeout(()=>document.querySelector('.tc.expanded,.dc-row.expanded')?.scrollIntoView({behavior:'smooth',block:'center'}),60);
 }
 
 function addTaskForDate(dateStr){
