@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200..400,0..1,0&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.umd.min.js"></script>
 <style>
 :root {
   /* Refined dark pro — deep slate base, one soft-indigo accent.
@@ -341,7 +342,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .kc-empty .cn{display:block;margin-top:4px;color:inherit;text-shadow:none;opacity:0.7}
 @media(max-width:1100px){.kanban{grid-template-columns:repeat(2,minmax(280px,1fr));gap:14px}}
 @media(max-width:640px){.kanban{grid-template-columns:1fr;gap:12px}}
-.tc{position:relative;background:var(--card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--card-border);border-radius:14px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;transition:transform .25s var(--ease),border-color .25s var(--ease),box-shadow .35s var(--ease),opacity .35s var(--ease);animation:ti .35s var(--ease) both}
+.tc{position:relative;background:var(--card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--card-border);border-radius:14px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;transition:transform .25s var(--ease),border-color .25s var(--ease),box-shadow .35s var(--ease),opacity .35s var(--ease)}
 /* External halo — sits BEHIND the card, same approach as the verdict card */
 /* Hover — single-layer neon outline + lift. No filter:blur (GPU-cheap). */
 .tc:hover{border-color:var(--accent1);box-shadow:0 8px 20px rgba(0,0,0,0.40),0 0 0 1px var(--accent1-10),0 0 18px var(--accent1-10);transform:translateY(-1px)}
@@ -813,9 +814,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 /* Day modal — immersive popup matching the verdict-card aesthetic */
 .day-modal{position:fixed;inset:0;z-index:300;background:radial-gradient(ellipse at center,rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.85) 100%);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;animation:fadeIn .3s var(--ease);padding:20px}
 .day-modal::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,var(--accent1-10) 0%,transparent 50%);pointer-events:none}
-.day-modal-card{position:relative;background:linear-gradient(160deg,var(--panel-1),var(--panel-2));backdrop-filter:blur(24px);border:1.5px solid transparent;background-clip:padding-box;border-radius:22px;padding:24px;max-width:720px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.5),0 0 60px var(--accent1-10),0 0 120px var(--accent1-06);animation:modalSpringUp .45s var(--ease)}
+.day-modal-card{position:relative;background:linear-gradient(160deg,var(--panel-1),var(--panel-2));backdrop-filter:blur(24px);border:1.5px solid transparent;background-clip:padding-box;border-radius:22px;padding:24px;max-width:720px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.5),0 0 60px var(--accent1-10),0 0 120px var(--accent1-06)}
 .day-modal-card::before{content:'';position:absolute;inset:-1.5px;border-radius:22px;padding:1.5px;background:linear-gradient(135deg,var(--accent1),var(--accent3),var(--accent2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.5}
-@keyframes modalSpringUp{0%{opacity:0;transform:translateY(40px) scale(0.92)}60%{opacity:1;transform:translateY(-4px) scale(1.01)}100%{opacity:1;transform:translateY(0) scale(1)}}
 .day-modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--card-border);position:relative}
 .day-modal-date{font-size:24px;font-weight:900;letter-spacing:-1px;line-height:1;background:linear-gradient(135deg,var(--accent1),var(--accent3),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 12px var(--accent1-10))}
 .day-modal-day{font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-top:6px}
@@ -1766,6 +1766,10 @@ function fbListen(p,cb){if(db)db.ref(p).on('value',s=>cb(s.val()))}
 // ═══════════════════════════════════════════
 let tasks={},taskHistory={},wastedLog={},expanded=null,wastedExpanded=null,wastedSort='recent',fStatus='all',fCat='all',fFrom='all',fProject='all',newCat='work',newPri='medium',newDiff='medium',newRep='none',sortBy='manual',searchQuery='';
 let projects={},openProjectId=null;
+// Entrance animations play ONLY for user-initiated re-renders (view switch,
+// filter/sort/search, initial load) — Firebase listener re-renders never
+// animate, otherwise every remote write would flicker the whole board.
+let listAnimPending=true;
 let plannerGoals={},plannerJournal={},plannerSubView='goals',planGoalHorizon='year',planMood='',planTags=[],planJournalTagFilter='all',planTLFilter='all',planExpandedGoal=null,planEditEntry=null;
 let focusOn=(localStorage.getItem('oyt_focus')||'1')==='1';
 let dayView=localStorage.getItem('oyt_day_view')||'chart';
@@ -1975,6 +1979,7 @@ function openNewProjectModal(){
     </div>
   </div>`;
   document.body.insertAdjacentHTML('beforeend',html);
+  fxModalIn(document.querySelector('#newProjModal .day-modal-card'));
   setTimeout(()=>document.getElementById('npName')?.focus(),60);
 }
 function closeNewProjectModal(){document.getElementById('newProjModal')?.remove()}
@@ -1988,14 +1993,20 @@ function submitNewProject(){
   closeNewProjectModal();
   if(ref&&ref.key)openProjectId=ref.key; // listener re-renders into detail view
 }
-// Animate progress rings from their previous value (anime.js arrives Phase 5;
-// until then this sets final state directly).
+// Animate progress rings from their previously-seen value so completing a
+// task visibly sweeps the ring instead of snapping.
 const _lastRingPct=new Map();
 function animateRings(root){
   root.querySelectorAll('.ring-fg').forEach(c=>{
     const el=c.closest('[data-pid]');
-    const key=el?.dataset.pid||'detail:'+openProjectId;
-    _lastRingPct.set(key,parseFloat(c.dataset.pct)||0);
+    const key=el?.dataset.pid||('detail:'+openProjectId);
+    const next=parseFloat(c.dataset.pct)||0;
+    const prev=_lastRingPct.has(key)?_lastRingPct.get(key):0;
+    _lastRingPct.set(key,next);
+    if(prev===next||!fxOn())return;
+    const offFor=p=>PROJ_RING_C*(1-Math.max(0,Math.min(100,p))/100);
+    c.setAttribute('stroke-dashoffset',offFor(prev));
+    fx(c,{strokeDashoffset:[offFor(prev),offFor(next)],duration:700,ease:'inOut(2)'});
   });
 }
 function setCat(c){
@@ -2019,7 +2030,7 @@ function onSearchInput(v){
   searchQuery=(v||'').trim();
   const clr=document.getElementById('searchClear');
   if(clr)clr.style.display=searchQuery?'flex':'none';
-  renderTasks();
+  renderTasksFresh();
 }
 // Highlight matched substring in escaped text
 function highlightMatch(text){
@@ -2367,8 +2378,21 @@ function qaRefreshProjectSelect(){
 function toggleQaPanel(){
   const p=document.getElementById('qaPanel'),ch=document.getElementById('qaChev');
   if(!p)return;
-  if(p.hidden){qaRefreshProjectSelect();p.hidden=false;ch.classList.add('open')}
-  else{p.hidden=true;ch.classList.remove('open')}
+  if(p.hidden){
+    qaRefreshProjectSelect();p.hidden=false;ch.classList.add('open');
+    if(fxOn()){
+      const h=p.scrollHeight;
+      p.style.overflow='hidden';
+      fx(p,{height:[0,h],opacity:[0,1],duration:320,ease:'out(4)',onComplete:()=>{p.style.height='';p.style.overflow=''}});
+    }
+  }else{
+    ch.classList.remove('open');
+    if(fxOn()){
+      const h=p.scrollHeight;
+      p.style.overflow='hidden';
+      fx(p,{height:[h,0],opacity:[1,0],duration:240,ease:'out(3)',onComplete:()=>{p.hidden=true;p.style.height='';p.style.opacity='';p.style.overflow=''}});
+    }else p.hidden=true;
+  }
 }
 function qaKeydown(e){
   if(e.key==='Enter'){addTask();return}
@@ -2519,6 +2543,9 @@ function playCelebrate(card,difficulty){
   const cfg=CELEB_CFG[difficulty]||CELEB_CFG.medium;
   if(card){
     card.classList.add('celebrating');
+    // Springy scale pop — fire-and-forget; a Firebase re-render replacing the
+    // node mid-flight is fine (we never hold the handle)
+    if(fxOn())fx(card,{scale:[1,1.05,1],duration:500,ease:anime.createSpring({stiffness:220,damping:13})});
     // Anchor for absolute-positioned particles
     if(getComputedStyle(card).position==='static')card.style.position='relative';
     const baseAngle=Math.random()*360;
@@ -3158,7 +3185,9 @@ function renderTasks(){
   stats.textContent=done+' of '+total+' completed';
   // Restore scroll position so Firebase re-renders don't jump to top
   if(savedScroll>0)window.scrollTo(0,savedScroll);
+  if(listAnimPending){listAnimPending=false;fxStaggerIn(list.querySelectorAll('.tc'))}
 }
+function renderTasksFresh(){listAnimPending=true;renderTasks()}
 // Render a single task card. Top-level so both the kanban and the project
 // detail view can use it. opts: {drag:true, rank:true, showProject:true}
 function renderTaskCard(id,t,i,opts={}){
@@ -3180,7 +3209,7 @@ function renderTaskCard(id,t,i,opts={}){
     .filter(([pid,p])=>p.status!=='archived'||pid===(t.projectId||''))
     .sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''))
     .map(([pid,p])=>`<option value="${pid}" ${t.projectId===pid?'selected':''}>${esc(p.name||'Untitled')}</option>`).join('');
-  let h=`<div class="tc ${t.completed?'done':''} ${exp?'expanded':''}" data-id="${id}" style="animation-delay:${i*25}ms;border-left:3px solid ${cc}" ${drag?'draggable="true" ondragstart="dragStart(event,\''+id+'\')" ondragover="dragOver(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event,\''+id+'\')" ondragend="dragEnd(event)"':''}>
+  let h=`<div class="tc ${t.completed?'done':''} ${exp?'expanded':''}" data-id="${id}" style="border-left:3px solid ${cc}" ${drag?'draggable="true" ondragstart="dragStart(event,\''+id+'\')" ondragover="dragOver(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event,\''+id+'\')" ondragend="dragEnd(event)"':''}>
     <span class="t-rank">${rank}</span>
     <button class="ck" onclick="toggleDone('${id}')">${t.completed?'&#10003;':''}</button>
     <div class="tb">
@@ -3394,20 +3423,20 @@ function toggleFilterPop(){
   const activeCount=entries.filter(([,t])=>!t.completed).length;
   const doneCount=entries.filter(([,t])=>t.completed).length;
   pop.innerHTML=`
-    <button class="ctrl-pop-item ${fStatus==='all'?'active':''}" onclick="fStatus='all';fCat='all';fProject='all';closeAllPopovers();renderTasks()">All (${entries.length})</button>
-    <button class="ctrl-pop-item ${fStatus==='active'?'active':''}" onclick="fStatus='active';closeAllPopovers();renderTasks()">Active (${activeCount})</button>
-    <button class="ctrl-pop-item ${fStatus==='completed'?'active':''}" onclick="fStatus='completed';closeAllPopovers();renderTasks()">Completed (${doneCount})</button>
+    <button class="ctrl-pop-item ${fStatus==='all'?'active':''}" onclick="fStatus='all';fCat='all';fProject='all';closeAllPopovers();renderTasksFresh()">All (${entries.length})</button>
+    <button class="ctrl-pop-item ${fStatus==='active'?'active':''}" onclick="fStatus='active';closeAllPopovers();renderTasksFresh()">Active (${activeCount})</button>
+    <button class="ctrl-pop-item ${fStatus==='completed'?'active':''}" onclick="fStatus='completed';closeAllPopovers();renderTasksFresh()">Completed (${doneCount})</button>
     <div class="ctrl-pop-divider"></div>
-    <button class="ctrl-pop-item ${fCat==='all'?'active':''}" onclick="fCat='all';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--text-muted)"></span>All Categories</button>
-    <button class="ctrl-pop-item ${fCat==='work'?'active':''}" onclick="fCat='work';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--cat-work-fg)"></span>Work</button>
-    <button class="ctrl-pop-item ${fCat==='personal'?'active':''}" onclick="fCat='personal';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--accent1)"></span>Personal</button>
-    <button class="ctrl-pop-item ${fCat==='project'?'active':''}" onclick="fCat='project';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--accent3,var(--accent2))"></span>Project</button>
-    <button class="ctrl-pop-item ${fCat==='rfi'?'active':''}" onclick="fCat='rfi';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:#fbbf24"></span>RFI</button>
+    <button class="ctrl-pop-item ${fCat==='all'?'active':''}" onclick="fCat='all';closeAllPopovers();renderTasksFresh()"><span class="pop-dot" style="background:var(--text-muted)"></span>All Categories</button>
+    <button class="ctrl-pop-item ${fCat==='work'?'active':''}" onclick="fCat='work';closeAllPopovers();renderTasksFresh()"><span class="pop-dot" style="background:var(--cat-work-fg)"></span>Work</button>
+    <button class="ctrl-pop-item ${fCat==='personal'?'active':''}" onclick="fCat='personal';closeAllPopovers();renderTasksFresh()"><span class="pop-dot" style="background:var(--accent1)"></span>Personal</button>
+    <button class="ctrl-pop-item ${fCat==='project'?'active':''}" onclick="fCat='project';closeAllPopovers();renderTasksFresh()"><span class="pop-dot" style="background:var(--accent3,var(--accent2))"></span>Project</button>
+    <button class="ctrl-pop-item ${fCat==='rfi'?'active':''}" onclick="fCat='rfi';closeAllPopovers();renderTasksFresh()"><span class="pop-dot" style="background:#fbbf24"></span>RFI</button>
     ${Object.keys(projects).length?`<div class="ctrl-pop-divider"></div>
-    <button class="ctrl-pop-item ${fProject==='all'?'active':''}" onclick="fProject='all';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--text-muted)"></span>All Projects</button>
-    <button class="ctrl-pop-item ${fProject===''?'active':''}" onclick="fProject='';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--text-muted)"></span>No project</button>
+    <button class="ctrl-pop-item ${fProject==='all'?'active':''}" onclick="fProject='all';closeAllPopovers();renderTasksFresh()"><span class="pop-dot" style="background:var(--text-muted)"></span>All Projects</button>
+    <button class="ctrl-pop-item ${fProject===''?'active':''}" onclick="fProject='';closeAllPopovers();renderTasksFresh()"><span class="pop-dot" style="background:var(--text-muted)"></span>No project</button>
     ${Object.entries(projects).filter(([,p])=>p.status!=='archived').sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||'')).map(([pid,p])=>
-      `<button class="ctrl-pop-item ${fProject===pid?'active':''}" onclick="fProject='${pid}';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:${p.color||'#7c9cff'}"></span>${esc(p.name||'Untitled')}</button>`).join('')}`:''}`;
+      `<button class="ctrl-pop-item ${fProject===pid?'active':''}" onclick="fProject='${pid}';closeAllPopovers();renderTasksFresh()"><span class="pop-dot" style="background:${p.color||'#7c9cff'}"></span>${esc(p.name||'Untitled')}</button>`).join('')}`:''}`;
   pop.classList.add('open');
   pill.classList.add('open');
 }
@@ -3418,7 +3447,7 @@ function toggleSortPop(){
   closeAllPopovers();
   if(wasOpen)return;
   const sorts=[['manual','Manual'],['priority','Priority'],['due','Due Date'],['category','Category'],['newest','Newest'],['oldest','Oldest'],['calendar','📅 Calendar']];
-  pop.innerHTML=sorts.map(([k,l])=>`<button class="ctrl-pop-item ${sortBy===k?'active':''}" onclick="sortBy='${k}';calSortWeekOffset=0;closeAllPopovers();renderTasks()">${l}</button>`).join('');
+  pop.innerHTML=sorts.map(([k,l])=>`<button class="ctrl-pop-item ${sortBy===k?'active':''}" onclick="sortBy='${k}';calSortWeekOffset=0;closeAllPopovers();renderTasksFresh()">${l}</button>`).join('');
   pop.classList.add('open');
   pill.classList.add('open');
 }
@@ -4110,12 +4139,41 @@ function toggleMotion(){
 applyMotion(localStorage.getItem('oyt_motion')||'calm');
 
 // ═══════════════════════════════════════════
+//  anime.js micro-interactions — fire-and-forget wrapper.
+//  Policy: prefers-reduced-motion → no JS animation (elements land in
+//  final state); calm (default) → 0.75× durations; lively → full.
+//  CDN failure degrades to instant UI (fxOn() checks window.anime).
+// ═══════════════════════════════════════════
+const _fxReduced=matchMedia('(prefers-reduced-motion: reduce)');
+function fxOn(){return typeof anime!=='undefined'&&!_fxReduced.matches}
+function fxScale(){return(document.documentElement.getAttribute('data-motion')||'calm')==='lively'?1:0.75}
+function fx(targets,params){
+  if(!fxOn()||!targets)return null;
+  if(targets.length===0)return null;
+  const p={...params};
+  if(p.duration)p.duration*=fxScale();
+  try{return anime.animate(targets,p)}catch(e){return null}
+}
+// Staggered card entrance — capped so huge lists stay snappy
+function fxStaggerIn(nodes){
+  if(!fxOn())return;
+  const arr=[...nodes].slice(0,24);
+  if(!arr.length)return;
+  fx(arr,{opacity:[0,1],translateY:[10,0],delay:anime.stagger(16),duration:300,ease:'out(3)'});
+}
+// Spring a freshly-inserted modal card up
+function fxModalIn(el){
+  if(!el||!fxOn())return;
+  fx(el,{translateY:[24,0],scale:[0.96,1],opacity:[0,1],ease:anime.createSpring({stiffness:180,damping:16})});
+}
+
+// ═══════════════════════════════════════════
 //  Clutter control — Focus toggle + Requester strip + From suggestions
 // ═══════════════════════════════════════════
 function toggleFocus(){
   focusOn=!focusOn;
   localStorage.setItem('oyt_focus',focusOn?'1':'0');
-  renderTasks();
+  renderTasksFresh();
 }
 function updateFocusBtn(){
   const b=document.getElementById('focusBtn');
@@ -4700,15 +4758,19 @@ let currentView='tasks';
 function switchView(v){
   currentView=v;
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
-  document.getElementById('v-'+v)?.classList.add('active');
+  const view=document.getElementById('v-'+v);
+  view?.classList.add('active');
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().includes(v)));
   // (Sisyphus rAF pause/resume removed)
+  if(v==='tasks'){renderTasksFresh()}
   if(v==='rfi')setRFIView(rfiSubView);
   if(v==='projects')renderProjects();
   if(v==='calendar')renderCalendar();
   if(v==='stats')renderStatsView();
   if(v==='wasted')renderWasted();
   if(v==='planner')renderPlanner();
+  // Staggered entrance for the incoming view's cards (kanban handles its own)
+  if(v!=='tasks'&&view)fxStaggerIn(view.querySelectorAll('.proj-card,.planner-goal,.stat-card,.rfi-card'));
   // Keep the "More" button highlighted while one of its tucked-away views is active.
   document.getElementById('moreBtn')?.classList.toggle('active',v==='rfi'||v==='wasted');
 }
@@ -5553,6 +5615,7 @@ function openDayModal(dateStr){
     </div>
   </div>`;
   document.body.insertAdjacentHTML('beforeend',html);
+  fxModalIn(document.querySelector('#dayModal .day-modal-card'));
   setTimeout(()=>document.getElementById('dayModalAddInput')?.focus(),100);
 }
 
@@ -5614,6 +5677,7 @@ function openTaskModal(id){
     </div>
   </div>`;
   document.body.insertAdjacentHTML('beforeend',html);
+  fxModalIn(document.querySelector('#taskModal .day-modal-card, #taskModal .tm-modal-card'));
   document.addEventListener('keydown',taskModalEsc);
 }
 function taskModalEsc(e){if(e.key==='Escape')closeTaskModal()}
