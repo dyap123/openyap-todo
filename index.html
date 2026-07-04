@@ -1380,6 +1380,86 @@ body.t-light .planner-date{color-scheme:light}
 .planner-entry-body{flex:1;min-width:0}
 .planner-entry-time{font-size:11px;font-weight:700;color:var(--text-muted)}
 @media(max-width:600px){.planner-tl{padding-left:22px}.planner-tl-dot{left:-22px}.planner-tl-day .planner-day-divider{margin-left:-22px}}
+
+/* ── Projects ── */
+.proj-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.proj-h2{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-0.01em}
+.proj-h2 .cn{font-size:11px;font-weight:600;color:var(--text-muted);margin-left:8px}
+.proj-section{margin-bottom:26px}
+.proj-sec-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--card-border);cursor:pointer;user-select:none}
+.proj-sec-head h3{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-body)}
+.proj-sec-head .dc-chev{margin-left:auto;transition:transform .25s var(--ease);color:var(--text-muted)}
+.proj-section.collapsed .dc-chev{transform:rotate(-90deg)}
+.proj-section.collapsed .proj-grid{display:none}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.proj-card{display:flex;align-items:center;gap:14px;background:var(--card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--card-border);border-left:3px solid var(--pc);border-radius:14px;padding:16px;cursor:pointer;transition:transform .25s var(--ease),border-color .25s var(--ease),box-shadow .3s var(--ease)}
+.proj-card:hover{transform:translateY(-2px);border-color:var(--pc);box-shadow:0 10px 24px rgba(0,0,0,0.30)}
+.proj-ring{position:relative;flex:none}
+.proj-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.proj-ring .ring-bg{fill:none;stroke:rgba(255,255,255,0.08);stroke-width:5}
+.proj-ring .ring-fg{fill:none;stroke:var(--pc,var(--accent1));stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .7s var(--ease)}
+.proj-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--text)}
+.proj-body{flex:1;min-width:0}
+.proj-name{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj-ico{margin-right:6px}
+.proj-meta{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap}
+.proj-status{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:20px;border:1px solid var(--card-border);color:var(--text-body)}
+.proj-status.active{color:var(--pc,var(--accent1));border-color:var(--pc,var(--accent1))}
+.proj-status.onhold{color:var(--yellow,#fbbf24);border-color:var(--yellow,#fbbf24)}
+.proj-status.done{color:#34d399;border-color:#34d399}
+.proj-counts{font-size:11px;color:var(--text-muted)}
+.proj-od{color:var(--red,#f87171);font-weight:700}
+.proj-target{font-size:11px;color:var(--text-muted);margin-top:5px}
+.proj-target.late{color:var(--red,#f87171);font-weight:700}
+/* legacy strip */
+.proj-legacy{background:var(--card);border:1px solid var(--card-border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.proj-legacy-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;font-size:12px;font-weight:600;color:var(--text-body);cursor:pointer;user-select:none}
+.proj-legacy .proj-legacy-rows{display:none;padding:0 14px 12px}
+.proj-legacy.open .proj-legacy-rows{display:block}
+.proj-legacy-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--card-border)}
+.proj-legacy-title{flex:1;font-size:12px;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.proj-legacy-row select{background:var(--panel-2,rgba(0,0,0,0.3));color:var(--text);border:1px solid var(--card-border);border-radius:8px;padding:4px 8px;font-size:11px}
+/* detail */
+.proj-back{background:none;border:none;color:var(--text-body);font-size:12px;font-weight:600;cursor:pointer;padding:4px 0;margin-bottom:12px}
+.proj-back:hover{color:var(--accent1)}
+.proj-detail-head{display:flex;gap:20px;align-items:flex-start;background:var(--card);border:1px solid var(--card-border);border-left:3px solid var(--pc);border-radius:14px;padding:18px;margin-bottom:16px}
+.proj-detail-info{flex:1;min-width:0}
+.proj-detail-titlerow{display:flex;gap:8px;align-items:center}
+.proj-icon-input{width:44px;text-align:center;font-size:18px;background:var(--panel-2,rgba(0,0,0,0.25));border:1px solid var(--card-border);border-radius:10px;padding:6px 2px;color:var(--text)}
+.proj-name-input{flex:1;font-size:18px;font-weight:800;background:transparent;border:none;border-bottom:1px dashed transparent;color:var(--text);padding:6px 2px;letter-spacing:-0.01em}
+.proj-name-input:hover,.proj-name-input:focus{border-bottom-color:var(--card-border);outline:none}
+.proj-detail-ctrls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+.proj-detail-ctrls select{background:var(--panel-2,rgba(0,0,0,0.3));color:var(--text);border:1px solid var(--card-border);border-radius:8px;padding:5px 8px;font-size:11px}
+.proj-swatches{display:inline-flex;gap:5px;align-items:center}
+.proj-swatch{width:16px;height:16px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
+.proj-swatch.sel{border-color:var(--text);transform:scale(1.15)}
+.proj-target-lbl{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted)}
+.proj-target-lbl.late{color:var(--red,#f87171)}
+.proj-target-lbl input{background:var(--panel-2,rgba(0,0,0,0.3));color:var(--text);border:1px solid var(--card-border);border-radius:8px;padding:4px 6px;font-size:11px}
+.proj-del{margin-left:auto;background:none;border:1px solid var(--card-border);color:var(--text-muted);font-size:10px;font-weight:700;border-radius:8px;padding:4px 10px;cursor:pointer}
+.proj-del:hover{color:var(--red,#f87171);border-color:var(--red,#f87171)}
+.proj-desc{width:100%;margin-top:10px;background:var(--panel-2,rgba(0,0,0,0.2));border:1px solid var(--card-border);border-radius:10px;color:var(--text-body);font-size:12px;padding:8px 10px;min-height:38px;resize:vertical;font-family:inherit}
+.proj-detail-stats{margin-top:8px;font-size:11px;color:var(--text-muted)}
+.proj-scoped-add{display:flex;gap:8px;margin-bottom:18px}
+.proj-scoped-add input{flex:1;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:10px 14px;color:var(--text);font-size:13px}
+.proj-scoped-add input:focus{outline:none;border-color:var(--pc,var(--accent1))}
+.proj-taskgrp{margin-bottom:20px}
+.proj-taskgrp-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.proj-taskgrp-head h4{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-body)}
+.proj-taskgrp.od .proj-taskgrp-head h4{color:var(--red,#f87171)}
+.proj-taskgrp.donegrp{opacity:.7}
+/* task-card project badge */
+.t-proj{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:20px;border:1px solid var(--pc,var(--accent1));color:var(--pc,var(--accent1));cursor:pointer;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:background .2s var(--ease)}
+.t-proj:hover{background:rgba(255,255,255,0.06)}
+/* new-project modal */
+.proj-new-card{max-width:400px;padding:20px}
+.proj-new-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:14px}
+.proj-new-card input[type=text]{width:100%;background:var(--panel-2,rgba(0,0,0,0.25));border:1px solid var(--card-border);border-radius:10px;padding:9px 12px;color:var(--text);font-size:13px;margin-bottom:10px}
+.proj-new-card input[type=text]:focus{outline:none;border-color:var(--accent1)}
+.proj-new-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.proj-new-row #npIcon{width:56px;text-align:center;margin-bottom:0}
+.proj-new-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+@media(max-width:600px){.proj-grid{grid-template-columns:1fr}.proj-detail-head{flex-direction:column;align-items:center}}
 </style>
 </head>
 <body>
@@ -1400,6 +1480,7 @@ body.t-light .planner-date{color-scheme:light}
     <span class="app-title" onclick="switchView('tasks');window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer">openyap todo</span>
     <div style="display:flex;gap:3px;align-items:center">
       <button class="tab-btn active" onclick="switchView('tasks')">Tasks</button>
+      <button class="tab-btn" onclick="switchView('projects')">Projects</button>
       <button class="tab-btn" onclick="switchView('planner')">Planner</button>
       <button class="tab-btn" onclick="switchView('calendar')">Calendar</button>
       <button class="tab-btn" onclick="switchView('stats')">Stats</button>
@@ -1514,6 +1595,11 @@ body.t-light .planner-date{color-scheme:light}
   <div class="task-list" id="taskList"></div>
   <div class="stats" id="stats"></div>
 </div><!-- /tasks -->
+
+<!-- Projects View -->
+<div class="view" id="v-projects">
+  <div id="projectsHost"></div>
+</div><!-- /projects -->
 
 <!-- Planner View -->
 <div class="view" id="v-planner">
@@ -1650,7 +1736,8 @@ function fbListen(p,cb){if(db)db.ref(p).on('value',s=>cb(s.val()))}
 // ═══════════════════════════════════════════
 //  State
 // ═══════════════════════════════════════════
-let tasks={},taskHistory={},wastedLog={},expanded=null,wastedExpanded=null,wastedSort='recent',fStatus='all',fCat='all',fFrom='all',newCat='work',newPri='medium',newDiff='medium',newRep='none',sortBy='manual',searchQuery='';
+let tasks={},taskHistory={},wastedLog={},expanded=null,wastedExpanded=null,wastedSort='recent',fStatus='all',fCat='all',fFrom='all',fProject='all',newCat='work',newPri='medium',newDiff='medium',newRep='none',sortBy='manual',searchQuery='';
+let projects={},openProjectId=null;
 let plannerGoals={},plannerJournal={},plannerSubView='goals',planGoalHorizon='year',planMood='',planTags=[],planJournalTagFilter='all',planTLFilter='all',planExpandedGoal=null,planEditEntry=null;
 let focusOn=(localStorage.getItem('oyt_focus')||'1')==='1';
 let dayView=localStorage.getItem('oyt_day_view')||'chart';
@@ -1661,7 +1748,8 @@ function setDayView(v,dateStr){dayView=v;localStorage.setItem('oyt_day_view',v);
 const DIFF_WEIGHTS={easy:1,medium:2,hard:4,epic:8,super_epic:16};
 
 function attachListeners(){
-  fbListen('todo/tasks',val=>{tasks=val||{};renderTasks();if(currentView==='calendar')renderCalendar();if(currentView==='rfi')renderRFI()});
+  fbListen('todo/tasks',val=>{tasks=val||{};renderTasks();if(currentView==='calendar')renderCalendar();if(currentView==='rfi')renderRFI();if(currentView==='projects')renderProjects()});
+  fbListen('todo/projects',val=>{projects=val||{};if(currentView==='projects')renderProjects();renderTasks()});
   fbListen('todo/history',val=>{taskHistory=val||{};renderDashV2();renderCmdMetrics()});
   fbListen('todo/wasted',val=>{wastedLog=val||{};if(currentView==='wasted')renderWasted()});
   fbListen('todo/planner/goals',val=>{plannerGoals=val||{};plannerRefresh()});
@@ -1681,6 +1769,207 @@ function buildTask(o={}){return{
 function createTask(o){return fbPush('todo/tasks',buildTask(o))}
 // History snapshot fields shared by all completion loggers
 function historyProjectFields(t){return{projectId:t.projectId||'',projectName:(typeof projects==='object'&&projects[t.projectId]?.name)||''}}
+
+// ═══════════════════════════════════════════
+//  Projects — long-running efforts holding many tasks.
+//  Progress is computed from member tasks (difficulty-weighted,
+//  partial credit from task progress), never stored.
+// ═══════════════════════════════════════════
+const PROJECT_COLORS=['#7c9cff','#5ec2d6','#9d8cff','#34d399','#fbbf24','#fb923c','#f472b6','#94a3b8'];
+const PROJECT_STATUS_LABELS={active:'Active',onhold:'On hold',done:'Done',archived:'Archived'};
+function createProject(f={}){return fbPush('todo/projects',{
+  name:'',color:PROJECT_COLORS[0],icon:'',status:'active',description:'',targetDate:'',
+  createdAt:new Date().toISOString(),order:Date.now(),...f})}
+function updateProject(id,f,v){fbSet(`todo/projects/${id}/${f}`,v)}
+function setProjectStatus(id,s){updateProject(id,'status',s)}
+// Delete the project but keep (and unassign) its tasks
+function deleteProjectKeepTasks(id){
+  const p=projects[id];
+  if(!confirm(`Delete project "${p?.name||'Untitled'}"? Its tasks are kept and unassigned.`))return;
+  const upd={};
+  Object.entries(tasks).forEach(([tid,t])=>{if(t.projectId===id)upd[`${tid}/projectId`]=''});
+  const fin=()=>{if(openProjectId===id)openProjectId=null;fbSet(`todo/projects/${id}`,null)};
+  if(Object.keys(upd).length&&db)db.ref('todo/tasks').update(upd).then(fin);else fin();
+}
+function projectStats(id){
+  let totalPts=0,donePts=0,active=0,done=0,overdue=0;
+  const today=new Date().toISOString().slice(0,10);
+  Object.values(tasks).forEach(t=>{
+    if((t.projectId||'')!==id)return;
+    const w=DIFF_WEIGHTS[t.difficulty||'medium']||2;
+    totalPts+=w;
+    if(t.completed){donePts+=w;done++}
+    else{
+      active++;
+      if(t.dueDate&&t.dueDate<today)overdue++;
+      donePts+=w*(Math.max(0,Math.min(100,parseFloat(t.progress)||0))/100);
+    }
+  });
+  return{totalPts,donePts,active,done,overdue,pct:totalPts?Math.round(donePts/totalPts*100):0};
+}
+function openProjectView(id){openProjectId=id;switchView('projects')}
+// SVG progress ring shared by cards + detail header. r=26 → C≈163.36
+const PROJ_RING_C=2*Math.PI*26;
+function projectRing(pct,size){
+  const off=PROJ_RING_C*(1-Math.max(0,Math.min(100,pct))/100);
+  return `<div class="proj-ring" style="width:${size}px;height:${size}px">
+    <svg viewBox="0 0 60 60"><circle class="ring-bg" cx="30" cy="30" r="26"/>
+    <circle class="ring-fg" cx="30" cy="30" r="26" stroke-dasharray="${PROJ_RING_C.toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}" data-pct="${pct}"/></svg>
+    <span class="proj-pct">${pct}%</span></div>`;
+}
+function projectCardHTML(id,p){
+  const s=projectStats(id);
+  const today=new Date().toISOString().slice(0,10);
+  const late=p.targetDate&&p.targetDate<today&&p.status==='active';
+  return `<div class="proj-card" data-pid="${id}" style="--pc:${p.color||'#7c9cff'}" onclick="openProjectView('${id}')">
+    ${projectRing(s.pct,64)}
+    <div class="proj-body">
+      <div class="proj-name">${p.icon?`<span class="proj-ico">${p.icon}</span>`:''}${esc(p.name||'Untitled')}</div>
+      <div class="proj-meta">
+        <span class="proj-status ${p.status}">${PROJECT_STATUS_LABELS[p.status]||p.status}</span>
+        <span class="proj-counts">${s.active} active · ${s.done} done${s.overdue?` · <span class="proj-od">${s.overdue} overdue</span>`:''}</span>
+      </div>
+      ${p.targetDate?`<div class="proj-target ${late?'late':''}">🎯 ${p.targetDate}${late?' — past target':''}</div>`:''}
+    </div>
+  </div>`;
+}
+function renderProjects(){
+  const host=document.getElementById('projectsHost');
+  if(!host)return;
+  if(openProjectId){
+    if(projects[openProjectId]){host.innerHTML=renderProjectDetail(openProjectId);return}
+    openProjectId=null;
+  }
+  const entries=Object.entries(projects).sort((a,b)=>(a[1].order||0)-(b[1].order||0));
+  const grp={active:[],onhold:[],closed:[]};
+  entries.forEach(([id,p])=>{
+    if(p.status==='onhold')grp.onhold.push([id,p]);
+    else if(p.status==='done'||p.status==='archived')grp.closed.push([id,p]);
+    else grp.active.push([id,p]);
+  });
+  // Legacy tasks that used the old category:'project' but have no real project
+  const legacy=Object.entries(tasks).filter(([,t])=>t.category==='project'&&!(t.projectId||''));
+  const legacyStrip=legacy.length?`<div class="proj-legacy" id="projLegacy">
+    <div class="proj-legacy-head" onclick="document.getElementById('projLegacy').classList.toggle('open')">
+      <span>⚠️ ${legacy.length} legacy “project” task${legacy.length>1?'s':''} not assigned to a project</span><span class="dc-chev">&#9662;</span>
+    </div>
+    <div class="proj-legacy-rows">${legacy.map(([tid,t])=>`
+      <div class="proj-legacy-row">
+        <span class="proj-legacy-title">${esc(t.title||'')}</span>
+        <select onchange="if(this.value)updateTask('${tid}','projectId',this.value)">
+          <option value="">Assign to…</option>
+          ${entries.filter(([,p])=>p.status!=='archived').map(([pid,p])=>`<option value="${pid}">${esc(p.name||'Untitled')}</option>`).join('')}
+        </select>
+      </div>`).join('')}</div>
+  </div>`:'';
+  const section=(title,arr,collapsed)=>arr.length?`<div class="proj-section ${collapsed?'collapsed':''}">
+    <div class="proj-sec-head" onclick="this.parentElement.classList.toggle('collapsed')"><h3>${title}</h3><span class="kc-count">${arr.length}</span><span class="dc-chev">&#9662;</span></div>
+    <div class="proj-grid">${arr.map(([id,p])=>projectCardHTML(id,p)).join('')}</div>
+  </div>`:'';
+  host.innerHTML=`
+    <div class="proj-header">
+      <h2 class="proj-h2">Projects<span class="cn">项目</span></h2>
+      <button class="add-btn" onclick="openNewProjectModal()">＋ New Project</button>
+    </div>
+    ${legacyStrip}
+    ${entries.length?`${section('Active',grp.active,false)}${section('On hold',grp.onhold,false)}${section('Done & archived',grp.closed,true)}`
+      :`<div class="empty-state"><div class="empty-mascot">🗂️</div><div class="empty-bubble">No projects yet — create one for long-running work like escalator coordination</div></div>`}
+  `;
+  animateRings(host);
+}
+function renderProjectDetail(id){
+  const p=projects[id];
+  const s=projectStats(id);
+  const today=new Date().toISOString().slice(0,10);
+  const members=Object.entries(tasks).filter(([,t])=>(t.projectId||'')===id);
+  const priRank={high:0,medium:1,low:2};
+  const activeSort=(a,b)=>((priRank[a[1].priority||'medium']-priRank[b[1].priority||'medium'])||((a[1].dueDate||'9999')<(b[1].dueDate||'9999')?-1:1));
+  const overdue=members.filter(([,t])=>!t.completed&&t.dueDate&&t.dueDate<today).sort(activeSort);
+  const active=members.filter(([,t])=>!t.completed&&!(t.dueDate&&t.dueDate<today)).sort(activeSort);
+  const done=members.filter(([,t])=>t.completed).sort((a,b)=>(b[1].completedAt||'')<(a[1].completedAt||'')?-1:1);
+  const cardOpts={drag:false,rank:false,showProject:false};
+  const grpHTML=(cls,title,arr)=>arr.length?`<div class="proj-taskgrp ${cls}">
+    <div class="proj-taskgrp-head"><h4>${title}</h4><span class="kc-count">${arr.length}</span></div>
+    <div class="task-list">${arr.map(([tid,t],i)=>renderTaskCard(tid,t,i,cardOpts)).join('')}</div>
+  </div>`:'';
+  const late=p.targetDate&&p.targetDate<today&&p.status==='active';
+  return `<div class="proj-detail" style="--pc:${p.color||'#7c9cff'}">
+    <button class="proj-back" onclick="openProjectId=null;renderProjects()">← All projects</button>
+    <div class="proj-detail-head">
+      ${projectRing(s.pct,88)}
+      <div class="proj-detail-info">
+        <div class="proj-detail-titlerow">
+          <input class="proj-icon-input" maxlength="4" value="${esc(p.icon||'')}" placeholder="🗂" onchange="updateProject('${id}','icon',this.value.trim())" title="Icon (emoji)">
+          <input class="proj-name-input" value="${esc(p.name||'')}" placeholder="Project name" onblur="updateProject('${id}','name',this.value.trim())" onkeydown="if(event.key==='Enter')this.blur()">
+        </div>
+        <div class="proj-detail-ctrls">
+          <select onchange="setProjectStatus('${id}',this.value)">${Object.entries(PROJECT_STATUS_LABELS).map(([k,l])=>`<option value="${k}" ${p.status===k?'selected':''}>${l}</option>`).join('')}</select>
+          <span class="proj-swatches">${PROJECT_COLORS.map(c=>`<button class="proj-swatch ${p.color===c?'sel':''}" style="background:${c}" onclick="updateProject('${id}','color','${c}')"></button>`).join('')}</span>
+          <label class="proj-target-lbl ${late?'late':''}">Target <input type="date" value="${esc(p.targetDate||'')}" onchange="updateProject('${id}','targetDate',this.value)"></label>
+          <button class="proj-del" onclick="deleteProjectKeepTasks('${id}')" title="Delete project, keep tasks">Delete</button>
+        </div>
+        <textarea class="proj-desc" placeholder="Description / scope notes…" onblur="updateProject('${id}','description',this.value)">${esc(p.description||'')}</textarea>
+        <div class="proj-detail-stats">${s.active} active · ${s.done} done${s.overdue?` · <span class="proj-od">${s.overdue} overdue</span>`:''} · ${Math.round(s.donePts)}/${s.totalPts} pts</div>
+      </div>
+    </div>
+    <div class="proj-scoped-add">
+      <input id="projScopedAdd" type="text" placeholder="Add a task to this project…" onkeydown="if(event.key==='Enter')projScopedAddTask('${id}')">
+      <button class="add-btn" onclick="projScopedAddTask('${id}')">Add</button>
+    </div>
+    ${grpHTML('od','Overdue',overdue)}
+    ${grpHTML('','Active',active)}
+    ${members.length?'':'<div class="kc-empty">No tasks yet — add one above, or use #'+esc((p.name||'').toLowerCase().split(/\s+/).join('-'))+' in the quick-add</div>'}
+    ${grpHTML('donegrp','Done',done)}
+  </div>`;
+}
+function projScopedAddTask(pid){
+  const inp=document.getElementById('projScopedAdd');
+  if(!inp)return;
+  const title=inp.value.trim();if(!title)return;
+  createTask({title,projectId:pid});
+  inp.value='';
+}
+function openNewProjectModal(){
+  closeNewProjectModal();
+  const html=`<div class="day-modal" id="newProjModal" onclick="if(event.target===this)closeNewProjectModal()">
+    <div class="day-modal-card proj-new-card">
+      <h3 class="proj-new-title">New Project</h3>
+      <input id="npName" type="text" placeholder="Project name (e.g. Escalator coordination)" onkeydown="if(event.key==='Enter')submitNewProject()">
+      <div class="proj-new-row">
+        <input id="npIcon" type="text" maxlength="4" placeholder="🛗" title="Icon (emoji, optional)">
+        <span class="proj-swatches" id="npSwatches">${PROJECT_COLORS.map((c,i)=>`<button class="proj-swatch ${i===0?'sel':''}" style="background:${c}" data-c="${c}" onclick="document.querySelectorAll('#npSwatches .proj-swatch').forEach(b=>b.classList.toggle('sel',b===this))"></button>`).join('')}</span>
+      </div>
+      <div class="proj-new-row"><label class="proj-target-lbl">Target date <input id="npTarget" type="date"></label></div>
+      <div class="proj-new-actions">
+        <button class="ob" onclick="closeNewProjectModal()">Cancel</button>
+        <button class="add-btn" onclick="submitNewProject()">Create</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
+  setTimeout(()=>document.getElementById('npName')?.focus(),60);
+}
+function closeNewProjectModal(){document.getElementById('newProjModal')?.remove()}
+function submitNewProject(){
+  const name=(document.getElementById('npName')?.value||'').trim();
+  if(!name)return;
+  const color=document.querySelector('#npSwatches .proj-swatch.sel')?.dataset.c||PROJECT_COLORS[0];
+  const icon=(document.getElementById('npIcon')?.value||'').trim();
+  const target=document.getElementById('npTarget')?.value||'';
+  const ref=createProject({name,color,icon,targetDate:target});
+  closeNewProjectModal();
+  if(ref&&ref.key)openProjectId=ref.key; // listener re-renders into detail view
+}
+// Animate progress rings from their previous value (anime.js arrives Phase 5;
+// until then this sets final state directly).
+const _lastRingPct=new Map();
+function animateRings(root){
+  root.querySelectorAll('.ring-fg').forEach(c=>{
+    const el=c.closest('[data-pid]');
+    const key=el?.dataset.pid||'detail:'+openProjectId;
+    _lastRingPct.set(key,parseFloat(c.dataset.pct)||0);
+  });
+}
 function setCat(c){
   newCat=c;
   document.querySelectorAll('.input-opts .ob[data-c]').forEach(b=>b.classList.toggle('s',b.dataset.c===c));
@@ -2078,7 +2367,7 @@ function setProgress(id,val){
 }
 function updateTask(id,f,v){fbSet(`todo/tasks/${id}/${f}`,v)}
 function deleteTask(id){fbSet(`todo/tasks/${id}`,null);if(expanded===id)expanded=null}
-function toggleExpand(id){expanded=expanded===id?null:id;renderTasks()}
+function toggleExpand(id){expanded=expanded===id?null:id;renderTasks();if(currentView==='projects')renderProjects()}
 
 // ═══════════════════════════════════════════
 //  Completion animation — CSS keyframes + spawned CSS particles.
@@ -2600,6 +2889,7 @@ function renderTasks(){
   if(fStatus==='active')fl=fl.filter(([,t])=>!t.completed);
   if(fStatus==='completed')fl=fl.filter(([,t])=>t.completed);
   if(fCat!=='all')fl=fl.filter(([,t])=>t.category===fCat);
+  if(fProject!=='all')fl=fl.filter(([,t])=>(t.projectId||'')===fProject);
   if(fFrom!=='all')fl=fl.filter(([,t])=>fFrom===''?!(t.from||'').trim():(t.from||'').trim()===fFrom);
   if(searchQuery){
     const q=searchQuery.toLowerCase();
@@ -2634,69 +2924,6 @@ function renderTasks(){
     return;
   }
   const today=new Date().toISOString().slice(0,10);
-  // Render a single task card. Pulled out of the kanban builder so each
-  // bucket can call it with its own index.
-  const renderCard=(id,t,i)=>{
-    const exp=expanded===id;
-    const od=t.dueDate&&!t.completed&&t.dueDate<today;
-    const cc=t.category==='work'?'var(--accent2)':t.category==='project'?'var(--accent3)':t.category==='rfi'?'#fbbf24':'var(--accent1)';
-    const rank=t.completed?'':String(i+1);
-    // Card is draggable for reorder ONLY when collapsed — when expanded the
-    // user is editing fields (esp. the progress range slider) and the parent
-    // drag would hijack mousedown events
-    const drag=!t.completed&&sortBy==='manual'&&!exp;
-    const diff=t.difficulty||'medium';
-    const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★',super_epic:'★★★★★'}[diff];
-    const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
-    let h=`<div class="tc ${t.completed?'done':''} ${exp?'expanded':''}" style="animation-delay:${i*25}ms;border-left:3px solid ${cc}" ${drag?'draggable="true" ondragstart="dragStart(event,\''+id+'\')" ondragover="dragOver(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event,\''+id+'\')" ondragend="dragEnd(event)"':''}>
-      <span class="t-rank">${rank}</span>
-      <button class="ck" onclick="toggleDone('${id}')">${t.completed?'&#10003;':''}</button>
-      <div class="tb">
-        <div class="tt" onclick="openTaskModal('${id}')" title="View details">${highlightMatch(t.title||'')}</div>
-        ${t.notes&&!exp?`<div class="t-notes" onclick="openTaskModal('${id}')" style="cursor:pointer">${highlightMatch((t.notes||'').slice(0,80))}${t.notes.length>80?'...':''}</div>`:''}
-        <div class="tm">
-          <span class="pd ${t.priority||'medium'}"></span>
-          <span class="cat ${t.category||'personal'}">${t.category||'personal'}</span>
-          <span class="t-diff ${diff}">${diffStars}</span>
-          ${t.repeat&&t.repeat!=='none'?`<span class="t-repeat">${t.repeat}</span>`:''}
-          ${t.from?`<span class="t-from">${esc(t.from)}</span>`:''}
-          ${t.dueDate?`<span class="dl ${od?'od':''}">${od?'Overdue':'Due'}: ${t.dueDate}${t.dueTime?' '+fmtTime12(t.dueTime):''}</span>`:''}
-        </div>
-        ${!t.completed&&prog>0?`<div class="t-prog">
-          <div class="t-prog-bar"><div class="t-prog-fill" style="width:${prog}%"></div></div>
-          <span class="t-prog-val">${prog}%</span>
-        </div>`:''}`;
-    if(exp){
-      h+=`<div class="tex">
-        <input type="text" class="tex-title" placeholder="Title" value="${esc(t.title||'')}" onblur="updateTask('${id}','title',this.value)" onkeydown="if(event.key==='Enter'){this.blur();}">
-        <textarea placeholder="Notes..." onblur="updateTask('${id}','notes',this.value)">${esc(t.notes||'')}</textarea>
-        <div class="tex-row">
-          <select onchange="updateTask('${id}','priority',this.value)">${['high','medium','low'].map(p=>`<option value="${p}" ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select>
-          <select onchange="updateTask('${id}','category',this.value)">${['work','personal','project','rfi'].map(c=>`<option value="${c}" ${t.category===c?'selected':''}>${c}</option>`).join('')}</select>
-          <select onchange="updateTask('${id}','difficulty',this.value)">${['easy','medium','hard','epic','super_epic'].map(d=>`<option value="${d}" ${diff===d?'selected':''}>${d.replace('_',' ')}</option>`).join('')}</select>
-          <select onchange="updateTask('${id}','repeat',this.value)" title="Repeat">${[['none','No repeat'],['daily','↻ Daily'],['weekly','↻ Weekly'],['monthly','↻ Monthly']].map(([v,lb])=>`<option value="${v}" ${(t.repeat||'none')===v?'selected':''}>${lb}</option>`).join('')}</select>
-          <input type="date" value="${t.dueDate||''}" onchange="updateTask('${id}','dueDate',this.value)">
-          <input type="time" value="${t.dueTime||''}" onchange="updateTask('${id}','dueTime',this.value)" style="width:90px">
-          <input type="text" placeholder="From (who asked?)" value="${esc(t.from||'')}" onchange="updateTask('${id}','from',this.value)" list="fromSuggestions" style="flex:1;min-width:120px">
-        </div>
-        <div class="tex-row" style="align-items:center;gap:10px">
-          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:600">Progress</span>
-          <input type="range" min="0" max="100" step="5" value="${prog}" draggable="false" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" oninput="this.nextElementSibling.textContent=this.value+'%'" onchange="setProgress('${id}',this.value)" style="flex:1;accent-color:var(--accent1);min-height:28px">
-          <span style="font-size:11px;font-weight:700;color:var(--accent1);min-width:36px;text-align:right">${prog}%</span>
-        </div>
-      </div>`}
-    h+=`</div>
-      ${!t.completed&&sortBy==='manual'?`<div class="reorder">
-        <button class="ro-btn" onclick="moveTask('${id}',-1)">&#9650;</button>
-        <button class="ro-btn" onclick="moveTask('${id}',1)">&#9660;</button>
-      </div>`:''}
-      <div class="ta">
-        <button class="tab" onclick="toggleExpand('${id}')">${exp?'&minus;':'&#9998;'}</button>
-        <button class="tab del" onclick="deleteTask('${id}')">&times;</button>
-      </div>
-    </div>`;
-    return h;
-  };
   // Daily checklist — recurring="daily" tasks live in a dedicated panel above
   // the kanban. A daily task is "done for today" when the recurring branch in
   // toggleDone has advanced its dueDate past today.
@@ -2800,13 +3027,85 @@ function renderTasks(){
     <section class="kc" data-col="${key}">
       <header class="kc-head"><h3>${en}<span class="cn">${cn}</span></h3><span class="kc-count">${buckets[key].length}</span></header>
       <div class="task-list">${buckets[key].length
-        ? buckets[key].map(([id,t],i)=>renderCard(id,t,i)).join('')
+        ? buckets[key].map(([id,t],i)=>renderTaskCard(id,t,i)).join('')
         : `<div class="kc-empty">Nothing here<span class="cn">空空如也</span></div>`}</div>
     </section>`).join('')}</div>`;
   const total=entries.length,done=entries.filter(([,t])=>t.completed).length;
   stats.textContent=done+' of '+total+' completed';
   // Restore scroll position so Firebase re-renders don't jump to top
   if(savedScroll>0)window.scrollTo(0,savedScroll);
+}
+// Render a single task card. Top-level so both the kanban and the project
+// detail view can use it. opts: {drag:true, rank:true, showProject:true}
+function renderTaskCard(id,t,i,opts={}){
+  const today=new Date().toISOString().slice(0,10);
+  const exp=expanded===id;
+  const od=t.dueDate&&!t.completed&&t.dueDate<today;
+  const proj=t.projectId?projects[t.projectId]:null;
+  const cc=proj?(proj.color||'var(--accent1)'):t.category==='work'?'var(--accent2)':t.category==='project'?'var(--accent3)':t.category==='rfi'?'#fbbf24':'var(--accent1)';
+  const rank=(opts.rank===false||t.completed)?'':String(i+1);
+  // Card is draggable for reorder ONLY when collapsed — when expanded the
+  // user is editing fields (esp. the progress range slider) and the parent
+  // drag would hijack mousedown events
+  const drag=opts.drag!==false&&!t.completed&&sortBy==='manual'&&!exp;
+  const diff=t.difficulty||'medium';
+  const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★',super_epic:'★★★★★'}[diff];
+  const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
+  const projBadge=(opts.showProject!==false&&proj)?`<span class="t-proj" style="--pc:${proj.color||'#7c9cff'}" onclick="event.stopPropagation();openProjectView('${t.projectId}')" title="Open project">${proj.icon?proj.icon+' ':''}${esc(proj.name||'Untitled')}</span>`:'';
+  const projOptions=`<option value="">No project</option>`+Object.entries(projects)
+    .filter(([pid,p])=>p.status!=='archived'||pid===(t.projectId||''))
+    .sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''))
+    .map(([pid,p])=>`<option value="${pid}" ${t.projectId===pid?'selected':''}>${esc(p.name||'Untitled')}</option>`).join('');
+  let h=`<div class="tc ${t.completed?'done':''} ${exp?'expanded':''}" data-id="${id}" style="animation-delay:${i*25}ms;border-left:3px solid ${cc}" ${drag?'draggable="true" ondragstart="dragStart(event,\''+id+'\')" ondragover="dragOver(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event,\''+id+'\')" ondragend="dragEnd(event)"':''}>
+    <span class="t-rank">${rank}</span>
+    <button class="ck" onclick="toggleDone('${id}')">${t.completed?'&#10003;':''}</button>
+    <div class="tb">
+      <div class="tt" onclick="openTaskModal('${id}')" title="View details">${highlightMatch(t.title||'')}</div>
+      ${t.notes&&!exp?`<div class="t-notes" onclick="openTaskModal('${id}')" style="cursor:pointer">${highlightMatch((t.notes||'').slice(0,80))}${t.notes.length>80?'...':''}</div>`:''}
+      <div class="tm">
+        <span class="pd ${t.priority||'medium'}"></span>
+        <span class="cat ${t.category||'personal'}">${t.category||'personal'}</span>
+        <span class="t-diff ${diff}">${diffStars}</span>
+        ${projBadge}
+        ${t.repeat&&t.repeat!=='none'?`<span class="t-repeat">${t.repeat}</span>`:''}
+        ${t.from?`<span class="t-from">${esc(t.from)}</span>`:''}
+        ${t.dueDate?`<span class="dl ${od?'od':''}">${od?'Overdue':'Due'}: ${t.dueDate}${t.dueTime?' '+fmtTime12(t.dueTime):''}</span>`:''}
+      </div>
+      ${!t.completed&&prog>0?`<div class="t-prog">
+        <div class="t-prog-bar"><div class="t-prog-fill" style="width:${prog}%"></div></div>
+        <span class="t-prog-val">${prog}%</span>
+      </div>`:''}`;
+  if(exp){
+    h+=`<div class="tex">
+      <input type="text" class="tex-title" placeholder="Title" value="${esc(t.title||'')}" onblur="updateTask('${id}','title',this.value)" onkeydown="if(event.key==='Enter'){this.blur();}">
+      <textarea placeholder="Notes..." onblur="updateTask('${id}','notes',this.value)">${esc(t.notes||'')}</textarea>
+      <div class="tex-row">
+        <select onchange="updateTask('${id}','priority',this.value)">${['high','medium','low'].map(p=>`<option value="${p}" ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select>
+        <select onchange="updateTask('${id}','category',this.value)">${['work','personal','project','rfi'].map(c=>`<option value="${c}" ${t.category===c?'selected':''}>${c}</option>`).join('')}</select>
+        <select onchange="updateTask('${id}','projectId',this.value)" title="Project">${projOptions}</select>
+        <select onchange="updateTask('${id}','difficulty',this.value)">${['easy','medium','hard','epic','super_epic'].map(d=>`<option value="${d}" ${diff===d?'selected':''}>${d.replace('_',' ')}</option>`).join('')}</select>
+        <select onchange="updateTask('${id}','repeat',this.value)" title="Repeat">${[['none','No repeat'],['daily','↻ Daily'],['weekly','↻ Weekly'],['monthly','↻ Monthly']].map(([v,lb])=>`<option value="${v}" ${(t.repeat||'none')===v?'selected':''}>${lb}</option>`).join('')}</select>
+        <input type="date" value="${t.dueDate||''}" onchange="updateTask('${id}','dueDate',this.value)">
+        <input type="time" value="${t.dueTime||''}" onchange="updateTask('${id}','dueTime',this.value)" style="width:90px">
+        <input type="text" placeholder="From (who asked?)" value="${esc(t.from||'')}" onchange="updateTask('${id}','from',this.value)" list="fromSuggestions" style="flex:1;min-width:120px">
+      </div>
+      <div class="tex-row" style="align-items:center;gap:10px">
+        <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:600">Progress</span>
+        <input type="range" min="0" max="100" step="5" value="${prog}" draggable="false" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" oninput="this.nextElementSibling.textContent=this.value+'%'" onchange="setProgress('${id}',this.value)" style="flex:1;accent-color:var(--accent1);min-height:28px">
+        <span style="font-size:11px;font-weight:700;color:var(--accent1);min-width:36px;text-align:right">${prog}%</span>
+      </div>
+    </div>`}
+  h+=`</div>
+    ${opts.drag!==false&&!t.completed&&sortBy==='manual'?`<div class="reorder">
+      <button class="ro-btn" onclick="moveTask('${id}',-1)">&#9650;</button>
+      <button class="ro-btn" onclick="moveTask('${id}',1)">&#9660;</button>
+    </div>`:''}
+    <div class="ta">
+      <button class="tab" onclick="toggleExpand('${id}')">${exp?'&minus;':'&#9998;'}</button>
+      <button class="tab del" onclick="deleteTask('${id}')">&times;</button>
+    </div>
+  </div>`;
+  return h;
 }
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 // Format "HH:MM" (24hr) → "H:MM AM/PM"
@@ -2971,7 +3270,7 @@ function toggleFilterPop(){
   const activeCount=entries.filter(([,t])=>!t.completed).length;
   const doneCount=entries.filter(([,t])=>t.completed).length;
   pop.innerHTML=`
-    <button class="ctrl-pop-item ${fStatus==='all'?'active':''}" onclick="fStatus='all';fCat='all';closeAllPopovers();renderTasks()">All (${entries.length})</button>
+    <button class="ctrl-pop-item ${fStatus==='all'?'active':''}" onclick="fStatus='all';fCat='all';fProject='all';closeAllPopovers();renderTasks()">All (${entries.length})</button>
     <button class="ctrl-pop-item ${fStatus==='active'?'active':''}" onclick="fStatus='active';closeAllPopovers();renderTasks()">Active (${activeCount})</button>
     <button class="ctrl-pop-item ${fStatus==='completed'?'active':''}" onclick="fStatus='completed';closeAllPopovers();renderTasks()">Completed (${doneCount})</button>
     <div class="ctrl-pop-divider"></div>
@@ -2979,7 +3278,12 @@ function toggleFilterPop(){
     <button class="ctrl-pop-item ${fCat==='work'?'active':''}" onclick="fCat='work';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--cat-work-fg)"></span>Work</button>
     <button class="ctrl-pop-item ${fCat==='personal'?'active':''}" onclick="fCat='personal';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--accent1)"></span>Personal</button>
     <button class="ctrl-pop-item ${fCat==='project'?'active':''}" onclick="fCat='project';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--accent3,var(--accent2))"></span>Project</button>
-    <button class="ctrl-pop-item ${fCat==='rfi'?'active':''}" onclick="fCat='rfi';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:#fbbf24"></span>RFI</button>`;
+    <button class="ctrl-pop-item ${fCat==='rfi'?'active':''}" onclick="fCat='rfi';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:#fbbf24"></span>RFI</button>
+    ${Object.keys(projects).length?`<div class="ctrl-pop-divider"></div>
+    <button class="ctrl-pop-item ${fProject==='all'?'active':''}" onclick="fProject='all';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--text-muted)"></span>All Projects</button>
+    <button class="ctrl-pop-item ${fProject===''?'active':''}" onclick="fProject='';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:var(--text-muted)"></span>No project</button>
+    ${Object.entries(projects).filter(([,p])=>p.status!=='archived').sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||'')).map(([pid,p])=>
+      `<button class="ctrl-pop-item ${fProject===pid?'active':''}" onclick="fProject='${pid}';closeAllPopovers();renderTasks()"><span class="pop-dot" style="background:${p.color||'#7c9cff'}"></span>${esc(p.name||'Untitled')}</button>`).join('')}`:''}`;
   pop.classList.add('open');
   pill.classList.add('open');
 }
@@ -3000,6 +3304,7 @@ function updateControlBarLabels(){
   if(fl){
     let lbl=fStatus==='all'?'All':fStatus==='active'?'Active':'Done';
     if(fCat!=='all')lbl+=` · ${fCat}`;
+    if(fProject!=='all')lbl+=` · ${fProject===''?'No project':(projects[fProject]?.name||'Project')}`;
     fl.textContent=lbl;
   }
   if(sl){
@@ -4270,6 +4575,7 @@ function switchView(v){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().includes(v)));
   // (Sisyphus rAF pause/resume removed)
   if(v==='rfi')setRFIView(rfiSubView);
+  if(v==='projects')renderProjects();
   if(v==='calendar')renderCalendar();
   if(v==='stats')renderStatsView();
   if(v==='wasted')renderWasted();
