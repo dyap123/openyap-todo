@@ -1460,6 +1460,28 @@ body.t-light .planner-date{color-scheme:light}
 .proj-new-row #npIcon{width:56px;text-align:center;margin-bottom:0}
 .proj-new-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
 @media(max-width:600px){.proj-grid{grid-template-columns:1fr}.proj-detail-head{flex-direction:column;align-items:center}}
+
+/* ── Smart quick-add ── */
+.qa{padding:10px 14px}
+.qa-bar{display:flex;align-items:center;gap:10px}
+.qa-plus{font-size:16px;color:var(--text-muted);flex:none;line-height:1}
+.qa .qa-bar input[type="text"]{flex:1;margin-bottom:0;font-size:14px}
+.qa-add{margin-left:0;flex:none}
+.qa-chev{flex:none;width:28px;height:28px;border-radius:50%;border:1px solid var(--card-border);background:transparent;color:var(--text-muted);font-size:13px;cursor:pointer;transition:transform .3s var(--ease),color .2s,border-color .2s;display:flex;align-items:center;justify-content:center}
+.qa-chev:hover{color:var(--accent1);border-color:var(--accent1)}
+.qa-chev.open{transform:rotate(180deg);color:var(--accent1);border-color:var(--accent1)}
+.qa-chips{display:none;flex-wrap:wrap;gap:6px;margin-top:8px}
+.qa-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 6px 3px 10px;border-radius:20px;border:1px solid var(--card-hover);color:var(--text-body);background:var(--accent1-06)}
+.qa-chip.pri{color:var(--accent1);border-color:var(--accent1)}
+.qa-chip.proj,.qa-chip.projSel{color:var(--accent3);border-color:var(--accent3)}
+.qa-chip.due{color:var(--accent2);border-color:var(--accent2)}
+.qa-chip-x{background:none;border:none;color:inherit;opacity:.6;font-size:12px;cursor:pointer;padding:0 2px;line-height:1}
+.qa-chip-x:hover{opacity:1}
+.qa-panel{display:block;margin-top:12px;padding-top:12px;border-top:1px solid var(--card-border)}
+.qa-panel[hidden]{display:none}
+.qa-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.qa-lbl{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}
+.qa-proj-sel{background:var(--panel-2,rgba(0,0,0,0.3));color:var(--text);border:1px solid var(--card-border);border-radius:10px;padding:5px 8px;font-size:11px;max-width:180px}
 </style>
 </head>
 <body>
@@ -1516,46 +1538,60 @@ body.t-light .planner-date{color-scheme:light}
 <!-- Tasks View -->
 <div class="view active" id="v-tasks">
   <!-- Input -->
-  <div class="input-card">
-    <input id="newTask" type="text" placeholder="What needs to be done?" onkeydown="if(event.key==='Enter')addTask()">
-    <div class="input-opts">
-      <div class="opt-grp">
-        <button class="ob s" data-c="work" onclick="setCat('work')">Work</button>
-        <button class="ob" data-c="personal" onclick="setCat('personal')">Personal</button>
-        <button class="ob" data-c="project" onclick="setCat('project')">Project</button>
-      </div>
-      <div class="opt-grp">
-        <button class="ob" data-p="high" onclick="setPri('high')">High</button>
-        <button class="ob s" data-p="medium" onclick="setPri('medium')">Med</button>
-        <button class="ob" data-p="low" onclick="setPri('low')">Low</button>
-      </div>
-      <div class="opt-grp">
-        <button class="ob" data-d="easy" onclick="setDiff('easy')">Easy</button>
-        <button class="ob s" data-d="medium" onclick="setDiff('medium')">★★</button>
-        <button class="ob" data-d="hard" onclick="setDiff('hard')">★★★</button>
-        <button class="ob" data-d="epic" onclick="setDiff('epic')">EPIC</button>
-        <button class="ob" data-d="super_epic" onclick="setDiff('super_epic')">SUPER EPIC</button>
-      </div>
-      <div class="opt-grp">
-        <button class="ob s" data-r="none" onclick="setRep('none')" title="No repeat">Once</button>
-        <button class="ob" data-r="daily" onclick="setRep('daily')" title="Repeats every day">↻ Daily</button>
-        <button class="ob" data-r="weekly" onclick="setRep('weekly')" title="Repeats every 7 days">↻ Weekly</button>
-        <button class="ob" data-r="monthly" onclick="setRep('monthly')" title="Repeats every month">↻ Monthly</button>
-      </div>
-      <span class="date-btn" id="dateBtnWrap" onclick="toggleDatePicker(event)">
-        <span id="dateBtnLabel">Due date</span>
-        <input type="hidden" id="newDue">
-      </span>
-      <span class="time-btn" id="timeBtnWrap" onclick="toggleTimePicker(event)">
-        <span id="timeBtnLabel">Time</span>
-        <input type="hidden" id="newTime">
-      </span>
-      <button class="add-btn" onclick="addTask()">Add</button>
+  <div class="input-card qa" id="quickAdd">
+    <div class="qa-bar">
+      <span class="qa-plus">＋</span>
+      <input id="newTask" type="text" placeholder="Add a task…  try  !high  #project  tomorrow" oninput="qaParse(this.value)" onkeydown="qaKeydown(event)" autocomplete="off">
+      <button class="add-btn qa-add" onclick="addTask()">Add</button>
+      <button class="qa-chev" id="qaChev" onclick="toggleQaPanel()" title="More options (⌘.)">⌄</button>
     </div>
-    <div class="notes-row">
-      <textarea id="newNotes" placeholder="Add notes..." rows="1"></textarea>
-      <input id="newFrom" type="text" class="from-input" placeholder="From (who asked?)" list="fromSuggestions">
-      <datalist id="fromSuggestions"></datalist>
+    <div class="qa-chips" id="qaChips"></div>
+    <div class="qa-panel input-opts" id="qaPanel" hidden>
+      <div class="qa-row">
+        <span class="qa-lbl">Priority</span>
+        <div class="opt-grp">
+          <button class="ob" data-p="high" onclick="setPri('high')">High</button>
+          <button class="ob s" data-p="medium" onclick="setPri('medium')">Med</button>
+          <button class="ob" data-p="low" onclick="setPri('low')">Low</button>
+        </div>
+        <span class="qa-lbl">Category</span>
+        <div class="opt-grp">
+          <button class="ob s" data-c="work" onclick="setCat('work')">Work</button>
+          <button class="ob" data-c="personal" onclick="setCat('personal')">Personal</button>
+        </div>
+        <span class="qa-lbl">Effort</span>
+        <div class="opt-grp">
+          <button class="ob" data-d="easy" onclick="setDiff('easy')">Easy</button>
+          <button class="ob s" data-d="medium" onclick="setDiff('medium')">★★</button>
+          <button class="ob" data-d="hard" onclick="setDiff('hard')">★★★</button>
+          <button class="ob" data-d="epic" onclick="setDiff('epic')">EPIC</button>
+          <button class="ob" data-d="super_epic" onclick="setDiff('super_epic')">SUPER EPIC</button>
+        </div>
+      </div>
+      <div class="qa-row">
+        <span class="qa-lbl">Repeat</span>
+        <div class="opt-grp">
+          <button class="ob s" data-r="none" onclick="setRep('none')" title="No repeat">Once</button>
+          <button class="ob" data-r="daily" onclick="setRep('daily')" title="Repeats every day">↻ Daily</button>
+          <button class="ob" data-r="weekly" onclick="setRep('weekly')" title="Repeats every 7 days">↻ Weekly</button>
+          <button class="ob" data-r="monthly" onclick="setRep('monthly')" title="Repeats every month">↻ Monthly</button>
+        </div>
+        <span class="qa-lbl">Project</span>
+        <select id="newProject" class="qa-proj-sel" onchange="qaProject=this.value;qaRenderChips()"><option value="">No project</option></select>
+        <span class="date-btn" id="dateBtnWrap" onclick="toggleDatePicker(event)">
+          <span id="dateBtnLabel">Due date</span>
+          <input type="hidden" id="newDue">
+        </span>
+        <span class="time-btn" id="timeBtnWrap" onclick="toggleTimePicker(event)">
+          <span id="timeBtnLabel">Time</span>
+          <input type="hidden" id="newTime">
+        </span>
+      </div>
+      <div class="notes-row">
+        <textarea id="newNotes" placeholder="Add notes..." rows="1"></textarea>
+        <input id="newFrom" type="text" class="from-input" placeholder="From (who asked?)" list="fromSuggestions">
+        <datalist id="fromSuggestions"></datalist>
+      </div>
     </div>
   </div>
 
@@ -2263,9 +2299,111 @@ function addDailyTask(){
   inp.value='';
 }
 
+// ═══════════════════════════════════════════
+//  Smart quick-add — one input bar with inline tokens.
+//  Tokens and panel controls write the SAME state (newPri, #newDue,
+//  qaProject); last write wins; Enter reads state. Unknown #tokens stay
+//  in the title — user text is never silently dropped.
+//  Vocabulary: !high/!h !med/!m !low/!l · #project-name (prefix match)
+//  · today/tod tomorrow/tmr/tom · weekday names · next week · in Nd · YYYY-MM-DD
+// ═══════════════════════════════════════════
+let qaProject='',qaCleanTitle='',qaChipList=[],qaPrevTok={pri:false,due:false,proj:false};
+const QA_WEEKDAYS={sunday:0,sun:0,monday:1,mon:1,tuesday:2,tues:2,tue:2,wednesday:3,wed:3,thursday:4,thurs:4,thur:4,thu:4,friday:5,fri:5,saturday:6,sat:6};
+function qaAddDays(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+function qaNextWeekday(w){const d=new Date();d.setDate(d.getDate()+((w-d.getDay()+7)%7));return d.toISOString().slice(0,10)}
+function qaNormName(s){return(s||'').toLowerCase().trim().replace(/\s+/g,'-')}
+// #token → project id. Exact normalized match wins, else alphabetically-first
+// prefix match, else null (token stays in the title).
+function qaMatchProject(tok){
+  const q=tok.toLowerCase();
+  const cands=Object.entries(projects).filter(([,p])=>p.status!=='archived')
+    .map(([id,p])=>[id,qaNormName(p.name)]).sort((a,b)=>a[1].localeCompare(b[1]));
+  const exact=cands.find(([,n])=>n===q);if(exact)return exact[0];
+  const pre=cands.find(([,n])=>n.startsWith(q));
+  return pre?pre[0]:null;
+}
+function qaFmtDate(ds){const d=new Date(ds+'T00:00:00');return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}
+function qaSetDue(ds){const h=document.getElementById('newDue');if(!h)return;h.value=ds||'';updateDateBtn()}
+function qaParse(v){
+  qaChipList=[];
+  let s=' '+(v||'')+' ';
+  let pri=null,priRaw=null,proj=null,projRaw=null,due=null,dueRaw=null;
+  s=s.replace(/\s!(high|medium|med|low|h|m|l)(?=\s)/gi,(m,g)=>{pri={h:'high',high:'high',m:'medium',med:'medium',medium:'medium',l:'low',low:'low'}[g.toLowerCase()];priRaw=m.trim();return ' '});
+  s=s.replace(/\s#([a-z0-9\-_]+)(?=\s)/gi,(m,g)=>{const id=qaMatchProject(g);if(id){proj=id;projRaw=m.trim();return ' '}return m});
+  s=s.replace(/\snext week(?=\s)/gi,m=>{due=qaAddDays(7);dueRaw=m.trim();return ' '});
+  s=s.replace(/\sin (\d{1,3}) ?d(?:ays?)?(?=\s)/gi,(m,g)=>{due=qaAddDays(parseInt(g,10));dueRaw=m.trim();return ' '});
+  s=s.replace(/\s(tomorrow|today|tmr|tom|tod)(?=\s)/gi,(m,g)=>{due=qaAddDays(/^(tomorrow|tmr|tom)$/i.test(g)?1:0);dueRaw=m.trim();return ' '});
+  s=s.replace(/\s(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|tue|wed|thurs|thur|thu|fri|sat|sun)(?=\s)/gi,(m,g)=>{due=qaNextWeekday(QA_WEEKDAYS[g.toLowerCase()]);dueRaw=m.trim();return ' '});
+  // Literal date runs LAST so an explicit YYYY-MM-DD beats a stray weekday word
+  s=s.replace(/\s(\d{4}-\d{2}-\d{2})(?=\s)/g,(m,g)=>{due=g;dueRaw=m.trim();return ' '});
+  // Apply token state; revert only fields a token previously set
+  if(pri)setPri(pri);else if(qaPrevTok.pri)setPri('medium');
+  const sel=document.getElementById('newProject');
+  if(proj!==null){qaProject=proj;if(sel)sel.value=proj}
+  else if(qaPrevTok.proj){qaProject='';if(sel)sel.value=''}
+  if(due)qaSetDue(due);else if(qaPrevTok.due)qaSetDue('');
+  qaPrevTok={pri:!!pri,due:!!due,proj:proj!==null};
+  qaCleanTitle=s.replace(/\s+/g,' ').trim();
+  if(pri)qaChipList.push({type:'pri',raw:priRaw,label:'⚑ '+pri});
+  if(proj)qaChipList.push({type:'proj',raw:projRaw,label:'# '+(projects[proj]?.name||'project')});
+  if(due)qaChipList.push({type:'due',raw:dueRaw,label:'📅 '+qaFmtDate(due)});
+  qaRenderChips();
+}
+function qaRenderChips(){
+  const host=document.getElementById('qaChips');if(!host)return;
+  const chips=[...qaChipList];
+  if(!chips.some(c=>c.type==='proj')&&qaProject&&projects[qaProject])chips.push({type:'projSel',label:'# '+(projects[qaProject].name||'Untitled')});
+  host.innerHTML=chips.map((c,i)=>`<span class="qa-chip ${c.type}">${esc(c.label)}<button class="qa-chip-x" onclick="qaRemoveChip(${i},'${c.type}')" title="Remove">×</button></span>`).join('');
+  host.style.display=chips.length?'flex':'none';
+}
+function qaRemoveChip(i,type){
+  const inp=document.getElementById('newTask');
+  if(type==='projSel'){qaProject='';const sel=document.getElementById('newProject');if(sel)sel.value='';qaRenderChips();return}
+  const c=qaChipList[i];if(!c||!c.raw)return;
+  inp.value=(' '+inp.value+' ').replace(' '+c.raw+' ',' ').replace(/\s+/g,' ').trim();
+  qaParse(inp.value);
+  inp.focus();
+}
+function qaRefreshProjectSelect(){
+  const sel=document.getElementById('newProject');if(!sel)return;
+  sel.innerHTML='<option value="">No project</option>'+Object.entries(projects)
+    .filter(([,p])=>p.status!=='archived')
+    .sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''))
+    .map(([id,p])=>`<option value="${id}">${esc(p.name||'Untitled')}</option>`).join('');
+  sel.value=qaProject||'';
+}
+function toggleQaPanel(){
+  const p=document.getElementById('qaPanel'),ch=document.getElementById('qaChev');
+  if(!p)return;
+  if(p.hidden){qaRefreshProjectSelect();p.hidden=false;ch.classList.add('open')}
+  else{p.hidden=true;ch.classList.remove('open')}
+}
+function qaKeydown(e){
+  if(e.key==='Enter'){addTask();return}
+  if(e.key==='Escape'){
+    const p=document.getElementById('qaPanel');
+    if(p&&!p.hidden)toggleQaPanel();
+    else{e.target.value='';qaParse('')}
+    return;
+  }
+  if(e.key==='.'&&(e.metaKey||e.ctrlKey)){e.preventDefault();toggleQaPanel()}
+}
+function qaReset(){
+  const inp=document.getElementById('newTask');if(inp)inp.value='';
+  document.getElementById('newDue').value='';document.getElementById('newTime').value='';
+  document.getElementById('newNotes').value='';
+  const fromEl=document.getElementById('newFrom');if(fromEl)fromEl.value='';
+  // Token-set priority resets to default; a panel-chosen one persists
+  if(qaPrevTok.pri)setPri('medium');
+  qaProject='';const sel=document.getElementById('newProject');if(sel)sel.value='';
+  qaPrevTok={pri:false,due:false,proj:false};qaChipList=[];qaCleanTitle='';
+  qaRenderChips();updateDateBtn();updateTimeBtn();
+  if(inp)inp.focus();
+}
 function addTask(){
   const inp=document.getElementById('newTask');
-  const t=inp.value.trim();if(!t)return;
+  qaParse(inp.value); // sync state in case value was set programmatically
+  const t=qaCleanTitle.trim();if(!t)return;
   const notes=document.getElementById('newNotes').value.trim();
   const from=(document.getElementById('newFrom')?.value||'').trim();
   createTask({
@@ -2273,15 +2411,9 @@ function addTask(){
     dueDate:document.getElementById('newDue').value||'',
     dueTime:document.getElementById('newTime').value||'',
     repeat:newRep||'none',
-    notes:notes,from:from
+    notes:notes,from:from,projectId:qaProject||''
   });
-  inp.value='';document.getElementById('newDue').value='';document.getElementById('newTime').value='';
-  document.getElementById('newNotes').value='';
-  const fromEl=document.getElementById('newFrom');if(fromEl)fromEl.value='';
-  document.getElementById('dateBtnWrap').classList.remove('has-date');
-  document.getElementById('dateBtnLabel').textContent='Due date';
-  document.getElementById('timeBtnWrap').classList.remove('has-time');
-  document.getElementById('timeBtnLabel').textContent='Time';
+  qaReset();
 }
 function toggleDone(id){
   const t=tasks[id];if(!t)return;
@@ -3547,7 +3679,7 @@ RFI NOTES:
 
 COMMANDS (use code blocks to execute):
 \`\`\`task
-{"title":"...","priority":"high|medium|low","category":"work|personal|project","difficulty":"easy|medium|hard|epic","dueDate":"YYYY-MM-DD","notes":"..."}
+{"title":"...","priority":"high|medium|low","category":"work|personal","difficulty":"easy|medium|hard|epic","dueDate":"YYYY-MM-DD","notes":"...","projectId":"(optional, from PROJECTS list)"}
 \`\`\`
 \`\`\`rfi
 {"rfiNumber":"RFI-012","title":"Subject — what you're asking","description":"Detail about what info you need","sendTo":"Rei","dueDate":"YYYY-MM-DD"}
@@ -3568,9 +3700,14 @@ Use the sheet command when the user wants to log something to a Google Sheet. As
 
 STATS: ${active.length} active tasks, ${done.length} completed, ${overdue.length} overdue, ${high.length} high priority
 RFIS: ${rfiOpen.length} to send, ${rfiSent.length} sent·waiting, ${rfiOverdue.length} overdue, ${rfiClosed.length} closed
-
-ACTIVE TASKS:\n`;
-  if(active.length)active.forEach(([id,t])=>{s+=`- ${t.title} [${t.priority}/${t.category}${t.dueDate?' due:'+t.dueDate:''}${t.from?' from:'+t.from:''}${t.notes?' — '+t.notes.slice(0,60):''}] id:${id}\n`});
+`;
+  const projList=Object.entries(projects).filter(([,p])=>p.status!=='archived');
+  if(projList.length){
+    s+='\nPROJECTS (long-running efforts; when the user names one, set projectId on new tasks):\n';
+    projList.forEach(([pid,p])=>{const ps=projectStats(pid);s+=`- ${p.name||'Untitled'} [${p.status}, ${ps.pct}% done, ${ps.active} active tasks${p.targetDate?', target '+p.targetDate:''}] projectId:${pid}\n`});
+  }
+  s+=`\nACTIVE TASKS:\n`;
+  if(active.length)active.forEach(([id,t])=>{s+=`- ${t.title} [${t.priority}/${t.category}${t.projectId&&projects[t.projectId]?' project:'+projects[t.projectId].name:''}${t.dueDate?' due:'+t.dueDate:''}${t.from?' from:'+t.from:''}${t.notes?' — '+t.notes.slice(0,60):''}] id:${id}\n`});
   else s+='(none)\n';
   if(overdue.length){s+='\nOVERDUE:\n';overdue.forEach(([id,t])=>{s+=`- ${t.title} (was due ${t.dueDate}) id:${id}\n`})}
   if(rfiOpen.length||rfiSent.length){
