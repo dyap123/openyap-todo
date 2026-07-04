@@ -1671,6 +1671,16 @@ function attachListeners(){
 // ═══════════════════════════════════════════
 //  CRUD
 // ═══════════════════════════════════════════
+// Single factory for task objects — every creation path goes through here
+// so new fields (e.g. projectId) exist on all tasks from day one.
+function buildTask(o={}){return{
+  title:'',priority:'medium',category:'work',difficulty:'medium',
+  progress:0,dueDate:'',dueTime:'',repeat:'none',notes:'',from:'',projectId:'',
+  completed:false,completedAt:'',
+  createdAt:new Date().toISOString(),order:Date.now(),...o}}
+function createTask(o){return fbPush('todo/tasks',buildTask(o))}
+// History snapshot fields shared by all completion loggers
+function historyProjectFields(t){return{projectId:t.projectId||'',projectName:(typeof projects==='object'&&projects[t.projectId]?.name)||''}}
 function setCat(c){
   newCat=c;
   document.querySelectorAll('.input-opts .ob[data-c]').forEach(b=>b.classList.toggle('s',b.dataset.c===c));
@@ -1957,12 +1967,9 @@ function addDailyTask(){
   const inp=document.getElementById('dcAddInput');
   if(!inp)return;
   const title=inp.value.trim();if(!title)return;
-  fbPush('todo/tasks',{
-    title,priority:'medium',category:'personal',difficulty:'easy',
-    repeat:'daily',progress:0,completed:false,completedAt:'',
-    dueDate:new Date().toISOString().slice(0,10),
-    dueTime:'',notes:'',from:'',
-    createdAt:new Date().toISOString(),order:Date.now()
+  createTask({
+    title,category:'personal',difficulty:'easy',repeat:'daily',
+    dueDate:new Date().toISOString().slice(0,10)
   });
   inp.value='';
 }
@@ -1972,13 +1979,12 @@ function addTask(){
   const t=inp.value.trim();if(!t)return;
   const notes=document.getElementById('newNotes').value.trim();
   const from=(document.getElementById('newFrom')?.value||'').trim();
-  fbPush('todo/tasks',{
-    title:t,priority:newPri,category:newCat,difficulty:newDiff,progress:0,
+  createTask({
+    title:t,priority:newPri,category:newCat,difficulty:newDiff,
     dueDate:document.getElementById('newDue').value||'',
     dueTime:document.getElementById('newTime').value||'',
     repeat:newRep||'none',
-    notes:notes,from:from,completed:false,completedAt:'',
-    createdAt:new Date().toISOString(),order:Date.now()
+    notes:notes,from:from
   });
   inp.value='';document.getElementById('newDue').value='';document.getElementById('newTime').value='';
   document.getElementById('newNotes').value='';
@@ -2005,7 +2011,8 @@ function toggleDone(id){
     // Stamp history so Sisyphus + stats count the completion
     fbPush('todo/history',{
       title:t.title||'',difficulty:t.difficulty||'medium',category:t.category||'personal',
-      priority:t.priority||'medium',completedAt:new Date().toISOString()
+      priority:t.priority||'medium',completedAt:new Date().toISOString(),
+      ...historyProjectFields(t)
     });
     fbSet(`todo/tasks/${id}/dueDate`,nd);
     fbSet(`todo/tasks/${id}/progress`,0);
@@ -2023,6 +2030,7 @@ function toggleDone(id){
       taskId:id,title:t.title||'',difficulty:t.difficulty||'medium',
       category:t.category||'personal',priority:t.priority||'medium',
       notes:t.notes||'',completedAt:new Date().toISOString(),
+      ...historyProjectFields(t)
     });
     playCelebrate(card,t.difficulty||'medium');
   }
@@ -2039,7 +2047,8 @@ function setProgress(id,val){
             ||document.querySelector(`.dc-row .dc-ck[onclick*="'${id}'"]`)?.closest('.dc-row');
     fbPush('todo/history',{
       title:t.title||'',difficulty:t.difficulty||'medium',category:t.category||'personal',
-      priority:t.priority||'medium',completedAt:new Date().toISOString()
+      priority:t.priority||'medium',completedAt:new Date().toISOString(),
+      ...historyProjectFields(t)
     });
     fbSet(`todo/tasks/${id}/dueDate`,nd);
     fbSet(`todo/tasks/${id}/progress`,0);
@@ -2059,6 +2068,7 @@ function setProgress(id,val){
       taskId:id,title:t?.title||'',difficulty:t?.difficulty||'medium',
       category:t?.category||'personal',priority:t?.priority||'medium',
       notes:t?.notes||'',completedAt:new Date().toISOString(),
+      ...historyProjectFields(t||{})
     });
     playCelebrate(card,t?.difficulty||'medium');
   } else if(v<100&&tasks[id]?.completed){
@@ -3306,7 +3316,7 @@ async function sendAlfred(){
     const finalVisible=full.replace(/```(?:task|done|edit|sheet|rfi|rfi-sent)\s*\n[\s\S]*?\n```/g,'').trim();
     renderAlfStreaming(el,finalVisible,prevWords,false);
     const tm=full.match(/```task\s*\n?([\s\S]*?)\n?```/);
-    if(tm){try{const c=JSON.parse(tm[1]);fbPush('todo/tasks',{title:c.title||'',priority:c.priority||'medium',category:c.category||'personal',difficulty:c.difficulty||'medium',progress:0,dueDate:c.dueDate||'',notes:c.notes||'',completed:false,completedAt:'',createdAt:new Date().toISOString(),order:Date.now()})}catch{}}
+    if(tm){try{const c=JSON.parse(tm[1]);createTask({title:c.title||'',priority:c.priority||'medium',category:c.category||'personal',difficulty:c.difficulty||'medium',dueDate:c.dueDate||'',notes:c.notes||'',projectId:(c.projectId&&projects[c.projectId])?c.projectId:''})}catch{}}
     const dm=full.match(/```done\s*\n?([\s\S]*?)\n?```/);
     if(dm){try{const c=JSON.parse(dm[1]);if(c.taskId){fbSet(`todo/tasks/${c.taskId}/completed`,true);fbSet(`todo/tasks/${c.taskId}/completedAt`,new Date().toISOString())}}catch{}}
     const em=full.match(/```edit\s*\n?([\s\S]*?)\n?```/);
@@ -3317,13 +3327,10 @@ async function sendAlfred(){
       try{
         const c=JSON.parse(rm[1]);
         const num=c.rfiNumber||nextRfiNumber();
-        fbPush('todo/tasks',{
+        createTask({
           title:c.title||'',category:'rfi',rfiNumber:num,priority:c.priority||'medium',
-          difficulty:'easy',progress:0,
-          dueDate:c.dueDate||'',dueTime:'',repeat:'none',
-          notes:'',description:c.description||'',sendTo:c.sendTo||'',sent:false,
-          completed:false,completedAt:'',
-          createdAt:new Date().toISOString(),order:Date.now()
+          difficulty:'easy',dueDate:c.dueDate||'',
+          description:c.description||'',sendTo:c.sendTo||'',sent:false
         });
       }catch{}
     }
@@ -3773,11 +3780,9 @@ function nextRfiNumber(){
 }
 function newRFI(){
   const num=nextRfiNumber();
-  fbPush('todo/tasks',{
-    title:'',category:'rfi',rfiNumber:num,priority:'medium',difficulty:'easy',progress:0,
-    dueDate:'',dueTime:'',repeat:'none',notes:'',description:'',sendTo:'',sent:false,
-    completed:false,completedAt:'',
-    createdAt:new Date().toISOString(),order:Date.now()
+  createTask({
+    title:'',category:'rfi',rfiNumber:num,difficulty:'easy',
+    description:'',sendTo:'',sent:false
   });
   setTimeout(()=>{
     const el=document.querySelector('.rfi-card[data-num="'+num+'"] .rfi-subj-input');
@@ -5121,11 +5126,7 @@ function dayModalAdd(dateStr){
   if(!inp)return;
   const title=inp.value.trim();
   if(!title)return;
-  fbPush('todo/tasks',{
-    title,priority:'medium',category:newCat||'personal',difficulty:'medium',progress:0,dueDate:dateStr,
-    repeat:'none',notes:'',completed:false,completedAt:'',
-    createdAt:new Date().toISOString(),order:Date.now()
-  });
+  createTask({title,category:newCat||'personal',dueDate:dateStr});
   setTimeout(()=>openDayModal(dateStr),250);
 }
 
@@ -5194,11 +5195,7 @@ function editFromModal(id){
 function addTaskForDate(dateStr){
   const title=prompt('Task title:');
   if(!title)return;
-  fbPush('todo/tasks',{
-    title,priority:'medium',category:'personal',difficulty:'medium',progress:0,dueDate:dateStr,
-    notes:'',completed:false,completedAt:'',
-    createdAt:new Date().toISOString(),order:Date.now()
-  });
+  createTask({title,category:'personal',dueDate:dateStr});
   setTimeout(()=>openDayModal(dateStr),200);
 }
 
