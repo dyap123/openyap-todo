@@ -77,31 +77,17 @@ body.t-light .empty-bubble::before{background:rgba(255,255,255,0.78)}
 body.t-light .ai-row input{color:var(--text)}
 body.t-light .am.user{color:var(--text)}
 body.t-light #alfredSidebar{background:rgba(246,245,251,0.95)}
-body.t-light .mascot{filter:grayscale(0.4) brightness(0.85);opacity:0.18}
-body.t-light .mascot:hover{filter:grayscale(0) brightness(1);opacity:0.7}
-body.t-light .mascot-mini{filter:grayscale(0.7) brightness(0.7);opacity:0.06}
 body.t-light .stat-emoji{filter:grayscale(0.5) brightness(0.85)}
 body.t-light .bg-mesh::before{opacity:0.6}
 /* Light Sisyphus canvas */
 /* Sisyphus canvas + sis-wrap removed — see <div class="cmd-strip"> in markup */
 
 /* Mascot — blended, subtle, alive (ambient motion calmed) */
-.mascot{position:fixed;bottom:20px;left:20px;font-size:32px;z-index:10;opacity:0.1;transition:all .4s var(--ease);cursor:pointer;filter:grayscale(0.5) brightness(0.7);animation:mascotFloat 7s ease-in-out infinite}
-.mascot:hover{opacity:0.7;filter:grayscale(0) brightness(1);animation:mascotWiggle .5s var(--ease)}
-@keyframes mascotFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(1deg)}}
-@keyframes mascotWiggle{0%{transform:rotate(0) scale(1)}15%{transform:rotate(-12deg) scale(1.2)}30%{transform:rotate(10deg) scale(1.3)}45%{transform:rotate(-8deg) scale(1.25)}60%{transform:rotate(5deg) scale(1.2)}75%{transform:rotate(-3deg) scale(1.15)}100%{transform:rotate(0) scale(1.15)}}
-.mascot-mini{position:fixed;font-size:18px;z-index:5;opacity:0.04;pointer-events:auto;cursor:pointer;filter:grayscale(0.7) brightness(0.5);animation:miniDrift 18s ease-in-out infinite;transition:all .3s var(--ease)}
-.mascot-mini:hover{opacity:0.6;filter:grayscale(0) brightness(1);animation:miniPop .4s var(--ease)}
-@keyframes miniDrift{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(3px,-4px) rotate(2deg)}50%{transform:translate(-2px,-1px) rotate(-1deg)}75%{transform:translate(-3px,2px) rotate(2deg)}}
-@keyframes miniPop{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.6) rotate(-15deg)}60%{transform:scale(1.4) rotate(10deg)}100%{transform:scale(1.3) rotate(0)}}
 
 /* Motion modes — "calm" is default; "lively" restores original pace; prefers-reduced-motion zeroes ambient loops */
-html[data-motion="lively"] .mascot{animation-duration:5s !important;opacity:0.12}
-html[data-motion="lively"] .mascot-mini{animation-duration:8s !important;opacity:0.05}
 html[data-motion="lively"] .bg-mesh::before{animation-duration:60s !important}
-html[data-motion="lively"] .glow-line.mid{animation-duration:4s !important}
 @media (prefers-reduced-motion: reduce){
-  .mascot,.mascot-mini,.bg-mesh::before,.glow-line.mid{animation:none !important}
+  .bg-mesh::before{animation:none !important}
   .sync-dot{animation-duration:4s !important}
 }
 
@@ -134,9 +120,6 @@ input,select,textarea,button{font-family:inherit}
 .bg-mesh::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:32px 32px}
 
 /* Gradient line accents */
-.glow-line{position:fixed;height:1px;z-index:0;pointer-events:none;opacity:0.15}
-.glow-line.top{top:48px;left:0;right:0;background:linear-gradient(90deg,transparent,var(--accent1),var(--accent3),var(--accent2),transparent)}
-.glow-line.mid{top:50%;left:10%;right:10%;background:linear-gradient(90deg,transparent,var(--glow1),transparent)}
 
 /* Header */
 .header{position:sticky;top:0;z-index:50;background:var(--hdr-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--card-border)}
@@ -277,51 +260,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 
 /* Task Cards */
 .task-list{display:flex;flex-direction:column;gap:10px}
-
-/* Daily Checklist — slim collapsible side-card sitting next to the metrics strip. */
-.daily-checklist{background:var(--card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--card-border);border-radius:14px;padding:10px 14px;height:100%;display:flex;flex-direction:column}
-.dc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;user-select:none}
-.dc-head:hover .dc-title{color:var(--accent1)}
-.dc-title{font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);display:flex;align-items:baseline;transition:color .15s var(--ease)}
-.dc-title .cn{font-size:10px;letter-spacing:0.04em;text-transform:none;font-weight:500;color:var(--text-muted);text-shadow:none;margin-left:5px}
-.dc-head-right{display:flex;align-items:center;gap:8px}
-.dc-count{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);padding:1px 7px;border:1px solid var(--card-border);border-radius:999px;min-width:32px;text-align:center}
-.dc-chev{font-size:9px;color:var(--text-muted);transition:transform .25s var(--ease)}
-.daily-checklist.collapsed .dc-chev{transform:rotate(-90deg)}
-.dc-body{overflow:hidden;transition:max-height .3s var(--ease),opacity .2s var(--ease),margin .25s var(--ease);margin-top:8px;max-height:600px;opacity:1}
-.daily-checklist.collapsed .dc-body{max-height:0;opacity:0;margin-top:0;pointer-events:none}
-.dc-rows{display:flex;flex-direction:column;gap:1px;max-height:280px;overflow-y:auto;padding-right:2px}
-.dc-rows::-webkit-scrollbar{width:6px}
-.dc-rows::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:3px}
-.dc-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:5px 4px;border-radius:6px;transition:background .15s var(--ease)}
-.dc-row:hover{background:rgba(255,46,136,0.04)}
-.dc-row.expanded{background:rgba(255,46,136,0.05);grid-template-rows:auto auto}
-.dc-row .tex{grid-column:1 / -1;margin-top:6px}
-.dc-ck{appearance:none;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--card-border);background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:transparent;cursor:pointer;flex-shrink:0;transition:all .2s var(--ease);padding:0;line-height:1}
-.dc-ck:hover{border-color:var(--accent1)}
-.dc-row.done .dc-ck{background:var(--accent1);border-color:var(--accent1);color:#fff}
-.dc-row-title{font-size:12.5px;color:var(--text);cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dc-row.done .dc-row-title{text-decoration:line-through;color:var(--text-muted);opacity:0.55}
-.dc-actions{display:flex;gap:1px;opacity:0;transition:opacity .15s var(--ease)}
-.dc-row:hover .dc-actions,.dc-row.expanded .dc-actions{opacity:1}
-.dc-actions button{background:transparent;border:none;color:var(--text-muted);font-size:11px;cursor:pointer;padding:2px 5px;border-radius:4px;transition:all .15s var(--ease);line-height:1}
-.dc-actions button:hover{color:var(--accent1);background:rgba(255,46,136,0.08)}
-.dc-actions button.del:hover{color:var(--red);background:rgba(255,77,109,0.08)}
-.dc-empty{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);opacity:0.5;padding:8px 4px;text-align:center}
-.dc-add{display:flex;align-items:center;gap:6px;margin-top:6px;padding:6px 4px 0;border-top:1px dashed var(--card-border)}
-.dc-add input{flex:1;background:transparent;border:none;outline:none;font-size:12.5px;color:var(--text);font-family:var(--font-en);padding:2px 0;min-width:0}
-.dc-add input::placeholder{color:var(--text-muted);opacity:0.45}
-.dc-add-btn{background:transparent;border:1px solid var(--card-border);color:var(--text-muted);font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;cursor:pointer;transition:all .2s var(--ease);font-family:var(--font-mono)}
-.dc-add-btn:hover{border-color:var(--accent1);color:var(--accent1)}
-/* "Done today" group — checked-off daily tasks drop here, collapsed by default. */
-.dc-done-group{margin-top:6px;border-top:1px dashed var(--card-border);padding-top:5px}
-.dc-done-head{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:3px 4px;border-radius:6px;transition:background .15s var(--ease)}
-.dc-done-head:hover{background:rgba(255,255,255,0.03)}
-.dc-done-label{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:0.04em;color:var(--text-muted)}
-.dc-done-chev{font-size:9px;color:var(--text-muted);transition:transform .25s var(--ease)}
-.dc-done-group.collapsed .dc-done-chev{transform:rotate(-90deg)}
-.dc-done-rows{display:flex;flex-direction:column;gap:1px;overflow:hidden;transition:max-height .25s var(--ease),opacity .2s var(--ease),margin .2s var(--ease);max-height:240px;opacity:1;margin-top:3px}
-.dc-done-group.collapsed .dc-done-rows{max-height:0;opacity:0;margin-top:0;pointer-events:none}
 
 /* Kanban grouping — Today / This Week / Later / Done columns side-by-side on desktop. */
 .kanban{display:grid;grid-template-columns:repeat(4,minmax(280px,1fr));gap:18px;margin-top:8px}
@@ -1062,8 +1000,7 @@ body.t-light .ctrl-pop-item:hover{background:rgba(0,0,0,0.04)}
 /* ═══ Command Center (collapsible dashboard) ═══ */
 .cmd-strip{display:flex;align-items:center;padding:10px 14px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);min-height:54px;flex:1;min-width:0}
 .tasks-top{display:flex;gap:14px;align-items:stretch;margin-bottom:14px}
-.daily-host{width:min(360px,34%);flex-shrink:0}
-@media (max-width:900px){.tasks-top{flex-direction:column}.daily-host{width:100%}}
+@media (max-width:900px){.tasks-top{flex-direction:column}}
 .cmd-metrics{display:flex;flex-direction:column;gap:10px;flex:1;width:100%;min-width:0}
 .cmd-strip-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
 .cmd-charts{display:flex;flex-direction:column;gap:12px;padding-top:10px;border-top:1px solid var(--card-border)}
@@ -1479,22 +1416,14 @@ body.t-light .planner-date{color-scheme:light}
 <body>
 
 <div class="bg-mesh"></div>
-<div class="glow-line top"></div>
-<div class="glow-line mid"></div>
 <!-- celebOverlay removed — see .tc.celebrating in <style> for the lean replacement -->
-<div class="mascot" id="mascot"></div>
-<div class="mascot-mini mm" id="mm0" style="top:12%;right:5%"></div>
-<div class="mascot-mini mm" id="mm1" style="top:35%;left:3%;animation-delay:-2s;animation-duration:9s"></div>
-<div class="mascot-mini mm" id="mm2" style="bottom:30%;right:7%;animation-delay:-4s;animation-duration:11s"></div>
-<div class="mascot-mini mm" id="mm3" style="bottom:12%;left:6%;animation-delay:-6s;animation-duration:13s"></div>
-<div class="mascot-mini mm" id="mm4" style="top:55%;right:3%;animation-delay:-1s;animation-duration:10s"></div>
 
 <nav class="header">
   <div class="header-inner">
     <span class="app-title" onclick="switchView('tasks');window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer">openyap todo</span>
     <div style="display:flex;gap:3px;align-items:center">
       <button class="tab-btn active" onclick="switchView('tasks')">Tasks</button>
-      <button class="tab-btn" onclick="switchView('projects')">Projects</button>
+      <button class="tab-btn" onclick="openProjectId=null;switchView('projects')">Projects</button>
       <button class="tab-btn" onclick="switchView('planner')">Planner</button>
       <button class="tab-btn" onclick="switchView('calendar')">Calendar</button>
       <button class="tab-btn" onclick="switchView('stats')">Stats</button>
@@ -1587,10 +1516,9 @@ body.t-light .planner-date{color-scheme:light}
     </div>
   </div>
 
-  <!-- Top strip: metrics on the left + slim daily checklist on the right. -->
+  <!-- Top strip: productivity metrics -->
   <div class="tasks-top">
     <div class="cmd-strip"><div class="cmd-metrics" id="cmdMetrics"></div></div>
-    <aside class="daily-host" id="dailyChecklist"></aside>
   </div>
 
   <!-- Control Bar (search + filter pill + sort pill) -->
@@ -2274,34 +2202,6 @@ function tpClear(){
   updateTimeBtn();
   closeTimePicker();
 }
-// Collapse/expand the daily checklist; state persists via localStorage.
-function toggleDailyChecklist(){
-  const card=document.getElementById('dailyChecklistCard');
-  if(!card)return;
-  card.classList.toggle('collapsed');
-  localStorage.setItem('oyt_daily_collapsed',card.classList.contains('collapsed')?'1':'0');
-}
-// Collapse/expand the "done today" group within the Daily Checklist.
-function toggleDailyDone(e){
-  if(e)e.stopPropagation();
-  const grp=document.getElementById('dcDoneGroup');
-  if(!grp)return;
-  grp.classList.toggle('collapsed');
-  localStorage.setItem('oyt_daily_done_collapsed',grp.classList.contains('collapsed')?'1':'0');
-}
-
-// Quick-add a daily-recurring task from the Daily Checklist input.
-function addDailyTask(){
-  const inp=document.getElementById('dcAddInput');
-  if(!inp)return;
-  const title=inp.value.trim();if(!title)return;
-  createTask({
-    title,category:'personal',difficulty:'easy',repeat:'daily',
-    dueDate:new Date().toISOString().slice(0,10)
-  });
-  inp.value='';
-}
-
 // ═══════════════════════════════════════════
 //  Smart quick-add — one input bar with inline tokens.
 //  Tokens and panel controls write the SAME state (newPri, #newDue,
@@ -3075,75 +2975,6 @@ function renderTasks(){
     return;
   }
   const today=new Date().toISOString().slice(0,10);
-  // Daily checklist — recurring="daily" tasks live in a dedicated panel above
-  // the kanban. A daily task is "done for today" when the recurring branch in
-  // toggleDone has advanced its dueDate past today.
-  const dailyTasks=fl.filter(([,t])=>t.repeat==='daily');
-  const regularTasks=fl.filter(([,t])=>t.repeat!=='daily');
-  const dailyDoneToday=([id,t])=>!!(t.dueDate && t.dueDate>today);
-  const dailyDoneCount=dailyTasks.filter(dailyDoneToday).length;
-  const renderDailyRow=([id,t])=>{
-    const done=dailyDoneToday([id,t]);
-    const exp=expanded===id;
-    const diff=t.difficulty||'medium';
-    const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
-    let h=`<div class="dc-row ${done?'done':''} ${exp?'expanded':''}">
-      <button class="dc-ck" onclick="toggleDone('${id}')" title="Mark done for today">${done?'&#10003;':''}</button>
-      <div class="dc-row-title" onclick="openTaskModal('${id}')" title="View details">${esc(t.title||'')}</div>
-      <div class="dc-actions">
-        <button onclick="event.stopPropagation();toggleExpand('${id}')" title="Edit">&#9998;</button>
-        <button class="del" onclick="event.stopPropagation();deleteTask('${id}')" title="Delete">&times;</button>
-      </div>`;
-    if(exp){
-      h+=`<div class="tex">
-        <input type="text" class="tex-title" placeholder="Title" value="${esc(t.title||'')}" onblur="updateTask('${id}','title',this.value)" onkeydown="if(event.key==='Enter'){this.blur();}">
-        <textarea placeholder="Notes..." onblur="updateTask('${id}','notes',this.value)">${esc(t.notes||'')}</textarea>
-        <div class="tex-row">
-          <select onchange="updateTask('${id}','priority',this.value)">${['high','medium','low'].map(p=>`<option value="${p}" ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select>
-          <select onchange="updateTask('${id}','category',this.value)">${['work','personal','project','rfi'].map(c=>`<option value="${c}" ${t.category===c?'selected':''}>${c}</option>`).join('')}</select>
-          <select onchange="updateTask('${id}','difficulty',this.value)">${['easy','medium','hard','epic','super_epic'].map(d=>`<option value="${d}" ${diff===d?'selected':''}>${d.replace('_',' ')}</option>`).join('')}</select>
-          <select onchange="updateTask('${id}','repeat',this.value)" title="Repeat">${[['none','No repeat'],['daily','↻ Daily'],['weekly','↻ Weekly'],['monthly','↻ Monthly']].map(([v,lb])=>`<option value="${v}" ${(t.repeat||'none')===v?'selected':''}>${lb}</option>`).join('')}</select>
-        </div>
-      </div>`;
-    }
-    h+=`</div>`;
-    return h;
-  };
-  const dailyCollapsed=localStorage.getItem('oyt_daily_collapsed')==='1';
-  const dailyDoneCollapsed=localStorage.getItem('oyt_daily_done_collapsed')!=='0';
-  // Checking a daily task off "eliminates" it from the active list — done
-  // tasks drop into a collapsed "done today" group so they can still be undone.
-  const dailyActive=dailyTasks.filter(e=>!dailyDoneToday(e));
-  const dailyDone=dailyTasks.filter(e=>dailyDoneToday(e));
-  const dailyActiveHTML=dailyActive.length
-    ? dailyActive.map(renderDailyRow).join('')
-    : (dailyTasks.length
-        ? `<div class="dc-empty">All done for today · 今日全部完成 🎉</div>`
-        : `<div class="dc-empty">No daily tasks yet · 暂无每日任务</div>`);
-  const dailyDoneHTML=dailyDone.length?`<div class="dc-done-group ${dailyDoneCollapsed?'collapsed':''}" id="dcDoneGroup">
-    <div class="dc-done-head" onclick="toggleDailyDone(event)">
-      <span class="dc-done-label">&#10003; ${dailyDone.length} done today</span>
-      <span class="dc-done-chev">&#9662;</span>
-    </div>
-    <div class="dc-done-rows">${dailyDone.map(renderDailyRow).join('')}</div>
-  </div>`:'';
-  const dailyHTML=`<div class="daily-checklist ${dailyCollapsed?'collapsed':''}" id="dailyChecklistCard">
-    <div class="dc-head" onclick="toggleDailyChecklist()">
-      <div class="dc-title">Daily<span class="cn">每日</span></div>
-      <div class="dc-head-right">
-        <span class="dc-count">${dailyDoneCount}/${dailyTasks.length}</span>
-        <span class="dc-chev">&#9662;</span>
-      </div>
-    </div>
-    <div class="dc-body">
-      <div class="dc-rows">${dailyActiveHTML}</div>
-      ${dailyDoneHTML}
-      <div class="dc-add">
-        <input id="dcAddInput" type="text" placeholder="Add daily task…" onkeydown="if(event.key==='Enter')addDailyTask()" onclick="event.stopPropagation()">
-        <button class="dc-add-btn" onclick="event.stopPropagation();addDailyTask()">+ Add</button>
-      </div>
-    </div>
-  </div>`;
   // Group remaining tasks into Today / This Week / Later / Done.
   // Bucketing rules:
   //   Today   — due today, overdue, or no due AND priority==='high'
@@ -3152,7 +2983,7 @@ function renderTasks(){
   //   Done    — anything t.completed
   const wk=new Date();wk.setDate(wk.getDate()+7);const weekCutoff=wk.toISOString().slice(0,10);
   const buckets={today:[],week:[],later:[],done:[]};
-  regularTasks.forEach(([id,t])=>{
+  fl.forEach(([id,t])=>{
     if(t.completed){buckets.done.push([id,t]);return}
     const due=t.dueDate||'';
     if(due){
@@ -3172,8 +3003,6 @@ function renderTasks(){
     ['later','Later','之后'],
     ['done','Done','完成'],
   ];
-  const dailyHost=document.getElementById('dailyChecklist');
-  if(dailyHost)dailyHost.innerHTML=dailyHTML;
   list.innerHTML=`<div class="kanban">${cols.map(([key,en,cn])=>`
     <section class="kc" data-col="${key}">
       <header class="kc-head"><h3>${en}<span class="cn">${cn}</span></h3><span class="kc-count">${buckets[key].length}</span></header>
@@ -4088,12 +3917,6 @@ function loadThemeSprites(themeKey){
   const csrc=SPRITE_BASE+th.sprite.corner;
   if(spriteCache[csrc])cornerImg=spriteCache[csrc];
   else{cornerImg=new Image();cornerImg.src=csrc;spriteCache[csrc]=cornerImg}
-  // Update the floating mascot element
-  const el=document.getElementById('mascot');
-  if(el){
-    if(cornerImg.complete&&cornerImg.naturalWidth){el.innerHTML='';el.style.backgroundImage='url('+csrc+')';el.style.backgroundSize='contain';el.style.backgroundRepeat='no-repeat';el.style.width='40px';el.style.height='40px';el.textContent=''}
-    else cornerImg.onload=()=>{el.innerHTML='';el.style.backgroundImage='url('+csrc+')';el.style.backgroundSize='contain';el.style.backgroundRepeat='no-repeat';el.style.width='40px';el.style.height='40px';el.textContent=''};
-  }
 }
 // Preload for current theme on startup
 loadThemeSprites(localStorage.getItem('oyt_theme')||'');
@@ -4102,9 +3925,6 @@ function setTheme(t){
   document.body.className=t;
   localStorage.setItem('oyt_theme',t);
   loadThemeSprites(t);
-  const th=THEMES[t]||THEMES[''];
-  document.getElementById('mascot').textContent=th.mascot;
-  for(let i=0;i<5;i++){const el=document.getElementById('mm'+i);if(el)el.textContent=th.minis[i]||''}
   document.querySelectorAll('.theme-dot').forEach(d=>d.classList.remove('active'));
   const dots=document.querySelectorAll('.theme-dot');
   const idx=['','t-ocean','t-forest','t-sunset','t-mono','t-sakura','t-light'].indexOf(t);
