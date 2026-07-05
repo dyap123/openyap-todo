@@ -1898,21 +1898,6 @@ function renderProjects(){
     else if(p.status==='done'||p.status==='archived')grp.closed.push([id,p]);
     else grp.active.push([id,p]);
   });
-  // Legacy tasks that used the old category:'project' but have no real project
-  const legacy=Object.entries(tasks).filter(([,t])=>t.category==='project'&&!(t.projectId||''));
-  const legacyStrip=legacy.length?`<div class="proj-legacy" id="projLegacy">
-    <div class="proj-legacy-head" onclick="document.getElementById('projLegacy').classList.toggle('open')">
-      <span>⚠️ ${legacy.length} legacy “project” task${legacy.length>1?'s':''} not assigned to a project</span><span class="dc-chev">&#9662;</span>
-    </div>
-    <div class="proj-legacy-rows">${legacy.map(([tid,t])=>`
-      <div class="proj-legacy-row">
-        <span class="proj-legacy-title">${esc(t.title||'')}</span>
-        <select onchange="if(this.value)updateTask('${tid}','projectId',this.value)">
-          <option value="">Assign to…</option>
-          ${entries.filter(([,p])=>p.status!=='archived').map(([pid,p])=>`<option value="${pid}">${esc(p.name||'Untitled')}</option>`).join('')}
-        </select>
-      </div>`).join('')}</div>
-  </div>`:'';
   const section=(title,arr,collapsed)=>arr.length?`<div class="proj-section ${collapsed?'collapsed':''}">
     <div class="proj-sec-head" onclick="this.parentElement.classList.toggle('collapsed')"><h3>${title}</h3><span class="kc-count">${arr.length}</span><span class="dc-chev">&#9662;</span></div>
     <div class="proj-grid">${arr.map(([id,p])=>projectCardHTML(id,p)).join('')}</div>
@@ -1922,7 +1907,6 @@ function renderProjects(){
       <h2 class="proj-h2">Projects<span class="cn">项目</span></h2>
       <button class="add-btn" onclick="openNewProjectModal()">＋ New Project</button>
     </div>
-    ${legacyStrip}
     ${entries.length?`${section('Active',grp.active,false)}${section('On hold',grp.onhold,false)}${section('Done & archived',grp.closed,true)}`
       :`<div class="empty-state"><div class="empty-mascot">🗂️</div><div class="empty-bubble">No projects yet — create one for long-running work like escalator coordination</div></div>`}
   `;
