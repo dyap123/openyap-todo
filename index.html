@@ -811,6 +811,23 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .tm-modal-btn.danger{flex:0 0 auto;color:var(--text-muted)}
 .tm-modal-btn.danger:hover{color:var(--red);border-color:var(--red);background:rgba(248,113,113,0.06)}
 .tm-modal-section-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin:18px 0 8px}
+/* Task modal — edit mode (full card form) */
+.tm-edit-title{width:100%;font-size:19px;font-weight:800;letter-spacing:-.01em;color:var(--text);background:transparent;border:none;border-bottom:1px dashed transparent;padding:4px 0;padding-right:12px}
+.tm-edit-title:hover,.tm-edit-title:focus{border-bottom-color:var(--card-border);outline:none}
+.tm-edit{display:flex;flex-direction:column;gap:14px;margin:16px 0 4px}
+.tm-edit-field{display:flex;flex-direction:column;gap:6px}
+.tm-edit-field.wide{width:100%}
+.tm-edit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px 16px}
+.tm-edit-notes{width:100%;min-height:80px;background:rgba(255,255,255,0.03);border:1px solid var(--card-border);border-radius:12px;padding:11px 13px;color:var(--text-body);font-size:14px;line-height:1.55;font-family:inherit;resize:vertical}
+.tm-edit-notes:focus{outline:none;border-color:var(--accent1)}
+.tm-edit-field select,.tm-edit-field input[type="time"],.tm-edit-field input[type="text"]{background:var(--panel-2,rgba(0,0,0,0.3));color:var(--text);border:1px solid var(--card-border);border-radius:10px;padding:8px 10px;font-size:12px;font-family:inherit;width:100%}
+.tm-edit-field select:focus,.tm-edit-field input:focus{outline:none;border-color:var(--accent1)}
+.tm-edit-field .qa-stars{padding:2px 0}
+.tm-edit-field input[type="range"]{width:100%}
+.seg{display:inline-flex;gap:3px;background:var(--panel-2,rgba(0,0,0,0.25));border:1px solid var(--card-border);border-radius:10px;padding:3px}
+.seg-btn{flex:1;background:transparent;border:none;color:var(--text-muted);font-size:11px;font-weight:700;text-transform:capitalize;padding:5px 8px;border-radius:7px;cursor:pointer;transition:all .15s var(--ease);font-family:inherit}
+.seg-btn:hover{color:var(--text-body)}
+.seg-btn.on{background:var(--accent1-10);color:var(--accent1)}
 .tm-modal-notes{background:rgba(255,255,255,0.03);border:1px solid var(--card-border);border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.6;color:var(--text-body);white-space:pre-wrap;word-break:break-word}
 .tm-modal-notes a{color:var(--accent1);text-decoration:underline;word-break:break-all}
 .tm-modal-notes-empty{background:rgba(255,255,255,0.02);border:1px dashed var(--card-border);border-radius:14px;padding:24px 16px;text-align:center;font-size:12px;color:var(--text-muted)}
@@ -1435,9 +1452,10 @@ body.t-light .planner-date{color-scheme:light}
 .proj-del:hover{color:var(--red,#f87171);border-color:var(--red,#f87171)}
 .proj-desc{width:100%;margin-top:10px;background:var(--panel-2,rgba(0,0,0,0.2));border:1px solid var(--card-border);border-radius:10px;color:var(--text-body);font-size:12px;padding:8px 10px;min-height:38px;resize:vertical;font-family:inherit}
 .proj-detail-stats{margin-top:8px;font-size:11px;color:var(--text-muted)}
-.proj-scoped-add{display:flex;gap:8px;margin-bottom:18px}
-.proj-scoped-add input{flex:1;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:10px 14px;color:var(--text);font-size:13px}
-.proj-scoped-add input:focus{outline:none;border-color:var(--pc,var(--accent1))}
+.proj-scoped-add{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.proj-add-bar{display:flex;gap:8px}
+.proj-scoped-add input[type="text"]{flex:1;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:10px 14px;color:var(--text);font-size:13px}
+.proj-scoped-add input[type="text"]:focus{outline:none;border-color:var(--pc,var(--accent1))}
 .proj-taskgrp{margin-bottom:20px}
 .proj-taskgrp-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .proj-taskgrp-head h4{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-body)}
@@ -1465,6 +1483,14 @@ body.t-light .planner-date{color-scheme:light}
 .qa-chev{flex:none;width:28px;height:28px;border-radius:50%;border:1px solid var(--card-border);background:transparent;color:var(--text-muted);font-size:13px;cursor:pointer;transition:transform .3s var(--ease),color .2s,border-color .2s;display:flex;align-items:center;justify-content:center}
 .qa-chev:hover{color:var(--accent1);border-color:var(--accent1)}
 .qa-chev.open{transform:rotate(180deg);color:var(--accent1);border-color:var(--accent1)}
+/* always-visible quick controls: stars + due date */
+.qa-quick{display:flex;align-items:center;gap:14px;margin-top:9px;flex-wrap:wrap}
+.qa-stars{display:inline-flex;align-items:center;gap:2px}
+.qa-star{background:none;border:none;padding:1px 2px;font-size:17px;line-height:1;cursor:pointer;color:var(--card-hover);transition:color .12s var(--ease),transform .12s var(--ease)}
+.qa-star:hover{transform:scale(1.18)}
+.qa-star.on{color:var(--yellow)}
+.qa-quick .date-btn{margin-left:2px}
+.qa-quick .date-btn .date-ico{font-size:11px;opacity:.9}
 .qa-chips{display:none;flex-wrap:wrap;gap:6px;margin-top:8px}
 .qa-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 6px 3px 10px;border-radius:20px;border:1px solid var(--card-hover);color:var(--text-body);background:var(--accent1-06)}
 .qa-chip.pri{color:var(--accent1);border-color:var(--accent1)}
@@ -1534,6 +1560,19 @@ body.t-light .planner-date{color-scheme:light}
       <button class="add-btn qa-add" onclick="addTask()">Add</button>
       <button class="qa-chev" id="qaChev" onclick="toggleQaPanel()" title="More options (⌘.)">⌄</button>
     </div>
+    <div class="qa-quick">
+      <div class="qa-stars" id="qaStars" title="Difficulty">
+        <button class="qa-star" data-lv="1" onclick="setDiff('easy')" title="Easy">★</button>
+        <button class="qa-star" data-lv="2" onclick="setDiff('medium')" title="Medium">★</button>
+        <button class="qa-star" data-lv="3" onclick="setDiff('hard')" title="Hard">★</button>
+        <button class="qa-star" data-lv="4" onclick="setDiff('epic')" title="Epic">★</button>
+        <button class="qa-star" data-lv="5" onclick="setDiff('super_epic')" title="Super epic">★</button>
+      </div>
+      <span class="date-btn" id="dateBtnWrap" onclick="toggleDatePicker(event)">
+        <span class="date-ico">📅</span><span id="dateBtnLabel">Due date</span>
+        <input type="hidden" id="newDue">
+      </span>
+    </div>
     <div class="qa-chips" id="qaChips"></div>
     <div class="qa-panel input-opts" id="qaPanel" hidden>
       <div class="qa-row">
@@ -1548,14 +1587,6 @@ body.t-light .planner-date{color-scheme:light}
           <button class="ob s" data-c="work" onclick="setCat('work')">Work</button>
           <button class="ob" data-c="personal" onclick="setCat('personal')">Personal</button>
         </div>
-        <span class="qa-lbl">Effort</span>
-        <div class="opt-grp">
-          <button class="ob" data-d="easy" onclick="setDiff('easy')">Easy</button>
-          <button class="ob s" data-d="medium" onclick="setDiff('medium')">★★</button>
-          <button class="ob" data-d="hard" onclick="setDiff('hard')">★★★</button>
-          <button class="ob" data-d="epic" onclick="setDiff('epic')">EPIC</button>
-          <button class="ob" data-d="super_epic" onclick="setDiff('super_epic')">SUPER EPIC</button>
-        </div>
       </div>
       <div class="qa-row">
         <span class="qa-lbl">Repeat</span>
@@ -1567,10 +1598,6 @@ body.t-light .planner-date{color-scheme:light}
         </div>
         <span class="qa-lbl">Project</span>
         <select id="newProject" class="qa-proj-sel" onchange="qaProject=this.value;qaRenderChips()"><option value="">No project</option></select>
-        <span class="date-btn" id="dateBtnWrap" onclick="toggleDatePicker(event)">
-          <span id="dateBtnLabel">Due date</span>
-          <input type="hidden" id="newDue">
-        </span>
         <span class="time-btn" id="timeBtnWrap" onclick="toggleTimePicker(event)">
           <span id="timeBtnLabel">Time</span>
           <input type="hidden" id="newTime">
@@ -1865,7 +1892,12 @@ function renderProjects(){
   const host=document.getElementById('projectsHost');
   if(!host)return;
   if(openProjectId){
-    if(projects[openProjectId]){host.innerHTML=renderProjectDetail(openProjectId);return}
+    if(projects[openProjectId]){
+      host.innerHTML=renderProjectDetail(openProjectId);
+      paintStars(document.getElementById('projStars'),projAddDiff);
+      updateProjDateBtn('');
+      return;
+    }
     openProjectId=null;
   }
   const entries=Object.entries(projects).sort((a,b)=>(a[1].order||0)-(b[1].order||0));
@@ -1941,8 +1973,23 @@ function renderProjectDetail(id){
       </div>
     </div>
     <div class="proj-scoped-add">
-      <input id="projScopedAdd" type="text" placeholder="Add a task to this project…" onkeydown="if(event.key==='Enter')projScopedAddTask('${id}')">
-      <button class="add-btn" onclick="projScopedAddTask('${id}')">Add</button>
+      <div class="proj-add-bar">
+        <input id="projScopedAdd" type="text" placeholder="Add a task to this project…" onkeydown="if(event.key==='Enter')projScopedAddTask('${id}')">
+        <button class="add-btn" onclick="projScopedAddTask('${id}')">Add</button>
+      </div>
+      <div class="qa-quick">
+        <div class="qa-stars" id="projStars" title="Difficulty">
+          <button class="qa-star" data-lv="1" onclick="setProjDiff('easy')" title="Easy">★</button>
+          <button class="qa-star" data-lv="2" onclick="setProjDiff('medium')" title="Medium">★</button>
+          <button class="qa-star" data-lv="3" onclick="setProjDiff('hard')" title="Hard">★</button>
+          <button class="qa-star" data-lv="4" onclick="setProjDiff('epic')" title="Epic">★</button>
+          <button class="qa-star" data-lv="5" onclick="setProjDiff('super_epic')" title="Super epic">★</button>
+        </div>
+        <span class="date-btn" id="projDateBtn" onclick="toggleDatePicker(event,{dueId:'projScopedDue',wrapId:'projDateBtn',after:updateProjDateBtn})">
+          <span class="date-ico">📅</span><span id="projDateLabel">Due date</span>
+          <input type="hidden" id="projScopedDue">
+        </span>
+      </div>
     </div>
     ${grpHTML('od','Overdue',overdue)}
     ${grpHTML('','Active',active)}
@@ -1950,12 +1997,30 @@ function renderProjectDetail(id){
     ${grpHTML('donegrp','Done',done)}
   </div>`;
 }
+let projAddDiff='medium';
+function setProjDiff(d){projAddDiff=d;paintStars(document.getElementById('projStars'),d)}
+function updateProjDateBtn(v){
+  const wrap=document.getElementById('projDateBtn'),label=document.getElementById('projDateLabel');
+  if(!wrap||!label)return;
+  const val=v!==undefined?v:(document.getElementById('projScopedDue')||{}).value||'';
+  if(val){
+    wrap.classList.add('has-date');
+    const today=new Date().toISOString().slice(0,10);
+    const tmr=(()=>{const d=new Date();d.setDate(d.getDate()+1);return d.toISOString().slice(0,10)})();
+    label.textContent=val===today?'Today':val===tmr?'Tomorrow':new Date(val+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  }else{wrap.classList.remove('has-date');label.textContent='Due date'}
+}
 function projScopedAddTask(pid){
   const inp=document.getElementById('projScopedAdd');
   if(!inp)return;
   const title=inp.value.trim();if(!title)return;
-  createTask({title,projectId:pid});
-  inp.value='';
+  const due=(document.getElementById('projScopedDue')||{}).value||'';
+  createTask({title,projectId:pid,difficulty:projAddDiff,dueDate:due});
+  inp.value='';projAddDiff='medium';
+  paintStars(document.getElementById('projStars'),'medium');
+  updateProjDateBtn('');
+  const dueEl=document.getElementById('projScopedDue');if(dueEl)dueEl.value='';
+  inp.focus();
 }
 function openNewProjectModal(){
   closeNewProjectModal();
@@ -2013,9 +2078,17 @@ function setPri(p){
   newPri=p;
   document.querySelectorAll('.input-opts .ob[data-p]').forEach(b=>b.classList.toggle('s',b.dataset.p===p));
 }
+const DIFF_ORDER=['easy','medium','hard','epic','super_epic'];
+// Fill a star row up to (and including) the star matching difficulty d
+function paintStars(container,d){
+  if(!container)return;
+  const idx=DIFF_ORDER.indexOf(d);
+  container.querySelectorAll('.qa-star').forEach((s,i)=>s.classList.toggle('on',i<=idx));
+}
 function setDiff(d){
   newDiff=d;
   document.querySelectorAll('.input-opts .ob[data-d]').forEach(b=>b.classList.toggle('s',b.dataset.d===d));
+  paintStars(document.getElementById('qaStars'),d);
 }
 function setRep(r){
   newRep=r;
@@ -2065,19 +2138,25 @@ function updateDateBtn(){
   else{wrap.classList.remove('has-date');label.textContent='Due date'}
 }
 // ── Custom date picker ──
+// Parametrized so the same popover drives the main quick-add, the project
+// scoped add, and the modal edit form. _dpTarget names the hidden input +
+// anchor button and an after(value) callback.
 let dpMonth=new Date().getMonth(),dpYear=new Date().getFullYear();
-function toggleDatePicker(e){
+let _dpTarget={dueId:'newDue',wrapId:'dateBtnWrap',after:updateDateBtn};
+function toggleDatePicker(e,cfg){
   if(e)e.stopPropagation();
   let pop=document.getElementById('datePickerPop');
   if(pop){closeDatePicker();return}
-  const curVal=document.getElementById('newDue').value;
+  _dpTarget=cfg?{after:null,...cfg}:{dueId:'newDue',wrapId:'dateBtnWrap',after:updateDateBtn};
+  const dueEl=document.getElementById(_dpTarget.dueId);
+  const curVal=dueEl?dueEl.value:'';
   if(curVal){const d=new Date(curVal+'T00:00:00');dpMonth=d.getMonth();dpYear=d.getFullYear()}
   pop=document.createElement('div');
   pop.className='dp-pop';pop.id='datePickerPop';
   // Append to body (not the button) so stacking contexts can't hide it
   document.body.appendChild(pop);
   // Always position BELOW the button with constrained max-height + scroll
-  const btn=document.getElementById('dateBtnWrap').getBoundingClientRect();
+  const btn=document.getElementById(_dpTarget.wrapId).getBoundingClientRect();
   let left=btn.right-280;
   if(left<8)left=8;
   if(left+280>window.innerWidth-8)left=window.innerWidth-288;
@@ -2091,7 +2170,7 @@ function toggleDatePicker(e){
   setTimeout(()=>document.addEventListener('click',dpClickOutside),50);
 }
 function dpClickOutside(e){
-  if(!e.target.closest('#datePickerPop')&&!e.target.closest('#dateBtnWrap'))closeDatePicker();
+  if(!e.target.closest('#datePickerPop')&&!e.target.closest('#'+_dpTarget.wrapId))closeDatePicker();
 }
 function closeDatePicker(){
   document.getElementById('datePickerPop')?.remove();
@@ -2103,7 +2182,8 @@ function renderDatePicker(){
   const todayStr=new Date().toISOString().slice(0,10);
   const tomorrowStr=(()=>{const d=new Date();d.setDate(d.getDate()+1);return d.toISOString().slice(0,10)})();
   const nextWeek=(()=>{const d=new Date();d.setDate(d.getDate()+7);return d.toISOString().slice(0,10)})();
-  const selected=document.getElementById('newDue').value;
+  const selEl=document.getElementById(_dpTarget.dueId);
+  const selected=selEl?selEl.value:'';
   const first=new Date(dpYear,dpMonth,1);
   const startDay=first.getDay();
   const daysInMonth=new Date(dpYear,dpMonth+1,0).getDate();
@@ -2150,13 +2230,15 @@ function dpNav(dir){
   renderDatePicker();
 }
 function dpSelect(ds){
-  document.getElementById('newDue').value=ds;
-  updateDateBtn();
+  const el=document.getElementById(_dpTarget.dueId);
+  if(el)el.value=ds;
+  if(_dpTarget.after)_dpTarget.after(ds);
   closeDatePicker();
 }
 function dpClear(){
-  document.getElementById('newDue').value='';
-  updateDateBtn();
+  const el=document.getElementById(_dpTarget.dueId);
+  if(el)el.value='';
+  if(_dpTarget.after)_dpTarget.after('');
   closeDatePicker();
 }
 
@@ -3121,16 +3203,12 @@ function renderTaskCard(id,t,i,opts={}){
   const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★',super_epic:'★★★★★'}[diff];
   const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
   const projBadge=(opts.showProject!==false&&proj)?`<span class="t-proj" style="--pc:${proj.color||'#7c9cff'}" onclick="event.stopPropagation();openProjectView('${t.projectId}')" title="Open project">${proj.icon?proj.icon+' ':''}${esc(proj.name||'Untitled')}</span>`:'';
-  const projOptions=`<option value="">No project</option>`+Object.entries(projects)
-    .filter(([pid,p])=>p.status!=='archived'||pid===(t.projectId||''))
-    .sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''))
-    .map(([pid,p])=>`<option value="${pid}" ${t.projectId===pid?'selected':''}>${esc(p.name||'Untitled')}</option>`).join('');
-  let h=`<div class="tc ${t.completed?'done':''} ${exp?'expanded':''}" data-id="${id}" style="border-left:3px solid ${cc}" ${exp?'':`onclick="if(!event.target.closest('button,input,select,textarea,a,.tex,.t-proj,.reorder,.ta'))openTaskModal('${id}')"`} ${drag?'draggable="true" ondragstart="dragStart(event,\''+id+'\')" ondragover="dragOver(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event,\''+id+'\')" ondragend="dragEnd(event)"':''}>
+  let h=`<div class="tc ${t.completed?'done':''}" data-id="${id}" style="border-left:3px solid ${cc}" onclick="if(!event.target.closest('button,a,.t-proj,.reorder,.ta'))openTaskModal('${id}')" ${drag?'draggable="true" ondragstart="dragStart(event,\''+id+'\')" ondragover="dragOver(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event,\''+id+'\')" ondragend="dragEnd(event)"':''}>
     <span class="t-rank">${rank}</span>
-    <button class="ck" onclick="toggleDone('${id}')">${t.completed?'&#10003;':''}</button>
+    <button class="ck" onclick="event.stopPropagation();toggleDone('${id}')">${t.completed?'&#10003;':''}</button>
     <div class="tb">
       <div class="tt" title="View details">${highlightMatch(t.title||'')}</div>
-      ${t.notes&&!exp?`<div class="t-notes">${highlightMatch((t.notes||'').slice(0,80))}${t.notes.length>80?'...':''}</div>`:''}
+      ${t.notes?`<div class="t-notes">${highlightMatch((t.notes||'').slice(0,80))}${t.notes.length>80?'...':''}</div>`:''}
       <div class="tm">
         <span class="pd ${t.priority||'medium'}"></span>
         <span class="cat ${t.category||'personal'}">${t.category||'personal'}</span>
@@ -3144,34 +3222,14 @@ function renderTaskCard(id,t,i,opts={}){
         <div class="t-prog-bar"><div class="t-prog-fill" style="width:${prog}%"></div></div>
         <span class="t-prog-val">${prog}%</span>
       </div>`:''}`;
-  if(exp){
-    h+=`<div class="tex">
-      <input type="text" class="tex-title" placeholder="Title" value="${esc(t.title||'')}" onblur="updateTask('${id}','title',this.value)" onkeydown="if(event.key==='Enter'){this.blur();}">
-      <textarea placeholder="Notes..." onblur="updateTask('${id}','notes',this.value)">${esc(t.notes||'')}</textarea>
-      <div class="tex-row">
-        <select onchange="updateTask('${id}','priority',this.value)">${['high','medium','low'].map(p=>`<option value="${p}" ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select>
-        <select onchange="updateTask('${id}','category',this.value)">${['work','personal','project','rfi'].map(c=>`<option value="${c}" ${t.category===c?'selected':''}>${c}</option>`).join('')}</select>
-        <select onchange="updateTask('${id}','projectId',this.value)" title="Project">${projOptions}</select>
-        <select onchange="updateTask('${id}','difficulty',this.value)">${['easy','medium','hard','epic','super_epic'].map(d=>`<option value="${d}" ${diff===d?'selected':''}>${d.replace('_',' ')}</option>`).join('')}</select>
-        <select onchange="updateTask('${id}','repeat',this.value)" title="Repeat">${[['none','No repeat'],['daily','↻ Daily'],['weekly','↻ Weekly'],['monthly','↻ Monthly']].map(([v,lb])=>`<option value="${v}" ${(t.repeat||'none')===v?'selected':''}>${lb}</option>`).join('')}</select>
-        <input type="date" value="${t.dueDate||''}" onchange="updateTask('${id}','dueDate',this.value)">
-        <input type="time" value="${t.dueTime||''}" onchange="updateTask('${id}','dueTime',this.value)" style="width:90px">
-        <input type="text" placeholder="From (who asked?)" value="${esc(t.from||'')}" onchange="updateTask('${id}','from',this.value)" list="fromSuggestions" style="flex:1;min-width:120px">
-      </div>
-      <div class="tex-row" style="align-items:center;gap:10px">
-        <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;font-weight:600">Progress</span>
-        <input type="range" min="0" max="100" step="5" value="${prog}" draggable="false" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" oninput="this.nextElementSibling.textContent=this.value+'%'" onchange="setProgress('${id}',this.value)" style="flex:1;accent-color:var(--accent1);min-height:28px">
-        <span style="font-size:11px;font-weight:700;color:var(--accent1);min-width:36px;text-align:right">${prog}%</span>
-      </div>
-    </div>`}
   h+=`</div>
     ${opts.drag!==false&&!t.completed&&sortBy==='manual'?`<div class="reorder">
-      <button class="ro-btn" onclick="moveTask('${id}',-1)">&#9650;</button>
-      <button class="ro-btn" onclick="moveTask('${id}',1)">&#9660;</button>
+      <button class="ro-btn" onclick="event.stopPropagation();moveTask('${id}',-1)">&#9650;</button>
+      <button class="ro-btn" onclick="event.stopPropagation();moveTask('${id}',1)">&#9660;</button>
     </div>`:''}
     <div class="ta">
-      <button class="tab" onclick="toggleExpand('${id}')">${exp?'&minus;':'&#9998;'}</button>
-      <button class="tab del" onclick="deleteTask('${id}')">&times;</button>
+      <button class="tab" onclick="event.stopPropagation();openTaskModal('${id}','edit')" title="Edit">&#9998;</button>
+      <button class="tab del" onclick="event.stopPropagation();deleteTask('${id}')" title="Delete">&times;</button>
     </div>
   </div>`;
   return h;
@@ -5543,11 +5601,15 @@ function closeDayModal(){
 function linkifyNotes(s){
   return esc(s).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
 }
-// Read-only popup so notes are visible without entering edit mode
-function openTaskModal(id){
+// Task detail popup. mode='view' shows a clean info card; mode='edit' turns
+// the SAME card into a full editable form (no cramped inline column).
+let _editTaskId=null;
+function openTaskModal(id,mode){
   closeTaskModal();
   const t=tasks[id];
   if(!t)return;
+  mode=mode||'view';
+  _editTaskId=mode==='edit'?id:null;
   const today=new Date().toISOString().slice(0,10);
   const od=t.dueDate&&!t.completed&&t.dueDate<today;
   const diff=t.difficulty||'medium';
@@ -5556,61 +5618,129 @@ function openTaskModal(id){
   const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
   const proj=t.projectId?projects[t.projectId]:null;
   const fmtDay=ds=>{if(!ds)return '';const d=new Date(ds.slice(0,10)+'T00:00:00');return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:d.getFullYear()===new Date().getFullYear()?undefined:'numeric'})};
-  const field=(lbl,val,cls)=>val?`<div class="tm-field ${cls||''}"><span class="tm-field-lbl">${lbl}</span><span class="tm-field-val">${val}</span></div>`:'';
-  const statusTxt=t.completed?'Done':od?'Overdue':'Active';
-  const grid=`<div class="tm-grid">
-    ${field('Status',`<span class="tm-status ${t.completed?'done':od?'od':'active'}">${statusTxt}</span>`)}
-    ${field('Priority',`<span class="pd ${t.priority||'medium'}"></span> ${t.priority||'medium'}`)}
-    ${field('Category',esc(t.category||'personal'))}
-    ${proj?field('Project',`<span class="t-proj" style="--pc:${proj.color||'#7c9cff'}" onclick="closeTaskModal();openProjectView('${t.projectId}')">${proj.icon?proj.icon+' ':''}${esc(proj.name||'Untitled')}</span>`):''}
-    ${field('Effort',`<span class="t-diff ${diff}">${diffStars}</span> ${diffLabel}`)}
-    ${field('Due',t.dueDate?`${fmtDay(t.dueDate)}${t.dueTime?' · '+fmtTime12(t.dueTime):''}${od?' <span class="tm-od">overdue</span>':''}`:'')}
-    ${field('Repeat',t.repeat&&t.repeat!=='none'?t.repeat:'')}
-    ${field('From',esc(t.from||''))}
-    ${t.category==='rfi'?field('RFI #',esc(t.rfiNumber||'')):''}
-    ${t.category==='rfi'?field('Send to',esc(t.sendTo||'')):''}
-    ${field('Created',fmtDay(t.createdAt))}
-    ${t.completed?field('Completed',fmtDay(t.completedAt)):''}
-  </div>`;
-  const progBlock=!t.completed?`<div class="tm-modal-prog">
-      <div class="tm-modal-prog-head"><span class="tm-field-lbl">Progress</span><span class="tm-prog-val">${prog}%</span></div>
-      <div class="tm-modal-prog-bar"><div class="tm-modal-prog-fill" style="width:${prog}%"></div></div>
-    </div>`:'';
-  const notes=(t.notes||'').trim();
-  const desc=(t.description||'').trim();
-  const notesBlock=(notes||desc)
-    ? `${desc?`<div class="tm-modal-section-label">Description</div><div class="tm-modal-notes">${linkifyNotes(desc)}</div>`:''}
-       ${notes?`<div class="tm-modal-section-label">Notes</div><div class="tm-modal-notes">${linkifyNotes(notes)}</div>`:''}`
-    : `<div class="tm-modal-notes-empty">No notes yet — tap Edit to add some.</div>`;
+
+  let body,foot,title;
+  if(mode==='edit'){
+    const projOptions=`<option value="">No project</option>`+Object.entries(projects)
+      .filter(([pid,p])=>p.status!=='archived'||pid===(t.projectId||''))
+      .sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''))
+      .map(([pid,p])=>`<option value="${pid}" ${t.projectId===pid?'selected':''}>${esc(p.name||'Untitled')}</option>`).join('');
+    const starsIdx=DIFF_ORDER.indexOf(diff);
+    const stars=DIFF_ORDER.map((d,i)=>`<button class="qa-star ${i<=starsIdx?'on':''}" onclick="editSetDiff('${d}')" title="${d.replace('_',' ')}">★</button>`).join('');
+    title=`<input class="tm-edit-title" value="${esc(t.title||'')}" placeholder="Task title" onchange="updateTask('${id}','title',this.value)">`;
+    body=`
+      <div class="tm-edit">
+        <label class="tm-edit-field wide"><span class="tm-field-lbl">Notes</span>
+          <textarea class="tm-edit-notes" placeholder="Add notes…" onchange="updateTask('${id}','notes',this.value)">${esc(t.notes||'')}</textarea>
+        </label>
+        <div class="tm-edit-grid">
+          <div class="tm-edit-field"><span class="tm-field-lbl">Priority</span>
+            <div class="seg">${['high','medium','low'].map(p=>`<button class="seg-btn ${((t.priority||'medium')===p)?'on':''}" onclick="editSet('${id}','priority','${p}',this)">${p}</button>`).join('')}</div>
+          </div>
+          <div class="tm-edit-field"><span class="tm-field-lbl">Difficulty</span>
+            <div class="qa-stars" id="editStars">${stars}</div>
+          </div>
+          <div class="tm-edit-field"><span class="tm-field-lbl">Category</span>
+            <select onchange="updateTask('${id}','category',this.value)">${['work','personal','project','rfi'].map(c=>`<option value="${c}" ${(t.category||'personal')===c?'selected':''}>${c}</option>`).join('')}</select>
+          </div>
+          <div class="tm-edit-field"><span class="tm-field-lbl">Project</span>
+            <select onchange="updateTask('${id}','projectId',this.value)">${projOptions}</select>
+          </div>
+          <div class="tm-edit-field"><span class="tm-field-lbl">Due date</span>
+            <span class="date-btn ${t.dueDate?'has-date':''}" id="editDateBtn" onclick="toggleDatePicker(event,{dueId:'editDue',wrapId:'editDateBtn',after:updateEditDateBtn})">
+              <span class="date-ico">📅</span><span id="editDateLabel">${t.dueDate?fmtDay(t.dueDate):'Due date'}</span>
+              <input type="hidden" id="editDue" value="${t.dueDate||''}">
+            </span>
+          </div>
+          <div class="tm-edit-field"><span class="tm-field-lbl">Time</span>
+            <input type="time" value="${t.dueTime||''}" onchange="updateTask('${id}','dueTime',this.value)">
+          </div>
+          <div class="tm-edit-field"><span class="tm-field-lbl">Repeat</span>
+            <select onchange="updateTask('${id}','repeat',this.value)">${[['none','No repeat'],['daily','Daily'],['weekly','Weekly'],['monthly','Monthly']].map(([v,lb])=>`<option value="${v}" ${(t.repeat||'none')===v?'selected':''}>${lb}</option>`).join('')}</select>
+          </div>
+          <div class="tm-edit-field"><span class="tm-field-lbl">From</span>
+            <input type="text" value="${esc(t.from||'')}" placeholder="Who asked?" list="fromSuggestions" onchange="updateTask('${id}','from',this.value)">
+          </div>
+        </div>
+        ${!t.completed?`<div class="tm-edit-field wide"><span class="tm-field-lbl">Progress · <span id="editProgVal">${prog}%</span></span>
+          <input type="range" min="0" max="100" step="5" value="${prog}" oninput="document.getElementById('editProgVal').textContent=this.value+'%'" onchange="setProgress('${id}',this.value)" style="accent-color:var(--accent1)">
+        </div>`:''}
+      </div>`;
+    foot=`
+      <button class="tm-modal-btn danger" onclick="if(confirm('Delete this task?')){deleteTask('${id}');closeTaskModal()}">Delete</button>
+      <button class="tm-modal-btn" onclick="toggleDone('${id}');closeTaskModal()">${t.completed?'↩ Mark active':'✓ Mark done'}</button>
+      <button class="tm-modal-btn primary" onclick="openTaskModal('${id}','view')">Done</button>`;
+  } else {
+    const field=(lbl,val,cls)=>val?`<div class="tm-field ${cls||''}"><span class="tm-field-lbl">${lbl}</span><span class="tm-field-val">${val}</span></div>`:'';
+    const statusTxt=t.completed?'Done':od?'Overdue':'Active';
+    title=`<div class="tm-modal-title ${t.completed?'done':''}">${esc(t.title||'(untitled)')}</div>`;
+    const grid=`<div class="tm-grid">
+      ${field('Status',`<span class="tm-status ${t.completed?'done':od?'od':'active'}">${statusTxt}</span>`)}
+      ${field('Priority',`<span class="pd ${t.priority||'medium'}"></span> ${t.priority||'medium'}`)}
+      ${field('Category',esc(t.category||'personal'))}
+      ${proj?field('Project',`<span class="t-proj" style="--pc:${proj.color||'#7c9cff'}" onclick="closeTaskModal();openProjectView('${t.projectId}')">${proj.icon?proj.icon+' ':''}${esc(proj.name||'Untitled')}</span>`):''}
+      ${field('Effort',`<span class="t-diff ${diff}">${diffStars}</span> ${diffLabel}`)}
+      ${field('Due',t.dueDate?`${fmtDay(t.dueDate)}${t.dueTime?' · '+fmtTime12(t.dueTime):''}${od?' <span class="tm-od">overdue</span>':''}`:'')}
+      ${field('Repeat',t.repeat&&t.repeat!=='none'?t.repeat:'')}
+      ${field('From',esc(t.from||''))}
+      ${t.category==='rfi'?field('RFI #',esc(t.rfiNumber||'')):''}
+      ${t.category==='rfi'?field('Send to',esc(t.sendTo||'')):''}
+      ${field('Created',fmtDay(t.createdAt))}
+      ${t.completed?field('Completed',fmtDay(t.completedAt)):''}
+    </div>`;
+    const progBlock=!t.completed&&prog>0?`<div class="tm-modal-prog">
+        <div class="tm-modal-prog-head"><span class="tm-field-lbl">Progress</span><span class="tm-prog-val">${prog}%</span></div>
+        <div class="tm-modal-prog-bar"><div class="tm-modal-prog-fill" style="width:${prog}%"></div></div>
+      </div>`:'';
+    const notes=(t.notes||'').trim();
+    const desc=(t.description||'').trim();
+    const notesBlock=(notes||desc)
+      ? `${desc?`<div class="tm-modal-section-label">Description</div><div class="tm-modal-notes">${linkifyNotes(desc)}</div>`:''}
+         ${notes?`<div class="tm-modal-section-label">Notes</div><div class="tm-modal-notes">${linkifyNotes(notes)}</div>`:''}`
+      : `<div class="tm-modal-notes-empty">No notes yet — tap Edit to add some.</div>`;
+    body=`${grid}${progBlock}${notesBlock}`;
+    foot=`
+      <button class="tm-modal-btn danger" onclick="if(confirm('Delete this task?')){deleteTask('${id}');closeTaskModal()}">Delete</button>
+      <button class="tm-modal-btn" onclick="toggleDone('${id}');closeTaskModal()">${t.completed?'↩ Mark active':'✓ Mark done'}</button>
+      <button class="tm-modal-btn primary" onclick="openTaskModal('${id}','edit')">✎ Edit</button>`;
+  }
+
   const html=`<div class="day-modal" id="taskModal" onclick="if(event.target===this)closeTaskModal()">
     <div class="day-modal-card" style="max-width:600px">
       <div class="day-modal-head">
-        <div class="tm-modal-title ${t.completed?'done':''}">${esc(t.title||'(untitled)')}</div>
+        ${title}
         <button class="day-modal-x" onclick="closeTaskModal()" title="Close">&times;</button>
       </div>
-      ${grid}
-      ${progBlock}
-      ${notesBlock}
-      <div class="tm-modal-foot">
-        <button class="tm-modal-btn danger" onclick="if(confirm('Delete this task?')){deleteTask('${id}');closeTaskModal()}">Delete</button>
-        <button class="tm-modal-btn" onclick="toggleDone('${id}');closeTaskModal()">${t.completed?'↩ Mark active':'✓ Mark done'}</button>
-        <button class="tm-modal-btn primary" onclick="closeTaskModal();editFromModal('${id}')">✎ Edit</button>
-      </div>
+      ${body}
+      <div class="tm-modal-foot">${foot}</div>
     </div>
   </div>`;
   document.body.insertAdjacentHTML('beforeend',html);
   fxModalIn(document.querySelector('#taskModal .day-modal-card'));
   document.addEventListener('keydown',taskModalEsc);
 }
+// Edit-mode helpers (operate on the task currently open in the modal)
+function editSetDiff(d){if(_editTaskId){updateTask(_editTaskId,'difficulty',d);paintStars(document.getElementById('editStars'),d)}}
+function editSet(id,field,val,btn){
+  updateTask(id,field,val);
+  if(btn&&btn.parentElement)btn.parentElement.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('on',b===btn));
+}
+function updateEditDateBtn(v){
+  const wrap=document.getElementById('editDateBtn'),label=document.getElementById('editDateLabel');
+  if(_editTaskId!==null)updateTask(_editTaskId,'dueDate',v||'');
+  if(!wrap||!label)return;
+  if(v){
+    wrap.classList.add('has-date');
+    const today=new Date().toISOString().slice(0,10);
+    const tmr=(()=>{const d=new Date();d.setDate(d.getDate()+1);return d.toISOString().slice(0,10)})();
+    label.textContent=v===today?'Today':v===tmr?'Tomorrow':new Date(v+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  }else{wrap.classList.remove('has-date');label.textContent='Due date'}
+}
 function taskModalEsc(e){if(e.key==='Escape')closeTaskModal()}
 function closeTaskModal(){
+  _editTaskId=null;
   document.getElementById('taskModal')?.remove();
   document.removeEventListener('keydown',taskModalEsc);
-}
-// Open the inline editor for a task, then scroll it into view
-function editFromModal(id){
-  expanded=id;renderTasks();
-  setTimeout(()=>document.querySelector('.tc.expanded,.dc-row.expanded')?.scrollIntoView({behavior:'smooth',block:'center'}),60);
 }
 
 function addTaskForDate(dateStr){
@@ -6059,6 +6189,7 @@ const savedTheme=localStorage.getItem('oyt_theme')||'';
 setTheme(savedTheme);
 if(initFB())attachListeners();
 renderTasks();
+paintStars(document.getElementById('qaStars'),newDiff);
 </script>
 </body>
 </html>
