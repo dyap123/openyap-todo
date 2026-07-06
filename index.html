@@ -1481,7 +1481,6 @@ body.t-light .planner-date{color-scheme:light}
 .qa-star:hover{transform:scale(1.18)}
 .qa-star.on{color:var(--yellow)}
 .qa-quick .date-btn{margin-left:2px}
-.qa-quick .date-btn .date-ico{font-size:11px;opacity:.9}
 .qa-chips{display:none;flex-wrap:wrap;gap:6px;margin-top:8px}
 .qa-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 6px 3px 10px;border-radius:20px;border:1px solid var(--card-hover);color:var(--text-body);background:var(--accent1-06)}
 .qa-chip.pri{color:var(--accent1);border-color:var(--accent1)}
@@ -1560,7 +1559,7 @@ body.t-light .planner-date{color-scheme:light}
         <button class="qa-star" data-lv="5" onclick="setDiff('super_epic')" title="Super epic">★</button>
       </div>
       <span class="date-btn" id="dateBtnWrap" onclick="toggleDatePicker(event)">
-        <span class="date-ico">📅</span><span id="dateBtnLabel">Due date</span>
+        <span id="dateBtnLabel">Due date</span>
         <input type="hidden" id="newDue">
       </span>
     </div>
@@ -1961,7 +1960,7 @@ function renderProjectDetail(id){
           <button class="qa-star" data-lv="5" onclick="setProjDiff('super_epic')" title="Super epic">★</button>
         </div>
         <span class="date-btn" id="projDateBtn" onclick="toggleDatePicker(event,{dueId:'projScopedDue',wrapId:'projDateBtn',after:updateProjDateBtn})">
-          <span class="date-ico">📅</span><span id="projDateLabel">Due date</span>
+          <span id="projDateLabel">Due date</span>
           <input type="hidden" id="projScopedDue">
         </span>
       </div>
@@ -5616,7 +5615,7 @@ function openTaskModal(id,mode){
           </div>
           <div class="tm-edit-field"><span class="tm-field-lbl">Due date</span>
             <span class="date-btn ${t.dueDate?'has-date':''}" id="editDateBtn" onclick="toggleDatePicker(event,{dueId:'editDue',wrapId:'editDateBtn',after:updateEditDateBtn})">
-              <span class="date-ico">📅</span><span id="editDateLabel">${t.dueDate?fmtDay(t.dueDate):'Due date'}</span>
+              <span id="editDateLabel">${t.dueDate?fmtDay(t.dueDate):'Due date'}</span>
               <input type="hidden" id="editDue" value="${t.dueDate||''}">
             </span>
           </div>
