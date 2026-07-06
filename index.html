@@ -839,6 +839,32 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .tm-modal-btn:hover{border-color:var(--card-hover);background:rgba(255,255,255,0.07);transform:translateY(-1px)}
 .tm-modal-btn.primary{background:linear-gradient(135deg,var(--accent1),var(--accent2));border-color:transparent;color:#fff}
 .tm-modal-btn.primary:hover{box-shadow:0 6px 20px var(--accent1-10)}
+/* Task updates — modal timeline + compose */
+.tm-upd{display:flex;flex-direction:column;gap:12px}
+.tm-upd-compose{display:flex;gap:8px}
+.tm-upd-input{flex:1;min-width:0;background:rgba(255,255,255,0.03);border:1px solid var(--card-border);border-radius:11px;padding:10px 13px;color:var(--text);font-size:13px;font-family:inherit}
+.tm-upd-input:focus{outline:none;border-color:var(--accent1)}
+.tm-upd-post{flex:0 0 auto;padding:0 18px;border-radius:11px;border:1px solid transparent;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s var(--ease)}
+.tm-upd-post:hover{box-shadow:0 6px 18px var(--accent1-10);transform:translateY(-1px)}
+.tm-upd-list{display:flex;flex-direction:column}
+.tm-upd-empty{background:rgba(255,255,255,0.02);border:1px dashed var(--card-border);border-radius:12px;padding:16px;text-align:center;font-size:12px;color:var(--text-muted)}
+.tm-upd-item{display:flex;gap:11px;padding:8px 0;position:relative}
+.tm-upd-item:not(:last-child)::before{content:'';position:absolute;left:4px;top:19px;bottom:-8px;width:1px;background:var(--card-border)}
+.tm-upd-dot{flex:0 0 auto;width:9px;height:9px;border-radius:50%;background:var(--card-border);margin-top:5px;z-index:1}
+.tm-upd-item.latest .tm-upd-dot{background:var(--accent1);box-shadow:0 0 0 3px var(--accent1-10)}
+.tm-upd-body{flex:1;min-width:0}
+.tm-upd-text{font-size:13px;line-height:1.5;color:var(--text-body);white-space:pre-wrap;word-break:break-word}
+.tm-upd-text a{color:var(--accent1);text-decoration:underline;word-break:break-all}
+.tm-upd-meta{display:flex;align-items:center;gap:8px;margin-top:3px;font-size:10px;color:var(--text-muted)}
+.tm-upd-tag{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent1);border:1px solid var(--accent1);border-radius:20px;padding:1px 6px}
+.tm-upd-del{margin-left:auto;background:transparent;border:none;color:var(--text-muted);font-size:15px;line-height:1;cursor:pointer;opacity:0;transition:opacity .15s;padding:0 2px}
+.tm-upd-item:hover .tm-upd-del{opacity:.55}
+.tm-upd-del:hover{opacity:1;color:var(--red)}
+/* Task card — last-update indicator */
+.t-lastupd{display:flex;align-items:center;gap:6px;margin-top:5px;font-size:11px;min-width:0}
+.t-lastupd-ic{color:var(--accent1);flex:0 0 auto}
+.t-lastupd-when{color:var(--accent1);font-weight:700;flex:0 0 auto}
+.t-lastupd-text{color:var(--text-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 /* View toggle (List ↔ Chart) */
 .day-view-toggle{display:inline-flex;background:rgba(255,255,255,0.04);border:1px solid var(--card-border);border-radius:10px;padding:3px;margin-bottom:14px;gap:2px}
 .day-view-toggle button{padding:5px 14px;border-radius:7px;border:none;background:transparent;color:var(--text-muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;font-family:inherit;transition:all .2s var(--ease);display:inline-flex;align-items:center;gap:4px}
@@ -1842,7 +1868,7 @@ function setDayView(v,dateStr){dayView=v;localStorage.setItem('oyt_day_view',v);
 const DIFF_WEIGHTS={easy:1,medium:2,hard:4,epic:8,super_epic:16};
 
 function attachListeners(){
-  fbListen('todo/tasks',val=>{tasks=val||{};renderTasks();if(currentView==='calendar')renderCalendar();if(currentView==='rfi')renderRFI();if(currentView==='projects')renderProjects();if(currentView==='planner'&&plannerSubView==='week')renderPlannerWeek()});
+  fbListen('todo/tasks',val=>{tasks=val||{};renderTasks();if(currentView==='calendar')renderCalendar();if(currentView==='rfi')renderRFI();if(currentView==='projects')renderProjects();if(currentView==='planner'&&plannerSubView==='week')renderPlannerWeek();refreshModalUpdates()});
   fbListen('todo/projects',val=>{projects=val||{};if(currentView==='projects')renderProjects();renderTasks()});
   fbListen('todo/history',val=>{taskHistory=val||{};renderDashV2();renderCmdMetrics()});
   fbListen('todo/wasted',val=>{wastedLog=val||{};if(currentView==='wasted')renderWasted()});
@@ -3225,6 +3251,7 @@ function renderTaskCard(id,t,i,opts={}){
   const diff=t.difficulty||'medium';
   const diffStars={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★',super_epic:'★★★★★'}[diff];
   const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
+  const lu=taskUpdates(t)[0];
   const projBadge=(opts.showProject!==false&&proj)?`<span class="t-proj" style="--pc:${proj.color||'#7c9cff'}" onclick="event.stopPropagation();openProjectView('${t.projectId}')" title="Open project">${proj.icon?proj.icon+' ':''}${esc(proj.name||'Untitled')}</span>`:'';
   let h=`<div class="tc ${t.completed?'done':''}" data-id="${id}" style="border-left:3px solid ${cc}" onclick="if(!event.target.closest('button,a,.t-proj,.reorder,.ta'))openTaskModal('${id}')" ${drag?'draggable="true" ondragstart="dragStart(event,\''+id+'\')" ondragover="dragOver(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event,\''+id+'\')" ondragend="dragEnd(event)"':''}>
     <span class="t-rank">${rank}</span>
@@ -3244,7 +3271,8 @@ function renderTaskCard(id,t,i,opts={}){
       ${!t.completed&&prog>0?`<div class="t-prog">
         <div class="t-prog-bar"><div class="t-prog-fill" style="width:${prog}%"></div></div>
         <span class="t-prog-val">${prog}%</span>
-      </div>`:''}`;
+      </div>`:''}
+      ${lu?`<div class="t-lastupd" title="${esc(fmtStamp(lu.at))}"><span class="t-lastupd-ic">&#8635;</span><span class="t-lastupd-when">${esc(relAgo(lu.at))}</span><span class="t-lastupd-text">${esc(lu.text.slice(0,80))}${lu.text.length>80?'…':''}</span></div>`:''}`;
   h+=`</div>
     ${opts.drag!==false&&!t.completed&&sortBy==='manual'?`<div class="reorder">
       <button class="ro-btn" onclick="event.stopPropagation();moveTask('${id}',-1)">&#9650;</button>
@@ -3265,6 +3293,73 @@ function fmtTime12(t){
   const hr=parseInt(h)||0;
   return(hr>12?hr-12:hr||12)+':'+m+(hr>=12?' PM':' AM');
 }
+
+// ── Task updates (per-task activity log) ─────────────────────
+// Posts live at todo/tasks/{id}/updates/{pushKey} = {text, at}. They ride
+// along the todo/tasks listener, so they're realtime + multi-device for free.
+// Compact relative time — "just now", "3 min ago", "2h ago", "4d ago"…
+function relAgo(iso){
+  if(!iso)return '';
+  const then=new Date(iso).getTime();
+  if(isNaN(then))return '';
+  const s=Math.floor((Date.now()-then)/1000);
+  if(s<45)return 'just now';
+  if(s<90)return '1 min ago';
+  const m=Math.floor(s/60);if(m<60)return m+' min ago';
+  const h=Math.floor(m/60);if(h<24)return h+'h ago';
+  const d=Math.floor(h/24);if(d<7)return d+'d ago';
+  if(d<30)return Math.floor(d/7)+'w ago';
+  if(d<365)return Math.floor(d/30)+'mo ago';
+  return Math.floor(d/365)+'y ago';
+}
+// Exact stamp for the tooltip — "Jul 6 · 4:12 PM"
+function fmtStamp(iso){
+  const d=new Date(iso);if(isNaN(d))return '';
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' · '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+}
+// Updates for a task, newest first.
+function taskUpdates(t){
+  const u=t&&t.updates;if(!u)return [];
+  return Object.entries(u).map(([k,v])=>({id:k,text:(v&&v.text)||'',at:(v&&v.at)||''}))
+    .sort((a,b)=>(a.at<b.at?1:a.at>b.at?-1:0));
+}
+function postTaskUpdate(id){
+  const inp=document.getElementById('tmUpdInput');
+  if(!inp)return;
+  const text=inp.value.trim();
+  if(!text)return;
+  fbPush(`todo/tasks/${id}/updates`,{text,at:new Date().toISOString()});
+  inp.value='';inp.focus();
+  // The todo/tasks listener → refreshModalUpdates() repaints the list.
+}
+function deleteTaskUpdate(id,uid){
+  if(!confirm('Delete this update?'))return;
+  fbSet(`todo/tasks/${id}/updates/${uid}`,null);
+}
+// Timeline HTML for the modal's updates list (newest on top).
+function renderUpdatesList(id){
+  const t=tasks[id];if(!t)return '';
+  const ups=taskUpdates(t);
+  if(!ups.length)return `<div class="tm-upd-empty">No updates yet — post the latest status above.</div>`;
+  return ups.map((u,i)=>`<div class="tm-upd-item ${i===0?'latest':''}">
+    <div class="tm-upd-dot"></div>
+    <div class="tm-upd-body">
+      <div class="tm-upd-text">${linkifyNotes(u.text)}</div>
+      <div class="tm-upd-meta">
+        <span title="${esc(fmtStamp(u.at))}">${esc(relAgo(u.at))}</span>
+        ${i===0?'<span class="tm-upd-tag">latest</span>':''}
+        <button class="tm-upd-del" title="Delete update" onclick="deleteTaskUpdate('${id}','${u.id}')">&times;</button>
+      </div>
+    </div>
+  </div>`).join('');
+}
+// Repaint the open modal's updates list in place (called from the tasks listener).
+function refreshModalUpdates(){
+  if(!_modalTaskId)return;
+  const el=document.getElementById('tmUpdates');
+  if(el)el.innerHTML=renderUpdatesList(_modalTaskId);
+}
+let _modalTaskId=null;
 
 // (toggleCmd removed — collapse mechanism deleted with Sisyphus)
 function renderCmdMetrics(){
@@ -5724,6 +5819,7 @@ function openTaskModal(id,mode){
   if(!t)return;
   mode=mode||'view';
   _editTaskId=mode==='edit'?id:null;
+  _modalTaskId=id;
   const today=new Date().toISOString().slice(0,10);
   const od=t.dueDate&&!t.completed&&t.dueDate<today;
   const diff=t.difficulty||'medium';
@@ -5812,7 +5908,18 @@ function openTaskModal(id,mode){
       ? `${desc?`<div class="tm-modal-section-label">Description</div><div class="tm-modal-notes">${linkifyNotes(desc)}</div>`:''}
          ${notes?`<div class="tm-modal-section-label">Notes</div><div class="tm-modal-notes">${linkifyNotes(notes)}</div>`:''}`
       : `<div class="tm-modal-notes-empty">No notes yet — tap Edit to add some.</div>`;
-    body=`${grid}${progBlock}${notesBlock}`;
+    const upCount=taskUpdates(t).length;
+    const updBlock=`
+      <div class="tm-modal-section-label">Updates${upCount?` · ${upCount}`:''}</div>
+      <div class="tm-upd">
+        <div class="tm-upd-compose">
+          <input id="tmUpdInput" class="tm-upd-input" placeholder="Post an update…" autocomplete="off"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();postTaskUpdate('${id}')}">
+          <button class="tm-upd-post" onclick="postTaskUpdate('${id}')">Post</button>
+        </div>
+        <div id="tmUpdates" class="tm-upd-list">${renderUpdatesList(id)}</div>
+      </div>`;
+    body=`${grid}${progBlock}${notesBlock}${updBlock}`;
     foot=`
       <button class="tm-modal-btn danger" onclick="if(confirm('Delete this task?')){deleteTask('${id}');closeTaskModal()}">Delete</button>
       <button class="tm-modal-btn" onclick="toggleDone('${id}');closeTaskModal()">${t.completed?'↩ Mark active':'✓ Mark done'}</button>
@@ -5852,7 +5959,7 @@ function updateEditDateBtn(v){
 }
 function taskModalEsc(e){if(e.key==='Escape')closeTaskModal()}
 function closeTaskModal(){
-  _editTaskId=null;
+  _editTaskId=null;_modalTaskId=null;
   document.getElementById('taskModal')?.remove();
   document.removeEventListener('keydown',taskModalEsc);
 }
