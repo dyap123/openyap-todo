@@ -865,6 +865,72 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .t-lastupd-ic{color:var(--accent1);flex:0 0 auto}
 .t-lastupd-when{color:var(--accent1);font-weight:700;flex:0 0 auto}
 .t-lastupd-text{color:var(--text-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+/* ── Inline task expand: notes + subtasks + Q&A ─────────────── */
+.tc.expanded{flex-wrap:wrap}
+.tc-exp{flex:0 0 100%;width:100%;margin-top:12px;padding-top:12px;border-top:1px solid var(--card-border);display:flex;flex-direction:column;gap:16px;cursor:default;animation:tcExpIn .22s var(--ease)}
+@keyframes tcExpIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.tce-sec{display:flex;flex-direction:column;gap:8px}
+.tce-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted)}
+.tce-count{margin-left:6px;padding:1px 7px;border-radius:20px;background:var(--accent1-10);color:var(--accent1);font-size:10px;font-weight:800}
+.tce-notes{width:100%;min-height:64px;background:rgba(255,255,255,0.03);border:1px solid var(--card-border);border-radius:11px;padding:10px 12px;color:var(--text-body);font-size:13px;line-height:1.55;font-family:inherit;resize:vertical;outline:none}
+.tce-notes:focus{border-color:var(--accent1)}
+/* Subtasks */
+.sub-list{display:flex;flex-direction:column;gap:6px}
+.sub-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:10px;padding:6px 8px}
+.sub-row.done{opacity:.5}
+.sub-row.done .sub-title{text-decoration:line-through;color:var(--text-muted)}
+.sub-ck{width:18px;height:18px;font-size:10px;margin-top:0;flex:0 0 auto}
+.sub-title{flex:1 1 130px;min-width:0;background:transparent;border:none;color:var(--text);font-size:13px;font-family:inherit;padding:2px 4px;outline:none;border-radius:6px}
+.sub-title:focus{background:rgba(255,255,255,0.05)}
+.sub-pri,.sub-diff,.sub-del{flex:0 0 auto;background:rgba(255,255,255,0.04);border:1px solid var(--card-border);border-radius:7px;color:var(--text-muted);font-size:11px;font-weight:700;cursor:pointer;padding:3px 7px;font-family:inherit;transition:all .15s var(--ease)}
+.sub-pri.high{color:var(--red);border-color:rgba(248,113,113,0.4)}
+.sub-pri.medium{color:var(--purple)}
+.sub-pri.low{color:var(--gray)}
+.sub-diff{color:var(--yellow)}
+.sub-pri:hover,.sub-diff:hover{border-color:var(--accent1);color:var(--accent1)}
+.sub-due{flex:0 0 auto;background:rgba(255,255,255,0.04);border:1px solid var(--card-border);border-radius:7px;color:var(--text-muted);font-size:11px;font-family:inherit;padding:2px 6px;outline:none;color-scheme:dark}
+.sub-due.od{color:var(--red);border-color:rgba(248,113,113,0.4)}
+.sub-del{color:var(--text-muted);padding:3px 8px;font-size:14px;line-height:1}
+.sub-del:hover{color:var(--red);border-color:rgba(248,113,113,0.4)}
+.sub-add{display:flex;gap:8px;margin-top:2px}
+.sub-add-input{flex:1;min-width:0;background:rgba(255,255,255,0.03);border:1px dashed var(--card-border);border-radius:10px;padding:8px 11px;color:var(--text);font-size:13px;font-family:inherit;outline:none}
+.sub-add-input:focus{border-style:solid;border-color:var(--accent1)}
+.sub-add-btn{flex:0 0 auto;width:38px;border-radius:10px;border:1px solid transparent;background:var(--accent1-10);color:var(--accent1);font-size:16px;font-weight:800;cursor:pointer}
+.sub-add-btn:hover{background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff}
+/* Q&A / reference */
+.qa-list{display:flex;flex-direction:column;gap:8px}
+.qa-item{position:relative;background:rgba(255,255,255,0.03);border:1px solid var(--card-border);border-radius:11px;padding:10px 34px 10px 12px}
+.qa-q{font-size:13px;font-weight:700;color:var(--text);line-height:1.45}
+.qa-q::before{content:'Q ';color:var(--accent1);font-weight:800}
+.qa-a{font-size:13px;color:var(--text-body);line-height:1.55;margin-top:4px;white-space:pre-wrap;word-break:break-word}
+.qa-a::before{content:'A ';color:var(--accent2);font-weight:800}
+.qa-a a{color:var(--accent1);text-decoration:underline;word-break:break-all}
+.qa-when{font-size:10px;color:var(--text-muted);margin-top:6px}
+.qa-del{position:absolute;top:8px;right:8px;background:transparent;border:none;color:var(--text-muted);font-size:16px;line-height:1;cursor:pointer;opacity:0;transition:opacity .15s;padding:0 3px}
+.qa-item:hover .qa-del{opacity:.55}
+.qa-del:hover{opacity:1;color:var(--red)}
+.qa-empty{background:rgba(255,255,255,0.02);border:1px dashed var(--card-border);border-radius:11px;padding:14px;text-align:center;font-size:12px;color:var(--text-muted)}
+.qa-add{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.qa-q-input,.qa-a-input{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--card-border);border-radius:10px;padding:9px 11px;color:var(--text);font-size:13px;font-family:inherit;outline:none}
+.qa-a-input{resize:vertical;min-height:38px;line-height:1.5}
+.qa-q-input:focus,.qa-a-input:focus{border-color:var(--accent1)}
+.qa-add-btn{align-self:flex-start;padding:8px 16px;border-radius:10px;border:1px solid transparent;background:var(--accent1-10);color:var(--accent1);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer}
+.qa-add-btn:hover{background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff}
+/* Subtask progress pill on the collapsed card */
+.t-subpill{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:800;letter-spacing:.4px;padding:2px 7px;border-radius:10px;background:rgba(255,255,255,0.05);color:var(--text-muted);border:1px solid var(--card-border)}
+.t-subpill.all{background:var(--accent1-10);color:var(--accent1);border-color:var(--accent1-10)}
+/* Project: Mark Done affordances */
+.proj-card{position:relative}
+.proj-markdone{padding:7px 14px;border-radius:10px;border:1px solid transparent;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s var(--ease)}
+.proj-markdone:hover{box-shadow:0 6px 18px var(--accent1-10);transform:translateY(-1px)}
+.proj-markdone.reopen{background:rgba(255,255,255,0.04);color:var(--text-body);border-color:var(--card-border)}
+.proj-card-done{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;border:1px solid var(--card-border);background:rgba(0,0,0,0.25);color:var(--text-muted);font-size:13px;cursor:pointer;opacity:0;transition:all .18s var(--ease);z-index:2}
+.proj-card:hover .proj-card-done{opacity:1}
+.proj-card-done:hover{border-color:var(--accent1);color:var(--accent1);background:var(--accent1-10)}
+.proj-done-card{max-width:420px;text-align:center}
+.proj-done-sub{font-size:13px;color:var(--text-muted);margin:8px 0 18px}
+.proj-done-actions{display:flex;flex-direction:column;gap:10px}
+.proj-done-actions .ob.subtle{opacity:.7}
 /* View toggle (List ↔ Chart) */
 .day-view-toggle{display:inline-flex;background:rgba(255,255,255,0.04);border:1px solid var(--card-border);border-radius:10px;padding:3px;margin-bottom:14px;gap:2px}
 .day-view-toggle button{padding:5px 14px;border-radius:7px;border:none;background:transparent;color:var(--text-muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;font-family:inherit;transition:all .2s var(--ease);display:inline-flex;align-items:center;gap:4px}
@@ -1942,6 +2008,7 @@ function projectCardHTML(id,p){
   const today=new Date().toISOString().slice(0,10);
   const late=p.targetDate&&p.targetDate<today&&p.status==='active';
   return `<div class="proj-card" data-pid="${id}" style="--pc:${p.color||'#7c9cff'}" onclick="openProjectView('${id}')">
+    ${p.status!=='done'&&p.status!=='archived'?`<button class="proj-card-done" onclick="event.stopPropagation();markProjectDone('${id}')" title="Mark project done">✓</button>`:''}
     ${projectRing(s.pct,64)}
     <div class="proj-body">
       <div class="proj-name">${p.icon?`<span class="proj-ico">${p.icon}</span>`:''}${esc(p.name||'Untitled')}</div>
@@ -1961,6 +2028,7 @@ function renderProjects(){
       host.innerHTML=renderProjectDetail(openProjectId);
       paintStars(document.getElementById('projStars'),projAddDiff);
       updateProjDateBtn('');
+      if(currentView==='projects')restoreExpFocus();
       return;
     }
     openProjectId=null;
@@ -2012,6 +2080,7 @@ function renderProjectDetail(id){
           <input class="proj-name-input" value="${esc(p.name||'')}" placeholder="Project name" onblur="updateProject('${id}','name',this.value.trim())" onkeydown="if(event.key==='Enter')this.blur()">
         </div>
         <div class="proj-detail-ctrls">
+          ${p.status!=='done'&&p.status!=='archived'?`<button class="proj-markdone" onclick="markProjectDone('${id}')" title="Mark this project done">✓ Mark Done</button>`:`<button class="proj-markdone reopen" onclick="setProjectStatus('${id}','active')" title="Reopen this project">↩ Reopen</button>`}
           <select onchange="setProjectStatus('${id}',this.value)">${Object.entries(PROJECT_STATUS_LABELS).map(([k,l])=>`<option value="${k}" ${p.status===k?'selected':''}>${l}</option>`).join('')}</select>
           <span class="proj-swatches">${PROJECT_COLORS.map(c=>`<button class="proj-swatch ${p.color===c?'sel':''}" style="background:${c}" onclick="updateProject('${id}','color','${c}')"></button>`).join('')}</span>
           <label class="proj-target-lbl ${late?'late':''}">Target <input type="date" value="${esc(p.targetDate||'')}" onchange="updateProject('${id}','targetDate',this.value)"></label>
@@ -2636,6 +2705,156 @@ function deleteTask(id){fbSet(`todo/tasks/${id}`,null);if(expanded===id)expanded
 function toggleExpand(id){expanded=expanded===id?null:id;renderTasks();if(currentView==='projects')renderProjects()}
 
 // ═══════════════════════════════════════════
+//  Subtasks + Q&A — both nested UNDER a task so they ride the parent's
+//  todo/tasks listener and never enter the top-level `tasks` map (keeps them
+//  out of the board / calendar / planner / stats aggregations).
+// ═══════════════════════════════════════════
+// After a Firebase-driven re-render the compose <input> is a brand-new node,
+// so stash which element id to refocus and reapply it once the DOM is rebuilt.
+let _expFocus=null;
+function restoreExpFocus(){
+  if(!_expFocus)return;
+  const id=_expFocus;_expFocus=null;
+  const el=document.getElementById(id);
+  if(el){el.focus();if(el.setSelectionRange){const n=(el.value||'').length;try{el.setSelectionRange(n,n)}catch(e){}}}
+}
+const DIFF_STARS={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★',super_epic:'★★★★★'};
+function subStats(t){const s=Object.values((t&&t.subtasks)||{});return{total:s.length,done:s.filter(x=>x.done).length}}
+function addSubtask(pid){
+  const inp=document.getElementById('subAdd-'+pid);
+  if(!inp)return;
+  const title=inp.value.trim();if(!title)return;
+  _expFocus='subAdd-'+pid;
+  fbPush(`todo/tasks/${pid}/subtasks`,{title,done:false,completedAt:'',priority:'medium',difficulty:'medium',dueDate:'',order:Date.now(),createdAt:new Date().toISOString()});
+  inp.value='';
+}
+function updateSubtask(pid,sid,f,v){fbSet(`todo/tasks/${pid}/subtasks/${sid}/${f}`,v)}
+function deleteSubtask(pid,sid){fbSet(`todo/tasks/${pid}/subtasks/${sid}`,null)}
+function cycleSubPri(pid,sid){const o=['low','medium','high'];const cur=tasks[pid]?.subtasks?.[sid]?.priority||'medium';updateSubtask(pid,sid,'priority',o[(o.indexOf(cur)+1)%o.length])}
+function cycleSubDiff(pid,sid){const cur=tasks[pid]?.subtasks?.[sid]?.difficulty||'medium';const i=DIFF_ORDER.indexOf(cur);updateSubtask(pid,sid,'difficulty',DIFF_ORDER[(i+1)%DIFF_ORDER.length])}
+function toggleSubtask(pid,sid){
+  const t=tasks[pid];const s=t&&t.subtasks&&t.subtasks[sid];if(!s)return;
+  const wasDone=!!s.done;
+  fbSet(`todo/tasks/${pid}/subtasks/${sid}/done`,!wasDone);
+  fbSet(`todo/tasks/${pid}/subtasks/${sid}/completedAt`,!wasDone?new Date().toISOString():'');
+  if(!wasDone){
+    // Log to history so finished subtasks count toward done-today / streak / stats
+    fbPush('todo/history',{taskId:pid,subId:sid,title:(s.title||'')+' · '+(t.title||''),
+      difficulty:s.difficulty||'medium',category:t.category||'personal',priority:s.priority||'medium',
+      completedAt:new Date().toISOString(),...historyProjectFields(t)});
+    const row=document.querySelector(`.sub-ck[onclick*="'${sid}'"]`)?.closest('.sub-row');
+    if(row&&fxOn())fx(row,{scale:[1,1.05,1],duration:420,ease:anime.createSpring({stiffness:220,damping:14})});
+  }
+}
+function renderSubtasks(pid,t){
+  const subs=Object.entries((t&&t.subtasks)||{}).sort((a,b)=>(a[1].order||0)-(b[1].order||0));
+  const today=new Date().toISOString().slice(0,10);
+  const rows=subs.map(([sid,s])=>{
+    const od=s.dueDate&&!s.done&&s.dueDate<today;
+    return `<div class="sub-row ${s.done?'done':''}">
+      <button class="ck sub-ck" onclick="event.stopPropagation();toggleSubtask('${pid}','${sid}')">${s.done?'&#10003;':''}</button>
+      <input class="sub-title" value="${esc(s.title||'')}" placeholder="Subtask" onchange="updateSubtask('${pid}','${sid}','title',this.value)">
+      <button class="sub-pri ${s.priority||'medium'}" onclick="cycleSubPri('${pid}','${sid}')" title="Priority: ${s.priority||'medium'} (click to cycle)">${(s.priority||'medium').charAt(0).toUpperCase()}</button>
+      <button class="sub-diff" onclick="cycleSubDiff('${pid}','${sid}')" title="Difficulty: ${(s.difficulty||'medium').replace('_',' ')} (click to cycle)">${DIFF_STARS[s.difficulty||'medium']}</button>
+      <input type="date" class="sub-due ${od?'od':''}" value="${s.dueDate||''}" onchange="updateSubtask('${pid}','${sid}','dueDate',this.value)" title="Due date">
+      <button class="sub-del" onclick="deleteSubtask('${pid}','${sid}')" title="Delete subtask">&times;</button>
+    </div>`;
+  }).join('');
+  return `<div class="sub-list">${rows}</div>
+    <div class="sub-add">
+      <input class="sub-add-input" id="subAdd-${pid}" placeholder="Add a subtask…" onkeydown="if(event.key==='Enter'){event.preventDefault();addSubtask('${pid}')}">
+      <button class="sub-add-btn" onclick="addSubtask('${pid}')" title="Add subtask">＋</button>
+    </div>`;
+}
+function addQA(id){
+  const q=document.getElementById('qaQ-'+id),a=document.getElementById('qaA-'+id);
+  if(!q||!a)return;
+  const qv=q.value.trim(),av=a.value.trim();
+  if(!qv&&!av)return;
+  _expFocus='qaQ-'+id;
+  fbPush(`todo/tasks/${id}/qa`,{q:qv,a:av,at:new Date().toISOString()});
+  q.value='';a.value='';
+}
+function deleteQA(id,qid){if(!confirm('Delete this Q&A entry?'))return;fbSet(`todo/tasks/${id}/qa/${qid}`,null)}
+function qaEntries(t){return Object.entries((t&&t.qa)||{}).sort((a,b)=>((a[1].at||'')<(b[1].at||'')?1:-1))}
+function renderQAList(id,t){
+  const qa=qaEntries(t);
+  if(!qa.length)return `<div class="qa-empty">No answered questions yet — capture a Q&amp;A to revisit later.</div>`;
+  return `<div class="qa-list">${qa.map(([qid,e])=>`<div class="qa-item">
+    <button class="qa-del" onclick="deleteQA('${id}','${qid}')" title="Delete">&times;</button>
+    ${e.q?`<div class="qa-q">${esc(e.q)}</div>`:''}
+    ${e.a?`<div class="qa-a">${linkifyNotes(e.a)}</div>`:''}
+    ${e.at?`<div class="qa-when" title="${esc(fmtStamp(e.at))}">${esc(relAgo(e.at))}</div>`:''}
+  </div>`).join('')}</div>`;
+}
+// Inline-expand panel rendered under a task card: full notes + subtasks + Q&A.
+function renderTaskExpand(id,t){
+  const ss=subStats(t);
+  return `<div class="tc-exp" onclick="event.stopPropagation()">
+    <div class="tce-sec">
+      <div class="tce-lbl">Notes</div>
+      <textarea class="tce-notes" placeholder="Add notes…" onchange="updateTask('${id}','notes',this.value)">${esc(t.notes||'')}</textarea>
+    </div>
+    <div class="tce-sec">
+      <div class="tce-lbl">Subtasks${ss.total?`<span class="tce-count">${ss.done}/${ss.total}</span>`:''}</div>
+      ${renderSubtasks(id,t)}
+    </div>
+    <div class="tce-sec">
+      <div class="tce-lbl">Q&amp;A · Reference</div>
+      ${renderQAList(id,t)}
+      <div class="qa-add">
+        <input class="qa-q-input" id="qaQ-${id}" placeholder="Question / topic…" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('qaA-${id}').focus()}">
+        <textarea class="qa-a-input" id="qaA-${id}" placeholder="Answer / reference…" rows="1"></textarea>
+        <button class="qa-add-btn" onclick="addQA('${id}')">Add Q&amp;A</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  Mark a whole project done — optionally closing its open tasks.
+// ═══════════════════════════════════════════
+function markProjectDone(id){
+  const p=projects[id];if(!p)return;
+  const open=Object.entries(tasks).filter(([,t])=>(t.projectId||'')===id&&!t.completed);
+  if(!open.length){setProjectStatus(id,'done');return;}
+  openProjDoneModal(id,open.length);
+}
+function openProjDoneModal(id,n){
+  closeProjDoneModal();
+  const p=projects[id]||{};
+  const html=`<div class="day-modal" id="projDoneModal" onclick="if(event.target===this)closeProjDoneModal()">
+    <div class="day-modal-card proj-done-card">
+      <h3 class="proj-new-title">Mark “${esc(p.name||'Untitled')}” done?</h3>
+      <p class="proj-done-sub">${n} task${n===1?'':'s'} still open in this project.</p>
+      <div class="proj-done-actions">
+        <button class="add-btn" onclick="finishProject('${id}',true)">✓ Mark done &amp; complete ${n} open task${n===1?'':'s'}</button>
+        <button class="ob" onclick="finishProject('${id}',false)">Mark done only (keep tasks open)</button>
+        <button class="ob subtle" onclick="closeProjDoneModal()">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
+  fxModalIn(document.querySelector('#projDoneModal .day-modal-card'));
+}
+function closeProjDoneModal(){document.getElementById('projDoneModal')?.remove()}
+function finishProject(id,closeTasks){
+  if(closeTasks&&db){
+    const now=new Date().toISOString();
+    const upd={};
+    Object.entries(tasks).forEach(([tid,t])=>{
+      if((t.projectId||'')!==id||t.completed)return;
+      upd[`${tid}/completed`]=true;upd[`${tid}/completedAt`]=now;upd[`${tid}/progress`]=100;
+      if(t.subtasks)Object.entries(t.subtasks).forEach(([sid,s])=>{if(!s.done){upd[`${tid}/subtasks/${sid}/done`]=true;upd[`${tid}/subtasks/${sid}/completedAt`]=now}});
+      fbPush('todo/history',{taskId:tid,title:t.title||'',difficulty:t.difficulty||'medium',category:t.category||'personal',priority:t.priority||'medium',notes:t.notes||'',completedAt:now,...historyProjectFields(t)});
+    });
+    if(Object.keys(upd).length)db.ref('todo/tasks').update(upd);
+  }
+  setProjectStatus(id,'done');
+  closeProjDoneModal();
+}
+
+// ═══════════════════════════════════════════
 //  Completion animation — CSS keyframes + spawned CSS particles.
 //  No canvas, no rAF, no filter:blur. Each particle is a <span> with
 //  per-instance --angle / --dist / --color vars driving a single
@@ -3233,6 +3452,7 @@ function renderTasks(){
   // Restore scroll position so Firebase re-renders don't jump to top
   if(savedScroll>0)window.scrollTo(0,savedScroll);
   if(listAnimPending){listAnimPending=false;fxStaggerIn(list.querySelectorAll('.tc'))}
+  if(currentView==='tasks')restoreExpFocus();
 }
 function renderTasksFresh(){listAnimPending=true;renderTasks()}
 // Render a single task card. Top-level so both the kanban and the project
@@ -3253,7 +3473,8 @@ function renderTaskCard(id,t,i,opts={}){
   const prog=t.completed?100:Math.max(0,Math.min(100,parseFloat(t.progress)||0));
   const lu=taskUpdates(t)[0];
   const projBadge=(opts.showProject!==false&&proj)?`<span class="t-proj" style="--pc:${proj.color||'#7c9cff'}" onclick="event.stopPropagation();openProjectView('${t.projectId}')" title="Open project">${proj.icon?proj.icon+' ':''}${esc(proj.name||'Untitled')}</span>`:'';
-  let h=`<div class="tc ${t.completed?'done':''}" data-id="${id}" style="border-left:3px solid ${cc}" onclick="if(!event.target.closest('button,a,.t-proj,.reorder,.ta'))openTaskModal('${id}')" ${drag?'draggable="true" ondragstart="dragStart(event,\''+id+'\')" ondragover="dragOver(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event,\''+id+'\')" ondragend="dragEnd(event)"':''}>
+  const ss=subStats(t);
+  let h=`<div class="tc ${t.completed?'done':''} ${exp?'expanded':''}" data-id="${id}" style="border-left:3px solid ${cc}" onclick="if(!event.target.closest('button,a,.t-proj,.reorder,.ta,.tc-exp'))toggleExpand('${id}')" ${drag?'draggable="true" ondragstart="dragStart(event,\''+id+'\')" ondragover="dragOver(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event,\''+id+'\')" ondragend="dragEnd(event)"':''}>
     <span class="t-rank">${rank}</span>
     <button class="ck" onclick="event.stopPropagation();toggleDone('${id}')">${t.completed?'&#10003;':''}</button>
     <div class="tb">
@@ -3264,6 +3485,7 @@ function renderTaskCard(id,t,i,opts={}){
         <span class="cat ${t.category||'personal'}">${t.category||'personal'}</span>
         <span class="t-diff ${diff}">${diffStars}</span>
         ${projBadge}
+        ${ss.total?`<span class="t-subpill ${ss.done===ss.total?'all':''}" title="Subtasks">&#9745; ${ss.done}/${ss.total}</span>`:''}
         ${t.repeat&&t.repeat!=='none'?`<span class="t-repeat">${t.repeat}</span>`:''}
         ${t.from?`<span class="t-from">${esc(t.from)}</span>`:''}
         ${t.dueDate?`<span class="dl ${od?'od':''}">${od?'Overdue':'Due'}: ${t.dueDate}${t.dueTime?' '+fmtTime12(t.dueTime):''}</span>`:''}
@@ -3282,6 +3504,7 @@ function renderTaskCard(id,t,i,opts={}){
       <button class="tab" onclick="event.stopPropagation();openTaskModal('${id}','edit')" title="Edit">&#9998;</button>
       <button class="tab del" onclick="event.stopPropagation();deleteTask('${id}')" title="Delete">&times;</button>
     </div>
+    ${exp?renderTaskExpand(id,t):''}
   </div>`;
   return h;
 }
@@ -5919,7 +6142,9 @@ function openTaskModal(id,mode){
         </div>
         <div id="tmUpdates" class="tm-upd-list">${renderUpdatesList(id)}</div>
       </div>`;
-    body=`${grid}${progBlock}${notesBlock}${updBlock}`;
+    const qaCount=qaEntries(t).length;
+    const qaBlock=`<div class="tm-modal-section-label">Q&amp;A · Reference${qaCount?` · ${qaCount}`:''}</div>${renderQAList(id,t)}`;
+    body=`${grid}${progBlock}${notesBlock}${qaBlock}${updBlock}`;
     foot=`
       <button class="tm-modal-btn danger" onclick="if(confirm('Delete this task?')){deleteTask('${id}');closeTaskModal()}">Delete</button>
       <button class="tm-modal-btn" onclick="toggleDone('${id}');closeTaskModal()">${t.completed?'↩ Mark active':'✓ Mark done'}</button>
