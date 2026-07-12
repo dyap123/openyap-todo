@@ -931,12 +931,18 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .proj-done-sub{font-size:13px;color:var(--text-muted);margin:8px 0 18px}
 .proj-done-actions{display:flex;flex-direction:column;gap:10px}
 .proj-done-actions .ob.subtle{opacity:.7}
-/* Project reference drawer — searchable Q&A across all project tasks */
-.proj-ref-btn{padding:7px 14px;border-radius:10px;border:1px solid var(--card-border);background:rgba(255,255,255,0.04);color:var(--text-body);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s var(--ease);display:inline-flex;align-items:center;gap:6px}
-.proj-ref-btn:hover{border-color:var(--accent1);color:var(--accent1)}
-.proj-ref-btn .proj-ref-count{font-size:10px;font-weight:800;padding:1px 6px;border-radius:20px;background:var(--accent1-10);color:var(--accent1)}
-.proj-ref-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1200;display:flex;justify-content:flex-end}
-.proj-ref-drawer{width:390px;max-width:92vw;height:100%;background:var(--sidebar-bg,#0d1017);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-left:1px solid var(--card-border);display:flex;flex-direction:column;box-shadow:-12px 0 44px rgba(0,0,0,0.5)}
+/* Project reference DOCK — searchable Q&A panel docked on the right, shown by
+   default, dismissable via an edge tab. */
+.ref-dock-panel{position:fixed;top:0;right:0;height:100%;width:370px;max-width:88vw;background:var(--sidebar-bg,#0d1017);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-left:1px solid var(--card-border);display:flex;flex-direction:column;box-shadow:-12px 0 44px rgba(0,0,0,0.45);transform:translateX(101%);transition:transform .32s var(--ease);z-index:1100}
+.ref-dock.open .ref-dock-panel{transform:translateX(0)}
+.ref-dock-tab{position:fixed;top:118px;right:0;z-index:1101;display:none;align-items:center;gap:8px;writing-mode:vertical-rl;background:var(--panel-2,#0f131b);border:1px solid var(--card-border);border-right:none;border-radius:12px 0 0 12px;padding:16px 9px;color:var(--accent1);font-size:12px;font-weight:800;letter-spacing:.04em;font-family:inherit;cursor:pointer;box-shadow:-5px 0 18px rgba(0,0,0,0.35);transition:color .2s var(--ease),background .2s var(--ease)}
+.ref-dock.closed .ref-dock-tab{display:flex}
+.ref-dock-tab:hover{color:#fff;background:linear-gradient(180deg,var(--accent1),var(--accent2))}
+.ref-dock-tab-ico{writing-mode:horizontal-tb;font-size:15px}
+.ref-dock-x{background:transparent;border:none;color:var(--text-muted);font-size:26px;line-height:1;cursor:pointer;padding:0 4px;transition:color .15s var(--ease)}
+.ref-dock-x:hover{color:var(--accent1)}
+/* Push project content left so the open dock never hides cards (wide screens). */
+@media(min-width:1180px){body.ref-dock-open #projectsHost{padding-right:388px;transition:padding-right .32s var(--ease)}}
 .proj-ref-head{display:flex;align-items:flex-start;justify-content:space-between;padding:18px 16px 12px}
 .proj-ref-title{font-size:16px;font-weight:800;color:var(--text);display:flex;flex-direction:column;gap:2px}
 .proj-ref-sub{font-size:11px;font-weight:600;color:var(--text-muted)}
@@ -2010,7 +2016,7 @@ function projectStats(id){
   });
   return{totalPts,donePts,active,done,overdue,pct:totalPts?Math.round(donePts/totalPts*100):0};
 }
-function openProjectView(id){openProjectId=id;switchView('projects')}
+function openProjectView(id){if(openProjectId!==id)refQuery='';openProjectId=id;switchView('projects')}
 // SVG progress ring shared by cards + detail header. r=26 → C≈163.36
 const PROJ_RING_C=2*Math.PI*26;
 function projectRing(pct,size){
@@ -2046,6 +2052,7 @@ function renderProjects(){
       paintStars(document.getElementById('projStars'),projAddDiff);
       updateProjDateBtn('');
       if(currentView==='projects')restoreExpFocus();
+      syncRefDock();
       return;
     }
     openProjectId=null;
@@ -2070,6 +2077,7 @@ function renderProjects(){
       :`<div class="empty-state"><div class="empty-mascot">🗂️</div><div class="empty-bubble">No projects yet — create one for long-running work like escalator coordination</div></div>`}
   `;
   animateRings(host);
+  syncRefDock();
 }
 function renderProjectDetail(id){
   const p=projects[id];
@@ -2097,7 +2105,6 @@ function renderProjectDetail(id){
           <input class="proj-name-input" value="${esc(p.name||'')}" placeholder="Project name" onblur="updateProject('${id}','name',this.value.trim())" onkeydown="if(event.key==='Enter')this.blur()">
         </div>
         <div class="proj-detail-ctrls">
-          <button class="proj-ref-btn" onclick="openProjectRef('${id}')" title="Search this project's Q&A reference">📖 Reference${(()=>{const n=projectQACount(id);return n?`<span class="proj-ref-count">${n}</span>`:''})()}</button>
           ${p.status!=='done'&&p.status!=='archived'?`<button class="proj-markdone" onclick="markProjectDone('${id}')" title="Mark this project done">✓ Mark Done</button>`:`<button class="proj-markdone reopen" onclick="setProjectStatus('${id}','active')" title="Reopen this project">↩ Reopen</button>`}
           <select onchange="setProjectStatus('${id}',this.value)">${Object.entries(PROJECT_STATUS_LABELS).map(([k,l])=>`<option value="${k}" ${p.status===k?'selected':''}>${l}</option>`).join('')}</select>
           <span class="proj-swatches">${PROJECT_COLORS.map(c=>`<button class="proj-swatch ${p.color===c?'sel':''}" style="background:${c}" onclick="updateProject('${id}','color','${c}')"></button>`).join('')}</span>
@@ -2881,9 +2888,15 @@ function finishProject(id,closeTasks){
 }
 
 // ═══════════════════════════════════════════
-//  Project reference drawer — searchable Q&A across all of a project's tasks.
+//  Project reference dock — a searchable Q&A panel docked on the right of the
+//  project view. Shown by default; a tab dismisses it and brings it back.
+//  Lives on document.body (not inside projectsHost) so project re-renders never
+//  wipe the search box, and so position:fixed is never trapped by a transformed
+//  ancestor. syncRefDock() (called at the end of renderProjects) mounts/refreshes
+//  or removes it to match the current view.
 // ═══════════════════════════════════════════
-let _refProjId=null;
+let refDockOpen=(typeof localStorage!=='undefined'&&localStorage.getItem('oyt_ref_open')==='0')?false:true;
+let refQuery='';
 // Flatten every Q&A entry across the project's tasks, newest first.
 function projectQAEntries(pid){
   const out=[];
@@ -2894,32 +2907,6 @@ function projectQAEntries(pid){
   return out.sort((a,b)=>(a.at<b.at?1:a.at>b.at?-1:0));
 }
 function projectQACount(pid){return projectQAEntries(pid).length}
-function openProjectRef(pid){
-  closeProjectRef();
-  _refProjId=pid;
-  const p=projects[pid]||{};
-  const html=`<div class="proj-ref-overlay" id="projRefOverlay" onclick="if(event.target===this)closeProjectRef()">
-    <aside class="proj-ref-drawer">
-      <div class="proj-ref-head">
-        <div class="proj-ref-title">📖 Reference<span class="proj-ref-sub">${esc(p.name||'Project')} · search Q&amp;A</span></div>
-        <button class="day-modal-x" onclick="closeProjectRef()" title="Close">&times;</button>
-      </div>
-      <input class="proj-ref-search" id="projRefSearch" placeholder="Search questions, answers, tasks…" oninput="renderProjectRefList(this.value)" autocomplete="off">
-      <div class="proj-ref-list" id="projRefList">${renderProjectRefItems(pid,'')}</div>
-    </aside>
-  </div>`;
-  document.body.insertAdjacentHTML('beforeend',html);
-  const drawer=document.querySelector('#projRefOverlay .proj-ref-drawer');
-  if(drawer&&fxOn())fx(drawer,{translateX:[44,0],opacity:[0,1],duration:280,ease:'out(3)'});
-  document.addEventListener('keydown',projRefEsc);
-  setTimeout(()=>document.getElementById('projRefSearch')?.focus(),60);
-}
-function projRefEsc(e){if(e.key==='Escape')closeProjectRef()}
-function closeProjectRef(){_refProjId=null;document.getElementById('projRefOverlay')?.remove();document.removeEventListener('keydown',projRefEsc)}
-function renderProjectRefList(query){
-  const el=document.getElementById('projRefList');
-  if(el&&_refProjId)el.innerHTML=renderProjectRefItems(_refProjId,query||'');
-}
 function renderProjectRefItems(pid,query){
   const q=(query||'').trim().toLowerCase();
   const all=projectQAEntries(pid);
@@ -2932,9 +2919,65 @@ function renderProjectRefItems(pid,query){
     ${e.a?`<div class="qa-a">${linkifyNotes(e.a)}</div>`:''}
   </div>`).join('');
 }
+function refDockHTML(pid){
+  const p=projects[pid]||{};
+  const n=projectQACount(pid);
+  return `<div class="ref-dock ${refDockOpen?'open':'closed'}" id="projRefDock" data-pid="${pid}">
+    <button class="ref-dock-tab" onclick="toggleRefDock()" title="Show reference">
+      <span class="ref-dock-tab-ico">📖</span><span class="ref-dock-tab-txt">Reference${n?` · ${n}`:''}</span>
+    </button>
+    <aside class="ref-dock-panel">
+      <div class="proj-ref-head">
+        <div class="proj-ref-title">📖 Reference<span class="proj-ref-sub">${esc(p.name||'Project')} · search Q&amp;A</span></div>
+        <button class="ref-dock-x" onclick="toggleRefDock()" title="Hide reference">›</button>
+      </div>
+      <input class="proj-ref-search" id="refDockSearch" placeholder="Search questions, answers, tasks…" value="${esc(refQuery)}" oninput="refDockInput(this.value)" autocomplete="off">
+      <div class="proj-ref-list" id="projRefList">${renderProjectRefItems(pid,refQuery)}</div>
+    </aside>
+  </div>`;
+}
+// Mount / refresh / remove the dock to match the current view. Called at the
+// end of renderProjects and from switchView.
+function syncRefDock(){
+  const onProject=currentView==='projects'&&openProjectId&&projects[openProjectId];
+  let dock=document.getElementById('projRefDock');
+  if(!onProject){if(dock)dock.remove();document.body.classList.remove('ref-dock-open');return;}
+  const pid=openProjectId;
+  if(!dock||dock.dataset.pid!==pid){
+    if(dock)dock.remove();
+    document.body.insertAdjacentHTML('beforeend',refDockHTML(pid));
+  } else {
+    // Same project: refresh only the list + tab count so the live search box
+    // (value + focus) is preserved across project re-renders.
+    const listEl=dock.querySelector('#projRefList');
+    if(listEl)listEl.innerHTML=renderProjectRefItems(pid,refQuery);
+    const txt=dock.querySelector('.ref-dock-tab-txt');const n=projectQACount(pid);
+    if(txt)txt.textContent='Reference'+(n?` · ${n}`:'');
+  }
+  document.body.classList.toggle('ref-dock-open',refDockOpen);
+}
+function toggleRefDock(){
+  refDockOpen=!refDockOpen;
+  try{localStorage.setItem('oyt_ref_open',refDockOpen?'1':'0')}catch(e){}
+  const dock=document.getElementById('projRefDock');
+  if(dock){
+    dock.classList.toggle('open',refDockOpen);
+    dock.classList.toggle('closed',!refDockOpen);
+    if(refDockOpen)setTimeout(()=>dock.querySelector('#refDockSearch')?.focus(),60);
+  }
+  document.body.classList.toggle('ref-dock-open',refDockOpen&&currentView==='projects'&&!!openProjectId);
+}
+function refDockInput(v){
+  refQuery=v||'';
+  const listEl=document.querySelector('#projRefDock #projRefList');
+  if(listEl&&openProjectId)listEl.innerHTML=renderProjectRefItems(openProjectId,refQuery);
+}
+function removeRefDock(){document.getElementById('projRefDock')?.remove();document.body.classList.remove('ref-dock-open')}
 function refJumpToTask(tid){
   expanded=tid;
-  closeProjectRef();
+  // On narrow screens the open panel covers the content — collapse it so the
+  // jumped-to task is actually visible.
+  if(typeof window!=='undefined'&&window.innerWidth<=900&&refDockOpen)toggleRefDock();
   if(currentView==='projects')renderProjects();else switchView('projects');
   setTimeout(()=>{
     const card=document.querySelector('#projectsHost .tc[data-id="'+tid+'"]');
@@ -5160,6 +5203,8 @@ function switchView(v){
   if(v!=='tasks'&&view)fxStaggerIn(view.querySelectorAll('.proj-card,.planner-goal,.stat-card,.rfi-card'));
   // Keep the "More" button highlighted while one of its tucked-away views is active.
   document.getElementById('moreBtn')?.classList.toggle('active',v==='rfi'||v==='wasted');
+  // The reference dock only belongs to a project detail view.
+  if(v!=='projects')removeRefDock();
 }
 
 // Close the "More" dropdown when clicking outside it.
