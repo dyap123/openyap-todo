@@ -931,6 +931,23 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .proj-done-sub{font-size:13px;color:var(--text-muted);margin:8px 0 18px}
 .proj-done-actions{display:flex;flex-direction:column;gap:10px}
 .proj-done-actions .ob.subtle{opacity:.7}
+/* Project reference drawer — searchable Q&A across all project tasks */
+.proj-ref-btn{padding:7px 14px;border-radius:10px;border:1px solid var(--card-border);background:rgba(255,255,255,0.04);color:var(--text-body);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s var(--ease);display:inline-flex;align-items:center;gap:6px}
+.proj-ref-btn:hover{border-color:var(--accent1);color:var(--accent1)}
+.proj-ref-btn .proj-ref-count{font-size:10px;font-weight:800;padding:1px 6px;border-radius:20px;background:var(--accent1-10);color:var(--accent1)}
+.proj-ref-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1200;display:flex;justify-content:flex-end}
+.proj-ref-drawer{width:390px;max-width:92vw;height:100%;background:var(--sidebar-bg,#0d1017);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-left:1px solid var(--card-border);display:flex;flex-direction:column;box-shadow:-12px 0 44px rgba(0,0,0,0.5)}
+.proj-ref-head{display:flex;align-items:flex-start;justify-content:space-between;padding:18px 16px 12px}
+.proj-ref-title{font-size:16px;font-weight:800;color:var(--text);display:flex;flex-direction:column;gap:2px}
+.proj-ref-sub{font-size:11px;font-weight:600;color:var(--text-muted)}
+.proj-ref-search{margin:0 16px 12px;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);border-radius:11px;padding:11px 13px;color:var(--text);font-size:14px;font-family:inherit;outline:none}
+.proj-ref-search:focus{border-color:var(--accent1)}
+.proj-ref-list{flex:1;overflow-y:auto;padding:0 16px 20px;display:flex;flex-direction:column;gap:10px}
+.proj-ref-item{background:rgba(255,255,255,0.03);border:1px solid var(--card-border);border-radius:12px;padding:12px 13px;cursor:pointer;transition:border-color .15s var(--ease),transform .15s var(--ease)}
+.proj-ref-item:hover{border-color:var(--accent1);transform:translateY(-1px)}
+.proj-ref-task{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--accent1);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.proj-ref-task::before{content:'▸'}
+.proj-ref-empty{padding:34px 12px;text-align:center;font-size:13px;color:var(--text-muted);line-height:1.6}
 /* View toggle (List ↔ Chart) */
 .day-view-toggle{display:inline-flex;background:rgba(255,255,255,0.04);border:1px solid var(--card-border);border-radius:10px;padding:3px;margin-bottom:14px;gap:2px}
 .day-view-toggle button{padding:5px 14px;border-radius:7px;border:none;background:transparent;color:var(--text-muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;font-family:inherit;transition:all .2s var(--ease);display:inline-flex;align-items:center;gap:4px}
@@ -2080,6 +2097,7 @@ function renderProjectDetail(id){
           <input class="proj-name-input" value="${esc(p.name||'')}" placeholder="Project name" onblur="updateProject('${id}','name',this.value.trim())" onkeydown="if(event.key==='Enter')this.blur()">
         </div>
         <div class="proj-detail-ctrls">
+          <button class="proj-ref-btn" onclick="openProjectRef('${id}')" title="Search this project's Q&A reference">📖 Reference${(()=>{const n=projectQACount(id);return n?`<span class="proj-ref-count">${n}</span>`:''})()}</button>
           ${p.status!=='done'&&p.status!=='archived'?`<button class="proj-markdone" onclick="markProjectDone('${id}')" title="Mark this project done">✓ Mark Done</button>`:`<button class="proj-markdone reopen" onclick="setProjectStatus('${id}','active')" title="Reopen this project">↩ Reopen</button>`}
           <select onchange="setProjectStatus('${id}',this.value)">${Object.entries(PROJECT_STATUS_LABELS).map(([k,l])=>`<option value="${k}" ${p.status===k?'selected':''}>${l}</option>`).join('')}</select>
           <span class="proj-swatches">${PROJECT_COLORS.map(c=>`<button class="proj-swatch ${p.color===c?'sel':''}" style="background:${c}" onclick="updateProject('${id}','color','${c}')"></button>`).join('')}</span>
@@ -2715,13 +2733,19 @@ let _expFocus=null;
 function restoreExpFocus(){
   if(!_expFocus)return;
   const id=_expFocus;_expFocus=null;
-  const el=document.getElementById(id);
+  // A task can be rendered in BOTH the (hidden) board and the projects detail,
+  // so the same id may exist twice — focus the LAST (visible) instance.
+  const els=document.querySelectorAll('[id="'+id+'"]');
+  const el=els[els.length-1];
   if(el){el.focus();if(el.setSelectionRange){const n=(el.value||'').length;try{el.setSelectionRange(n,n)}catch(e){}}}
 }
 const DIFF_STARS={easy:'★',medium:'★★',hard:'★★★',epic:'★★★★',super_epic:'★★★★★'};
 function subStats(t){const s=Object.values((t&&t.subtasks)||{});return{total:s.length,done:s.filter(x=>x.done).length}}
-function addSubtask(pid){
-  const inp=document.getElementById('subAdd-'+pid);
+function addSubtask(pid,el){
+  // Resolve the input relative to the clicked control — the same id can exist
+  // twice (hidden board + projects detail), so getElementById is unreliable.
+  const box=el&&el.closest&&el.closest('.sub-add');
+  const inp=box?box.querySelector('.sub-add-input'):document.getElementById('subAdd-'+pid);
   if(!inp)return;
   const title=inp.value.trim();if(!title)return;
   _expFocus='subAdd-'+pid;
@@ -2762,12 +2786,14 @@ function renderSubtasks(pid,t){
   }).join('');
   return `<div class="sub-list">${rows}</div>
     <div class="sub-add">
-      <input class="sub-add-input" id="subAdd-${pid}" placeholder="Add a subtask…" onkeydown="if(event.key==='Enter'){event.preventDefault();addSubtask('${pid}')}">
-      <button class="sub-add-btn" onclick="addSubtask('${pid}')" title="Add subtask">＋</button>
+      <input class="sub-add-input" id="subAdd-${pid}" placeholder="Add a subtask…" onkeydown="if(event.key==='Enter'){event.preventDefault();addSubtask('${pid}',this)}">
+      <button class="sub-add-btn" onclick="addSubtask('${pid}',this)" title="Add subtask">＋</button>
     </div>`;
 }
-function addQA(id){
-  const q=document.getElementById('qaQ-'+id),a=document.getElementById('qaA-'+id);
+function addQA(id,el){
+  const box=el&&el.closest&&el.closest('.qa-add');
+  const q=box?box.querySelector('.qa-q-input'):document.getElementById('qaQ-'+id);
+  const a=box?box.querySelector('.qa-a-input'):document.getElementById('qaA-'+id);
   if(!q||!a)return;
   const qv=q.value.trim(),av=a.value.trim();
   if(!qv&&!av)return;
@@ -2803,9 +2829,9 @@ function renderTaskExpand(id,t){
       <div class="tce-lbl">Q&amp;A · Reference</div>
       ${renderQAList(id,t)}
       <div class="qa-add">
-        <input class="qa-q-input" id="qaQ-${id}" placeholder="Question / topic…" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('qaA-${id}').focus()}">
+        <input class="qa-q-input" id="qaQ-${id}" placeholder="Question / topic…" onkeydown="if(event.key==='Enter'){event.preventDefault();this.closest('.qa-add').querySelector('.qa-a-input').focus()}">
         <textarea class="qa-a-input" id="qaA-${id}" placeholder="Answer / reference…" rows="1"></textarea>
-        <button class="qa-add-btn" onclick="addQA('${id}')">Add Q&amp;A</button>
+        <button class="qa-add-btn" onclick="addQA('${id}',this)">Add Q&amp;A</button>
       </div>
     </div>
   </div>`;
@@ -2852,6 +2878,68 @@ function finishProject(id,closeTasks){
   }
   setProjectStatus(id,'done');
   closeProjDoneModal();
+}
+
+// ═══════════════════════════════════════════
+//  Project reference drawer — searchable Q&A across all of a project's tasks.
+// ═══════════════════════════════════════════
+let _refProjId=null;
+// Flatten every Q&A entry across the project's tasks, newest first.
+function projectQAEntries(pid){
+  const out=[];
+  Object.entries(tasks).forEach(([tid,t])=>{
+    if((t.projectId||'')!==pid||!t.qa)return;
+    Object.entries(t.qa).forEach(([qid,e])=>out.push({taskId:tid,taskTitle:t.title||'Untitled',qid,q:e.q||'',a:e.a||'',at:e.at||''}));
+  });
+  return out.sort((a,b)=>(a.at<b.at?1:a.at>b.at?-1:0));
+}
+function projectQACount(pid){return projectQAEntries(pid).length}
+function openProjectRef(pid){
+  closeProjectRef();
+  _refProjId=pid;
+  const p=projects[pid]||{};
+  const html=`<div class="proj-ref-overlay" id="projRefOverlay" onclick="if(event.target===this)closeProjectRef()">
+    <aside class="proj-ref-drawer">
+      <div class="proj-ref-head">
+        <div class="proj-ref-title">📖 Reference<span class="proj-ref-sub">${esc(p.name||'Project')} · search Q&amp;A</span></div>
+        <button class="day-modal-x" onclick="closeProjectRef()" title="Close">&times;</button>
+      </div>
+      <input class="proj-ref-search" id="projRefSearch" placeholder="Search questions, answers, tasks…" oninput="renderProjectRefList(this.value)" autocomplete="off">
+      <div class="proj-ref-list" id="projRefList">${renderProjectRefItems(pid,'')}</div>
+    </aside>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
+  const drawer=document.querySelector('#projRefOverlay .proj-ref-drawer');
+  if(drawer&&fxOn())fx(drawer,{translateX:[44,0],opacity:[0,1],duration:280,ease:'out(3)'});
+  document.addEventListener('keydown',projRefEsc);
+  setTimeout(()=>document.getElementById('projRefSearch')?.focus(),60);
+}
+function projRefEsc(e){if(e.key==='Escape')closeProjectRef()}
+function closeProjectRef(){_refProjId=null;document.getElementById('projRefOverlay')?.remove();document.removeEventListener('keydown',projRefEsc)}
+function renderProjectRefList(query){
+  const el=document.getElementById('projRefList');
+  if(el&&_refProjId)el.innerHTML=renderProjectRefItems(_refProjId,query||'');
+}
+function renderProjectRefItems(pid,query){
+  const q=(query||'').trim().toLowerCase();
+  const all=projectQAEntries(pid);
+  let items=all;
+  if(q)items=all.filter(e=>(e.q+' '+e.a+' '+e.taskTitle).toLowerCase().includes(q));
+  if(!items.length)return `<div class="proj-ref-empty">${all.length?`No matches for “${esc(query)}”.`:'No Q&amp;A captured yet.<br>Expand any task in this project and add Q&amp;A entries — they collect here for easy searching later.'}</div>`;
+  return items.map(e=>`<div class="proj-ref-item" onclick="if(!event.target.closest('a'))refJumpToTask('${e.taskId}')">
+    <div class="proj-ref-task">${esc(e.taskTitle)}</div>
+    ${e.q?`<div class="qa-q">${esc(e.q)}</div>`:''}
+    ${e.a?`<div class="qa-a">${linkifyNotes(e.a)}</div>`:''}
+  </div>`).join('');
+}
+function refJumpToTask(tid){
+  expanded=tid;
+  closeProjectRef();
+  if(currentView==='projects')renderProjects();else switchView('projects');
+  setTimeout(()=>{
+    const card=document.querySelector('#projectsHost .tc[data-id="'+tid+'"]');
+    if(card&&card.scrollIntoView)card.scrollIntoView({behavior:'smooth',block:'center'});
+  },90);
 }
 
 // ═══════════════════════════════════════════
