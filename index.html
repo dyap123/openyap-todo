@@ -79,6 +79,39 @@ body.t-light .am.user{color:var(--text)}
 body.t-light #alfredSidebar{background:rgba(246,245,251,0.95)}
 body.t-light .stat-emoji{filter:grayscale(0.5) brightness(0.85)}
 body.t-light .bg-mesh::before{opacity:0.6}
+/* ═══ Light mode — clean & bright pass (fix dark-assumption surfaces/text/shadows) ═══ */
+/* Surface fills that used near-invisible white on the dark base → subtle dark tint + border */
+body.t-light .notes-row textarea,body.t-light .t-prog-bar,body.t-light .tm-edit-notes,
+body.t-light .tm-upd-input,body.t-light .sub-row,body.t-light .sub-add-input,
+body.t-light .qa-item,body.t-light .qa-q-input,body.t-light .qa-a-input,body.t-light .tce-notes,
+body.t-light .t-subpill,body.t-light .proj-ref-item,body.t-light .proj-ref-search,
+body.t-light .day-view-toggle,body.t-light .diff-bar-track,body.t-light .dash-v2-bar,
+body.t-light .planner-chip.subtle,body.t-light .cal-sort-task,body.t-light .kc-count,
+body.t-light .search-clear,body.t-light .day-stat,body.t-light .sub-pri,body.t-light .sub-diff,
+body.t-light .sub-del,body.t-light .sub-due,body.t-light .qa-empty,body.t-light .proj-ref-empty,
+body.t-light .seg,body.t-light .tm-grid .tm-field,body.t-light .tm-modal-notes{
+  background:rgba(0,0,0,0.035);border-color:rgba(0,0,0,0.08)}
+/* Low-alpha white text → readable dark */
+body.t-light .date-btn,body.t-light .time-btn,body.t-light .t-diff,body.t-light .tab,
+body.t-light .ah-x,body.t-light .day-modal-x,body.t-light .ro-btn,body.t-light .ref-dock-x,
+body.t-light .ob.s[data-r="none"],body.t-light .sub-add-btn,body.t-light .qa-when{color:rgba(0,0,0,0.5)}
+body.t-light .date-btn:hover,body.t-light .time-btn:hover,body.t-light .tab-btn:hover,
+body.t-light .sort-btn:hover,body.t-light .fp:hover,body.t-light .tab:hover{color:rgba(0,0,0,0.72)}
+body.t-light .t-diff{color:rgba(0,0,0,0.28)}
+/* Dark panels that never inverted */
+body.t-light #bjPanel{background:rgba(255,255,255,0.96)}
+body.t-light .ai-row{background:rgba(0,0,0,0.035)}
+/* Soften heavy dark drop-shadows (muddy halos on white) */
+body.t-light .tp-pop,body.t-light .dp-pop,body.t-light .day-modal-card,body.t-light .ctrl-pop,
+body.t-light .ref-dock-panel,body.t-light #alfredSidebar,body.t-light .theme-dots,
+body.t-light .qa-add,body.t-light .more-dropdown{box-shadow:0 12px 34px -12px rgba(30,20,60,0.22)}
+body.t-light .cal-day{background:linear-gradient(160deg,var(--card),rgba(0,0,0,0.02))}
+/* Tone down the neon signage + glow decorations for a clean paper-like light UI */
+body.t-light::before{-webkit-text-stroke:1px rgba(124,58,237,0.06);text-shadow:none;opacity:0.35}
+body.t-light::after{-webkit-text-stroke:1px rgba(37,99,235,0.06);text-shadow:none;opacity:0.3}
+body.t-light .bg-mesh::before{opacity:0.4}
+body.t-light .cn,body.t-light .cn-cyan{text-shadow:none}
+body.t-light .app-title{opacity:0.75}
 /* Light Sisyphus canvas */
 /* Sisyphus canvas + sis-wrap removed — see <div class="cmd-strip"> in markup */
 
@@ -133,9 +166,17 @@ input,select,textarea,button{font-family:inherit}
 .header-inner{max-width:min(1500px,95vw);margin:0 auto;padding:0 28px;height:48px;display:flex;align-items:center;justify-content:space-between}
 .app-title{font-weight:300;font-size:11px;letter-spacing:.3em;color:var(--accent1);opacity:0.6;text-transform:uppercase}
 .header-right{display:flex;gap:8px;align-items:center}
-.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--accent1);box-shadow:0 0 8px var(--accent1-10);animation:syncPulse 2s ease-in-out infinite}
-@keyframes syncPulse{0%,100%{opacity:1}50%{opacity:0.4}}
-.sync-label{font-size:9px;color:var(--accent1);opacity:0.3;letter-spacing:0.6px;font-weight:600}
+/* Cool-mode switch — gates the 3D layered task-card effects */
+.cool-switch{display:inline-flex;align-items:center;gap:6px;padding:4px 8px 4px 9px;border-radius:20px;border:1px solid var(--card-border);background:rgba(255,255,255,0.04);color:var(--text-muted);font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-family:inherit;cursor:pointer;transition:all .22s var(--ease)}
+.cool-switch .cool-ico{font-size:11px;filter:grayscale(1);opacity:.5;transition:all .22s var(--ease)}
+.cool-switch .cool-knob{position:relative;width:22px;height:12px;border-radius:20px;background:var(--card-border);transition:background .22s var(--ease)}
+.cool-switch .cool-knob::after{content:'';position:absolute;top:1px;left:1px;width:10px;height:10px;border-radius:50%;background:var(--text-muted);transition:transform .22s var(--ease),background .22s var(--ease)}
+.cool-switch:hover{border-color:var(--card-hover);color:var(--text-body)}
+.cool-switch.on{border-color:var(--accent1-10);color:var(--accent1);background:var(--accent1-10)}
+.cool-switch.on .cool-ico{filter:none;opacity:1}
+.cool-switch.on .cool-knob{background:linear-gradient(90deg,var(--accent1),var(--accent2))}
+.cool-switch.on .cool-knob::after{transform:translateX(10px);background:#fff}
+@media(max-width:640px){.cool-switch .cool-txt{display:none}}
 
 /* Main */
 .main{max-width:min(1500px,95vw);margin:0 auto;padding:20px 28px 100px;position:relative;z-index:1}
@@ -292,6 +333,26 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 /* External halo — sits BEHIND the card, same approach as the verdict card */
 /* Hover — single-layer neon outline + lift. No filter:blur (GPU-cheap). */
 .tc:hover{border-color:var(--accent1);box-shadow:0 8px 20px rgba(0,0,0,0.40),0 0 0 1px var(--accent1-10),0 0 18px var(--accent1-10);transform:translateY(-1px)}
+/* ── Cool mode: 3D "layers" tilt (ported from the portfolio exploded assembly).
+   Only on hover-capable pointers; JS writes --rx/--ry (tilt) + --mx/--my (sheen)
+   and toggles .tilting. translateZ on children makes them parallax as layers. */
+@media(hover:hover) and (pointer:fine){
+  html[data-cool="on"] .tc{transform-style:preserve-3d;transition:transform .28s var(--ease),border-color .25s var(--ease),box-shadow .35s var(--ease),opacity .35s var(--ease)}
+  html[data-cool="on"] .tc.tilting{border-color:var(--accent1);box-shadow:0 18px 40px -12px rgba(0,0,0,0.55),0 0 0 1px var(--accent1-10),0 0 26px var(--accent1-10);z-index:3}
+  /* Cursor-following sheen */
+  html[data-cool="on"] .tc:not(.celebrating)::after{content:'';position:absolute;inset:0;border-radius:14px;pointer-events:none;background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%),var(--accent1-10),transparent 60%);opacity:0;transition:opacity .25s var(--ease);mix-blend-mode:screen;z-index:2}
+  html[data-cool="on"] .tc.tilting:not(.celebrating)::after{opacity:1}
+  html[data-cool="on"] body.t-light .tc:not(.celebrating)::after{mix-blend-mode:multiply}
+  /* Layered depth — children float toward the viewer while tilting */
+  html[data-cool="on"] .tc.tilting .ck{transform:translateZ(34px)}
+  html[data-cool="on"] .tc.tilting .tb{transform:translateZ(24px)}
+  html[data-cool="on"] .tc.tilting .tm{transform:translateZ(-6px)}
+  html[data-cool="on"] .tc.tilting .t-rank{transform:translateZ(10px)}
+  html[data-cool="on"] .tc.tilting .ta{transform:translateZ(30px)}
+  html[data-cool="on"] .tc.tilting .t-prog,html[data-cool="on"] .tc.tilting .t-lastupd{transform:translateZ(6px)}
+  html[data-cool="on"] .tc .ck,html[data-cool="on"] .tc .tb,html[data-cool="on"] .tc .tm,html[data-cool="on"] .tc .t-rank,html[data-cool="on"] .tc .ta,html[data-cool="on"] .tc .t-prog,html[data-cool="on"] .tc .t-lastupd{transition:transform .28s var(--ease)}
+}
+@media (prefers-reduced-motion: reduce){html[data-cool="on"] .tc{transform:none !important}html[data-cool="on"] .tc::after{display:none}}
 /* Completion — lean CSS-only sequence, no canvas, no filter:blur.
    0–120ms scale pulse → 120–300ms neon ring pulse → 300–700ms fade + slide. */
 .tc.celebrating{will-change:transform,opacity;animation:tcCelebrate 700ms var(--ease) forwards;overflow:visible}
@@ -1681,8 +1742,9 @@ body.t-light .planner-date{color-scheme:light}
       </div>
     </div>
     <div class="header-right">
-      <span class="sync-label">synced</span>
-      <span class="sync-dot"></span>
+      <button class="cool-switch" id="coolToggle" onclick="toggleCool()" title="Cool mode — 3D layered task cards" aria-pressed="true">
+        <span class="cool-ico">✨</span><span class="cool-txt">Cool</span><span class="cool-knob"></span>
+      </button>
       <button class="tab-btn" id="motionToggle" onclick="toggleMotion()" title="Toggle ambient motion">⎯</button>
       <div class="theme-picker">
         <button class="tab-btn" onclick="document.getElementById('themeDots').classList.toggle('show')">Theme</button>
@@ -4596,6 +4658,70 @@ function fxModalIn(el){
   if(!el||!fxOn())return;
   fx(el,{translateY:[24,0],scale:[0.96,1],opacity:[0,1],ease:anime.createSpring({stiffness:180,damping:16})});
 }
+
+// ═══════════════════════════════════════════
+//  Cool mode — gates the 3D layered ("cool") task-card tilt effect. Mirrors
+//  the motion-mode pattern via an <html data-cool> attribute (NOT a body
+//  class — setTheme() overwrites body.className). Default ON.
+// ═══════════════════════════════════════════
+const _hoverCapable=matchMedia('(hover: hover) and (pointer: fine)');
+let _tiltCard=null,_tiltRaf=0;
+function coolOn(){return document.documentElement.getAttribute('data-cool')==='on'}
+function tiltEligible(card){
+  return !!card&&coolOn()&&_hoverCapable.matches&&!_fxReduced.matches
+    &&!card.classList.contains('expanded')&&!card.classList.contains('celebrating')&&!card.classList.contains('done');
+}
+function clearTilt(card){
+  if(!card)return;
+  card.classList.remove('tilting');
+  card.style.transform='';
+  ['--rx','--ry','--mx','--my'].forEach(v=>card.style.removeProperty(v));
+}
+function dropTilt(){if(_tiltCard){clearTilt(_tiltCard);_tiltCard=null;}}
+function applyCool(mode){
+  document.documentElement.setAttribute('data-cool',mode);
+  const btn=document.getElementById('coolToggle');
+  if(btn){
+    btn.classList.toggle('on',mode==='on');
+    btn.setAttribute('aria-pressed',mode==='on'?'true':'false');
+    btn.title=mode==='on'?'Cool mode: on (click to turn off)':'Cool mode: off (click to turn on)';
+  }
+  if(mode!=='on')dropTilt();
+}
+function toggleCool(){
+  applyCool(coolOn()?'off':'on');
+  try{localStorage.setItem('oyt_cool',document.documentElement.getAttribute('data-cool'))}catch(e){}
+}
+applyCool(localStorage.getItem('oyt_cool')||'on');
+// One delegated pointer handler drives every .tc — cards re-render on Firebase
+// pushes, so never bind per-card. rAF-throttled; writes the CSS vars the gated
+// CSS consumes (tilt + cursor sheen).
+document.addEventListener('pointermove',e=>{
+  if(!coolOn()||!_hoverCapable.matches||_fxReduced.matches){if(_tiltCard)dropTilt();return;}
+  const card=e.target.closest?e.target.closest('.tc'):null;
+  if(card!==_tiltCard){if(_tiltCard)dropTilt();_tiltCard=tiltEligible(card)?card:null;}
+  if(!_tiltCard||_tiltRaf)return;
+  const cx=e.clientX,cy=e.clientY,c=_tiltCard;
+  _tiltRaf=requestAnimationFrame(()=>{
+    _tiltRaf=0;
+    if(!c.isConnected||!tiltEligible(c)){clearTilt(c);if(_tiltCard===c)_tiltCard=null;return;}
+    const r=c.getBoundingClientRect();if(!r.width||!r.height)return;
+    const dx=(cx-r.left)/r.width-0.5,dy=(cy-r.top)/r.height-0.5,MAX=9;
+    c.style.setProperty('--rx',(dx*MAX).toFixed(2)+'deg');
+    c.style.setProperty('--ry',(-dy*MAX).toFixed(2)+'deg');
+    c.style.setProperty('--mx',((cx-r.left)/r.width*100).toFixed(1)+'%');
+    c.style.setProperty('--my',((cy-r.top)/r.height*100).toFixed(1)+'%');
+    c.classList.add('tilting');
+    c.style.transform='perspective(900px) rotateX(var(--ry)) rotateY(var(--rx)) translateZ(6px)';
+  });
+},{passive:true});
+document.addEventListener('pointerout',e=>{
+  if(!_tiltCard)return;
+  const to=e.relatedTarget;
+  if(to&&_tiltCard.contains&&_tiltCard.contains(to))return; // still inside the card
+  dropTilt();
+},{passive:true});
+document.addEventListener('dragstart',dropTilt,true);
 
 // ═══════════════════════════════════════════
 //  Clutter control — Focus toggle + Requester strip + From suggestions
