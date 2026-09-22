@@ -153,7 +153,7 @@ svg{flex:none}
 .switch{display:none}
 .switch .dim{color:var(--muted);margin-left:4px;font-variant-numeric:tabular-nums}
 .sides{display:grid;grid-template-columns:1fr 1fr;padding-top:8px}
-.side{display:grid;grid-template-rows:subgrid;grid-row:span 4;padding:0 36px 48px;min-width:0}
+.side{display:grid;grid-template-rows:subgrid;grid-row:span 4;padding:0 36px 48px;min-width:0;position:relative;transition:background .18s,box-shadow .18s}
 .side:first-child{padding-left:0}
 .side:last-child{padding-right:0;border-left:1px solid var(--line)}
 .side[data-side="career"]{--side-c:var(--career)}
@@ -196,6 +196,19 @@ svg{flex:none}
 .task.completing{transition:opacity .28s .1s;opacity:.35}
 .task-spark{position:absolute;left:8px;top:10px;width:5px;height:5px;border-radius:50%;background:var(--side-c);pointer-events:none;z-index:2}
 .t-main{flex:1;min-width:0;cursor:text}
+[data-drag-id]{cursor:grab}
+[data-drag-id] .t-main,[data-drag-id] .now-title{cursor:grab}
+[data-drag-id].is-dragging{opacity:.35}
+.side.drop-ready{background:color-mix(in srgb,var(--side-c) 4%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--side-c) 28%,transparent)}
+.side.drop-ready::after{content:'Drop here';position:absolute;top:20px;right:16px;padding:3px 8px;border:1px solid color-mix(in srgb,var(--side-c) 45%,var(--line));border-radius:999px;color:var(--side-c);font-size:11px;background:var(--bg);pointer-events:none}
+.side.drop-over{background:color-mix(in srgb,var(--side-c) 10%,var(--surface));box-shadow:inset 0 0 0 2px var(--side-c)}
+.drag-ghost{position:fixed;z-index:110;left:0;top:0;width:min(280px,72vw);padding:10px 12px;border:1px solid var(--line-2);border-left:3px solid var(--side-c);border-radius:9px;background:var(--raise);color:var(--text);box-shadow:0 14px 34px rgba(0,0,0,.3);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;will-change:transform}
+.drag-dock{display:none;position:fixed;z-index:105;left:12px;right:12px;bottom:12px;grid-template-columns:1fr 1fr;gap:8px;padding:8px;border:1px solid var(--line-2);border-radius:13px;background:color-mix(in srgb,var(--bg) 92%,transparent);box-shadow:0 16px 40px rgba(0,0,0,.36);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.drag-target{display:grid;place-items:center;height:52px;border:1px solid var(--line-2);border-radius:9px;color:var(--body);font-size:13px;font-weight:500}
+.drag-target::before{content:'';width:7px;height:7px;border-radius:2px;background:var(--side-c);margin-right:7px;display:inline-block}
+.drag-target.is-source{opacity:.35}
+.drag-target.drop-over{color:var(--text);border-color:var(--side-c);background:color-mix(in srgb,var(--side-c) 14%,var(--surface))}
+body.drag-active{user-select:none;-webkit-user-select:none}
 .t-title{overflow-wrap:anywhere}
 .t-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin-top:2px;font-size:12px;color:var(--muted)}
 .t-meta svg{display:block}
@@ -505,6 +518,8 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
   .cal-event > *{display:none}
   .cal-more{font-size:9px;padding:0}
   .cal-agenda{grid-template-columns:1fr;gap:12px}
+  body.drag-active .drag-dock{display:grid}
+  .side.drop-ready::after{display:none}
   .fld{grid-template-columns:1fr;gap:6px}
   .back{padding:0;place-items:end stretch}
   .sheet{width:100%;max-height:94vh;border-radius:14px 14px 0 0}
@@ -620,6 +635,10 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 
 <div class="pop" id="themePop" role="dialog" aria-label="Theme" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="drag-dock" id="dragDock" aria-hidden="true">
+  <div class="drag-target" data-drop-side="career" style="--side-c:var(--career)">Career</div>
+  <div class="drag-target" data-drop-side="openyap" style="--side-c:var(--openyap)">OpenYap</div>
+</div>
 
 <script>
 (()=>{
@@ -967,7 +986,7 @@ function setView(v){
 
 function buildSides(){
   $('#sides').innerHTML=SIDES.map(s=>`
-    <div class="side" data-side="${s}">
+    <div class="side" data-side="${s}" data-side-label="${SIDE_NAME[s]}">
       <div class="side-head"><h2 class="side-name">${SIDE_NAME[s]}</h2><span class="side-count" data-count></span></div>
       <div class="now empty" data-now></div>
       <div class="addwrap">
@@ -1026,12 +1045,14 @@ function nowMeta(t){
 function renderNow(el,doing){
   if(!doing.length){
     el.className='now empty';
+    el.removeAttribute('draggable');delete el.dataset.dragId;
     el.innerHTML='<div class="now-label">Now</div><div class="now-title">Nothing in progress</div><div class="now-meta">Press the play button on a task to track it here.</div>';
     return;
   }
   const [id,t]=doing[0];
   el.className='now';
-  if(openId===id){el.innerHTML='<div class="now-label">Now</div>'+editorHTML(id,t);return}
+  if(openId===id){el.removeAttribute('draggable');delete el.dataset.dragId;el.innerHTML='<div class="now-label">Now</div>'+editorHTML(id,t);return}
+  el.draggable=true;el.dataset.dragId=id;
   const more=doing.slice(1).map(([oid,o])=>`<button data-id="${oid}" data-act="edit">${esc(o.title)}</button>`).join(', ');
   el.innerHTML=`<div class="now-label">Now</div>
     <div class="now-title" data-id="${id}" data-act="edit" role="button" tabindex="0" title="Edit">${esc(t.title||'(untitled)')}</div>
@@ -1048,9 +1069,9 @@ function taskRow(id,t){
   if(t.timeSpent)meta.push(`<span>${fmtDur(t.timeSpent)} logged</span>`);
   if(t.notes)meta.push(`<span title="Has notes">${ICON.note}</span>`);
   if(taskPrivate(t))meta.push(`<span title="Private: left out of reports">${ICON.lock}</span>`);
-  return `<li class="task" data-id="${id}">
+  return `<li class="task" data-id="${id}" data-drag-id="${id}" draggable="true">
     <button class="ck" data-act="complete" aria-label="Complete ${esc(t.title)}"></button>
-    <div class="t-main" data-act="edit" role="button" tabindex="0"><div class="t-title">${esc(t.title||'(untitled)')}</div>${meta.length?`<div class="t-meta">${meta.join('')}</div>`:''}</div>
+    <div class="t-main" data-act="edit" role="button" tabindex="0" title="Drag to the other side or click to edit"><div class="t-title">${esc(t.title||'(untitled)')}</div>${meta.length?`<div class="t-meta">${meta.join('')}</div>`:''}</div>
     <button class="t-go" data-act="start" aria-label="Start ${esc(t.title)}" title="Start">${ICON.play}</button>
   </li>`;
 }
@@ -1890,9 +1911,78 @@ function toast(msg,label,fn){
 }
 function hideToast(){$('#toast').classList.remove('show')}
 
+// ═══ Drag tasks between sides ════════════════════════════════════════════
+// Native drag handles mouse/trackpad. A short hold starts the touch version;
+// moving before the hold stays a normal page scroll.
+let dragState=null,touchPress=null,dragClickBlock=0;
+const dragNodes=()=>[...$$('.side'),...$$('.drag-target')];
+function dragSideAt(x,y){
+  const el=document.elementFromPoint(x,y);if(!el)return '';
+  return el.closest('[data-drop-side]')?.dataset.dropSide||el.closest('.side')?.dataset.side||'';
+}
+function markDragSide(side){
+  dragNodes().forEach(el=>el.classList.toggle('drop-over',(el.dataset.dropSide||el.dataset.side)===side&&side!==dragState?.source));
+  if(dragState)dragState.over=side!==dragState.source?side:'';
+}
+function beginDrag(id,row,pointer){
+  const t=tasks[id];if(!t)return false;
+  const source=taskSide(t);dragState={id,source,row,over:'',pointer:!!pointer,ghost:null};
+  row.classList.add('is-dragging');document.body.classList.add('drag-active');
+  $$('.side').forEach(el=>el.classList.toggle('drop-ready',el.dataset.side!==source));
+  $$('.drag-target').forEach(el=>el.classList.toggle('is-source',el.dataset.dropSide===source));
+  $('#dragDock').setAttribute('aria-hidden','false');
+  return true;
+}
+function moveDragged(side){
+  if(!dragState||!side||side===dragState.source)return;
+  const t=tasks[dragState.id];if(!t)return;
+  setTaskSide(dragState.id,side);
+  toast(`Moved ${t.title||'task'} to ${SIDE_NAME[side]}`);
+  const target=$(`.side[data-side="${side}"]`);fx(target,{scale:[.99,1],duration:360,ease:'out(4)'});
+}
+function endDrag(){
+  if(dragState?.row)dragState.row.classList.remove('is-dragging');
+  if(dragState?.ghost)dragState.ghost.remove();
+  dragNodes().forEach(el=>el.classList.remove('drop-over','drop-ready','is-source'));
+  document.body.classList.remove('drag-active');$('#dragDock').setAttribute('aria-hidden','true');
+  dragState=null;
+}
+document.addEventListener('dragstart',e=>{
+  const row=e.target.closest&&e.target.closest('[data-drag-id]');if(!row||!beginDrag(row.dataset.dragId,row,false)){e.preventDefault();return}
+  e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',row.dataset.dragId);
+});
+document.addEventListener('dragover',e=>{
+  if(!dragState||dragState.pointer)return;const side=dragSideAt(e.clientX,e.clientY);
+  if(side&&side!==dragState.source){e.preventDefault();e.dataTransfer.dropEffect='move'}markDragSide(side);
+});
+document.addEventListener('drop',e=>{if(!dragState||dragState.pointer)return;e.preventDefault();const side=dragSideAt(e.clientX,e.clientY)||dragState.over;moveDragged(side);endDrag()});
+document.addEventListener('dragend',()=>{if(dragState&&!dragState.pointer)endDrag()});
+document.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='mouse'||e.button!==0||e.target.closest('button,input,textarea,select,label'))return;
+  const row=e.target.closest&&e.target.closest('[data-drag-id]');if(!row)return;
+  touchPress={id:row.dataset.dragId,row,pointerId:e.pointerId,x:e.clientX,y:e.clientY,active:false,timer:setTimeout(()=>{
+    if(!touchPress||touchPress.pointerId!==e.pointerId||!beginDrag(touchPress.id,row,true))return;
+    touchPress.active=true;const t=tasks[touchPress.id],g=document.createElement('div');g.className='drag-ghost';g.style.setProperty('--side-c',`var(--${taskSide(t)})`);g.textContent=t.title||'(untitled)';document.body.appendChild(g);dragState.ghost=g;
+    g.style.transform=`translate3d(${e.clientX+12}px,${e.clientY+12}px,0)`;if(navigator.vibrate)navigator.vibrate(12);
+  },260)};
+},true);
+document.addEventListener('pointermove',e=>{
+  if(!touchPress||touchPress.pointerId!==e.pointerId)return;
+  if(!touchPress.active){if(Math.hypot(e.clientX-touchPress.x,e.clientY-touchPress.y)>8){clearTimeout(touchPress.timer);touchPress=null}return}
+  e.preventDefault();if(dragState?.ghost)dragState.ghost.style.transform=`translate3d(${e.clientX+12}px,${e.clientY+12}px,0)`;markDragSide(dragSideAt(e.clientX,e.clientY));
+},{passive:false});
+function finishTouchDrag(e){
+  if(!touchPress||touchPress.pointerId!==e.pointerId)return;clearTimeout(touchPress.timer);
+  if(touchPress.active){e.preventDefault();moveDragged(dragSideAt(e.clientX,e.clientY)||dragState?.over);dragClickBlock=Date.now()+450;endDrag()}
+  touchPress=null;
+}
+document.addEventListener('pointerup',finishTouchDrag,true);document.addEventListener('pointercancel',finishTouchDrag,true);
+document.addEventListener('contextmenu',e=>{if(dragState?.pointer)e.preventDefault()});
+
 // ═══ Events ══════════════════════════════════════════════════════════════
 document.addEventListener('click',e=>{
   const t=e.target;
+  if(Date.now()<dragClickBlock&&t.closest('[data-drag-id]')){e.preventDefault();return}
   if(!$('#themePop').hidden&&!t.closest('#themePop')&&!t.closest('#themeBtn'))closeThemes();
   const act=t.closest('[data-act]');
   if(act){const host=act.closest('[data-id]');if(host)handleAct(act.dataset.act,host.dataset.id,act);return}
