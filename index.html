@@ -345,6 +345,49 @@ svg{flex:none}
 .tl-item.is-priv .tl-t{color:var(--muted)}
 .tl-more{display:flex;justify-content:center;padding:10px 0 30px}
 
+/* ── Calendar: due work and finished work share one month ── */
+.cal{padding:32px 0 18px}
+.cal-top{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:22px}
+.cal-title h2{font-size:28px;line-height:1.1;letter-spacing:-.025em;margin:0 0 5px;font-weight:600}
+.cal-title p{margin:0;color:var(--muted);font-size:13px}
+.cal-nav{display:flex;align-items:center;gap:7px}
+.cal-nav .icon-btn{border:1px solid var(--line-2);font-size:19px;line-height:1}
+.cal-legend{display:flex;align-items:center;gap:18px;margin:0 0 12px;font-size:12px;color:var(--muted)}
+.cal-legend span{display:inline-flex;align-items:center;gap:7px}
+.cal-legend i{width:7px;height:7px;border-radius:50%;background:var(--side-c)}
+.cal-weekdays,.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.cal-weekdays{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.cal-weekdays span{padding:0 9px 8px}
+.cal-grid{border-top:1px solid var(--line-2);border-left:1px solid var(--line)}
+.cal-day{min-height:118px;padding:8px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-width:0;transition:background .15s,box-shadow .15s}
+.cal-day:hover{background:color-mix(in srgb,var(--surface) 68%,transparent)}
+.cal-day.is-out{color:var(--muted);background:color-mix(in srgb,var(--surface) 25%,transparent)}
+.cal-day.is-selected{background:color-mix(in srgb,var(--accent) 7%,var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 60%,transparent)}
+.cal-num{width:26px;height:26px;display:grid;place-items:center;border-radius:50%;font-size:12px;color:var(--body);font-variant-numeric:tabular-nums;margin-bottom:4px}
+.cal-num:hover{background:var(--raise);color:var(--text)}
+.cal-day.is-today .cal-num{background:var(--accent);color:var(--on-accent);font-weight:600}
+.cal-events{display:grid;gap:3px}
+.cal-event{display:grid;grid-template-columns:6px minmax(0,1fr);align-items:center;gap:6px;width:100%;padding:2px 3px;border-radius:4px;font-size:11px;color:var(--body);min-width:0}
+button.cal-event:hover{background:var(--raise);color:var(--text)}
+.cal-event span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-mark{width:6px;height:6px;border-radius:50%;background:var(--side-c)}
+.cal-event.k-done{color:var(--muted)}
+.cal-event.k-done .cal-mark{background:transparent;box-shadow:inset 0 0 0 1px var(--side-c)}
+.cal-event.is-late{color:var(--danger)}
+.cal-more{font-size:10px;color:var(--muted);padding:2px 3px}
+.cal-agenda{display:grid;grid-template-columns:180px minmax(0,1fr);gap:30px;margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
+.cal-agenda h3{font-size:14px;margin:0 0 3px;font-weight:600}
+.cal-agenda-head p{font-size:12px;color:var(--muted);margin:0}
+.cal-agenda-list{display:grid}
+.cal-a-row{display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:11px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;min-width:0}
+.cal-a-row[data-open]{cursor:pointer}
+.cal-a-row[data-open]:hover .cal-a-title{text-decoration:underline;text-decoration-color:var(--line-2);text-underline-offset:3px}
+.cal-a-dot{width:7px;height:7px;border-radius:50%;background:var(--side-c);align-self:center}
+.cal-a-row.k-done .cal-a-dot{background:transparent;box-shadow:inset 0 0 0 1px var(--side-c)}
+.cal-a-title{overflow-wrap:anywhere}
+.cal-a-meta{font-size:11px;color:var(--muted);white-space:nowrap}
+.cal-a-row.is-late .cal-a-meta{color:var(--danger)}
+
 /* ── Export sheet ── */
 .back{position:fixed;inset:0;z-index:60;background:var(--scrim);display:grid;place-items:center;padding:16px}
 .sheet{background:var(--bg);border:1px solid var(--line-2);border-radius:14px;width:min(700px,100%);max-height:min(90vh,920px);display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.35)}
@@ -454,6 +497,14 @@ svg{flex:none}
   .tl-lane{grid-column:2}
   .tl-lane[data-lane="career"] .tl-item{flex-direction:row;text-align:left}
   .tl-lane[data-lane="openyap"]:not(:empty){padding-top:10px}
+  .cal-day{min-height:70px;padding:5px}
+  .cal-num{width:24px;height:24px;margin-bottom:5px}
+  .cal-events{display:flex;gap:3px;flex-wrap:wrap;padding:0 4px}
+  .cal-event{display:block;width:7px;height:7px;padding:0;border-radius:50%;background:var(--side-c)}
+  .cal-event.k-done{background:transparent;box-shadow:inset 0 0 0 1px var(--side-c)}
+  .cal-event > *{display:none}
+  .cal-more{font-size:9px;padding:0}
+  .cal-agenda{grid-template-columns:1fr;gap:12px}
   .fld{grid-template-columns:1fr;gap:6px}
   .back{padding:0;place-items:end stretch}
   .sheet{width:100%;max-height:94vh;border-radius:14px 14px 0 0}
@@ -467,6 +518,15 @@ svg{flex:none}
   .hero-n{font-size:60px}
   .tab{padding:6px 8px}
   .today .yr{display:none}
+  .cal{padding-top:24px}
+  .cal-top{align-items:flex-start;margin-bottom:18px}
+  .cal-title h2{font-size:23px}
+  .cal-title p{max-width:18ch}
+  .cal-nav{flex-wrap:wrap;justify-content:flex-end;max-width:130px}
+  .cal-nav .btn{order:3}
+  .cal-weekdays span{padding:0 2px 7px;text-align:center;font-size:10px}
+  .cal-day{min-height:58px;padding:3px}
+  .cal-num{width:22px;height:22px;font-size:11px}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -489,6 +549,7 @@ svg{flex:none}
       <button class="tab" role="tab" data-view="tasks">Tasks</button>
       <button class="tab" role="tab" data-view="dashboard">Dashboard</button>
       <button class="tab" role="tab" data-view="timeline">Timeline</button>
+      <button class="tab" role="tab" data-view="calendar">Calendar</button>
       <button class="tab" role="tab" data-view="done">Done</button>
     </nav>
     <div class="acts">
@@ -529,6 +590,10 @@ svg{flex:none}
 
   <section id="v-timeline" class="view" aria-label="Timeline" hidden>
     <div class="wrap" id="tlHost"></div>
+  </section>
+
+  <section id="v-calendar" class="view" aria-label="Calendar" hidden>
+    <div class="wrap" id="calHost"></div>
   </section>
 </main>
 
@@ -637,7 +702,7 @@ const OY_RE=/open\s?yap|\bai\b|\bllm\b|claude|minimax|deepseek/i;
 
 let tasks={},hist={},projects={},sideMap={};
 const ready={tasks:false,hist:false};
-const VIEWS=['tasks','dashboard','timeline','done'];
+const VIEWS=['tasks','dashboard','timeline','calendar','done'];
 let view=LS.get('oym_view','tasks');if(!VIEWS.includes(view))view='tasks';
 // The Drive notes feature was removed; forget any connector saved on this device.
 LS.del('oym_bridge');LS.del('oym_bridge_setup');LS.del('oym_upside');
@@ -880,6 +945,7 @@ function render(force){
   if(view==='tasks')renderTasks(anim);
   else if(view==='dashboard')renderDash(anim);
   else if(view==='timeline')renderTimeline(anim);
+  else if(view==='calendar')renderCalendar(anim);
   else if(view==='done')renderDone(anim);
   if(!$('#exBack').hidden)renderExportLive();
 }
@@ -1277,6 +1343,66 @@ function renderDash(anim){
   fx($$('.wcap',host),{opacity:[0,1],duration:420,delay:stg(40,{start:620})});
   fx($$('.hc:not(.is-f)',host),{opacity:[0,1],duration:280,delay:stg(2,{start:300}),ease:'out(2)'});
   fx($$('.up-row',host),{opacity:[0,1],translateX:[-8,0],duration:460,delay:stg(45,{start:360}),ease:'out(3)'});
+}
+
+// ═══ Calendar ════════════════════════════════════════════════════════════
+// Due dates and completed work use the same normalized side colors as the
+// rest of the app. The six-week grid keeps adjacent-month context visible.
+const CAL_DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+let calCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),calSelected=ymd(new Date());
+function calendarData(cursor=calCursor){
+  const first=new Date(cursor.getFullYear(),cursor.getMonth(),1),start=mondayOf(first),end=addDays(start,42),byDay=new Map();
+  const add=(k,item)=>{if(k<ymd(start)||k>=ymd(end))return;let a=byDay.get(k);if(!a){a=[];byDay.set(k,a)}a.push(item)};
+  const todayK=ymd(new Date());
+  for(const [id,t] of Object.entries(tasks)){
+    if(!t||t.completed||!t.dueDate)continue;
+    add(t.dueDate,{kind:'due',id,title:t.title||'(untitled)',side:taskSide(t),late:t.dueDate<todayK,urgent:t.priority==='high'});
+  }
+  for(const e of entries()){
+    const k=ymd(new Date(e.completedAt));
+    add(k,{kind:'done',title:e.title||'(untitled)',side:e.side,private:e.private,at:e.completedAt});
+  }
+  for(const a of byDay.values())a.sort((x,y)=>(x.kind==='due'?0:1)-(y.kind==='due'?0:1)||(x.urgent?-1:0)-(y.urgent?-1:0)||String(y.at||'').localeCompare(String(x.at||'')));
+  let due=0,done=0;
+  for(const [k,a] of byDay)if(k.slice(0,7)===ymd(first).slice(0,7))for(const x of a)x.kind==='due'?due++:done++;
+  return {first,start,end,byDay,todayK,due,done};
+}
+function calEvent(e){
+  const tag=e.kind==='due'?'button':'span',open=e.id?` data-open="${e.id}"`:'';
+  const title=(e.kind==='due'?(e.late?'Overdue: ':'Due: '):'Finished: ')+(e.title||'');
+  return `<${tag} class="cal-event k-${e.kind}${e.late?' is-late':''}" style="--side-c:var(--${e.side})"${open} title="${esc(title)}"><i class="cal-mark"></i><span>${esc(e.title)}</span></${tag}>`;
+}
+function calAgendaRow(e){
+  const open=e.id?` data-open="${e.id}" role="button" tabindex="0"`:'';
+  const meta=e.kind==='due'?(e.late?'Overdue':e.urgent?'Due, urgent':'Due'):(e.private?'Finished, private':'Finished');
+  return `<div class="cal-a-row k-${e.kind}${e.late?' is-late':''}" style="--side-c:var(--${e.side})"${open}><i class="cal-a-dot"></i><span class="cal-a-title">${esc(e.title)}</span><span class="cal-a-meta">${esc(meta)} · ${SIDE_NAME[e.side]}</span></div>`;
+}
+function renderCalendar(anim){
+  const host=$('#calHost');
+  if(!ready.tasks||!ready.hist){host.innerHTML='<p class="hint" style="padding:40px 0">Loading…</p>';return}
+  const C=calendarData(),days=[];
+  for(let i=0;i<42;i++){
+    const d=addDays(C.start,i),k=ymd(d),items=C.byDay.get(k)||[],out=d.getMonth()!==C.first.getMonth(),shown=items.slice(0,3);
+    const label=`${DOWL[d.getDay()]}, ${MONL[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}${items.length?`, ${items.length} item${items.length===1?'':'s'}`:''}`;
+    days.push(`<div class="cal-day${out?' is-out':''}${k===C.todayK?' is-today':''}${k===calSelected?' is-selected':''}" data-cal-day="${k}">
+      <button class="cal-num" data-cal-pick="${k}" aria-label="${esc(label)}">${d.getDate()}</button>
+      <div class="cal-events">${shown.map(calEvent).join('')}${items.length>3?`<span class="cal-more">+${items.length-3}</span>`:''}</div>
+    </div>`);
+  }
+  const selected=parseYmd(calSelected),agenda=C.byDay.get(calSelected)||[],aDue=agenda.filter(e=>e.kind==='due').length,aDone=agenda.length-aDue;
+  const sub=[aDue?`${aDue} due`:'',aDone?`${aDone} finished`:''].filter(Boolean).join(' · ')||'Nothing scheduled or finished';
+  host.innerHTML=`<div class="cal">
+    <div class="cal-top"><div class="cal-title"><h2>${MONL[C.first.getMonth()]} ${C.first.getFullYear()}</h2><p>${C.due} due · ${C.done} finished this month</p></div>
+      <div class="cal-nav"><button class="icon-btn" data-cal-nav="prev" aria-label="Previous month">‹</button><button class="btn" data-cal-nav="today">Today</button><button class="icon-btn" data-cal-nav="next" aria-label="Next month">›</button></div></div>
+    <div class="cal-legend"><span style="--side-c:var(--career)"><i></i>Career</span><span style="--side-c:var(--openyap)"><i></i>OpenYap</span><span>Solid due · ring finished</span></div>
+    <div class="cal-weekdays" aria-hidden="true">${CAL_DOW.map(d=>`<span>${d}</span>`).join('')}</div>
+    <div class="cal-grid">${days.join('')}</div>
+    <section class="cal-agenda" aria-live="polite"><div class="cal-agenda-head"><h3>${DOWL[selected.getDay()]}, ${fmtMDY(selected)}</h3><p>${sub}</p></div><div class="cal-agenda-list">${agenda.length?agenda.map(calAgendaRow).join(''):'<p class="hint">Choose another day, or add a due date to a task.</p>'}</div></section>
+  </div>`;
+  if(!anim)return;
+  fx($('.cal-top',host),{opacity:[0,1],translateY:[8,0],duration:480,ease:'out(3)'});
+  fx($$('.cal-day',host),{opacity:[0,1],scale:[.975,1],duration:360,delay:stg(8,{start:80}),ease:'out(3)'});
+  fx($('.cal-agenda',host),{opacity:[0,1],translateY:[8,0],duration:440,delay:260,ease:'out(3)'});
 }
 
 // ═══ Timeline ════════════════════════════════════════════════════════════
@@ -1781,6 +1907,8 @@ document.addEventListener('click',e=>{
   const op=t.closest('[data-open]');if(op){const id=op.dataset.open;if(tasks[id]){setView('tasks');openEditor(id)}return}
   const dt=t.closest('[data-dash="table"]');if(dt){dashTable=!dashTable;LS.set('oym_dashtable',dashTable?'1':'0');renderDash();return}
   const tm=t.closest('[data-tl="more"]');if(tm){tlPrevStart=tlStartKey();tlWeeks+=4;renderTimeline(true);return}
+  const cn=t.closest('[data-cal-nav]');if(cn){const now=new Date();if(cn.dataset.calNav==='today'){calCursor=new Date(now.getFullYear(),now.getMonth(),1);calSelected=ymd(now)}else{const n=cn.dataset.calNav==='prev'?-1:1;calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()+n,1);calSelected=ymd(calCursor)}renderCalendar(true);return}
+  const cd=t.closest('[data-cal-day]');if(cd){calSelected=cd.dataset.calDay;renderCalendar(true);return}
   if(t.closest('#exportBtn')){openExport();return}
   if(t.closest('#themeBtn')){$('#themePop').hidden?openThemes():closeThemes();return}
   const th=t.closest('[data-theme-id]');if(th){applyTheme(th.dataset.themeId);openThemes();return}
@@ -1872,7 +2000,7 @@ if(db){
   let seen=false;
   db.ref('.info/connected').on('value',s=>{const on=!!s.val();if(on)seen=true;$('#offline').hidden=on||!seen});
 }
-window.__oym={dashData,timelineData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>
