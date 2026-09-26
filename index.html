@@ -18,6 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.umd.min.js"></script>
 <style>
@@ -129,6 +130,16 @@ svg{flex:none}
 .btn:disabled{opacity:.45;cursor:default}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:500}
 .btn.primary:hover{filter:brightness(1.08)}
+/* Sign-in gate: the database answers only to the owner's Google account (rules: todo/ = OWNER email). */
+.gate{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px}
+.gate[hidden]{display:none}
+.gate-card{max-width:340px;width:100%;text-align:center}
+.gate-card h2{font-size:20px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
+.gate-card p{color:var(--muted);font-size:13px;line-height:1.55;margin-bottom:18px}
+.gate-card .btn{height:38px;padding:0 18px}
+.gate-msg{margin-top:14px;font-size:12px;color:var(--danger);min-height:1em}
+.signout{background:none;border:0;color:var(--muted);font:inherit;font-size:12px;cursor:pointer;padding:0;margin-left:12px}
+.signout:hover{color:var(--text)}
 .btn.ghost{border-color:transparent;color:var(--muted)}
 .btn.ghost:hover{color:var(--text);background:none}
 .btn.danger{color:var(--danger)}
@@ -553,6 +564,12 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 </style>
 </head>
 <body>
+<div class="gate" id="gate" hidden><div class="gate-card">
+  <h2>OpenYap Todo</h2>
+  <p>Your tasks are private. Sign in with your Google account to open them.</p>
+  <button class="btn primary" type="button" id="gateBtn">Sign in with Google</button>
+  <div class="gate-msg" id="gateMsg"></div>
+</div></div>
 <div class="ambient" aria-hidden="true">
   <i class="ambient-orb"></i><i class="ambient-orb"></i><i class="ambient-orb"></i><i class="ambient-line"></i>
 </div>
@@ -612,7 +629,7 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
   </section>
 </main>
 
-<footer class="foot wrap"><a href="legacy/">Open the legacy version</a></footer>
+<footer class="foot wrap"><span id="whoami"></span><button class="signout" type="button" id="signOutBtn" hidden>Sign out</button></footer>
 
 <div class="back" id="exBack" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="exTitle">
@@ -704,9 +721,14 @@ function applyTheme(id){
 }
 
 // ═══ Firebase (same database and paths as the legacy app) ═══════════════
-const DB_URL='https://gen-lang-client-0119642855-default-rtdb.firebaseio.com';
-let db=null;
-try{if(!firebase.apps.length)firebase.initializeApp({databaseURL:DB_URL});db=firebase.database()}catch(e){console.error('Firebase',e)}
+// The rules let exactly one verified Google account read or write todo/ (and nothing else in
+// this database is open to anyone). The apiKey is a public identifier, not a secret.
+const FB_CONFIG={apiKey:'AIzaSyBr-msdIz3GHfsWUrHoMUNoqP7987LlEWY',authDomain:'gen-lang-client-0119642855.firebaseapp.com',
+  databaseURL:'https://gen-lang-client-0119642855-default-rtdb.firebaseio.com',projectId:'gen-lang-client-0119642855',
+  appId:'1:1027442560426:web:2be1a68f0887f96bd06fd3'};
+const OWNER='dyap123@gmail.com';
+let db=null,auth=null;
+try{if(!firebase.apps.length)firebase.initializeApp(FB_CONFIG);db=firebase.database();auth=firebase.auth()}catch(e){console.error('Firebase',e)}
 const newKey=p=>db.ref(p).push().key;
 function upd(o){if(!db)return Promise.reject(new Error('No database'));return db.ref().update(o).catch(err=>{toast('Could not save: '+err.message);throw err})}
 const TP=id=>'todo/tasks/'+id;
@@ -2082,14 +2104,48 @@ applyTheme(document.documentElement.dataset.theme);
 startAmbient();
 render(true);
 animNext=true;
-if(db){
-  db.ref('todo/tasks').on('value',s=>{tasks=s.val()||{};ready.tasks=true;schedule()});
-  db.ref('todo/history').on('value',s=>{hist=s.val()||{};ready.hist=true;schedule()});
-  db.ref('todo/projects').on('value',s=>{projects=s.val()||{};schedule()});
-  db.ref('todo/sides').on('value',s=>{sideMap=s.val()||{};schedule()});
+// ═══ Sign-in gate ═════════════════════════════════════════════════════
+// Listeners attach only once the owner is signed in; a denied read would otherwise look like
+// an empty task list. Popup first (works in Safari and Chrome); redirect when a popup cannot open
+// (an installed home-screen app, a blocker).
+let listening=false;
+function gateMsg(t){$('#gateMsg').textContent=t||''}
+function listen(){
+  if(listening||!db)return;listening=true;
+  const fail=e=>{toast('Could not load: '+e.message)};
+  db.ref('todo/tasks').on('value',s=>{tasks=s.val()||{};ready.tasks=true;schedule()},fail);
+  db.ref('todo/history').on('value',s=>{hist=s.val()||{};ready.hist=true;schedule()},fail);
+  db.ref('todo/projects').on('value',s=>{projects=s.val()||{};schedule()},fail);
+  db.ref('todo/sides').on('value',s=>{sideMap=s.val()||{};schedule()},fail);
   let seen=false;
   db.ref('.info/connected').on('value',s=>{const on=!!s.val();if(on)seen=true;$('#offline').hidden=on||!seen});
 }
+function unlisten(){
+  if(!listening)return;listening=false;
+  for(const p of ['todo/tasks','todo/history','todo/projects','todo/sides'])db.ref(p).off();
+  tasks={};hist={};projects={};sideMap={};schedule();
+}
+async function signIn(){
+  gateMsg('');
+  const prov=new firebase.auth.GoogleAuthProvider();prov.setCustomParameters({prompt:'select_account',login_hint:OWNER});
+  try{await auth.signInWithPopup(prov)}
+  catch(e){
+    if(['auth/popup-blocked','auth/operation-not-supported-in-this-environment','auth/cancelled-popup-request'].includes(e.code)){
+      try{await auth.signInWithRedirect(prov)}catch(e2){gateMsg(e2.message)}
+    }else if(e.code!=='auth/popup-closed-by-user')gateMsg(e.message);
+  }
+}
+if(auth){
+  $('#gateBtn').addEventListener('click',signIn);
+  $('#signOutBtn').addEventListener('click',()=>auth.signOut());
+  auth.getRedirectResult().catch(e=>gateMsg(e.message));
+  auth.onAuthStateChanged(u=>{
+    const ok=!!(u&&u.emailVerified&&(u.email||'').toLowerCase()===OWNER);
+    if(u&&!ok){gateMsg((u.email||'That account')+' cannot open this list.');auth.signOut();return}
+    $('#gate').hidden=ok;$('#signOutBtn').hidden=!ok;$('#whoami').textContent=ok?u.email:'';
+    if(ok)listen();else unlisten();
+  });
+}else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
 window.__oym={dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
