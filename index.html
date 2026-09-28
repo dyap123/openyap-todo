@@ -491,6 +491,81 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 [data-theme="minimal"] .side-name::before{border-radius:50%}
 
 /* ── Small screens: one side at a time ── */
+/* ── Map ─────────────────────────────────────────────────────────────────
+   The paper mind-map sheet: flat cards, 1px rules, one side colour. Motion lives in JS. */
+.wrap.wide{max-width:1480px}
+.map-bar{display:flex;align-items:center;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
+.map-pills{display:flex;gap:6px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;padding:2px}
+.map-pills::-webkit-scrollbar{display:none}
+.map-pill{height:30px;padding:0 13px;border-radius:999px;border:1px solid var(--line-2);font-size:12.5px;color:var(--muted);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;flex-shrink:0}
+.map-pill i{width:7px;height:7px;border-radius:50%;background:var(--side-c)}
+.map-pill:hover{color:var(--text)}
+.map-pill[aria-pressed="true"]{color:var(--text);border-color:var(--text)}
+.map-pill.ghost{border-style:dashed}
+.map-new{display:flex;gap:6px;flex-shrink:0}.map-new .txt{height:30px;width:190px}.map-new .btn{height:30px}
+.map-tools{display:flex;gap:6px;flex-shrink:0}
+.map-tools .btn{height:30px;padding:0 11px}
+.mp-count{font:11px var(--mono);color:var(--muted);margin-left:2px}
+.map-stage{position:relative;height:calc(100vh - 176px);min-height:480px;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  background-color:var(--bg);background-image:radial-gradient(var(--line-2) 1px,transparent 1.3px);background-size:24px 24px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.map-stage.panning{cursor:grabbing}
+.map-empty{display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.map-world{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0}
+.map-links{position:absolute;overflow:visible;pointer-events:none}
+.map-links path{fill:none;stroke:var(--line-2);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.mp-card{position:absolute;background:var(--surface);border:1px solid var(--line-2);border-radius:10px;cursor:pointer;transition:border-color .15s,box-shadow .2s}
+.mp-card:hover{border-color:var(--muted)}
+.mp-card.sel{border-color:var(--text);box-shadow:0 0 0 3px color-mix(in srgb,var(--text) 9%,transparent)}
+.mp-k{font:600 9px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.mp-root{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 18px;background:var(--raise);border:1.5px solid var(--text)}
+.mp-root .mp-t{font-size:19px;font-weight:600;letter-spacing:-.015em;line-height:1.2;margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mp-branch{display:flex;flex-direction:column;justify-content:center;padding:0 14px;border-left:3px solid var(--side-c)}
+.mp-branch .mp-t{font-size:15px;font-weight:600;letter-spacing:-.01em;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-topic{overflow:hidden;cursor:default}
+.mp-th{height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--raise);border-bottom:1px solid var(--line);cursor:pointer}
+.mp-th .mp-t{flex:1;min-width:0;font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-td{font:10.5px var(--mono);color:var(--muted)}
+.mp-items{list-style:none;margin:0;padding:3px 0}
+.mp-item{height:24px;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:12.5px;color:var(--body);cursor:pointer}
+.mp-item:hover,.mp-item.sel{background:var(--raise);color:var(--text)}
+.mp-item.sel{box-shadow:inset 2px 0 0 var(--text)}
+.mp-item .n{font:10.5px var(--mono);color:var(--faint);width:14px;flex-shrink:0}
+.mp-item .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-item .d{font:10.5px var(--mono);color:var(--muted)}
+.mp-item.late .d{color:var(--danger)}
+.mp-item.done .t{text-decoration:line-through;color:var(--faint)}
+.mp-item .dot,.mp-linked .dot{width:6px;height:6px;border-radius:50%;background:var(--side-c);flex-shrink:0}
+.mp-empty{height:24px;display:flex;align-items:center;padding:0 12px;font-size:12px;color:var(--faint)}
+.mp-add{display:block;width:100%;height:30px;text-align:left;padding:0 12px;font-size:12px;color:var(--faint);border-top:1px dashed var(--line)}
+.mp-add:hover{color:var(--text)}
+.mp-plus{position:absolute;right:-12px;top:50%;margin-top:-12px;width:24px;height:24px;border-radius:50%;border:1px solid var(--line-2);background:var(--surface);color:var(--muted);font-size:15px;line-height:1;opacity:0;transition:opacity .15s}
+.mp-card:hover .mp-plus,.mp-card.sel .mp-plus{opacity:1}
+.mp-plus:hover{color:var(--text);border-color:var(--text)}
+.mp-pulse{position:absolute;border:1.5px solid var(--text);border-radius:12px;pointer-events:none;opacity:0}
+.mp-bloom .mp-card,.mp-bloom .mp-item,.mp-bloom .mp-empty{opacity:0}
+.mp-bloom .map-links path{stroke-dasharray:1;stroke-dashoffset:1}
+.mp-lift{opacity:.3}
+.mp-no{opacity:.45}
+.mp-ok{border-color:var(--side-c)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--side-c) 24%,transparent);opacity:1}
+body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
+.mp-ghost{position:fixed;left:0;top:0;z-index:80;pointer-events:none;padding:7px 12px;border-radius:8px;background:var(--text);color:var(--bg);font-size:12.5px;font-weight:500;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 10px 28px rgba(0,0,0,.2)}
+.mp-panel{position:absolute;right:14px;top:14px;width:292px;max-height:calc(100% - 28px);overflow:auto;background:var(--surface);border:1px solid var(--line-2);border-radius:12px;padding:14px;display:grid;gap:12px;z-index:5;box-shadow:0 14px 36px rgba(0,0,0,.12);cursor:default}
+.mp-ph{display:flex;align-items:center;justify-content:space-between}
+.mp-panel .fld,.mp-dates .fld{grid-template-columns:1fr;gap:5px}.mp-panel .lbl{font-size:12px}.mp-panel .txt{width:100%}.mp-panel .hint{font-size:12px}
+.mp-dates{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mp-linked{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--body)}.mp-linked .link{margin-left:auto}
+.mp-tray{position:absolute;left:14px;top:14px;bottom:14px;width:258px;overflow:auto;background:var(--surface);border:1px solid var(--line-2);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:7px;z-index:5;cursor:default}
+.mp-tray-h{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin-bottom:4px}.mp-tray-h span{font-size:11.5px;color:var(--muted);grid-column:1}.mp-tray-h .icon-btn{grid-row:1/3;grid-column:2}
+.mp-tray-row{display:flex;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;cursor:grab;background:var(--bg)}
+.mp-tray-row .t{flex:1;min-width:0}.mp-tray-row .d{font:10.5px var(--mono);color:var(--muted)}
+.mp-tray-row:hover{border-color:var(--muted)}
+.wrapseg{flex-wrap:wrap;height:auto}
+@media (max-width:820px){
+  .map-stage{height:calc(100vh - 160px);border-radius:12px}
+  .mp-panel{left:10px;right:10px;top:auto;bottom:10px;width:auto;max-height:62%}
+  .mp-tray{left:10px;right:10px;width:auto;top:auto;bottom:10px;max-height:55%}
+  .map-tools .btn[data-mact="zin"],.map-tools .btn[data-mact="zout"]{display:none}
+}
 @media (max-width:820px){
   .wrap{padding:0 16px}
   .top .wrap{gap:12px;height:54px}
@@ -582,6 +657,7 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
       <button class="tab" role="tab" data-view="dashboard">Dashboard</button>
       <button class="tab" role="tab" data-view="timeline">Timeline</button>
       <button class="tab" role="tab" data-view="calendar">Calendar</button>
+      <button class="tab" role="tab" data-view="map">Map</button>
       <button class="tab" role="tab" data-view="done">Done</button>
     </nav>
     <div class="acts">
@@ -626,6 +702,10 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 
   <section id="v-calendar" class="view" aria-label="Calendar" hidden>
     <div class="wrap" id="calHost"></div>
+  </section>
+
+  <section id="v-map" class="view" aria-label="Map" hidden>
+    <div class="wrap wide" id="mapHost"></div>
   </section>
 </main>
 
@@ -742,8 +822,8 @@ const PRI_RANK={high:0,medium:1,low:2};
 const OY_RE=/open\s?yap|\bai\b|\bllm\b|claude|minimax|deepseek/i;
 
 let tasks={},hist={},projects={},sideMap={};
-const ready={tasks:false,hist:false};
-const VIEWS=['tasks','dashboard','timeline','calendar','done'];
+const ready={tasks:false,hist:false,maps:false};
+const VIEWS=['tasks','dashboard','timeline','calendar','map','done'];
 let view=LS.get('oym_view','tasks');if(!VIEWS.includes(view))view='tasks';
 // The Drive notes feature was removed; forget any connector saved on this device.
 LS.del('oym_bridge');LS.del('oym_bridge_setup');LS.del('oym_upside');
@@ -975,7 +1055,7 @@ function logDone(raw,side){
 
 // ═══ Rendering ═══════════════════════════════════════════════════════════
 let rTimer=0,deferred=false,pointerDown=false;
-function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor')&&/^(INPUT|TEXTAREA)$/.test(a.tagName))}
+function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new')&&/^(INPUT|TEXTAREA)$/.test(a.tagName))}
 function schedule(){_entries=null;if(rTimer)return;rTimer=setTimeout(()=>{rTimer=0;render()},16)}
 function render(force){
   if(!force&&(editingText()||pointerDown)){deferred=true;return}
@@ -987,6 +1067,7 @@ function render(force){
   else if(view==='dashboard')renderDash(anim);
   else if(view==='timeline')renderTimeline(anim);
   else if(view==='calendar')renderCalendar(anim);
+  else if(view==='map')renderMap(anim);
   else if(view==='done')renderDone(anim);
   if(!$('#exBack').hidden)renderExportLive();
 }
@@ -1514,6 +1595,578 @@ function renderTimeline(anim){
   fx(items('openyap'),{opacity:[0,1],translateX:[-14,0],duration:540,delay:stg(22,{start:prev?40:220}),ease:'out(3)'});
   fx($$('.tl-week span',host).slice(0,12),{opacity:[0,1],duration:500,delay:stg(60,{start:100})});
 }
+// ═══ Map: a mind map per project ═════════════════════════════════════════
+// todo/maps/{projectId} = {title?, nodes:{id:{parent,kind,title,order,start?,due?,taskId?}}}.
+// parent 'root' makes a branch; a branch holds topics; a topic holds items. The layout is
+// the paper sheet's: branches top, left, right, bottom; a branch's topics in a row (top and
+// bottom) or a column (left and right); items are numbered rows inside their topic.
+// An item becomes a task only when it gets a date or "Add to list" (then taskId links them).
+let maps={};
+let mapPid=LS.get('oym_mappid','');
+let mapSel='';            // selected card or item ('root' is the project card)
+let mapFocus=false;       // focus the panel's title field after the next paint
+let mapTray=false;        // the Unplaced tasks drawer
+let mapNewOpen=false;     // the New project field
+const mapCam={};          // pid -> {x,y,k}
+let mapPrev=null;         // id -> {x,y} of the last paint, for FLIP moves
+let mapBloomPid='';       // the project whose entrance already played
+let mapGrow=null;         // {id,parent}: a bubble that was just added
+const MAP_SLOTS=['top','left','right','bottom'];
+const MW={root:270,branch:200,topic:224},MH={root:96,branch:64},M_HEAD=40,M_ROW=24,M_FOOT=30,M_GAP=26;
+
+const mapNodes=pid=>(maps[pid]&&maps[pid].nodes)||{};
+function mapKids(nodes,parent){
+  return Object.entries(nodes).filter(([,n])=>n&&n.parent===parent)
+    .sort((a,b)=>(a[1].order||0)-(b[1].order||0)||(a[0]<b[0]?-1:a[0]>b[0]?1:0));
+}
+function mapKindOf(nodes,id){
+  if(id==='root')return 'root';
+  const n=nodes[id];if(!n)return '';
+  if(n.parent==='root')return 'branch';
+  const p=nodes[n.parent];if(!p)return '';
+  return p.parent==='root'?'topic':'item';
+}
+function mapDescendants(nodes,id){const out=[];const walk=p=>{for(const [k] of mapKids(nodes,p)){out.push(k);walk(k)}};walk(id);return out}
+const mapSlot=i=>i<4?MAP_SLOTS[i]:(i%2?'right':'left');
+const mapTopicH=(nodes,tid)=>M_HEAD+Math.max(1,mapKids(nodes,tid).length)*M_ROW+M_FOOT;
+
+// Pure: world rectangles for every card and the connector paths. Same input, same drawing,
+// on every device.
+function mapLayout(nodes){
+  const C={root:{x:-MW.root/2,y:-MH.root/2,w:MW.root,h:MH.root,kind:'root'}},L=[];
+  const side={top:[],left:[],right:[],bottom:[]};
+  mapKids(nodes,'root').forEach(([id],i)=>side[mapSlot(i)].push(id));
+  const TW=MW.topic,BW=MW.branch,BH=MH.branch,rx=MW.root/2,ry=MH.root/2;
+  const topicsOf=b=>mapKids(nodes,b).map(([t])=>({t,h:mapTopicH(nodes,t)}));
+  // Left and right: a column of topics per side, each branch centred on its own group.
+  let colTop=Infinity,colBot=-Infinity;
+  for(const s of ['left','right']){
+    const sg=s==='left'?-1:1,groups=side[s].map(b=>({b,ts:topicsOf(b)}));
+    groups.forEach(g=>g.h=Math.max(BH,g.ts.reduce((a,t)=>a+t.h,0)+Math.max(0,g.ts.length-1)*M_GAP));
+    const total=groups.reduce((a,g)=>a+g.h,0)+Math.max(0,groups.length-1)*M_GAP*2;
+    let y=-total/2+(s==='left'?-36:36);          // the sheet sets the left branch high, the right low
+    const colX=sg<0?-rx-340-TW:rx+340,brX=sg<0?-rx-70-BW:rx+70;
+    for(const g of groups){
+      const by=y+g.h/2-BH/2;
+      C[g.b]={x:brX,y:by,w:BW,h:BH,kind:'branch',slot:s};
+      const re={x:sg<0?-rx:rx,y:0},be={x:sg<0?brX+BW:brX,y:by+BH/2},mid=(re.x+be.x)/2;
+      L.push({to:g.b,d:`M${re.x} ${re.y}H${mid}V${be.y}H${be.x}`});
+      const bout=sg<0?brX:brX+BW,bus=sg<0?colX+TW+(bout-colX-TW)/2:bout+(colX-bout)/2;
+      let ty=y+(g.h-(g.ts.reduce((a,t)=>a+t.h,0)+Math.max(0,g.ts.length-1)*M_GAP))/2;
+      for(const t of g.ts){
+        C[t.t]={x:colX,y:ty,w:TW,h:t.h,kind:'topic',slot:s};
+        const tin=sg<0?colX+TW:colX;
+        L.push({to:t.t,d:`M${bout} ${by+BH/2}H${bus}V${ty+Math.min(t.h/2,34)}H${tin}`});
+        colTop=Math.min(colTop,ty);colBot=Math.max(colBot,ty+t.h);ty+=t.h+M_GAP;
+      }
+      colTop=Math.min(colTop,by);colBot=Math.max(colBot,by+BH);
+      y+=g.h+M_GAP*2;
+    }
+  }
+  // Top and bottom: one row of topics, pushed clear of the side columns when it is wide.
+  const colInner=rx+340;
+  for(const s of ['top','bottom']){
+    const sg=s==='top'?-1:1;
+    for(const b of side[s]){
+      const by=sg<0?-ry-78-BH:ry+78;
+      C[b]={x:-BW/2,y:by,w:BW,h:BH,kind:'branch',slot:s};
+      L.push({to:b,d:`M0 ${sg*ry}V${sg<0?by+BH:by}`});
+      const ts=topicsOf(b);if(!ts.length)continue;
+      const tw=ts.length*TW+(ts.length-1)*M_GAP,x0=-tw/2,hmax=Math.max(...ts.map(t=>t.h));
+      let edge=sg<0?by-70:by+BH+70;
+      if(tw/2>colInner-20&&isFinite(colTop))edge=sg<0?Math.min(edge,colTop-50):Math.max(edge,colBot+50);
+      const bus=sg<0?edge+32:edge-32,bOut=sg<0?by:by+BH;
+      ts.forEach((t,i)=>{
+        const x=x0+i*(TW+M_GAP),y=sg<0?edge-t.h:edge;
+        C[t.t]={x,y,w:TW,h:t.h,kind:'topic',slot:s};
+        L.push({to:t.t,d:`M0 ${bOut}V${bus}H${x+TW/2}V${sg<0?edge:edge}`});
+      });
+      void hmax;
+    }
+  }
+  let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  for(const r of Object.values(C)){x0=Math.min(x0,r.x);y0=Math.min(y0,r.y);x1=Math.max(x1,r.x+r.w);y1=Math.max(y1,r.y+r.h)}
+  return {C,L,box:{x:x0,y:y0,w:x1-x0,h:y1-y0}};
+}
+
+// Pure: where a drag may land. Items go into a topic (or before another item), topics into a
+// branch (or before another topic), branches swap slots. Anything else is refused, which is
+// also what keeps a bubble out of its own subtree.
+function mapDropRule(nodes,drag,target){
+  if(!target||target===drag.id)return null;
+  const tk=mapKindOf(nodes,target);
+  if(drag.kind==='item'||drag.kind==='task'){
+    if(tk==='topic')return {parent:target};
+    if(tk==='item')return {parent:nodes[target].parent,before:target};
+    return null;
+  }
+  if(drag.kind==='topic'){
+    if(tk==='branch')return nodes[drag.id]&&nodes[drag.id].parent===target?null:{parent:target};
+    if(tk==='topic')return {parent:nodes[target].parent,before:target};
+    return null;
+  }
+  if(drag.kind==='branch')return tk==='branch'?{swap:target}:null;
+  return null;
+}
+function mapOrderFor(nodes,parent,before,skip){
+  const sib=mapKids(nodes,parent).filter(([k])=>k!==skip);
+  if(!before){const last=sib[sib.length-1];return last?(last[1].order||0)+1000:Date.now()}
+  const i=sib.findIndex(([k])=>k===before);if(i<0)return Date.now();
+  const hi=sib[i][1].order||0,lo=i>0?(sib[i-1][1].order||0):hi-2000;
+  return (lo+hi)/2;
+}
+const MP=(pid,id)=>'todo/maps/'+pid+'/nodes/'+id;
+
+// ── Project side and tasks
+const projSideOf=pid=>{const m=projSide(pid);return m&&SIDES.includes(m.side)?m.side:'career'};
+function mapTaskFor(pid,node,extra){
+  const side=projSideOf(pid);
+  return buildTask({title:node.title||'(untitled)',projectId:pid,side,category:side==='openyap'?'project':'work',...extra});
+}
+function mapLinkedIds(pid){const s=new Set();for(const n of Object.values(mapNodes(pid)))if(n&&n.taskId)s.add(n.taskId);return s}
+function mapUnplaced(pid){
+  const linked=mapLinkedIds(pid);
+  return Object.entries(tasks).filter(([id,t])=>t&&t.projectId===pid&&!t.completed&&!linked.has(id)).sort(cmpTask);
+}
+function mapProjects(){
+  return Object.entries(projects).filter(([id,p])=>p&&(maps[id]||!['done','archived'].includes(p.status)))
+    .sort((a,b)=>(maps[b[0]]?1:0)-(maps[a[0]]?1:0)||(a[1].order||0)-(b[1].order||0));
+}
+
+// ── Writes
+function mapAdd(parent){
+  const pid=mapPid,nodes=mapNodes(pid),pk=mapKindOf(nodes,parent);
+  if(pk==='item')return;
+  const kind=pk==='root'?'branch':pk==='branch'?'topic':'item';
+  const id=newKey('todo/maps/'+pid+'/nodes');
+  const title={branch:'New branch',topic:'New topic',item:'New item'}[kind];
+  mapGrow={id,parent};mapSel=id;mapFocus=true;
+  upd({[MP(pid,id)]:{parent,kind,title,order:mapOrderFor(nodes,parent,null)}});
+}
+function mapSave(id,f,v){
+  const pid=mapPid,nodes=mapNodes(pid),n=nodes[id];
+  if(id==='root'){
+    if(f==='name'&&v.trim())upd({['todo/projects/'+pid+'/name']:v.trim()});
+    else if(f==='mtitle')upd({['todo/maps/'+pid+'/title']:v.trim()||null});
+    return;
+  }
+  if(!n)return;
+  const up={};
+  if(f==='title'){const t=v.trim()||'(untitled)';up[MP(pid,id)+'/title']=t;if(n.taskId&&tasks[n.taskId])up[TP(n.taskId)+'/title']=t}
+  else if(f==='start'||f==='due'){
+    up[MP(pid,id)+'/'+f]=v||null;
+    if(f==='due'&&mapKindOf(nodes,id)==='item'){
+      if(n.taskId&&tasks[n.taskId])up[TP(n.taskId)+'/dueDate']=v||'';
+      else if(v){const tid=newKey('todo/tasks');up[TP(tid)]=mapTaskFor(pid,n,{dueDate:v});up[MP(pid,id)+'/taskId']=tid;toast('Added to your list: '+(n.title||'item'))}
+    }
+  }
+  upd(up);
+}
+function mapToList(id){
+  const pid=mapPid,n=mapNodes(pid)[id];if(!n||n.taskId)return;
+  const tid=newKey('todo/tasks');
+  upd({[TP(tid)]:mapTaskFor(pid,n,{dueDate:n.due||''}),[MP(pid,id)+'/taskId']:tid});
+  toast('Added to your list: '+(n.title||'item'));
+}
+function mapDelete(id){
+  const pid=mapPid,nodes=mapNodes(pid);if(!nodes[id])return;
+  const ids=[id,...mapDescendants(nodes,id)],snap={};
+  const up={};for(const k of ids){snap[k]=nodes[k];up[MP(pid,k)]=null}
+  mapSel='';upd(up);
+  const kept=ids.filter(k=>snap[k].taskId&&tasks[snap[k].taskId]).length;
+  toast(`Deleted ${ids.length} bubble${ids.length===1?'':'s'}`+(kept?`; ${kept} task${kept===1?'':'s'} kept in your list`:''),'Undo',()=>{
+    const back={};for(const k of ids)back[MP(pid,k)]=snap[k];upd(back);
+  });
+}
+function mapApplyDrop(drag,rule){
+  const pid=mapPid,nodes=mapNodes(pid);
+  if(rule.swap){
+    const a=nodes[drag.id],b=nodes[rule.swap];
+    upd({[MP(pid,drag.id)+'/order']:b.order||0,[MP(pid,rule.swap)+'/order']:a.order||0});return;
+  }
+  const order=mapOrderFor(nodes,rule.parent,rule.before,drag.id);
+  if(drag.kind==='task'){
+    const t=tasks[drag.id];if(!t)return;
+    const id=newKey('todo/maps/'+pid+'/nodes');
+    upd({[MP(pid,id)]:{parent:rule.parent,kind:'item',title:t.title||'(untitled)',order,taskId:drag.id,...(t.dueDate?{due:t.dueDate}:{})}});
+    return;
+  }
+  const kind=mapKindOf(nodes,rule.parent)==='topic'?'item':'topic';
+  upd({[MP(pid,drag.id)+'/parent']:rule.parent,[MP(pid,drag.id)+'/order']:order,[MP(pid,drag.id)+'/kind']:kind});
+}
+function mapNewProject(name){
+  name=name.trim();if(!name)return;
+  const id=newKey('todo/projects'),side=mSide||'career';
+  upd({['todo/projects/'+id]:{name,color:'',icon:'',status:'active',description:'',targetDate:'',createdAt:new Date().toISOString(),order:Date.now()},
+       ['todo/sides/'+id]:{side,private:false},['todo/maps/'+id+'/title']:name});
+  mapNewOpen=false;mapPid=id;LS.set('oym_mappid',id);mapSel='root';mapFocus=true;renderMap();
+}
+function mapProjSide(v){upd({['todo/sides/'+mapPid+'/side']:v})}
+function mapProjPrivate(){const m=projSide(mapPid)||{};upd({['todo/sides/'+mapPid+'/private']:!m.private,['todo/sides/'+mapPid+'/side']:m.side||projSideOf(mapPid)})}
+
+// ── Camera
+function mapStageSize(){const s=$('#mapStage');return s?{w:s.clientWidth,h:s.clientHeight}:{w:900,h:600}}
+function mapApplyCam(){
+  const w=$('#mapWorld'),st=$('#mapStage');if(!w||!st)return;
+  const c=mapCam[mapPid]||{x:0,y:0,k:1},{w:sw,h:sh}=mapStageSize();
+  w.style.transform=`translate(${sw/2+c.x}px,${sh/2+c.y}px) scale(${c.k})`;
+  st.style.backgroundPosition=`${sw/2+c.x}px ${sh/2+c.y}px`;st.style.backgroundSize=`${24*c.k}px ${24*c.k}px`;
+}
+function mapFitCam(lay){
+  const {w,h}=mapStageSize(),b=lay.box,pad=60;
+  const k=Math.max(.22,Math.min(1.15,(w-pad)/b.w,(h-pad)/b.h));
+  return {x:-(b.x+b.w/2)*k,y:-(b.y+b.h/2)*k,k};
+}
+function mapTween(to){
+  const c=mapCam[mapPid]||(mapCam[mapPid]={x:0,y:0,k:1});
+  if(!canAnim()){Object.assign(c,to);mapApplyCam();return}
+  try{anime.animate(c,{x:to.x,y:to.y,k:to.k,duration:700,ease:'out(4)',onUpdate:mapApplyCam})}catch(e){Object.assign(c,to);mapApplyCam()}
+}
+function mapZoom(f,cx,cy){
+  const c=mapCam[mapPid]||(mapCam[mapPid]={x:0,y:0,k:1}),{w,h}=mapStageSize();
+  const k=Math.max(.2,Math.min(2.2,c.k*f));
+  const px=(cx??w/2)-w/2,py=(cy??h/2)-h/2;         // keep the point under the cursor still
+  c.x=px-(px-c.x)*(k/c.k);c.y=py-(py-c.y)*(k/c.k);c.k=k;mapApplyCam();
+}
+
+// ── Render
+function mapItemRow(pid,id,n,i){
+  const t=n.taskId?tasks[n.taskId]:null,due=(t&&t.dueDate)||n.due||'',done=!!(t&&t.completed);
+  const late=!done&&due&&due<ymd(new Date());
+  return `<li class="mp-item${done?' done':''}${late?' late':''}${mapSel===id?' sel':''}" data-nid="${id}" data-mkind="item">
+    <span class="n">${i+1}</span><span class="t">${esc(n.title||(t&&t.title)||'(untitled)')}</span>
+    ${due?`<span class="d">${esc(fmtMD(parseYmd(due)))}</span>`:''}${t?`<span class="dot" title="${done?'Done':'In your list'}"></span>`:''}</li>`;
+}
+function renderMap(anim){
+  const host=$('#mapHost');if(!host)return;
+  if(!(ready.tasks&&ready.maps)){host.innerHTML='<p class="empty">Loading…</p>';return}
+  const plist=mapProjects();
+  if(!projects[mapPid]&&plist.length){mapPid=plist[0][0];LS.set('oym_mappid',mapPid)}
+  const pid=mapPid,P=projects[pid];
+  const pills=plist.map(([id,p])=>`<button class="map-pill" type="button" data-mpid="${id}" aria-pressed="${id===pid}" style="--side-c:var(--${projSideOf(id)})"><i></i>${esc(p.name||'Untitled')}</button>`).join('');
+  const bar=`<div class="map-bar">
+    <div class="map-pills">${pills}${mapNewOpen?`<form class="map-new" data-mform="new"><input class="txt" id="mapNewName" placeholder="Project name" autocomplete="off"><button class="btn primary" type="submit">Create</button></form>`
+      :'<button class="map-pill ghost" type="button" data-mact="new">+ New project</button>'}</div>
+    <div class="map-tools">
+      ${P?`<button class="btn" type="button" data-mact="tray">Unplaced <span class="mp-count">${mapUnplaced(pid).length}</span></button>
+      <button class="btn" type="button" data-mact="zout" aria-label="Zoom out">−</button><button class="btn" type="button" data-mact="zin" aria-label="Zoom in">+</button>
+      <button class="btn" type="button" data-mact="fit">Fit</button><button class="btn primary" type="button" data-mact="roadmap">Roadmap PDF</button>`:''}
+    </div></div>`;
+  if(!P){host.innerHTML=bar+'<div class="map-stage map-empty" id="mapStage"><p>Create a project to start a map.</p></div>';return}
+  const nodes=mapNodes(pid),lay=mapLayout(nodes),side=projSideOf(pid),mt=(maps[pid]&&maps[pid].title)||P.name;
+  const cards=[];
+  cards.push(`<div class="mp-card mp-root${mapSel==='root'?' sel':''}" data-nid="root" style="left:${lay.C.root.x}px;top:${lay.C.root.y}px;width:${MW.root}px;height:${MH.root}px">
+    <span class="mp-k">Main topic</span><span class="mp-t">${esc(mt)}</span><button class="mp-plus" type="button" data-madd="root" title="Add a branch" aria-label="Add a branch">+</button></div>`);
+  for(const [bid,b] of mapKids(nodes,'root')){
+    const r=lay.C[bid];
+    cards.push(`<div class="mp-card mp-branch${mapSel===bid?' sel':''}" data-nid="${bid}" data-mkind="branch" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px">
+      <span class="mp-k">Sub-topic</span><span class="mp-t">${esc(b.title)}</span><button class="mp-plus" type="button" data-madd="${bid}" title="Add a topic" aria-label="Add a topic">+</button></div>`);
+    for(const [tid,tn] of mapKids(nodes,bid)){
+      const tr=lay.C[tid],items=mapKids(nodes,tid);
+      cards.push(`<div class="mp-card mp-topic${mapSel===tid?' sel':''}" data-nid="${tid}" data-mkind="topic" style="left:${tr.x}px;top:${tr.y}px;width:${tr.w}px;height:${tr.h}px">
+        <div class="mp-th"><span class="mp-t">${esc(tn.title)}</span>${tn.due?`<span class="mp-td">${esc(fmtMD(parseYmd(tn.due)))}</span>`:''}</div>
+        <ol class="mp-items">${items.length?items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join(''):'<li class="mp-empty">Nothing here yet</li>'}</ol>
+        <button class="mp-add" type="button" data-madd="${tid}">+ Add item</button></div>`);
+    }
+  }
+  const b=lay.box,paths=lay.L.map(l=>`<path d="${l.d}" data-to="${l.to}" pathLength="1"/>`).join('');
+  const svg=`<svg class="map-links" style="left:${b.x-40}px;top:${b.y-40}px;width:${b.w+80}px;height:${b.h+80}px" viewBox="${b.x-40} ${b.y-40} ${b.w+80} ${b.h+80}" aria-hidden="true">${paths}</svg>`;
+  const un=mapTray?mapUnplaced(pid):[];
+  const tray=mapTray?`<aside class="mp-tray"><div class="mp-tray-h"><b>Unplaced</b><span>${un.length} open task${un.length===1?'':'s'} in ${esc(P.name)}</span><button class="icon-btn" type="button" data-mact="tray" aria-label="Close">${ICON.x}</button></div>
+    ${un.length?un.map(([id,t])=>`<div class="mp-tray-row" data-tid="${id}"><span class="t">${esc(t.title||'(untitled)')}</span>${t.dueDate?`<span class="d">${esc(fmtMD(parseYmd(t.dueDate)))}</span>`:''}</div>`).join('')
+      :'<p class="hint">Every open task in this project is on the map.</p>'}<p class="hint">Drag a task onto a topic to place it.</p></aside>`:'';
+  host.innerHTML=bar+`<div class="map-stage" id="mapStage" style="--side-c:var(--${side})"><div class="map-world" id="mapWorld">${svg}${cards.join('')}</div>${tray}${mapPanelHTML(pid,nodes)}</div>`;
+  const first=!mapCam[pid];if(first)mapCam[pid]=mapFitCam(lay);
+  mapApplyCam();
+  const bloom=(anim||mapBloomPid!==pid)&&canAnim();
+  if(bloom){mapBloomPid=pid;mapBloom(lay)}
+  else mapFlip(lay);
+  mapPrev=mapPositions(lay,nodes);mapGrow=null;
+  if(mapFocus){mapFocus=false;const i=$('#mpTitle');if(i){i.focus();i.select()}}
+}
+function mapPositions(lay,nodes){
+  const P={};for(const [id,r] of Object.entries(lay.C))P[id]={x:r.x,y:r.y};
+  for(const [tid] of Object.entries(lay.C).filter(([,r])=>r.kind==='topic'))
+    mapKids(nodes,tid).forEach(([iid],i)=>{const r=lay.C[tid];P[iid]={x:r.x,y:r.y+M_HEAD+3+i*M_ROW,parent:tid}});
+  return P;
+}
+function mapPanelHTML(pid,nodes){
+  if(!mapSel)return '';
+  const P=projects[pid];
+  if(mapSel==='root'){
+    const m=projSide(pid)||{},side=projSideOf(pid);
+    return `<div class="mp-panel" data-mpanel="root">
+      <div class="mp-ph"><span class="mp-k">Project</span><button class="icon-btn" type="button" data-mact="close" aria-label="Close">${ICON.x}</button></div>
+      <label class="fld"><span class="lbl">Name</span><input class="txt" id="mpTitle" data-mf="name" value="${esc(P.name||'')}"></label>
+      <label class="fld"><span class="lbl">Main topic</span><input class="txt" data-mf="mtitle" value="${esc((maps[pid]&&maps[pid].title)||'')}" placeholder="${esc(P.name||'')}"></label>
+      <div class="fld"><span class="lbl">Side</span><div class="seg" role="group" aria-label="Side">${segHTML([['career','Career'],['openyap','OpenYap']],side,'data-mside-set')}</div></div>
+      <label class="check"><input type="checkbox" data-mact-chk="private"${m.private?' checked':''}> Private (kept out of reports)</label>
+      <button class="btn" type="button" data-madd="root">+ Add branch</button></div>`;
+  }
+  const n=nodes[mapSel];if(!n){mapSel='';return ''}
+  const kind=mapKindOf(nodes,mapSel),t=n.taskId?tasks[n.taskId]:null,due=(t&&t.dueDate)||n.due||'';
+  const kids=mapDescendants(nodes,mapSel).length;
+  return `<div class="mp-panel" data-mpanel="${mapSel}">
+    <div class="mp-ph"><span class="mp-k">${{branch:'Sub-topic',topic:'Topic',item:'Item'}[kind]}</span><button class="icon-btn" type="button" data-mact="close" aria-label="Close">${ICON.x}</button></div>
+    <label class="fld"><span class="lbl">Title</span><input class="txt" id="mpTitle" data-mf="title" value="${esc(n.title||'')}"></label>
+    <div class="mp-dates"><label class="fld"><span class="lbl">Start</span><input class="txt" type="date" data-mf="start" value="${esc(n.start||'')}"></label>
+      <label class="fld"><span class="lbl">${kind==='item'?'Due':'Finish'}</span><input class="txt" type="date" data-mf="due" value="${esc(kind==='item'?due:(n.due||''))}"></label></div>
+    ${kind==='item'?(t?`<div class="mp-linked"><span class="dot"></span>${t.completed?'Done in your list':'In your list'}<button class="link" type="button" data-open="${n.taskId}">Open</button></div>`
+      :`<button class="btn" type="button" data-mact="list">Add to list</button><p class="hint">Giving it a due date adds it to your list too.</p>`)
+      :`<button class="btn" type="button" data-madd="${mapSel}">+ Add ${kind==='branch'?'topic':'item'}</button>`}
+    <button class="btn ghost danger" type="button" data-mact="del">Delete${kids?` (and ${kids} inside)`:''}</button></div>`;
+}
+
+// ── Motion: the bloom on arrival, FLIP when things move
+function mapBloom(lay){
+  const w=$('#mapWorld');if(!w)return;
+  const root=$('.mp-root',w),c=lay.C;
+  w.classList.add('mp-bloom');            // cards start hidden so a delayed one never flashes
+  const ctr=id=>{const r=c[id];return r?{x:r.x+r.w/2,y:r.y+r.h/2}:{x:0,y:0}};
+  const pulse=document.createElement('div');pulse.className='mp-pulse';
+  Object.assign(pulse.style,{left:c.root.x+'px',top:c.root.y+'px',width:c.root.w+'px',height:c.root.h+'px'});w.appendChild(pulse);
+  fx(pulse,{scale:[1,2.4],opacity:[.55,0],duration:1300,delay:180,ease:'out(3)',onComplete:()=>pulse.remove()});
+  fx(root,{scale:[.35,1],opacity:[0,1],duration:1100,ease:'outElastic(1,.55)'});
+  fx($$('.map-links path',w),{strokeDashoffset:[1,0],duration:760,delay:stg(22,{start:260}),ease:'inOut(2)'});
+  const br=$$('.mp-branch',w),tp=$$('.mp-topic',w);
+  br.forEach(el=>{const p=ctr(el.dataset.nid);el._dx=-p.x;el._dy=-p.y});
+  fx(br,{translateX:{from:el=>el._dx,to:0},translateY:{from:el=>el._dy,to:0},scale:[.2,1],opacity:[0,1],duration:900,delay:stg(90,{start:220}),ease:'outBack(1.4)'});
+  const nodes=mapNodes(mapPid);
+  tp.forEach(el=>{const n=nodes[el.dataset.nid],a=ctr(n&&n.parent),p=ctr(el.dataset.nid);el._dx=(a.x-p.x)*.7;el._dy=(a.y-p.y)*.7});
+  fx(tp,{translateX:{from:el=>el._dx,to:0},translateY:{from:el=>el._dy,to:0},scale:[.5,1],opacity:[0,1],duration:820,delay:stg(45,{start:480}),ease:'outBack(1.2)'});
+  fx($$('.mp-item,.mp-empty',w),{opacity:[0,1],translateX:[-10,0],duration:420,delay:stg(11,{start:820}),ease:'out(3)'});
+}
+function mapFlip(lay){
+  if(!mapPrev||!canAnim())return;
+  const w=$('#mapWorld');if(!w)return;
+  const now=mapPositions(lay,mapNodes(mapPid));
+  let moved=false;
+  for(const el of $$('[data-nid]',w)){
+    const id=el.dataset.nid,a=mapPrev[id],b=now[id];if(!b)continue;
+    // An item row rides inside its topic card, so only its motion relative to the card is its own.
+    let dx=a?a.x-b.x:0,dy=a?a.y-b.y:0;
+    if(a&&b.parent){const pa=mapPrev[b.parent],pb=now[b.parent];if(pa&&pb){dx-=pa.x-pb.x;dy-=pa.y-pb.y}}
+    if(a&&(dx||dy)){moved=true;fx(el,{translateX:[dx,0],translateY:[dy,0],duration:680,ease:'outElastic(1,.75)'})}
+    else if(!a&&mapGrow&&mapGrow.id===id){
+      moved=true;const p=now[mapGrow.parent]||{x:b.x,y:b.y};
+      fx(el,{translateX:[(p.x-b.x)*.5,0],translateY:[(p.y-b.y)*.5,0],scale:[.3,1],opacity:[0,1],duration:720,ease:'outBack(1.6)'});
+    }
+  }
+  if(moved)fx($$('.map-links path',w),{opacity:[.15,1],duration:520,delay:120,ease:'out(2)'});
+}
+function mapPick(pid){
+  if(pid===mapPid){renderMap();return}
+  const go=()=>{mapPid=pid;LS.set('oym_mappid',pid);mapSel='';mapTray=false;renderMap()};
+  const w=$('#mapWorld');
+  if(!w||!canAnim()){go();return}
+  fx($$('.mp-card',w),{translateX:el=>-(parseFloat(el.style.left)+el.offsetWidth/2)*.8,translateY:el=>-(parseFloat(el.style.top)+el.offsetHeight/2)*.8,
+    scale:.3,opacity:0,duration:300,delay:stg(6),ease:'in(3)'});
+  fx($$('.map-links path',w),{opacity:0,duration:220,ease:'in(2)'});
+  setTimeout(go,340);
+}
+
+// ── Pointer: pan, pinch, wheel zoom, and dragging bubbles
+let mpPan=null,mpDrag=null,mpPress=null,mpClickBlock=0;const mpPts=new Map();
+function mpDragInfo(el){
+  const tr=el.closest('.mp-tray-row');if(tr)return {kind:'task',id:tr.dataset.tid,title:tasks[tr.dataset.tid]?.title||'Task',el:tr};
+  const it=el.closest('[data-nid]');if(!it||it.dataset.nid==='root')return null;
+  const n=mapNodes(mapPid)[it.dataset.nid];if(!n)return null;
+  return {kind:mapKindOf(mapNodes(mapPid),it.dataset.nid),id:it.dataset.nid,title:n.title||'',el:it};
+}
+function mpStartDrag(info,x,y){
+  mpDrag={...info,rule:null,target:''};
+  info.el.classList.add('mp-lift');document.body.classList.add('mp-dragging');
+  const g=document.createElement('div');g.className='mp-ghost';g.textContent=info.title||'(untitled)';document.body.appendChild(g);mpDrag.ghost=g;
+  g.style.transform=`translate3d(${x+14}px,${y+10}px,0)`;
+  fx(g,{scale:[.6,1],opacity:[0,1],duration:260,ease:'outBack(2)'});
+  const nodes=mapNodes(mapPid);
+  for(const el of $$('#mapWorld [data-nid]'))el.classList.toggle('mp-no',!mapDropRule(nodes,info,el.dataset.nid)&&el.dataset.nid!==info.id);
+  if(navigator.vibrate)navigator.vibrate(10);
+}
+function mpMoveDrag(x,y){
+  mpDrag.ghost.style.transform=`translate3d(${x+14}px,${y+10}px,0)`;
+  const el=document.elementFromPoint(x,y),t=el&&el.closest&&el.closest('#mapWorld [data-nid]');
+  const id=t?t.dataset.nid:'',rule=id?mapDropRule(mapNodes(mapPid),mpDrag,id):null;
+  if(id!==mpDrag.target){$$('.mp-ok').forEach(e=>e.classList.remove('mp-ok'));if(rule&&t){t.classList.add('mp-ok');fx(t,{scale:[1.03,1],duration:260,ease:'out(3)'})}}
+  mpDrag.target=id;mpDrag.rule=rule;
+}
+function mpEndDrag(drop){
+  const d=mpDrag;mpDrag=null;if(!d)return;
+  d.el.classList.remove('mp-lift');document.body.classList.remove('mp-dragging');
+  $$('.mp-ok,.mp-no').forEach(e=>e.classList.remove('mp-ok','mp-no'));
+  if(drop&&d.rule){d.ghost.remove();mapApplyDrop(d,d.rule);mpClickBlock=Date.now()+400}
+  else if(canAnim()){const r=d.el.getBoundingClientRect();fx(d.ghost,{translateX:r.left,translateY:r.top,opacity:0,scale:.7,duration:320,ease:'in(2)',onComplete:()=>d.ghost.remove()})}
+  else d.ghost.remove();
+}
+document.addEventListener('pointerdown',e=>{
+  const st=e.target.closest&&e.target.closest('#mapStage');if(!st||e.button>0)return;
+  if(e.target.closest('button,input,textarea,select,label,.mp-panel,.mp-tray-h'))return;
+  mpPts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(mpPts.size===2){mpPress&&clearTimeout(mpPress.timer);mpPress=null;const [a,b]=[...mpPts.values()];mpPan={pinch:Math.hypot(a.x-b.x,a.y-b.y)};return}
+  const info=mpDragInfo(e.target);
+  if(info){mpPress={info,id:e.pointerId,x:e.clientX,y:e.clientY,mouse:e.pointerType==='mouse',timer:e.pointerType==='mouse'?0:setTimeout(()=>{if(mpPress){mpStartDrag(mpPress.info,mpPress.x,mpPress.y);mpPress.live=true}},260)};return}
+  if(e.target.closest('.mp-tray'))return;
+  const c=mapCam[mapPid];if(!c)return;
+  mpPan={id:e.pointerId,x:e.clientX,y:e.clientY,cx:c.x,cy:c.y,moved:false};st.classList.add('panning');
+});
+document.addEventListener('pointermove',e=>{
+  if(mpPts.has(e.pointerId))mpPts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(mpPan&&mpPan.pinch&&mpPts.size===2){
+    const [a,b]=[...mpPts.values()],d=Math.hypot(a.x-b.x,a.y-b.y),r=$('#mapStage').getBoundingClientRect();
+    mapZoom(d/mpPan.pinch,(a.x+b.x)/2-r.left,(a.y+b.y)/2-r.top);mpPan.pinch=d;e.preventDefault();return;
+  }
+  if(mpPress&&mpPress.id===e.pointerId){
+    const dist=Math.hypot(e.clientX-mpPress.x,e.clientY-mpPress.y);
+    if(!mpPress.live){
+      if(mpPress.mouse&&dist>5){mpStartDrag(mpPress.info,e.clientX,e.clientY);mpPress.live=true}
+      else if(!mpPress.mouse&&dist>8){clearTimeout(mpPress.timer);const info=mpPress.info;mpPress=null;
+        const c=mapCam[mapPid];if(c){mpPan={id:e.pointerId,x:e.clientX,y:e.clientY,cx:c.x,cy:c.y,moved:true};void info}}
+    }
+    if(mpDrag){e.preventDefault();mpMoveDrag(e.clientX,e.clientY)}
+    return;
+  }
+  if(mpPan&&mpPan.id===e.pointerId){
+    const c=mapCam[mapPid];c.x=mpPan.cx+e.clientX-mpPan.x;c.y=mpPan.cy+e.clientY-mpPan.y;
+    if(Math.abs(e.clientX-mpPan.x)+Math.abs(e.clientY-mpPan.y)>4)mpPan.moved=true;mapApplyCam();
+  }
+},{passive:false});
+function mpUp(e){
+  mpPts.delete(e.pointerId);
+  if(mpPress&&mpPress.id===e.pointerId){clearTimeout(mpPress.timer);if(mpDrag)mpEndDrag(e.type==='pointerup');mpPress=null;return}
+  if(mpPan&&(mpPan.id===e.pointerId||mpPan.pinch)){if(mpPan.moved)mpClickBlock=Date.now()+250;mpPan=null;$('#mapStage')?.classList.remove('panning')}
+}
+document.addEventListener('pointerup',mpUp);document.addEventListener('pointercancel',mpUp);
+document.addEventListener('wheel',e=>{
+  const st=e.target.closest&&e.target.closest('#mapStage');if(!st||e.target.closest('.mp-panel,.mp-tray'))return;
+  e.preventDefault();const r=st.getBoundingClientRect();
+  if(e.ctrlKey||e.metaKey)mapZoom(Math.exp(-e.deltaY*.01),e.clientX-r.left,e.clientY-r.top);
+  else{const c=mapCam[mapPid];if(!c)return;c.x-=e.deltaX;c.y-=e.deltaY;mapApplyCam()}
+},{passive:false});
+window.addEventListener('resize',()=>{if(view==='map')mapApplyCam()});
+
+// Clicks inside the map. Returns true when it handled the click.
+function mapClick(t){
+  if(!t.closest('#mapHost'))return false;
+  if(Date.now()<mpClickBlock)return true;
+  const pp=t.closest('[data-mpid]');if(pp){mapPick(pp.dataset.mpid);return true}
+  const ad=t.closest('[data-madd]');if(ad){mapAdd(ad.dataset.madd);return true}
+  const ss=t.closest('[data-mside-set]');if(ss){mapProjSide(ss.dataset.msideSet);return true}
+  const a=t.closest('[data-mact]');
+  if(a){const k=a.dataset.mact;
+    if(k==='new'){mapNewOpen=true;renderMap();$('#mapNewName')?.focus()}
+    else if(k==='tray'){mapTray=!mapTray;renderMap();if(mapTray)fx($('.mp-tray'),{translateX:[-24,0],opacity:[0,1],duration:380,ease:'out(4)'})}
+    else if(k==='fit'){const lay=mapLayout(mapNodes(mapPid));mapTween(mapFitCam(lay))}
+    else if(k==='zin')mapZoom(1.2);
+    else if(k==='zout')mapZoom(1/1.2);
+    else if(k==='roadmap'){EX.tab='roadmap';EX.rpid=mapPid;saveEX();openExport()}
+    else if(k==='close'){mapSel='';renderMap()}
+    else if(k==='list')mapToList(mapSel);
+    else if(k==='del')mapDelete(mapSel);
+    return true;
+  }
+  if(t.closest('.mp-panel,.mp-tray,[data-open]'))return !t.closest('[data-open]');
+  const nd=t.closest('#mapWorld [data-nid]');
+  if(nd){const id=nd.dataset.nid,was=mapSel;mapSel=id===was?'':id;renderMap();
+    if(mapSel)fx($('.mp-panel'),{translateY:[10,0],opacity:[0,1],duration:320,ease:'out(4)'});return true}
+  if(t.closest('#mapStage')&&mapSel){mapSel='';renderMap();return true}
+  return !!t.closest('#mapStage');
+}
+
+// ═══ Roadmap (data + PDF) ════════════════════════════════════════════════
+function roadmapData(pid,today){
+  today=today||ymd(new Date());
+  const nodes=mapNodes(pid),P=projects[pid]||{};
+  const item=(id,n)=>{const t=n.taskId?tasks[n.taskId]:null,due=(t&&t.dueDate)||n.due||'',done=!!(t&&t.completed);
+    return {id,title:n.title||(t&&t.title)||'(untitled)',start:n.start||'',due,done,inList:!!t,status:done?'done':due&&due<today?'overdue':'open'}};
+  const lanes=mapKids(nodes,'root').map(([bid,b])=>({id:bid,title:b.title||'',topics:mapKids(nodes,bid).map(([tid,tn])=>{
+    const items=mapKids(nodes,tid).map(([iid,i])=>item(iid,i)),ds=items.flatMap(i=>[i.start,i.due]).concat([tn.start,tn.due]).filter(Boolean).sort();
+    return {id:tid,title:tn.title||'',start:ds[0]||'',end:ds[ds.length-1]||'',items};
+  })}));
+  const all=lanes.flatMap(l=>l.topics.flatMap(t=>[t.start,t.end])).filter(Boolean).sort();
+  const undated=[];for(const l of lanes)for(const t of l.topics)for(const i of t.items)if(!i.due&&!i.start)undated.push({...i,lane:l.title,topic:t.title});
+  return {pid,name:P.name||'Project',title:(maps[pid]&&maps[pid].title)||P.name||'',lanes,min:all[0]||'',max:all[all.length-1]||'',undated,today,
+    dated:lanes.reduce((a,l)=>a+l.topics.reduce((b,t)=>b+t.items.filter(i=>i.due||i.start).length,0),0)};
+}
+function buildRoadmap(o){
+  const R=roadmapData(o.pid),k=pdfKit(o.paper,'landscape'),{doc,P,W,H}=k,M=40;k.M=M;
+  const mix=(c,f)=>c.map(v=>Math.round(v+(255-v)*f));
+  const acc=P.acc,soft=mix(acc,.82),late=[192,57,43];
+  let y=M;
+  function header(cont){
+    y=M;setT(k,'bold',16,P.ink);doc.text(fit(doc,'Roadmap - '+R.name+(cont?' (continued)':''),W-2*M-200),M,y+4);
+    setT(k,'normal',9,P.muted);doc.text(fit(doc,R.title&&R.title!==R.name?R.title:'',W-2*M-200),M,y+19);
+    doc.text('Generated '+fmtMDY(new Date()),W-M,y+4,{align:'right'});
+    if(R.min)doc.text(fmtMDY(parseYmd(R.min))+' - '+fmtMDY(parseYmd(R.max)),W-M,y+19,{align:'right'});
+    y+=34;doc.setDrawColor(...P.rule);doc.setLineWidth(.6);doc.line(M,y,W-M,y);y+=12;
+  }
+  header(false);
+  // Timeline
+  const LX=M+180,RX=W-M;
+  if(R.min){
+    const d0=mondayOf(parseYmd(R.min)),d1=addDays(mondayOf(parseYmd(R.max)),7);
+    const days=Math.max(7,Math.round((d1-d0)/864e5)),px=(RX-LX)/days;
+    const X=ds=>LX+Math.round((parseYmd(ds)-d0)/864e5)*px;
+    const monthly=days>7*30;
+    const cols=()=>{
+      setT(k,'normal',7,P.muted);doc.setDrawColor(...P.line);doc.setLineWidth(.3);
+      if(monthly){for(let d=new Date(d0.getFullYear(),d0.getMonth(),1);d<d1;d=new Date(d.getFullYear(),d.getMonth()+1,1)){const x=LX+Math.max(0,(d-d0)/864e5)*px;doc.text(MON[d.getMonth()]+(d.getMonth()?'':' '+d.getFullYear()),x+2,y);doc.line(x,y+4,x,H-M-10)}}
+      else{const every=days/7>20?2:1;let i=0;for(let d=new Date(d0);d<d1;d=addDays(d,7),i++){const x=LX+(d-d0)/864e5*px;if(i%every===0)doc.text(fmtMD(d),x+2,y);doc.line(x,y+4,x,H-M-10)}}
+      y+=12;
+    };
+    cols();
+    const need=h=>{if(y+h>H-M-14){doc.addPage();header(true);cols()}};
+    const top=y;
+    for(const l of R.lanes){
+      if(!l.topics.some(t=>t.start||t.end))continue;
+      need(20);setT(k,'bold',9.5,P.ink);doc.text(fit(doc,l.title,170),M,y+10);
+      doc.setDrawColor(...P.rule);doc.setLineWidth(.5);doc.line(M,y+15,RX,y+15);y+=20;
+      for(const t of l.topics){
+        if(!t.start&&!t.end)continue;
+        need(16);setT(k,'bold',8,P.body);doc.text(fit(doc,t.title,160),M+8,y+9);
+        const a=X(t.start||t.end),b=Math.max(X(t.end||t.start)+px,a+3);
+        doc.setFillColor(...soft);doc.rect(a,y+2,b-a,9,'F');y+=15;
+        for(const i of t.items){
+          if(!i.due&&!i.start)continue;
+          need(12);setT(k,'normal',7.5,i.status==='overdue'?late:P.muted);doc.text(fit(doc,i.title,150),M+16,y+8);
+          const c=i.done?P.muted:i.status==='overdue'?late:acc;doc.setFillColor(...c);doc.setDrawColor(...c);
+          if(i.start&&i.due){const a2=X(i.start),b2=Math.max(X(i.due)+px,a2+3);doc.rect(a2,y+3,b2-a2,5,'F')}
+          else{const x=X(i.due||i.start)+px/2;doc.lines([[4,4],[-4,4],[-4,-4]],x,y+1.5,[1,1],'F',true)}
+          y+=12;
+        }
+      }
+    }
+    const tx=X(R.today);
+    if(tx>=LX&&tx<=RX){doc.setDrawColor(...late);doc.setLineWidth(.8);doc.line(tx,top-8,tx,Math.min(y,H-M-10));setT(k,'bold',7,late);doc.text('Today',tx+2,top-10)}
+  }else{
+    setT(k,'normal',10,P.muted);doc.text('No dates yet. Give items a start or due date on the Map to see them on a timeline.',M,y+10);y+=24;
+  }
+  // Schedule
+  doc.addPage();header(true);
+  const cx=[M,M+250,M+430,M+510,M+590,M+670];
+  const th=()=>{setT(k,'bold',8,P.muted);['Item','Topic','Start','Due','Status','In list'].forEach((h,i)=>doc.text(h,cx[i],y));y+=6;doc.setDrawColor(...P.rule);doc.line(M,y,W-M,y);y+=11};
+  const need2=h=>{if(y+h>H-M-14){doc.addPage();header(true);th()}};
+  setT(k,'bold',12,P.ink);doc.text('Schedule',M,y+4);y+=20;th();
+  for(const l of R.lanes){
+    const rows=l.topics.flatMap(t=>t.items.filter(i=>i.due||i.start).map(i=>({...i,topic:t.title})))
+      .sort((a,b)=>(a.due||a.start)<(b.due||b.start)?-1:1);
+    if(!rows.length)continue;
+    need2(30);setT(k,'bold',9.5,acc);doc.text(fit(doc,l.title,W-2*M),M,y+2);y+=14;
+    for(const r of rows){
+      need2(13);setT(k,'normal',8.5,r.status==='overdue'?late:P.body);
+      doc.text(fit(doc,r.title,240),cx[0],y);doc.text(fit(doc,r.topic,170),cx[1],y);
+      doc.text(r.start?fmtMD(parseYmd(r.start)):'-',cx[2],y);doc.text(r.due?fmtMD(parseYmd(r.due)):'-',cx[3],y);
+      doc.text(r.status==='done'?'Done':r.status==='overdue'?'Overdue':'Open',cx[4],y);doc.text(r.inList?'Yes':'-',cx[5],y);y+=13;
+    }
+    y+=6;
+  }
+  if(R.undated.length){
+    need2(34);setT(k,'bold',9.5,P.ink);doc.text('Not scheduled',M,y+2);y+=14;
+    for(const r of R.undated){need2(13);setT(k,'normal',8.5,P.muted);doc.text(fit(doc,r.title,240),cx[0],y);doc.text(fit(doc,r.lane+' / '+r.topic,300),cx[1],y);y+=13}
+  }
+  pageNumbers(k,'Roadmap - '+R.name);
+  return doc;
+}
+
 // ═══ PDF export ══════════════════════════════════════════════════════════
 let pdfLib=null;
 function loadPDF(){
@@ -1530,8 +2183,8 @@ function loadPDF(){
 const pc=s=>String(s||'').replace(/[‘’ʼ]/g,"'").replace(/[“”]/g,'"').replace(/[–—−]/g,'-').replace(/…/g,'...')
   .replace(/[   ]/g,' ').replace(/•/g,'-').replace(/[\r\t]/g,' ').replace(/[^\n\x20-\x7E¡-ÿ]/g,'').replace(/ {2,}/g,' ').trim();
 const hexRgb=h=>{h=String(h).replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16);return isNaN(n)?[80,80,80]:[n>>16&255,n>>8&255,n&255]};
-function pdfKit(paper){
-  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'pt',format:paper==='a4'?'a4':'letter',compress:true});
+function pdfKit(paper,orient){
+  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'pt',format:paper==='a4'?'a4':'letter',orientation:orient==='landscape'?'landscape':'portrait',compress:true});
   const th=curTheme();
   const P={ink:[28,31,36],body:[64,70,80],muted:[118,124,134],rule:[208,213,219],line:[208,215,224],dot:[168,175,184],
     acc:hexRgb(th.print),career:hexRgb(th.pc),openyap:hexRgb(th.po),font:th.mono?'courier':'helvetica'};
@@ -1810,11 +2463,11 @@ const EX={
   tab:LS.get('oym_extab','report'),range:LS.get('oym_exrange','week'),side:LS.get('oym_exside','both'),
   notes:LS.get('oym_exnotes','0')==='1',routine:LS.get('oym_exroutine','1')==='1',name:LS.get('oym_name',''),
   tpl:LS.get('oym_extpl','cornell'),dside:LS.get('oym_exdside','both'),wins:LS.get('oym_exwins','1')==='1',
-  blanks:Math.max(0,Math.min(3,+LS.get('oym_exblanks','1')||0)),paper:LS.get('oym_expaper','letter'),over:{}
+  blanks:Math.max(0,Math.min(3,+LS.get('oym_exblanks','1')||0)),paper:LS.get('oym_expaper','letter'),rpid:LS.get('oym_exrpid',''),over:{}
 };
 const saveEX=()=>{LS.set('oym_extab',EX.tab);LS.set('oym_exrange',EX.range);LS.set('oym_exside',EX.side);LS.set('oym_exnotes',EX.notes?'1':'0');
   LS.set('oym_exroutine',EX.routine?'1':'0');LS.set('oym_name',EX.name);LS.set('oym_extpl',EX.tpl);LS.set('oym_exdside',EX.dside);
-  LS.set('oym_exwins',EX.wins?'1':'0');LS.set('oym_exblanks',String(EX.blanks));LS.set('oym_expaper',EX.paper)};
+  LS.set('oym_exwins',EX.wins?'1':'0');LS.set('oym_exblanks',String(EX.blanks));LS.set('oym_expaper',EX.paper);LS.set('oym_exrpid',EX.rpid||'')};
 function reportPool(){return entries().filter(e=>inRange(e,EX.range)&&(EX.side==='both'||e.side===EX.side))}
 const included=e=>EX.over[e.key]!==undefined?EX.over[e.key]:!e.private;
 function reportOpts(){
@@ -1838,9 +2491,17 @@ function closeExport(){
 }
 function exStatus(t,err){const s=$('#exStatus');s.textContent=t;s.className='ex-status'+(err?' err':'')}
 function renderExport(){
-  $('[data-exg="tab"]').innerHTML=segHTML([['report','Completed work'],['dump','Brain dump']],EX.tab,'data-extab');
+  $('[data-exg="tab"]').innerHTML=segHTML([['report','Completed work'],['dump','Brain dump'],['roadmap','Roadmap']],EX.tab,'data-extab');
   const body=$('#exBody');
-  if(EX.tab==='report'){
+  if(EX.tab==='roadmap'){
+    const withMaps=mapProjects().filter(([id])=>maps[id]);
+    if(!maps[EX.rpid]&&withMaps.length)EX.rpid=withMaps[0][0];
+    body.innerHTML=`<div style="display:grid;gap:16px">
+      <div class="fld"><span class="lbl">Project</span><div class="seg wrapseg" role="group" aria-label="Project">${segHTML(withMaps.map(([id,p])=>[id,esc(p.name||'Untitled')]),EX.rpid,'data-exrpid')||'<span class="hint">Make a map first.</span>'}</div></div>
+      <div class="fld"><span class="lbl">Paper</span><div class="seg" role="group" aria-label="Paper size">${segHTML([['letter','Letter'],['a4','A4']],EX.paper,'data-expaper')}</div></div>
+      <p class="hint" id="rmCount"></p>
+    </div>`;
+  }else if(EX.tab==='report'){
     body.innerHTML=`<div style="display:grid;gap:16px">
       <div class="fld"><span class="lbl">Period</span><div class="seg" role="group" aria-label="Period">${segHTML(RANGES,EX.range,'data-exrange')}</div></div>
       <div class="fld"><span class="lbl">Side</span><div class="seg" role="group" aria-label="Side">${segHTML([['both','Both'],['career','Career'],['openyap','OpenYap']],EX.side,'data-exside')}</div></div>
@@ -1874,6 +2535,10 @@ function renderExportLive(){
     pick.innerHTML=rows.length?rows.map(e=>{const d=new Date(e.completedAt);return `<label class="pick-row"><input type="checkbox" data-key="${esc(e.key)}"${included(e)?' checked':''}><span class="pk-date">${DOW[d.getDay()]} ${d.getMonth()+1}/${d.getDate()}</span><span class="pk-title">${esc(e.title)}</span><span class="pk-tag">${e.private?'Private':SIDE_NAME[e.side]}</span></label>`}).join('')
       :'<div class="pick-empty">Pick another period, or log finished work on the Done tab.</div>';
     pick.scrollTop=st;
+  }else if(EX.tab==='roadmap'){
+    const el=$('#rmCount');if(!el||!EX.rpid)return;
+    const R=roadmapData(EX.rpid),n=R.lanes.reduce((a,l)=>a+l.topics.reduce((b,t)=>b+t.items.length,0),0);
+    el.textContent=`Landscape. A timeline of ${R.dated} dated item${R.dated===1?'':'s'}, then the schedule by branch. ${n-R.dated} without dates are listed as not scheduled.`;
   }else{
     const el=$('#dumpCount');if(!el)return;
     const d=dumpData(dumpOpts()),n=d.groups.reduce((a,g)=>a+g.tasks.length,0);
@@ -1882,12 +2547,14 @@ function renderExportLive(){
 }
 function exFileName(){
   const d=ymd(new Date());
+  if(EX.tab==='roadmap')return `Roadmap - ${(projects[EX.rpid]&&projects[EX.rpid].name)||'Project'} - ${d}.pdf`;
   if(EX.tab==='report'){const r={week:'This week',lastweek:'Last week',month:MONL[new Date().getMonth()],all:'All time'}[EX.range];return `Completed work - ${r}${EX.side==='both'?'':' - '+SIDE_NAME[EX.side]} - ${d}.pdf`}
   return `Brain dump - ${TPLS.find(t=>t.id===EX.tpl).name} - ${d}.pdf`;
 }
 async function makePDF(){
   await loadPDF();
-  const doc=EX.tab==='report'?buildReport(reportOpts()):buildDump(dumpOpts());
+  if(EX.tab==='roadmap'&&!maps[EX.rpid])throw new Error('Pick a project with a map.');
+  const doc=EX.tab==='roadmap'?buildRoadmap({pid:EX.rpid,paper:EX.paper}):EX.tab==='report'?buildReport(reportOpts()):buildDump(dumpOpts());
   return {blob:doc.output('blob'),name:exFileName()};
 }
 async function exportAct(act){
@@ -2006,6 +2673,7 @@ document.addEventListener('click',e=>{
   const t=e.target;
   if(Date.now()<dragClickBlock&&t.closest('[data-drag-id]')){e.preventDefault();return}
   if(!$('#themePop').hidden&&!t.closest('#themePop')&&!t.closest('#themeBtn'))closeThemes();
+  if(mapClick(t))return;
   const act=t.closest('[data-act]');
   if(act){const host=act.closest('[data-id]');if(host)handleAct(act.dataset.act,host.dataset.id,act);return}
   const v=t.closest('[data-view]');if(v){setView(v.dataset.view);return}
@@ -2027,7 +2695,7 @@ document.addEventListener('click',e=>{
   // Export sheet
   if(t===$('#exBack')){closeExport();return}
   const ex=t.closest('[data-ex]');if(ex){exportAct(ex.dataset.ex);return}
-  const map=[['data-extab','tab'],['data-exrange','range'],['data-exside','side'],['data-exdside','dside'],['data-expaper','paper']];
+  const map=[['data-extab','tab'],['data-exrange','range'],['data-exside','side'],['data-exdside','dside'],['data-expaper','paper'],['data-exrpid','rpid']];
   for(const [attr,key] of map){const b=t.closest('['+attr+']');if(b){EX[key]=b.getAttribute(attr);saveEX();renderExport();return}}
   const bl=t.closest('[data-exblanks]');if(bl){EX.blanks=+bl.dataset.exblanks;saveEX();renderExport();return}
   const tp=t.closest('[data-tpl]');if(tp){EX.tpl=tp.dataset.tpl;saveEX();renderExport();return}
@@ -2051,11 +2719,14 @@ document.addEventListener('submit',e=>{
   const f=e.target;e.preventDefault();
   if(f.dataset.add){const inp=f.querySelector('input');lastAddSide=f.dataset.add;if(addTask(f.dataset.add,inp.value))inp.value=''}
   else if(f.id==='logAdd'){const inp=$('#logInput');if(logDone(inp.value,logSide))inp.value=''}
+  else if(f.dataset.mform==='new')mapNewProject($('#mapNewName').value);
 });
 document.addEventListener('focusin',e=>{const f=e.target.closest&&e.target.closest('[data-add]');if(f)lastAddSide=f.dataset.add});
 document.addEventListener('change',e=>{
   const t=e.target;
   if(t.dataset.f){const ed=t.closest('.editor');if(ed){if(t.dataset.f==='notes'){notesPending=null;clearTimeout(notesTimer)}saveField(ed.dataset.id,t.dataset.f,t.value)}return}
+  if(t.dataset.mf&&t.closest('.mp-panel')){mapSave(mapSel,t.dataset.mf,t.value);return}
+  if(t.dataset.mactChk==='private'){mapProjPrivate();return}
   if(t.dataset.exc){EX[t.dataset.exc]=t.checked;saveEX();renderExportLive();return}
   if(t.dataset.key&&t.closest('#exPick')){EX.over[t.dataset.key]=t.checked;renderExportLive();return}
 });
@@ -2077,8 +2748,10 @@ document.addEventListener('keydown',e=>{
     if(!$('#exBack').hidden){closeExport();return}
     if(!$('#themePop').hidden){closeThemes();$('#themeBtn').focus();return}
     if(openId){closeEditor();return}
+    if(view==='map'&&(mapSel||mapNewOpen)){mapSel='';mapNewOpen=false;renderMap();return}
     return;
   }
+  if(e.key==='Enter'&&t.dataset&&t.dataset.mf&&t.closest('.mp-panel')){e.preventDefault();t.blur();return}
   if(e.key==='Enter'&&t.classList&&t.classList.contains('e-title')){e.preventDefault();saveField(t.closest('.editor').dataset.id,'title',t.value);closeEditor();return}
   if((e.key==='Enter'||e.key===' ')&&t.matches&&t.matches('[role="button"][data-act],[role="button"][data-open]')){e.preventDefault();t.click();return}
   if(t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;
@@ -2117,13 +2790,14 @@ function listen(){
   db.ref('todo/history').on('value',s=>{hist=s.val()||{};ready.hist=true;schedule()},fail);
   db.ref('todo/projects').on('value',s=>{projects=s.val()||{};schedule()},fail);
   db.ref('todo/sides').on('value',s=>{sideMap=s.val()||{};schedule()},fail);
+  db.ref('todo/maps').on('value',s=>{maps=s.val()||{};ready.maps=true;schedule()},fail);
   let seen=false;
   db.ref('.info/connected').on('value',s=>{const on=!!s.val();if(on)seen=true;$('#offline').hidden=on||!seen});
 }
 function unlisten(){
   if(!listening)return;listening=false;
-  for(const p of ['todo/tasks','todo/history','todo/projects','todo/sides'])db.ref(p).off();
-  tasks={};hist={};projects={};sideMap={};schedule();
+  for(const p of ['todo/tasks','todo/history','todo/projects','todo/sides','todo/maps'])db.ref(p).off();
+  tasks={};hist={};projects={};sideMap={};maps={};schedule();
 }
 async function signIn(){
   gateMsg('');
@@ -2146,7 +2820,7 @@ if(auth){
     if(ok)listen();else unlisten();
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
-window.__oym={dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>

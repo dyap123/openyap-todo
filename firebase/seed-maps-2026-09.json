@@ -1,0 +1,974 @@
+{
+ "todo/projects/-map00-aiinconstruction": {
+  "name": "AI in Construction",
+  "color": "",
+  "icon": "",
+  "status": "active",
+  "description": "",
+  "targetDate": "",
+  "createdAt": "2026-09-28T13:49:55.000Z",
+  "order": 1790603395820
+ },
+ "todo/sides/-map00-aiinconstruction": {
+  "side": "career",
+  "private": false
+ },
+ "todo/maps/-map00-aiinconstruction": {
+  "title": "Maximize AI to be better builders",
+  "nodes": {
+   "n001": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Enterprise Policies",
+    "order": 1000
+   },
+   "n002": {
+    "parent": "n001",
+    "kind": "topic",
+    "title": "Cybersecurity",
+    "order": 1000
+   },
+   "n003": {
+    "parent": "n002",
+    "kind": "item",
+    "title": "Variables of exposure",
+    "order": 1000
+   },
+   "n004": {
+    "parent": "n002",
+    "kind": "item",
+    "title": "Multi-Factor Entra ID",
+    "order": 2000
+   },
+   "n005": {
+    "parent": "n002",
+    "kind": "item",
+    "title": "Information used to create AI tools (sensitivity)",
+    "order": 3000
+   },
+   "n006": {
+    "parent": "n002",
+    "kind": "item",
+    "title": "Logging / auditing tools",
+    "order": 4000
+   },
+   "n007": {
+    "parent": "n001",
+    "kind": "topic",
+    "title": "Data Governance",
+    "order": 2000
+   },
+   "n008": {
+    "parent": "n007",
+    "kind": "item",
+    "title": "Types of data",
+    "order": 1000
+   },
+   "n009": {
+    "parent": "n007",
+    "kind": "item",
+    "title": "Where data lives",
+    "order": 2000
+   },
+   "n010": {
+    "parent": "n007",
+    "kind": "item",
+    "title": "Accuracy of data",
+    "order": 3000
+   },
+   "n011": {
+    "parent": "n007",
+    "kind": "item",
+    "title": "Scalability and flexibility of data",
+    "order": 4000
+   },
+   "n012": {
+    "parent": "n001",
+    "kind": "topic",
+    "title": "AI Council",
+    "order": 3000
+   },
+   "n013": {
+    "parent": "n012",
+    "kind": "item",
+    "title": "M365 use cases",
+    "order": 1000
+   },
+   "n014": {
+    "parent": "n012",
+    "kind": "item",
+    "title": "Data allowed to access?",
+    "order": 2000
+   },
+   "n015": {
+    "parent": "n012",
+    "kind": "item",
+    "title": "How to educate employees?",
+    "order": 3000
+   },
+   "n016": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Existing Data",
+    "order": 2000
+   },
+   "n017": {
+    "parent": "n016",
+    "kind": "topic",
+    "title": "M365",
+    "order": 1000
+   },
+   "n018": {
+    "parent": "n017",
+    "kind": "item",
+    "title": "Outlook + emails",
+    "order": 1000
+   },
+   "n019": {
+    "parent": "n017",
+    "kind": "item",
+    "title": "Excel - useful tracker (LDR)",
+    "order": 2000
+   },
+   "n020": {
+    "parent": "n017",
+    "kind": "item",
+    "title": "OneDrive (Box 2.0)",
+    "order": 3000
+   },
+   "n021": {
+    "parent": "n017",
+    "kind": "item",
+    "title": "Fabric Dashboard (usually broken)",
+    "order": 4000
+   },
+   "n022": {
+    "parent": "n016",
+    "kind": "topic",
+    "title": "Box / ACC / Web",
+    "order": 2000
+   },
+   "n023": {
+    "parent": "n022",
+    "kind": "item",
+    "title": "Contract drawings and specifications",
+    "order": 1000
+   },
+   "n024": {
+    "parent": "n022",
+    "kind": "item",
+    "title": "RFIs",
+    "order": 2000
+   },
+   "n025": {
+    "parent": "n022",
+    "kind": "item",
+    "title": "Submittals",
+    "order": 3000
+   },
+   "n026": {
+    "parent": "n022",
+    "kind": "item",
+    "title": "LDR Excel",
+    "order": 4000
+   },
+   "n027": {
+    "parent": "n022",
+    "kind": "item",
+    "title": "Schedule",
+    "order": 5000
+   },
+   "n028": {
+    "parent": "n022",
+    "kind": "item",
+    "title": "BIM + Revit files",
+    "order": 6000
+   },
+   "n029": {
+    "parent": "n016",
+    "kind": "topic",
+    "title": "CMiC / WinEst",
+    "order": 3000
+   },
+   "n030": {
+    "parent": "n029",
+    "kind": "item",
+    "title": "Labor rate + productivity",
+    "order": 1000
+   },
+   "n031": {
+    "parent": "n029",
+    "kind": "item",
+    "title": "Change orders",
+    "order": 2000
+   },
+   "n032": {
+    "parent": "n029",
+    "kind": "item",
+    "title": "Project budgets",
+    "order": 3000
+   },
+   "n033": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Field Use",
+    "order": 3000
+   },
+   "n034": {
+    "parent": "n033",
+    "kind": "topic",
+    "title": "Concrete",
+    "order": 1000
+   },
+   "n035": {
+    "parent": "n034",
+    "kind": "item",
+    "title": "Qty takeoff (plan view)",
+    "order": 1000
+   },
+   "n036": {
+    "parent": "n034",
+    "kind": "item",
+    "title": "Embed + inventory track",
+    "order": 2000
+   },
+   "n037": {
+    "parent": "n034",
+    "kind": "item",
+    "title": "Schedule + sequencing",
+    "order": 3000
+   },
+   "n038": {
+    "parent": "n034",
+    "kind": "item",
+    "title": "Document logs (RFI, submittals, break data)",
+    "order": 4000
+   },
+   "n039": {
+    "parent": "n033",
+    "kind": "topic",
+    "title": "MEP",
+    "order": 2000
+   },
+   "n040": {
+    "parent": "n039",
+    "kind": "item",
+    "title": "Trade allocation",
+    "order": 1000
+   },
+   "n041": {
+    "parent": "n039",
+    "kind": "item",
+    "title": "Code compliance",
+    "order": 2000
+   },
+   "n042": {
+    "parent": "n039",
+    "kind": "item",
+    "title": "Document logs",
+    "order": 3000
+   },
+   "n043": {
+    "parent": "n039",
+    "kind": "item",
+    "title": "Schedule + sequencing",
+    "order": 4000
+   },
+   "n044": {
+    "parent": "n039",
+    "kind": "item",
+    "title": "Inventory track",
+    "order": 5000
+   },
+   "n045": {
+    "parent": "n033",
+    "kind": "topic",
+    "title": "Drywall",
+    "order": 3000
+   },
+   "n046": {
+    "parent": "n045",
+    "kind": "item",
+    "title": "Qty takeoff",
+    "order": 1000
+   },
+   "n047": {
+    "parent": "n045",
+    "kind": "item",
+    "title": "Schedule",
+    "order": 2000
+   },
+   "n048": {
+    "parent": "n045",
+    "kind": "item",
+    "title": "Inventory track",
+    "order": 3000
+   },
+   "n049": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Core Functions",
+    "order": 4000
+   },
+   "n050": {
+    "parent": "n049",
+    "kind": "topic",
+    "title": "Revit File",
+    "order": 1000
+   },
+   "n051": {
+    "parent": "n050",
+    "kind": "item",
+    "title": "Accurately create grid, then quantities from dwg + shops",
+    "order": 1000
+   },
+   "n052": {
+    "parent": "n050",
+    "kind": "item",
+    "title": "Clean UI for site walk",
+    "order": 2000
+   },
+   "n053": {
+    "parent": "n050",
+    "kind": "item",
+    "title": "Organized structure for variables and types",
+    "order": 3000
+   },
+   "n054": {
+    "parent": "n050",
+    "kind": "item",
+    "title": "VPS service for LLM check on human quantities; sync workbook and ACC for changes",
+    "order": 4000
+   },
+   "n055": {
+    "parent": "n049",
+    "kind": "topic",
+    "title": "Scheduling",
+    "order": 2000
+   },
+   "n056": {
+    "parent": "n055",
+    "kind": "item",
+    "title": "Create sequences within elements (mass select)",
+    "order": 1000
+   },
+   "n057": {
+    "parent": "n055",
+    "kind": "item",
+    "title": "Create sequence across large scope of work",
+    "order": 2000
+   },
+   "n058": {
+    "parent": "n055",
+    "kind": "item",
+    "title": "Create simple Excel schedule with trades",
+    "order": 3000
+   },
+   "n059": {
+    "parent": "n055",
+    "kind": "item",
+    "title": "Align all trades with schedule",
+    "order": 4000
+   },
+   "n060": {
+    "parent": "n049",
+    "kind": "topic",
+    "title": "AI",
+    "order": 3000
+   },
+   "n061": {
+    "parent": "n060",
+    "kind": "item",
+    "title": "Indexing specs + code compliance",
+    "order": 1000
+   },
+   "n062": {
+    "parent": "n049",
+    "kind": "topic",
+    "title": "Inventory",
+    "order": 4000
+   },
+   "n063": {
+    "parent": "n062",
+    "kind": "item",
+    "title": "Embeds",
+    "order": 1000
+   },
+   "n064": {
+    "parent": "n062",
+    "kind": "item",
+    "title": "Tools",
+    "order": 2000
+   },
+   "n065": {
+    "parent": "n062",
+    "kind": "item",
+    "title": "Materials",
+    "order": 3000
+   },
+   "n066": {
+    "parent": "n062",
+    "kind": "item",
+    "title": "Logistics + laydown",
+    "order": 4000
+   }
+  }
+ },
+ "todo/sides/-P25PXSq33unJ506PF3n": {
+  "side": "openyap",
+  "private": false
+ },
+ "todo/maps/-P25PXSq33unJ506PF3n": {
+  "title": "OpenYap",
+  "nodes": {
+   "n001": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Backend",
+    "order": 1000
+   },
+   "n002": {
+    "parent": "n001",
+    "kind": "topic",
+    "title": "Firebase",
+    "order": 1000
+   },
+   "n003": {
+    "parent": "n002",
+    "kind": "item",
+    "title": "Hosts .json and web app",
+    "order": 1000
+   },
+   "n004": {
+    "parent": "n002",
+    "kind": "item",
+    "title": "Manipulate data for more functions",
+    "order": 2000
+   },
+   "n005": {
+    "parent": "n001",
+    "kind": "topic",
+    "title": "VPS",
+    "order": 2000
+   },
+   "n006": {
+    "parent": "n005",
+    "kind": "item",
+    "title": "Allows for LLM layer and misc. automations",
+    "order": 1000
+   },
+   "n007": {
+    "parent": "n005",
+    "kind": "item",
+    "title": "Local models",
+    "order": 2000
+   },
+   "n008": {
+    "parent": "n005",
+    "kind": "item",
+    "title": "Scale + cost?",
+    "order": 3000
+   },
+   "n009": {
+    "parent": "n005",
+    "kind": "item",
+    "title": "24/7 uptime",
+    "order": 4000
+   },
+   "n010": {
+    "parent": "n005",
+    "kind": "item",
+    "title": "Run Revit engine 24/7",
+    "order": 5000
+   },
+   "n011": {
+    "parent": "n001",
+    "kind": "topic",
+    "title": "openyap-infra",
+    "order": 3000
+   },
+   "n012": {
+    "parent": "n011",
+    "kind": "item",
+    "title": "Codebase for front end and back end on the MacBook; directory for harnesses",
+    "order": 1000
+   },
+   "n013": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Developers",
+    "order": 2000
+   },
+   "n014": {
+    "parent": "n013",
+    "kind": "topic",
+    "title": "Agents",
+    "order": 1000
+   },
+   "n015": {
+    "parent": "n014",
+    "kind": "item",
+    "title": "Claude Code",
+    "order": 1000
+   },
+   "n016": {
+    "parent": "n014",
+    "kind": "item",
+    "title": "Codex - gate-test and audit each other",
+    "order": 2000
+   },
+   "n017": {
+    "parent": "n014",
+    "kind": "item",
+    "title": "Use manager system to deploy cheaper agents",
+    "order": 3000
+   },
+   "n018": {
+    "parent": "n014",
+    "kind": "item",
+    "title": "DeepSeek - observe Claude Code and Codex, make tools",
+    "order": 4000
+   },
+   "n019": {
+    "parent": "n013",
+    "kind": "topic",
+    "title": "OY Hub",
+    "order": 2000
+   },
+   "n020": {
+    "parent": "n019",
+    "kind": "item",
+    "title": "View codebase changes",
+    "order": 1000
+   },
+   "n021": {
+    "parent": "n019",
+    "kind": "item",
+    "title": "View + communicate with agents",
+    "order": 2000
+   },
+   "n022": {
+    "parent": "n019",
+    "kind": "item",
+    "title": "Trace changes",
+    "order": 3000
+   },
+   "n023": {
+    "parent": "n013",
+    "kind": "topic",
+    "title": "Admin",
+    "order": 3000
+   },
+   "n024": {
+    "parent": "n023",
+    "kind": "item",
+    "title": "Firebase - database",
+    "order": 1000
+   },
+   "n025": {
+    "parent": "n023",
+    "kind": "item",
+    "title": "Tailscale - secure VPS with VPN",
+    "order": 2000
+   },
+   "n026": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Reusability",
+    "order": 3000
+   },
+   "n027": {
+    "parent": "n026",
+    "kind": "topic",
+    "title": "IFC Engine",
+    "order": 1000
+   },
+   "n028": {
+    "parent": "n027",
+    "kind": "item",
+    "title": "Parse contract docs",
+    "order": 1000
+   },
+   "n029": {
+    "parent": "n027",
+    "kind": "item",
+    "title": "Parse IFC file",
+    "order": 2000
+   },
+   "n030": {
+    "parent": "n027",
+    "kind": "item",
+    "title": "Populate grid",
+    "order": 3000
+   },
+   "n031": {
+    "parent": "n027",
+    "kind": "item",
+    "title": "Populate qtys",
+    "order": 4000
+   },
+   "n032": {
+    "parent": "n027",
+    "kind": "item",
+    "title": "Populate variables",
+    "order": 5000
+   },
+   "n033": {
+    "parent": "n027",
+    "kind": "item",
+    "title": "Smooth viewing",
+    "order": 6000
+   },
+   "n034": {
+    "parent": "n026",
+    "kind": "topic",
+    "title": "Doc Parse",
+    "order": 2000
+   },
+   "n035": {
+    "parent": "n034",
+    "kind": "item",
+    "title": "Parse schedule",
+    "order": 1000
+   },
+   "n036": {
+    "parent": "n034",
+    "kind": "item",
+    "title": "Inventory + Excel sheets",
+    "order": 2000
+   },
+   "n037": {
+    "parent": "n034",
+    "kind": "item",
+    "title": "Misc. documents",
+    "order": 3000
+   },
+   "n038": {
+    "parent": "n026",
+    "kind": "topic",
+    "title": "Qty Track",
+    "order": 3000
+   },
+   "n039": {
+    "parent": "n038",
+    "kind": "item",
+    "title": "Embeds",
+    "order": 1000
+   },
+   "n040": {
+    "parent": "n038",
+    "kind": "item",
+    "title": "Tools",
+    "order": 2000
+   },
+   "n041": {
+    "parent": "n038",
+    "kind": "item",
+    "title": "Misc. materials",
+    "order": 3000
+   },
+   "n042": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Front End",
+    "order": 4000
+   },
+   "n043": {
+    "parent": "n042",
+    "kind": "topic",
+    "title": "The Map",
+    "order": 1000
+   },
+   "n044": {
+    "parent": "n043",
+    "kind": "item",
+    "title": "Maximize VDC team",
+    "order": 1000
+   },
+   "n045": {
+    "parent": "n043",
+    "kind": "item",
+    "title": "Catch detailing error",
+    "order": 2000
+   },
+   "n046": {
+    "parent": "n043",
+    "kind": "item",
+    "title": "Qty tracking - qty takeoff to singular units",
+    "order": 3000
+   },
+   "n047": {
+    "parent": "n043",
+    "kind": "item",
+    "title": "Team alignment",
+    "order": 4000
+   },
+   "n048": {
+    "parent": "n042",
+    "kind": "topic",
+    "title": "Scheduling",
+    "order": 2000
+   },
+   "n049": {
+    "parent": "n048",
+    "kind": "item",
+    "title": "Create sequence based on map",
+    "order": 1000
+   },
+   "n050": {
+    "parent": "n048",
+    "kind": "item",
+    "title": "Select + add trades",
+    "order": 2000
+   },
+   "n051": {
+    "parent": "n048",
+    "kind": "item",
+    "title": "Simple Gantt chart",
+    "order": 3000
+   },
+   "n052": {
+    "parent": "n048",
+    "kind": "item",
+    "title": "Schedule overlay with other trades",
+    "order": 4000
+   },
+   "n053": {
+    "parent": "n048",
+    "kind": "item",
+    "title": "Required items?",
+    "order": 5000
+   },
+   "n054": {
+    "parent": "n042",
+    "kind": "topic",
+    "title": "Inventory",
+    "order": 3000
+   },
+   "n055": {
+    "parent": "n054",
+    "kind": "item",
+    "title": "Delivery logs - site audit",
+    "order": 1000
+   },
+   "n056": {
+    "parent": "n054",
+    "kind": "item",
+    "title": "Laydown area",
+    "order": 2000
+   },
+   "n057": {
+    "parent": "n054",
+    "kind": "item",
+    "title": "Add / remove / transfer (other project)",
+    "order": 3000
+   },
+   "n058": {
+    "parent": "n054",
+    "kind": "item",
+    "title": "Compare invoice",
+    "order": 4000
+   }
+  }
+ },
+ "todo/projects/-map02-diamondbar": {
+  "name": "Diamond Bar",
+  "color": "",
+  "icon": "",
+  "status": "active",
+  "description": "",
+  "targetDate": "",
+  "createdAt": "2026-09-28T13:49:55.000Z",
+  "order": 1790603395822
+ },
+ "todo/sides/-map02-diamondbar": {
+  "side": "career",
+  "private": true
+ },
+ "todo/maps/-map02-diamondbar": {
+  "title": "Diamond Bar",
+  "nodes": {
+   "n001": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Design",
+    "order": 1000
+   },
+   "n002": {
+    "parent": "n001",
+    "kind": "topic",
+    "title": "Scan",
+    "order": 1000
+   },
+   "n003": {
+    "parent": "n002",
+    "kind": "item",
+    "title": "Dimensions to model into Revit",
+    "order": 1000
+   },
+   "n004": {
+    "parent": "n001",
+    "kind": "topic",
+    "title": "Revit",
+    "order": 2000
+   },
+   "n005": {
+    "parent": "n004",
+    "kind": "item",
+    "title": "Level 1",
+    "order": 1000
+   },
+   "n006": {
+    "parent": "n004",
+    "kind": "item",
+    "title": "Level 2",
+    "order": 2000
+   },
+   "n007": {
+    "parent": "n004",
+    "kind": "item",
+    "title": "Backyard",
+    "order": 3000
+   },
+   "n008": {
+    "parent": "n001",
+    "kind": "topic",
+    "title": "Permitting",
+    "order": 3000
+   },
+   "n009": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Windows",
+    "order": 2000
+   },
+   "n010": {
+    "parent": "n009",
+    "kind": "topic",
+    "title": "Subcontract",
+    "order": 1000
+   },
+   "n011": {
+    "parent": "n009",
+    "kind": "topic",
+    "title": "Budget / Scope",
+    "order": 2000
+   },
+   "n012": {
+    "parent": "n009",
+    "kind": "topic",
+    "title": "Permit",
+    "order": 3000
+   },
+   "n013": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Kitchen",
+    "order": 3000
+   },
+   "n014": {
+    "parent": "n013",
+    "kind": "topic",
+    "title": "Subcontract",
+    "order": 1000
+   },
+   "n015": {
+    "parent": "n013",
+    "kind": "topic",
+    "title": "Budget / Scope",
+    "order": 2000
+   },
+   "n016": {
+    "parent": "n013",
+    "kind": "topic",
+    "title": "Permit",
+    "order": 3000
+   },
+   "n017": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Pool",
+    "order": 4000
+   },
+   "n018": {
+    "parent": "n017",
+    "kind": "topic",
+    "title": "Subcontract",
+    "order": 1000
+   },
+   "n019": {
+    "parent": "n017",
+    "kind": "topic",
+    "title": "Budget / Scope",
+    "order": 2000
+   },
+   "n020": {
+    "parent": "n017",
+    "kind": "topic",
+    "title": "Permit",
+    "order": 3000
+   }
+  }
+ },
+ "todo/projects/-map03-life": {
+  "name": "Life",
+  "color": "",
+  "icon": "",
+  "status": "active",
+  "description": "",
+  "targetDate": "",
+  "createdAt": "2026-09-28T13:49:55.000Z",
+  "order": 1790603395823
+ },
+ "todo/sides/-map03-life": {
+  "side": "career",
+  "private": true
+ },
+ "todo/maps/-map03-life": {
+  "title": "Life",
+  "nodes": {
+   "n001": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Finance",
+    "order": 1000
+   },
+   "n002": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Health",
+    "order": 2000
+   },
+   "n003": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Social",
+    "order": 3000
+   },
+   "n004": {
+    "parent": "root",
+    "kind": "branch",
+    "title": "Career",
+    "order": 4000
+   }
+  }
+ },
+ "todo/projects/-map04-concrete": {
+  "name": "Concrete",
+  "color": "",
+  "icon": "",
+  "status": "active",
+  "description": "",
+  "targetDate": "",
+  "createdAt": "2026-09-28T13:49:55.000Z",
+  "order": 1790603395824
+ },
+ "todo/sides/-map04-concrete": {
+  "side": "career",
+  "private": false
+ },
+ "todo/maps/-map04-concrete": {
+  "title": "Concrete",
+  "nodes": {}
+ }
+}
