@@ -161,6 +161,47 @@ async function boot(seed) {
   d.querySelector('#toastAct').click();
   ok('Undo brings the topic back with its items', !!db.get(`todo/maps/${OY}/nodes/${topic2}`) && M.mapKids(M.maps[OY].nodes, topic2).length === inside);
 
+  const tick = () => new Promise(r => setTimeout(r, 40));
+  console.log('descriptions and colours');
+  M.setMapPid(OY);
+  d.querySelector('[data-view="map"]').click(); await new Promise(r => setTimeout(r, 30));
+  d.querySelector(`#mapWorld [data-nid="${it}"]`).click();
+  const ta = d.querySelector('.mp-panel textarea[data-mf="desc"]');
+  ok('an item has a description field', !!ta);
+  ta.value = 'Mirror hosting on dev first'; ta.dispatchEvent(new w.Event('change', { bubbles: true })); await tick();
+  eq('the description is saved on the bubble', db.get(`todo/maps/${OY}/nodes/${it}/desc`), 'Mirror hosting on dev first');
+  eq('and becomes the linked task\'s notes', db.get('todo/tasks/' + node.taskId + '/notes'), 'Mirror hosting on dev first');
+  ok('the row shows a note mark', !!d.querySelector(`#mapWorld [data-nid="${it}"] .mp-note`));
+  ok('a newline does not close the field', (() => { const t2 = d.querySelector('.mp-panel textarea[data-mf="desc"]'); t2.focus();
+    const ev = new w.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }); t2.dispatchEvent(ev); t2.blur(); return !ev.defaultPrevented; })());
+  await tick();
+  // Colour a branch: its topics, items and connectors take it; a topic of its own overrides.
+  d.querySelector(`#mapWorld [data-nid="${bLeft}"]`).click();
+  d.querySelector('.mp-panel [data-mcolor="#46a758"]').click(); await tick();
+  eq('the branch colour is saved', db.get(`todo/maps/${OY}/nodes/${bLeft}/color`), '#46a758');
+  const t0 = M.mapKids(M.maps[OY].nodes, bLeft)[0][0];
+  ok('its topics inherit it', d.querySelector(`#mapWorld [data-nid="${t0}"]`).getAttribute('style').includes('--mc:#46a758'));
+  ok('and so does its connector', d.querySelector(`.map-links path[data-to="${t0}"]`).getAttribute('style') === 'stroke:#46a758');
+  d.querySelector(`#mapWorld [data-nid="${t0}"] .mp-th`).click();
+  ok('the topic panel says where its colour comes from', /Green from above/.test(d.querySelector('.mp-panel').textContent));
+  d.querySelector('.mp-panel [data-mcolor="#e5484d"]').click(); await tick();
+  ok('a topic of its own overrides the branch', d.querySelector(`#mapWorld [data-nid="${t0}"]`).getAttribute('style').includes('--mc:#e5484d'));
+  d.querySelector('.mp-panel [data-mcolor=""]').click();
+  eq('Same as above clears it', db.get(`todo/maps/${OY}/nodes/${t0}/color`), undefined);
+  const mu0 = db.updates.length; M.mapSave && w.document.querySelector('.mp-panel');
+  d.querySelector('.mp-panel [data-mcolor=""]').click();
+  ok('only palette colours are accepted', (() => { const n0 = db.updates.length; w.__oym.mapSetColor && w.__oym.mapSetColor(t0, 'red; background:url(x)'); return db.updates.length === n0; })());
+  d.querySelector('#mapWorld .mp-root').click();
+  const rta = d.querySelector('.mp-panel textarea[data-mf="desc"]');
+  rta.value = 'Field-first construction software'; rta.dispatchEvent(new w.Event('change', { bubbles: true }));
+  eq('the main topic\'s description is the project description', db.get(`todo/projects/${OY}/description`), 'Field-first construction software');
+  const R0 = M.roadmapData(OY, '2026-09-28'), lane = R0.lanes.find(l => l.id === bLeft);
+  eq('the roadmap carries colours', [lane.color, lane.topics[0].color], ['#46a758', '#46a758']);
+  ok('and descriptions', R0.lanes.some(l => l.topics.some(t => t.items.some(i => i.desc === 'Mirror hosting on dev first'))));
+  const pdf2 = M.buildRoadmap({ pid: OY, paper: 'letter' });
+  ok('a coloured, described roadmap still builds', Buffer.from(pdf2.output('arraybuffer')).slice(0, 5).toString() === '%PDF-');
+  void mu0;
+
   console.log('roadmap');
   M.setMapPid(AI);
   const aiN = M.maps[AI].nodes, cyber = 'n002', cItems = M.mapKids(aiN, cyber).map(([k]) => k);

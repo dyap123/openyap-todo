@@ -517,12 +517,12 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 .mp-card:hover{border-color:var(--muted)}
 .mp-card.sel{border-color:var(--text);box-shadow:0 0 0 3px color-mix(in srgb,var(--text) 9%,transparent)}
 .mp-k{font:600 9px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.mp-root{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 18px;background:var(--raise);border:1.5px solid var(--text)}
+.mp-root{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 18px;background:var(--raise);border:1.5px solid var(--mc,var(--text))}
 .mp-root .mp-t{font-size:19px;font-weight:600;letter-spacing:-.015em;line-height:1.2;margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.mp-branch{display:flex;flex-direction:column;justify-content:center;padding:0 14px;border-left:3px solid var(--side-c)}
+.mp-branch{display:flex;flex-direction:column;justify-content:center;padding:0 14px;border-left:3px solid var(--mc,var(--side-c))}
 .mp-branch .mp-t{font-size:15px;font-weight:600;letter-spacing:-.01em;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mp-topic{overflow:hidden;cursor:default}
-.mp-th{height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--raise);border-bottom:1px solid var(--line);cursor:pointer}
+.mp-th{height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;background:color-mix(in srgb,var(--mc,var(--raise)) 11%,var(--raise));border-bottom:1px solid var(--line);box-shadow:inset 0 3px 0 var(--mc,transparent);cursor:pointer}
 .mp-th .mp-t{flex:1;min-width:0;font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mp-td{font:10.5px var(--mono);color:var(--muted)}
 .mp-items{list-style:none;margin:0;padding:3px 0}
@@ -530,11 +530,24 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 .mp-item:hover,.mp-item.sel{background:var(--raise);color:var(--text)}
 .mp-item.sel{box-shadow:inset 2px 0 0 var(--text)}
 .mp-item .n{font:10.5px var(--mono);color:var(--faint);width:14px;flex-shrink:0}
+.mp-topic .mp-item .n{color:color-mix(in srgb,var(--mc,var(--faint)) 70%,var(--faint))}
+.mp-item.own{box-shadow:inset 3px 0 0 var(--mc)}
+.mp-item.own.sel{box-shadow:inset 3px 0 0 var(--mc),inset 0 0 0 1px var(--line-2)}
 .mp-item .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mp-item .d{font:10.5px var(--mono);color:var(--muted)}
 .mp-item.late .d{color:var(--danger)}
 .mp-item.done .t{text-decoration:line-through;color:var(--faint)}
-.mp-item .dot,.mp-linked .dot{width:6px;height:6px;border-radius:50%;background:var(--side-c);flex-shrink:0}
+.mp-item .dot,.mp-linked .dot{width:6px;height:6px;border-radius:50%;background:var(--mc,var(--side-c));flex-shrink:0}
+.mp-note{display:inline-flex;color:var(--muted);flex-shrink:0;vertical-align:-2px;margin-left:4px}
+.mp-note svg{width:11px;height:11px}
+.map-links path.c{stroke-opacity:.7}
+.mp-sw{display:flex;flex-wrap:wrap;gap:6px}
+.mp-sw button{width:20px;height:20px;border-radius:50%;background:var(--c);border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line-2);transition:transform .15s}
+.mp-sw button:hover{transform:scale(1.12)}
+.mp-sw button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--text)}
+.mp-sw button.none{background:linear-gradient(135deg,transparent 45%,var(--muted) 45%,var(--muted) 55%,transparent 55%),var(--surface)}
+.mp-inh{color:var(--faint)}
+.mp-desc{height:auto;min-height:64px;padding:8px 11px;resize:vertical;line-height:1.45;font:inherit;font-size:13px}
 .mp-empty{height:24px;display:flex;align-items:center;padding:0 12px;font-size:12px;color:var(--faint)}
 .mp-add{display:block;width:100%;height:30px;text-align:left;padding:0 12px;font-size:12px;color:var(--faint);border-top:1px dashed var(--line)}
 .mp-add:hover{color:var(--text)}
@@ -551,8 +564,8 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 .mp-ghost{position:fixed;left:0;top:0;z-index:80;pointer-events:none;padding:7px 12px;border-radius:8px;background:var(--text);color:var(--bg);font-size:12.5px;font-weight:500;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 10px 28px rgba(0,0,0,.2)}
 .mp-panel{position:absolute;right:14px;top:14px;width:292px;max-height:calc(100% - 28px);overflow:auto;background:var(--surface);border:1px solid var(--line-2);border-radius:12px;padding:14px;display:grid;gap:12px;z-index:5;box-shadow:0 14px 36px rgba(0,0,0,.12);cursor:default}
 .mp-ph{display:flex;align-items:center;justify-content:space-between}
-.mp-panel .fld,.mp-dates .fld{grid-template-columns:1fr;gap:5px}.mp-panel .lbl{font-size:12px}.mp-panel .txt{width:100%}.mp-panel .hint{font-size:12px}
-.mp-dates{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mp-panel .fld,.mp-dates .fld{grid-template-columns:minmax(0,1fr);gap:5px;min-width:0}.mp-panel .lbl{font-size:12px}.mp-panel .txt{width:100%;min-width:0;font-size:13px}.mp-panel .txt[type=date]{padding:0 8px}.mp-panel .hint{font-size:12px}.mp-panel>*{min-width:0}
+.mp-dates{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
 .mp-linked{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--body)}.mp-linked .link{margin-left:auto}
 .mp-tray{position:absolute;left:14px;top:14px;bottom:14px;width:258px;overflow:auto;background:var(--surface);border:1px solid var(--line-2);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:7px;z-index:5;cursor:default}
 .mp-tray-h{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin-bottom:4px}.mp-tray-h span{font-size:11.5px;color:var(--muted);grid-column:1}.mp-tray-h .icon-btn{grid-row:1/3;grid-column:2}
@@ -1615,6 +1628,18 @@ const MAP_SLOTS=['top','left','right','bottom'];
 const MW={root:270,branch:200,topic:224},MH={root:96,branch:64},M_HEAD=40,M_ROW=24,M_FOOT=30,M_GAP=26;
 
 const mapNodes=pid=>(maps[pid]&&maps[pid].nodes)||{};
+// Colours read on white paper and on the dark themes alike. A bubble without its own colour
+// takes its parent's, so colouring a branch tints its whole group; the main topic's colour
+// reaches everything that has none.
+const MAP_COLORS=[['#e5484d','Red'],['#f76b15','Orange'],['#e2a336','Amber'],['#46a758','Green'],['#12a594','Teal'],
+  ['#0090ff','Blue'],['#6e56cf','Violet'],['#d6409f','Pink'],['#8b8d98','Gray']];
+const mapColorOk=c=>MAP_COLORS.some(([h])=>h===c);
+function mapColorOf(pid,nodes,id){
+  const seen=new Set();
+  while(id&&id!=='root'&&!seen.has(id)){seen.add(id);const n=nodes[id];if(!n)break;if(mapColorOk(n.color))return n.color;id=n.parent}
+  const r=maps[pid]&&maps[pid].color;return mapColorOk(r)?r:'';
+}
+const mcStyle=c=>c?`--mc:${c};`:'';
 function mapKids(nodes,parent){
   return Object.entries(nodes).filter(([,n])=>n&&n.parent===parent)
     .sort((a,b)=>(a[1].order||0)-(b[1].order||0)||(a[0]<b[0]?-1:a[0]>b[0]?1:0));
@@ -1721,7 +1746,7 @@ const MP=(pid,id)=>'todo/maps/'+pid+'/nodes/'+id;
 const projSideOf=pid=>{const m=projSide(pid);return m&&SIDES.includes(m.side)?m.side:'career'};
 function mapTaskFor(pid,node,extra){
   const side=projSideOf(pid);
-  return buildTask({title:node.title||'(untitled)',projectId:pid,side,category:side==='openyap'?'project':'work',...extra});
+  return buildTask({title:node.title||'(untitled)',projectId:pid,side,category:side==='openyap'?'project':'work',notes:node.desc||'',...extra});
 }
 function mapLinkedIds(pid){const s=new Set();for(const n of Object.values(mapNodes(pid)))if(n&&n.taskId)s.add(n.taskId);return s}
 function mapUnplaced(pid){
@@ -1748,11 +1773,13 @@ function mapSave(id,f,v){
   if(id==='root'){
     if(f==='name'&&v.trim())upd({['todo/projects/'+pid+'/name']:v.trim()});
     else if(f==='mtitle')upd({['todo/maps/'+pid+'/title']:v.trim()||null});
+    else if(f==='desc')upd({['todo/projects/'+pid+'/description']:v.trim().slice(0,2000)});
     return;
   }
   if(!n)return;
   const up={};
   if(f==='title'){const t=v.trim()||'(untitled)';up[MP(pid,id)+'/title']=t;if(n.taskId&&tasks[n.taskId])up[TP(n.taskId)+'/title']=t}
+  else if(f==='desc'){const d=v.trim().slice(0,2000);up[MP(pid,id)+'/desc']=d||null;if(n.taskId&&tasks[n.taskId])up[TP(n.taskId)+'/notes']=d}
   else if(f==='start'||f==='due'){
     up[MP(pid,id)+'/'+f]=v||null;
     if(f==='due'&&mapKindOf(nodes,id)==='item'){
@@ -1761,6 +1788,12 @@ function mapSave(id,f,v){
     }
   }
   upd(up);
+}
+function mapSetColor(id,c){
+  if(c&&!mapColorOk(c))return;
+  const pid=mapPid;
+  if(id==='root')upd({['todo/maps/'+pid+'/color']:c||null});
+  else if(mapNodes(pid)[id])upd({[MP(pid,id)+'/color']:c||null});
 }
 function mapToList(id){
   const pid=mapPid,n=mapNodes(pid)[id];if(!n||n.taskId)return;
@@ -1788,7 +1821,7 @@ function mapApplyDrop(drag,rule){
   if(drag.kind==='task'){
     const t=tasks[drag.id];if(!t)return;
     const id=newKey('todo/maps/'+pid+'/nodes');
-    upd({[MP(pid,id)]:{parent:rule.parent,kind:'item',title:t.title||'(untitled)',order,taskId:drag.id,...(t.dueDate?{due:t.dueDate}:{})}});
+    upd({[MP(pid,id)]:{parent:rule.parent,kind:'item',title:t.title||'(untitled)',order,taskId:drag.id,...(t.dueDate?{due:t.dueDate}:{}),...(t.notes?{desc:t.notes}:{})}});
     return;
   }
   const kind=mapKindOf(nodes,rule.parent)==='topic'?'item':'topic';
@@ -1830,11 +1863,12 @@ function mapZoom(f,cx,cy){
 }
 
 // ── Render
+const mapNote=d=>d?`<span class="mp-note" title="${esc(d)}">${ICON.note}</span>`:'';
 function mapItemRow(pid,id,n,i){
   const t=n.taskId?tasks[n.taskId]:null,due=(t&&t.dueDate)||n.due||'',done=!!(t&&t.completed);
-  const late=!done&&due&&due<ymd(new Date());
-  return `<li class="mp-item${done?' done':''}${late?' late':''}${mapSel===id?' sel':''}" data-nid="${id}" data-mkind="item">
-    <span class="n">${i+1}</span><span class="t">${esc(n.title||(t&&t.title)||'(untitled)')}</span>
+  const late=!done&&due&&due<ymd(new Date()),c=n.color&&mapColorOk(n.color)?n.color:'';
+  return `<li class="mp-item${done?' done':''}${late?' late':''}${mapSel===id?' sel':''}${c?' own':''}" data-nid="${id}" data-mkind="item" style="${mcStyle(c)}"${n.desc?` title="${esc(n.desc)}"`:''}>
+    <span class="n">${i+1}</span><span class="t">${esc(n.title||(t&&t.title)||'(untitled)')}</span>${n.desc?`<span class="mp-note">${ICON.note}</span>`:''}
     ${due?`<span class="d">${esc(fmtMD(parseYmd(due)))}</span>`:''}${t?`<span class="dot" title="${done?'Done':'In your list'}"></span>`:''}</li>`;
 }
 function renderMap(anim){
@@ -1855,21 +1889,22 @@ function renderMap(anim){
   if(!P){host.innerHTML=bar+'<div class="map-stage map-empty" id="mapStage"><p>Create a project to start a map.</p></div>';return}
   const nodes=mapNodes(pid),lay=mapLayout(nodes),side=projSideOf(pid),mt=(maps[pid]&&maps[pid].title)||P.name;
   const cards=[];
-  cards.push(`<div class="mp-card mp-root${mapSel==='root'?' sel':''}" data-nid="root" style="left:${lay.C.root.x}px;top:${lay.C.root.y}px;width:${MW.root}px;height:${MH.root}px">
+  const rc=mapColorOf(pid,nodes,'root');
+  cards.push(`<div class="mp-card mp-root${mapSel==='root'?' sel':''}" data-nid="root" style="${mcStyle(rc)}left:${lay.C.root.x}px;top:${lay.C.root.y}px;width:${MW.root}px;height:${MH.root}px"${P.description?` title="${esc(P.description)}"`:''}>
     <span class="mp-k">Main topic</span><span class="mp-t">${esc(mt)}</span><button class="mp-plus" type="button" data-madd="root" title="Add a branch" aria-label="Add a branch">+</button></div>`);
   for(const [bid,b] of mapKids(nodes,'root')){
     const r=lay.C[bid];
-    cards.push(`<div class="mp-card mp-branch${mapSel===bid?' sel':''}" data-nid="${bid}" data-mkind="branch" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px">
-      <span class="mp-k">Sub-topic</span><span class="mp-t">${esc(b.title)}</span><button class="mp-plus" type="button" data-madd="${bid}" title="Add a topic" aria-label="Add a topic">+</button></div>`);
+    cards.push(`<div class="mp-card mp-branch${mapSel===bid?' sel':''}" data-nid="${bid}" data-mkind="branch" style="${mcStyle(mapColorOf(pid,nodes,bid))}left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px">
+      <span class="mp-k">Sub-topic${mapNote(b.desc)}</span><span class="mp-t">${esc(b.title)}</span><button class="mp-plus" type="button" data-madd="${bid}" title="Add a topic" aria-label="Add a topic">+</button></div>`);
     for(const [tid,tn] of mapKids(nodes,bid)){
       const tr=lay.C[tid],items=mapKids(nodes,tid);
-      cards.push(`<div class="mp-card mp-topic${mapSel===tid?' sel':''}" data-nid="${tid}" data-mkind="topic" style="left:${tr.x}px;top:${tr.y}px;width:${tr.w}px;height:${tr.h}px">
-        <div class="mp-th"><span class="mp-t">${esc(tn.title)}</span>${tn.due?`<span class="mp-td">${esc(fmtMD(parseYmd(tn.due)))}</span>`:''}</div>
+      cards.push(`<div class="mp-card mp-topic${mapSel===tid?' sel':''}" data-nid="${tid}" data-mkind="topic" style="${mcStyle(mapColorOf(pid,nodes,tid))}left:${tr.x}px;top:${tr.y}px;width:${tr.w}px;height:${tr.h}px">
+        <div class="mp-th"><span class="mp-t">${esc(tn.title)}</span>${mapNote(tn.desc)}${tn.due?`<span class="mp-td">${esc(fmtMD(parseYmd(tn.due)))}</span>`:''}</div>
         <ol class="mp-items">${items.length?items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join(''):'<li class="mp-empty">Nothing here yet</li>'}</ol>
         <button class="mp-add" type="button" data-madd="${tid}">+ Add item</button></div>`);
     }
   }
-  const b=lay.box,paths=lay.L.map(l=>`<path d="${l.d}" data-to="${l.to}" pathLength="1"/>`).join('');
+  const b=lay.box,paths=lay.L.map(l=>{const c=mapColorOf(pid,nodes,l.to);return `<path d="${l.d}" data-to="${l.to}" pathLength="1"${c?` class="c" style="stroke:${c}"`:''}/>`}).join('');
   const svg=`<svg class="map-links" style="left:${b.x-40}px;top:${b.y-40}px;width:${b.w+80}px;height:${b.h+80}px" viewBox="${b.x-40} ${b.y-40} ${b.w+80} ${b.h+80}" aria-hidden="true">${paths}</svg>`;
   const un=mapTray?mapUnplaced(pid):[];
   const tray=mapTray?`<aside class="mp-tray"><div class="mp-tray-h"><b>Unplaced</b><span>${un.length} open task${un.length===1?'':'s'} in ${esc(P.name)}</span><button class="icon-btn" type="button" data-mact="tray" aria-label="Close">${ICON.x}</button></div>
@@ -1890,6 +1925,14 @@ function mapPositions(lay,nodes){
     mapKids(nodes,tid).forEach(([iid],i)=>{const r=lay.C[tid];P[iid]={x:r.x,y:r.y+M_HEAD+3+i*M_ROW,parent:tid}});
   return P;
 }
+function mapSwatches(pid,nodes,id){
+  const own=id==='root'?((maps[pid]&&maps[pid].color)||''):((nodes[id]&&nodes[id].color)||''),eff=mapColorOf(pid,nodes,id);
+  const inh=!mapColorOk(own)&&eff?MAP_COLORS.find(([h])=>h===eff)[1]:'';
+  return `<div class="fld"><span class="lbl">Color${inh?` <span class="mp-inh">(${esc(inh)} from above)</span>`:''}</span><div class="mp-sw" role="group" aria-label="Color">
+    <button type="button" class="none" data-mcolor="" aria-pressed="${!mapColorOk(own)}" title="${id==='root'?'None':'Same as above'}"></button>
+    ${MAP_COLORS.map(([h,n])=>`<button type="button" data-mcolor="${h}" style="--c:${h}" aria-pressed="${own===h}" title="${n}" aria-label="${n}"></button>`).join('')}</div></div>`;
+}
+const mapDescHTML=(v,ph)=>`<label class="fld"><span class="lbl">Description</span><textarea class="txt mp-desc" data-mf="desc" rows="3" maxlength="2000" placeholder="${ph}">${esc(v||'')}</textarea></label>`;
 function mapPanelHTML(pid,nodes){
   if(!mapSel)return '';
   const P=projects[pid];
@@ -1899,6 +1942,8 @@ function mapPanelHTML(pid,nodes){
       <div class="mp-ph"><span class="mp-k">Project</span><button class="icon-btn" type="button" data-mact="close" aria-label="Close">${ICON.x}</button></div>
       <label class="fld"><span class="lbl">Name</span><input class="txt" id="mpTitle" data-mf="name" value="${esc(P.name||'')}"></label>
       <label class="fld"><span class="lbl">Main topic</span><input class="txt" data-mf="mtitle" value="${esc((maps[pid]&&maps[pid].title)||'')}" placeholder="${esc(P.name||'')}"></label>
+      ${mapDescHTML(P.description,'What this project is for')}
+      ${mapSwatches(pid,nodes,'root')}
       <div class="fld"><span class="lbl">Side</span><div class="seg" role="group" aria-label="Side">${segHTML([['career','Career'],['openyap','OpenYap']],side,'data-mside-set')}</div></div>
       <label class="check"><input type="checkbox" data-mact-chk="private"${m.private?' checked':''}> Private (kept out of reports)</label>
       <button class="btn" type="button" data-madd="root">+ Add branch</button></div>`;
@@ -1909,6 +1954,8 @@ function mapPanelHTML(pid,nodes){
   return `<div class="mp-panel" data-mpanel="${mapSel}">
     <div class="mp-ph"><span class="mp-k">${{branch:'Sub-topic',topic:'Topic',item:'Item'}[kind]}</span><button class="icon-btn" type="button" data-mact="close" aria-label="Close">${ICON.x}</button></div>
     <label class="fld"><span class="lbl">Title</span><input class="txt" id="mpTitle" data-mf="title" value="${esc(n.title||'')}"></label>
+    ${mapDescHTML(n.desc,kind==='item'?(t?'Also saved as the task\'s notes':'Details, links, what done looks like'):'What this covers')}
+    ${mapSwatches(pid,nodes,mapSel)}
     <div class="mp-dates"><label class="fld"><span class="lbl">Start</span><input class="txt" type="date" data-mf="start" value="${esc(n.start||'')}"></label>
       <label class="fld"><span class="lbl">${kind==='item'?'Due':'Finish'}</span><input class="txt" type="date" data-mf="due" value="${esc(kind==='item'?due:(n.due||''))}"></label></div>
     ${kind==='item'?(t?`<div class="mp-linked"><span class="dot"></span>${t.completed?'Done in your list':'In your list'}<button class="link" type="button" data-open="${n.taskId}">Open</button></div>`
@@ -2051,6 +2098,7 @@ function mapClick(t){
   const pp=t.closest('[data-mpid]');if(pp){mapPick(pp.dataset.mpid);return true}
   const ad=t.closest('[data-madd]');if(ad){mapAdd(ad.dataset.madd);return true}
   const ss=t.closest('[data-mside-set]');if(ss){mapProjSide(ss.dataset.msideSet);return true}
+  const mc=t.closest('[data-mcolor]');if(mc){mapSetColor(mapSel,mc.dataset.mcolor);return true}
   const a=t.closest('[data-mact]');
   if(a){const k=a.dataset.mact;
     if(k==='new'){mapNewOpen=true;renderMap();$('#mapNewName')?.focus()}
@@ -2077,10 +2125,10 @@ function roadmapData(pid,today){
   today=today||ymd(new Date());
   const nodes=mapNodes(pid),P=projects[pid]||{};
   const item=(id,n)=>{const t=n.taskId?tasks[n.taskId]:null,due=(t&&t.dueDate)||n.due||'',done=!!(t&&t.completed);
-    return {id,title:n.title||(t&&t.title)||'(untitled)',start:n.start||'',due,done,inList:!!t,status:done?'done':due&&due<today?'overdue':'open'}};
-  const lanes=mapKids(nodes,'root').map(([bid,b])=>({id:bid,title:b.title||'',topics:mapKids(nodes,bid).map(([tid,tn])=>{
+    return {id,title:n.title||(t&&t.title)||'(untitled)',desc:n.desc||'',color:mapColorOf(pid,nodes,id),start:n.start||'',due,done,inList:!!t,status:done?'done':due&&due<today?'overdue':'open'}};
+  const lanes=mapKids(nodes,'root').map(([bid,b])=>({id:bid,title:b.title||'',desc:b.desc||'',color:mapColorOf(pid,nodes,bid),topics:mapKids(nodes,bid).map(([tid,tn])=>{
     const items=mapKids(nodes,tid).map(([iid,i])=>item(iid,i)),ds=items.flatMap(i=>[i.start,i.due]).concat([tn.start,tn.due]).filter(Boolean).sort();
-    return {id:tid,title:tn.title||'',start:ds[0]||'',end:ds[ds.length-1]||'',items};
+    return {id:tid,title:tn.title||'',desc:tn.desc||'',color:mapColorOf(pid,nodes,tid),start:ds[0]||'',end:ds[ds.length-1]||'',items};
   })}));
   const all=lanes.flatMap(l=>l.topics.flatMap(t=>[t.start,t.end])).filter(Boolean).sort();
   const undated=[];for(const l of lanes)for(const t of l.topics)for(const i of t.items)if(!i.due&&!i.start)undated.push({...i,lane:l.title,topic:t.title});
@@ -2118,17 +2166,17 @@ function buildRoadmap(o){
     const top=y;
     for(const l of R.lanes){
       if(!l.topics.some(t=>t.start||t.end))continue;
-      need(20);setT(k,'bold',9.5,P.ink);doc.text(fit(doc,l.title,170),M,y+10);
+      need(20);setT(k,'bold',9.5,l.color?hexRgb(l.color):P.ink);doc.text(fit(doc,l.title,170),M,y+10);
       doc.setDrawColor(...P.rule);doc.setLineWidth(.5);doc.line(M,y+15,RX,y+15);y+=20;
       for(const t of l.topics){
         if(!t.start&&!t.end)continue;
         need(16);setT(k,'bold',8,P.body);doc.text(fit(doc,t.title,160),M+8,y+9);
         const a=X(t.start||t.end),b=Math.max(X(t.end||t.start)+px,a+3);
-        doc.setFillColor(...soft);doc.rect(a,y+2,b-a,9,'F');y+=15;
+        doc.setFillColor(...(t.color?mix(hexRgb(t.color),.72):soft));doc.rect(a,y+2,b-a,9,'F');y+=15;
         for(const i of t.items){
           if(!i.due&&!i.start)continue;
           need(12);setT(k,'normal',7.5,i.status==='overdue'?late:P.muted);doc.text(fit(doc,i.title,150),M+16,y+8);
-          const c=i.done?P.muted:i.status==='overdue'?late:acc;doc.setFillColor(...c);doc.setDrawColor(...c);
+          const c=i.done?P.muted:i.status==='overdue'?late:i.color?hexRgb(i.color):acc;doc.setFillColor(...c);doc.setDrawColor(...c);
           if(i.start&&i.due){const a2=X(i.start),b2=Math.max(X(i.due)+px,a2+3);doc.rect(a2,y+3,b2-a2,5,'F')}
           else{const x=X(i.due||i.start)+px/2;doc.lines([[4,4],[-4,4],[-4,-4]],x,y+1.5,[1,1],'F',true)}
           y+=12;
@@ -2150,18 +2198,21 @@ function buildRoadmap(o){
     const rows=l.topics.flatMap(t=>t.items.filter(i=>i.due||i.start).map(i=>({...i,topic:t.title})))
       .sort((a,b)=>(a.due||a.start)<(b.due||b.start)?-1:1);
     if(!rows.length)continue;
-    need2(30);setT(k,'bold',9.5,acc);doc.text(fit(doc,l.title,W-2*M),M,y+2);y+=14;
+    need2(30);setT(k,'bold',9.5,l.color?hexRgb(l.color):acc);doc.text(fit(doc,l.title,W-2*M),M,y+2);y+=14;
     for(const r of rows){
-      need2(13);setT(k,'normal',8.5,r.status==='overdue'?late:P.body);
+      const dl=r.desc?wrap(doc,r.desc,W-2*M-24,2):[];
+      need2(13+dl.length*10);setT(k,'normal',8.5,r.status==='overdue'?late:P.body);
       doc.text(fit(doc,r.title,240),cx[0],y);doc.text(fit(doc,r.topic,170),cx[1],y);
       doc.text(r.start?fmtMD(parseYmd(r.start)):'-',cx[2],y);doc.text(r.due?fmtMD(parseYmd(r.due)):'-',cx[3],y);
       doc.text(r.status==='done'?'Done':r.status==='overdue'?'Overdue':'Open',cx[4],y);doc.text(r.inList?'Yes':'-',cx[5],y);y+=13;
+      if(dl.length){setT(k,'normal',7.5,P.muted);dl.forEach(line=>{doc.text(line,cx[0]+10,y-2);y+=10});y+=2}
     }
     y+=6;
   }
   if(R.undated.length){
     need2(34);setT(k,'bold',9.5,P.ink);doc.text('Not scheduled',M,y+2);y+=14;
-    for(const r of R.undated){need2(13);setT(k,'normal',8.5,P.muted);doc.text(fit(doc,r.title,240),cx[0],y);doc.text(fit(doc,r.lane+' / '+r.topic,300),cx[1],y);y+=13}
+    for(const r of R.undated){const dl=r.desc?wrap(doc,r.desc,W-2*M-24,1):[];need2(13+dl.length*10);setT(k,'normal',8.5,P.muted);doc.text(fit(doc,r.title,240),cx[0],y);doc.text(fit(doc,r.lane+' / '+r.topic,300),cx[1],y);y+=13;
+      if(dl.length){setT(k,'normal',7.5,P.muted);doc.text(dl[0],cx[0]+10,y-2);y+=12}}
   }
   pageNumbers(k,'Roadmap - '+R.name);
   return doc;
@@ -2751,7 +2802,7 @@ document.addEventListener('keydown',e=>{
     if(view==='map'&&(mapSel||mapNewOpen)){mapSel='';mapNewOpen=false;renderMap();return}
     return;
   }
-  if(e.key==='Enter'&&t.dataset&&t.dataset.mf&&t.closest('.mp-panel')){e.preventDefault();t.blur();return}
+  if(e.key==='Enter'&&t.tagName==='INPUT'&&t.dataset&&t.dataset.mf&&t.closest('.mp-panel')){e.preventDefault();t.blur();return}
   if(e.key==='Enter'&&t.classList&&t.classList.contains('e-title')){e.preventDefault();saveField(t.closest('.editor').dataset.id,'title',t.value);closeEditor();return}
   if((e.key==='Enter'||e.key===' ')&&t.matches&&t.matches('[role="button"][data-act],[role="button"][data-open]')){e.preventDefault();t.click();return}
   if(t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;
@@ -2820,7 +2871,7 @@ if(auth){
     if(ok)listen();else unlisten();
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
-window.__oym={mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>
