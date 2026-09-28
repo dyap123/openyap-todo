@@ -394,6 +394,47 @@ async function boot(seed) {
   ok('the Roadmap tab lists mapped projects', d.querySelectorAll('[data-exrpid]').length === 6);
   ok('and counts what will print', /dated item/.test(d.querySelector('#rmCount').textContent));
 
+  console.log('brief: selected branches for a meeting');
+  const AIn = M.maps[AI].nodes, [eb, ed] = M.mapKids(AIn, 'root').map(([k]) => k);   // Enterprise Policies, Existing Data
+  const cyb = M.mapKids(AIn, eb)[0][0], cybItems = M.mapKids(AIn, cyb).map(([k]) => k);
+  // Only two Cybersecurity items: the branch and topic come along as headings, nothing else.
+  const exc = new Set(Object.keys(AIn)); exc.delete(cybItems[0]); exc.delete(cybItems[2]);
+  const f = M.mapFilterNodes(AIn, exc);
+  eq('picked items and their ancestors, nothing else', Object.keys(f).sort(), [eb, cyb, cybItems[0], cybItems[2]].sort());
+  ok('an unpicked ancestor is a heading only', f[eb]._ctx === true && f[eb].desc === undefined);
+  ok('moved positions are dropped for the drawing', f[eb].dx === undefined);
+  const f2 = M.mapFilterNodes(AIn, new Set());
+  eq('nothing excluded keeps the whole map', Object.keys(f2).length, Object.keys(AIn).length);
+  w.localStorage.removeItem('oym_bexc_' + AI);
+  M.briefToggle(AI, eb);
+  ok('unticking a section leaves out everything in it', [eb, ...M.mapKids(AIn, eb).map(([k]) => k)].every(k => M.briefExcluded(AI).has(k)));
+  M.briefToggle(AI, cybItems[1]);
+  eq('ticking one item inside brings back just that item', Object.keys(M.mapFilterNodes(AIn, M.briefExcluded(AI))).filter(k => M.mapKids(AIn, 'root').some(([b]) => b === k) || true).filter(k => [eb, cyb, cybItems[1]].includes(k)).length, 3);
+  M.briefToggle(AI, eb);
+  ok('ticking a partly picked section picks all of it', ![eb, ...M.mapKids(AIn, eb).map(([k]) => k)].some(k => M.briefExcluded(AI).has(k)));
+
+  // The export sheet.
+  if (d.querySelector('#exBack').hidden) d.querySelector('#exportBtn').click();
+  d.querySelector('[data-extab="brief"]').click(); await tick();
+  d.querySelector(`[data-exrpid="${AI}"]`).click(); await tick();
+  eq('the Brief tab lists every bubble as a checklist', d.querySelectorAll('#bTree input[data-bnode]').length, Object.keys(M.maps[AI].nodes).length);
+  d.querySelector('[data-ex="bnone"]').click(); await tick();
+  ok('Clear leaves nothing picked', /Nothing picked/.test(d.querySelector('#bCount').textContent));
+  const cb = d.querySelector(`#bTree input[data-bnode="${cybItems[0]}"]`); cb.checked = true; cb.dispatchEvent(new w.Event('change', { bubbles: true })); await tick();
+  ok('ticking an item counts it', /1 section, 1 item/.test(d.querySelector('#bCount').textContent));
+  ok('its section shows as partly picked', d.querySelector(`#bTree input[data-bnode="${eb}"]`).indeterminate === true);
+  const bt = d.querySelector('#exBTitle'); bt.value = 'AI Council kickoff'; bt.dispatchEvent(new w.Event('input', { bubbles: true }));
+  const bdoc = M.buildBrief({ pid: AI, paper: 'letter', title: 'AI Council kickoff', name: 'Danzel', desc: true, map: true, time: true, notes: true });
+  ok('the brief is a PDF', Buffer.from(bdoc.output('arraybuffer')).slice(0, 5).toString() === '%PDF-');
+  const sizes = []; for (let i = 1; i <= bdoc.getNumberOfPages(); i++) { bdoc.setPage(i); sizes.push(bdoc.internal.pageSize.getWidth() > bdoc.internal.pageSize.getHeight() ? 'L' : 'P'); }
+  eq('outline portrait, then the map page and the timeline in landscape', sizes, ['P', 'L', 'L']);
+  const doc2 = M.buildBrief({ pid: AI, paper: 'a4', title: '', name: '', desc: false, map: false, time: false, notes: false });
+  eq('with the extras off it is the outline alone', doc2.getNumberOfPages(), 1);
+  d.querySelector('[data-ex="ball"]').click(); await tick();
+  ok('Select all puts everything back', /4 sections, 49 items/.test(d.querySelector('#bCount').textContent));
+  const wholeBrief = M.buildBrief({ pid: AI, paper: 'letter', title: 'All', name: '', desc: true, map: true, time: true, notes: true });
+  ok('a whole-map brief paginates', wholeBrief.getNumberOfPages() >= 4);
+
   console.log(`\nmap: ${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
 })().catch(e => { console.error(e); process.exit(1); });
