@@ -100,15 +100,39 @@ async function boot(seed) {
   const it = 'n003', topic = 'n002', branch = 'n001', topic2 = M.mapKids(nodes, 'n001')[1][0], item2 = M.mapKids(nodes, topic2)[0][0];
   eq('item onto a topic', M.mapDropRule(nodes, { kind: 'item', id: it }, topic2), { parent: topic2 });
   eq('item onto an item lands before it', M.mapDropRule(nodes, { kind: 'item', id: it }, item2), { parent: topic2, before: item2 });
-  eq('item onto a branch is refused', M.mapDropRule(nodes, { kind: 'item', id: it }, branch), null);
+  eq('item onto a sub-topic goes into it', M.mapDropRule(nodes, { kind: 'item', id: it }, branch), { parent: branch });
   eq('item onto the main topic is refused', M.mapDropRule(nodes, { kind: 'item', id: it }, 'root'), null);
   eq('onto itself is refused', M.mapDropRule(nodes, { kind: 'item', id: it }, it), null);
   eq('topic onto another branch', M.mapDropRule(nodes, { kind: 'topic', id: topic }, bLeft), { parent: bLeft });
   eq('topic onto its own branch is a no-op', M.mapDropRule(nodes, { kind: 'topic', id: topic }, branch), null);
   eq('topic onto an item is refused (no nesting under an item)', M.mapDropRule(nodes, { kind: 'topic', id: topic }, item2), null);
+  eq('topic onto another topic nests inside it', M.mapDropRule(nodes, { kind: 'topic', id: topic }, topic2), { parent: topic2 });
   eq('branch onto a branch swaps', M.mapDropRule(nodes, { kind: 'branch', id: branch }, bBot), { swap: bBot });
   eq('branch onto a topic is refused', M.mapDropRule(nodes, { kind: 'branch', id: branch }, topic2), null);
   eq('an unplaced task onto a topic', M.mapDropRule(nodes, { kind: 'task', id: 'tLoose' }, topic), { parent: topic });
+
+  console.log('nesting');
+  // Topics inside topics, three deep on every side, plus items straight on sub-topics.
+  const deep = {}; let o = 0;
+  for (let b = 0; b < 4; b++) { const bid = 'B' + b; deep[bid] = { parent: 'root', kind: 'branch', title: 'B', order: o++ };
+    deep[bid + 'i'] = { parent: bid, kind: 'item', title: 'branch item', order: o++ };
+    for (let t = 0; t < 3; t++) { const t1 = bid + 'T' + t; deep[t1] = { parent: bid, kind: 'topic', title: 'T', order: o++ };
+      deep[t1 + 'i'] = { parent: t1, kind: 'item', title: 'i', order: o++ };
+      for (let u = 0; u < 2; u++) { const t2 = t1 + 'U' + u; deep[t2] = { parent: t1, kind: 'topic', title: 'U', order: o++ };
+        deep[t2 + 'i'] = { parent: t2, kind: 'item', title: 'i', order: o++ };
+        const t3 = t2 + 'V'; deep[t3] = { parent: t2, kind: 'topic', title: 'V', order: o++ }; } } }
+  const dl = M.mapLayout(deep);
+  eq('no overlaps with topics three deep on every side', overlaps(dl.C), []);
+  eq('every sub-topic and topic gets a card', Object.keys(dl.C).length, 1 + 4 + 4 * 3 * (1 + 2 + 2));
+  eq('and a connector', dl.L.length, 4 + 4 * 3 * (1 + 2 + 2));
+  ok('a left topic\'s children sit further left', dl.C['B1T0U0'].x + dl.C['B1T0U0'].w <= dl.C['B1T0'].x);
+  ok('a right topic\'s children sit further right', dl.C['B2T0U0'].x >= dl.C['B2T0'].x + dl.C['B2T0'].w);
+  ok('a top topic\'s children sit higher', dl.C['B0T0U0'].y + dl.C['B0T0U0'].h <= dl.C['B0T0'].y);
+  ok('a bottom topic\'s children sit lower', dl.C['B3T0U0'].y >= dl.C['B3T0'].y + dl.C['B3T0'].h);
+  ok('a sub-topic with items is taller', dl.C['B0'].h > 64 + 30);
+  eq('a topic cannot go inside its own nested topic', M.mapDropRule(deep, { kind: 'topic', id: 'B1T0' }, 'B1T0U0V'), null);
+  eq('but can go inside a cousin', M.mapDropRule(deep, { kind: 'topic', id: 'B1T0' }, 'B1T1U0'), { parent: 'B1T1U0' });
+  eq('items still stay rows: an item never takes children', M.mapDropRule(deep, { kind: 'topic', id: 'B1T0' }, 'B1T1i'), null);
 
   console.log('the view');
   d.querySelector('[data-view="map"]').click();
@@ -249,6 +273,35 @@ async function boot(seed) {
   d.querySelector('[data-mact="fit"]').click(); await tick();
   const r1 = { x: 0, y: 0, w: 100, h: 40 }, up1 = M.mapLink(r1, { x: 0, y: -200, w: 100, h: 40 }), side1 = M.mapLink(r1, { x: 300, y: 0, w: 100, h: 40 });
   ok('a child above gets a vertical elbow, a child beside a horizontal one', /^M50 0V/.test(up1) && /^M100 20H/.test(side1));
+
+  console.log('adding at any depth');
+  M.setMapPid(OY); await tick();
+  const tp = M.mapKids(M.maps[OY].nodes, bTop).map(([k]) => k).find(k => M.mapKindOf(M.maps[OY].nodes, k) === 'topic');
+  d.querySelector(`#mapWorld [data-nid="${tp}"] .mp-plus`).click(); await tick();
+  const sub = M.mapKids(M.maps[OY].nodes, tp).map(([k]) => k).find(k => M.mapKindOf(M.maps[OY].nodes, k) === 'topic');
+  ok('+ on a topic adds a topic inside it', !!sub && !!d.querySelector(`#mapWorld .mp-topic[data-nid="${sub}"] .mp-inl`));
+  d.querySelector(`#mapWorld [data-nid="${sub}"] .mp-inl`).blur(); await tick();
+  d.querySelector(`#mapWorld [data-nid="${sub}"] .mp-add`).click(); await tick();
+  ok('and that one takes items', M.mapKids(M.maps[OY].nodes, sub).some(([k]) => M.mapKindOf(M.maps[OY].nodes, k) === 'item'));
+  d.activeElement && d.activeElement.blur && d.activeElement.blur(); await tick();
+  d.querySelector(`#mapWorld .mp-branch[data-nid="${bTop}"] .mp-add`).click(); await tick();
+  const bi = M.mapKids(M.maps[OY].nodes, bTop).map(([k]) => k).find(k => M.mapKindOf(M.maps[OY].nodes, k) === 'item');
+  ok('a sub-topic takes items too, shown as rows in its card', !!bi && !!d.querySelector(`#mapWorld .mp-branch[data-nid="${bTop}"] .mp-item[data-nid="${bi}"]`));
+  d.activeElement && d.activeElement.blur && d.activeElement.blur(); await tick();
+  db.ref().update({ [`todo/maps/${OY}/nodes/${bi}/due`]: '2026-10-20', [`todo/maps/${OY}/nodes/${sub}/start`]: '2026-11-02', [`todo/maps/${OY}/nodes/${sub}/due`]: '2026-11-30' }); await tick();
+  const RN = M.roadmapData(OY, '2026-09-28'), ln = RN.lanes.find(l => l.id === bTop);
+  ok('the roadmap carries a sub-topic\'s own items', ln.items.some(i => i.id === bi && i.due === '2026-10-20'));
+  const nested = ln.topics.find(t => t.id === sub), parent = ln.topics.find(t => t.id === tp);
+  ok('and nested topics, one level deeper, with their path', nested && nested.depth === 1 && nested.path.length === 2);
+  ok('a parent topic spans what is nested under it', parent.end >= '2026-11-30');
+  ok('a nested roadmap still builds', Buffer.from(M.buildRoadmap({ pid: OY, paper: 'letter' }).output('arraybuffer')).slice(0, 5).toString() === '%PDF-');
+  d.querySelector(`#mapWorld [data-nid="${sub}"] .mp-th`).click(); await tick();
+  const sibs = () => M.mapKids(M.maps[OY].nodes, tp).filter(([k]) => M.mapKindOf(M.maps[OY].nodes, k) === 'topic').map(([k]) => k);
+  M.mapDelete(sub); await tick();
+  const t2list = () => M.mapTopicsOf ? null : M.mapKids(M.maps[OY].nodes, bTop).filter(([k]) => M.mapKindOf(M.maps[OY].nodes, k) === 'topic').map(([k]) => k);
+  const before2 = t2list(); M.setMapPid(OY); M.mapNudge(before2[1], -1); await tick();
+  const after2 = t2list();
+  eq('↑ moves a topic one place earlier among its siblings', [after2[0], after2[1]], [before2[1], before2[0]]);
 
   console.log('projects: find, create, delete');
   d.querySelector('.mp-cur').click();

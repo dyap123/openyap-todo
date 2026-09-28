@@ -546,13 +546,19 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 .mp-card:hover{border-color:var(--muted)}
 .mp-card.sel{border-color:var(--text);box-shadow:0 0 0 3px color-mix(in srgb,var(--text) 9%,transparent)}
 .mp-card.sel .mp-t,.mp-item.sel .t{cursor:text}
+.mp-card{overflow:visible}.mp-topic,.mp-branch{overflow:visible}.mp-topic>.mp-th{border-radius:9px 9px 0 0}
 .mp-inl{width:100%;min-width:0;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--text);border-radius:5px;padding:1px 5px;margin:-2px -6px;outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--text) 10%,transparent)}
 .mp-root .mp-inl{text-align:center}
 .mp-card.editing,.mp-item.editing{overflow:visible}
 .mp-k{font:600 9px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .mp-root{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 18px;background:var(--raise);border:1.5px solid var(--mc,var(--text))}
 .mp-root .mp-t{font-size:19px;font-weight:600;letter-spacing:-.015em;line-height:1.2;margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.mp-branch{display:flex;flex-direction:column;justify-content:center;padding:0 14px;border-left:3px solid var(--mc,var(--side-c))}
+.mp-branch{display:flex;flex-direction:column;border-left:3px solid var(--mc,var(--side-c))}
+.mp-bh{height:64px;flex-shrink:0;display:flex;flex-direction:column;justify-content:center;padding:0 14px;border-bottom:1px solid var(--line)}
+.mp-branch .mp-items{padding:3px 0}
+.mp-branch .mp-add{margin-top:auto}
+.mp-nudge{display:inline-flex;gap:2px;align-items:center}.mp-nudge .icon-btn{font-size:14px}
+.mp-topic .mp-plus{top:20px;margin-top:-12px}
 .mp-branch .mp-t{font-size:15px;font-weight:600;letter-spacing:-.01em;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mp-topic{overflow:hidden;cursor:default}
 .mp-th{height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;background:color-mix(in srgb,var(--mc,var(--raise)) 11%,var(--raise));border-bottom:1px solid var(--line);box-shadow:inset 0 3px 0 var(--mc,transparent);cursor:pointer}
@@ -1693,15 +1699,24 @@ function mapKindOf(nodes,id){
   if(id==='root')return 'root';
   const n=nodes[id];if(!n)return '';
   if(n.parent==='root')return 'branch';
+  if(n.kind==='topic'||n.kind==='item')return n.kind;
   const p=nodes[n.parent];if(!p)return '';
   return p.parent==='root'?'topic':'item';
 }
 function mapDescendants(nodes,id){const out=[];const walk=p=>{for(const [k] of mapKids(nodes,p)){out.push(k);walk(k)}};walk(id);return out}
 const mapSlot=i=>i<4?MAP_SLOTS[i]:(i%2?'right':'left');
-const mapTopicH=(nodes,tid)=>M_HEAD+Math.max(1,mapKids(nodes,tid).length)*M_ROW+M_FOOT;
+// A sub-topic (branch) and a topic are both cards that hold item rows; a topic may also hold
+// topics of its own, to any depth. Items are always rows inside the card they belong to.
+const M_BHEAD=64,M_THEAD=40,M_LGAP=56,M_RGAP=46;
+const mapItemsOf=(nodes,id)=>mapKids(nodes,id).filter(([k])=>mapKindOf(nodes,k)==='item');
+const mapTopicsOf=(nodes,id)=>mapKids(nodes,id).filter(([k])=>mapKindOf(nodes,k)==='topic');
+function mapCardH(nodes,id,kind){
+  const n=mapItemsOf(nodes,id).length;
+  if(kind==='branch')return M_BHEAD+(n?n*M_ROW+6:0)+M_FOOT;
+  return M_THEAD+Math.max(1,n)*M_ROW+M_FOOT;
+}
+const mapHeadH=kind=>kind==='branch'?M_BHEAD:M_THEAD;
 
-// Pure: world rectangles for every card and the connector paths. Same input, same drawing,
-// on every device.
 // An elbow from parent to child: vertical when the child sits above or below, horizontal when it
 // sits beside. Siblings share their middle leg, which is what draws the sheet's bus lines.
 function mapLink(a,b,orient){
@@ -1713,94 +1728,110 @@ function mapLink(a,b,orient){
     const y1=dy<0?a.y:a.y+a.h,y2=dy<0?b.y+b.h:b.y,m=Math.round((y1+y2)/2);
     return `M${ca.x} ${y1}V${m}H${cb.x}V${y2}`;
   }
-  const x1=dx<0?a.x:a.x+a.w,x2=dx<0?b.x+b.w:b.x,m=Math.round((x1+x2)/2),y2=b.kind==='topic'?b.y+Math.min(b.h/2,34):cb.y;
-  return `M${x1} ${ca.y}H${m}V${y2}H${x2}`;
+  const x1=dx<0?a.x:a.x+a.w,x2=dx<0?b.x+b.w:b.x,m=Math.round((x1+x2)/2);
+  const y1=a.kind==='branch'||a.kind==='root'?ca.y:a.y+Math.min(a.h/2,34),y2=b.kind==='topic'?b.y+Math.min(b.h/2,34):cb.y;
+  return `M${x1} ${y1}H${m}V${y2}H${x2}`;
 }
+
+// Pure: world rectangles for every card and the connector paths. Same input, same drawing,
+// on every device. The sheet's layout, extended outward one level per nesting depth.
 function mapLayout(nodes){
   const C={root:{x:-MW.root/2,y:-MH.root/2,w:MW.root,h:MH.root,kind:'root'}},L=[];
   const side={top:[],left:[],right:[],bottom:[]};
   mapKids(nodes,'root').forEach(([id],i)=>side[mapSlot(i)].push(id));
-  const TW=MW.topic,BW=MW.branch,BH=MH.branch,rx=MW.root/2,ry=MH.root/2;
-  const topicsOf=b=>mapKids(nodes,b).map(([t])=>({t,h:mapTopicH(nodes,t)}));
-  // Left and right: a column of topics per side, each branch centred on its own group.
+  const TW=MW.topic,BW=MW.branch,rx=MW.root/2,ry=MH.root/2;
+  const seen=new Set();
+  const kidsT=id=>seen.has(id)?[]:(seen.add(id),mapTopicsOf(nodes,id).map(([k])=>k));
+  // Columns (left, right): a subtree is as tall as its card or its children stacked, whichever
+  // is taller, and a card sits centred on its children.
+  const colH={};
+  const measureCol=id=>{const ks=kidsT(id),h=mapCardH(nodes,id,'topic');
+    const ch=ks.reduce((a,k)=>a+measureCol(k),0)+Math.max(0,ks.length-1)*M_GAP;return colH[id]=Math.max(h,ch)};
   let colTop=Infinity,colBot=-Infinity;
+  const placeCol=(id,x,yTop,sg,s)=>{
+    const h=mapCardH(nodes,id,'topic'),H=colH[id],ks=mapTopicsOf(nodes,id).map(([k])=>k).filter(k=>colH[k]!==undefined);
+    const y=yTop+(H-h)/2;C[id]={x,y,w:TW,h,kind:'topic',slot:s};
+    colTop=Math.min(colTop,y);colBot=Math.max(colBot,y+h);
+    const ch=ks.reduce((a,k)=>a+colH[k],0)+Math.max(0,ks.length-1)*M_GAP;let cy=yTop+(H-ch)/2;
+    for(const k of ks){placeCol(k,x+sg*(TW+M_LGAP),cy,sg,s);cy+=colH[k]+M_GAP}
+  };
   for(const s of ['left','right']){
-    const sg=s==='left'?-1:1,groups=side[s].map(b=>({b,ts:topicsOf(b)}));
-    groups.forEach(g=>g.h=Math.max(BH,g.ts.reduce((a,t)=>a+t.h,0)+Math.max(0,g.ts.length-1)*M_GAP));
+    const sg=s==='left'?-1:1;
+    const groups=side[s].map(b=>{const ts=kidsT(b);ts.forEach(measureCol);
+      const bh=mapCardH(nodes,b,'branch'),th=ts.reduce((a,t)=>a+colH[t],0)+Math.max(0,ts.length-1)*M_GAP;
+      return {b,ts,bh,th,h:Math.max(bh,th)}});
     const total=groups.reduce((a,g)=>a+g.h,0)+Math.max(0,groups.length-1)*M_GAP*2;
     let y=-total/2+(s==='left'?-36:36);          // the sheet sets the left branch high, the right low
     const colX=sg<0?-rx-340-TW:rx+340,brX=sg<0?-rx-70-BW:rx+70;
     for(const g of groups){
-      const by=y+g.h/2-BH/2;
-      C[g.b]={x:brX,y:by,w:BW,h:BH,kind:'branch',slot:s};
-      const re={x:sg<0?-rx:rx,y:0},be={x:sg<0?brX+BW:brX,y:by+BH/2},mid=(re.x+be.x)/2;
-      L.push({to:g.b,d:`M${re.x} ${re.y}H${mid}V${be.y}H${be.x}`});
-      const bout=sg<0?brX:brX+BW,bus=sg<0?colX+TW+(bout-colX-TW)/2:bout+(colX-bout)/2;
-      let ty=y+(g.h-(g.ts.reduce((a,t)=>a+t.h,0)+Math.max(0,g.ts.length-1)*M_GAP))/2;
-      for(const t of g.ts){
-        C[t.t]={x:colX,y:ty,w:TW,h:t.h,kind:'topic',slot:s};
-        const tin=sg<0?colX+TW:colX;
-        L.push({to:t.t,d:`M${bout} ${by+BH/2}H${bus}V${ty+Math.min(t.h/2,34)}H${tin}`});
-        colTop=Math.min(colTop,ty);colBot=Math.max(colBot,ty+t.h);ty+=t.h+M_GAP;
-      }
-      colTop=Math.min(colTop,by);colBot=Math.max(colBot,by+BH);
+      const by=y+g.h/2-g.bh/2;
+      C[g.b]={x:brX,y:by,w:BW,h:g.bh,kind:'branch',slot:s};
+      colTop=Math.min(colTop,by);colBot=Math.max(colBot,by+g.bh);
+      let ty=y+(g.h-g.th)/2;
+      for(const t of g.ts){placeCol(t,colX,ty,sg,s);ty+=colH[t]+M_GAP}
       y+=g.h+M_GAP*2;
     }
   }
-  // Top and bottom: one row of topics, pushed clear of the side columns when it is wide.
-  const colInner=rx+340;
+  // Rows (top, bottom): a subtree is as wide as its card or its children side by side; each
+  // depth is its own row, as tall as the tallest card in it.
+  const colInner=rx+340,rowW={},lvlH={};
+  const measureRow=(id,d)=>{const ks=kidsT(id);lvlH[d]=Math.max(lvlH[d]||0,mapCardH(nodes,id,'topic'));
+    const cw=ks.reduce((a,k)=>a+measureRow(k,d+1),0)+Math.max(0,ks.length-1)*M_GAP;return rowW[id]=Math.max(TW,cw)};
   for(const s of ['top','bottom']){
     const sg=s==='top'?-1:1;
     for(const b of side[s]){
-      const by=sg<0?-ry-78-BH:ry+78;
-      C[b]={x:-BW/2,y:by,w:BW,h:BH,kind:'branch',slot:s};
-      L.push({to:b,d:`M0 ${sg*ry}V${sg<0?by+BH:by}`});
-      const ts=topicsOf(b);if(!ts.length)continue;
-      const tw=ts.length*TW+(ts.length-1)*M_GAP,x0=-tw/2,hmax=Math.max(...ts.map(t=>t.h));
-      let edge=sg<0?by-70:by+BH+70;
+      const bh=mapCardH(nodes,b,'branch'),by=sg<0?-ry-78-bh:ry+78;
+      C[b]={x:-BW/2,y:by,w:BW,h:bh,kind:'branch',slot:s};
+      for(const k in lvlH)delete lvlH[k];
+      const ts=kidsT(b);ts.forEach(t=>measureRow(t,1));if(!ts.length)continue;
+      const tw=ts.reduce((a,t)=>a+rowW[t],0)+Math.max(0,ts.length-1)*M_GAP;
+      let edge=sg<0?by-70:by+bh+70;
       if(tw/2>colInner-20&&isFinite(colTop))edge=sg<0?Math.min(edge,colTop-50):Math.max(edge,colBot+50);
-      const bus=sg<0?edge+32:edge-32,bOut=sg<0?by:by+BH;
-      ts.forEach((t,i)=>{
-        const x=x0+i*(TW+M_GAP),y=sg<0?edge-t.h:edge;
-        C[t.t]={x,y,w:TW,h:t.h,kind:'topic',slot:s};
-        L.push({to:t.t,d:`M0 ${bOut}V${bus}H${x+TW/2}V${sg<0?edge:edge}`});
-      });
-      void hmax;
+      const lvlEdge={1:edge};                       // the row's inner edge (bottom for top rows)
+      for(let d=2;lvlH[d];d++)lvlEdge[d]=lvlEdge[d-1]+sg*(lvlH[d-1]+M_RGAP);
+      const placeRow=(id,d,xLeft)=>{
+        const h=mapCardH(nodes,id,'topic'),W=rowW[id],x=xLeft+(W-TW)/2,y=sg<0?lvlEdge[d]-h:lvlEdge[d];
+        C[id]={x,y,w:TW,h,kind:'topic',slot:s};
+        const ks=mapTopicsOf(nodes,id).map(([k])=>k).filter(k=>rowW[k]!==undefined);
+        const cw=ks.reduce((a,k)=>a+rowW[k],0)+Math.max(0,ks.length-1)*M_GAP;let cx=xLeft+(W-cw)/2;
+        for(const k of ks){placeRow(k,d+1,cx);cx+=rowW[k]+M_GAP}
+      };
+      let x=-tw/2;for(const t of ts){placeRow(t,1,x);x+=rowW[t]+M_GAP}
     }
   }
-  // Where you dragged things: a branch's offset moves its whole group, a topic's its own card.
+  // Where you dragged things: an offset moves that card and everything under it.
   // Fit clears them all and the sheet layout above comes back.
-  const off=n=>({x:+(n&&n.dx)||0,y:+(n&&n.dy)||0});
-  for(const [bid,bn] of mapKids(nodes,'root')){
-    const ob=off(bn);if(C[bid]){C[bid].x+=ob.x;C[bid].y+=ob.y}
-    for(const [tid,tn] of mapKids(nodes,bid)){const ot=off(tn);if(C[tid]){C[tid].x+=ob.x+ot.x;C[tid].y+=ob.y+ot.y}}
-  }
-  L.length=0;
+  const shift=(id,ox,oy)=>{const n=nodes[id],x=ox+(+(n&&n.dx)||0),y=oy+(+(n&&n.dy)||0);
+    if(C[id]){C[id].x+=x;C[id].y+=y}for(const [k] of mapTopicsOf(nodes,id))if(C[k])shift(k,x,y)};
+  for(const [bid] of mapKids(nodes,'root'))shift(bid,0,0);
+  const link=(p,id,o)=>{L.push({to:id,d:mapLink(C[p],C[id],o)});for(const [k] of mapTopicsOf(nodes,id))if(C[k])link(id,k,o)};
   for(const [bid] of mapKids(nodes,'root')){
-    const o=C[bid]&&(C[bid].slot==='top'||C[bid].slot==='bottom')?'v':'h';
-    if(C[bid])L.push({to:bid,d:mapLink(C.root,C[bid],o)});
-    for(const [tid] of mapKids(nodes,bid))if(C[tid])L.push({to:tid,d:mapLink(C[bid],C[tid],o)});
+    if(!C[bid])continue;
+    const o=C[bid].slot==='top'||C[bid].slot==='bottom'?'v':'h';
+    link('root',bid,o);
   }
   let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
   for(const r of Object.values(C)){x0=Math.min(x0,r.x);y0=Math.min(y0,r.y);x1=Math.max(x1,r.x+r.w);y1=Math.max(y1,r.y+r.h)}
   return {C,L,box:{x:x0,y:y0,w:x1-x0,h:y1-y0}};
 }
 
-// Pure: where a drag may land. Items go into a topic (or before another item), topics into a
-// branch (or before another topic), branches swap slots. Anything else is refused, which is
-// also what keeps a bubble out of its own subtree.
+// Pure: where a drag may land.
+//  item (or an unplaced task): into any sub-topic or topic card, or just before another item
+//  topic: into a sub-topic or another topic (nesting), never into itself or its own subtree
+//  sub-topic: swaps slots with another sub-topic
 function mapDropRule(nodes,drag,target){
   if(!target||target===drag.id)return null;
   const tk=mapKindOf(nodes,target);
   if(drag.kind==='item'||drag.kind==='task'){
-    if(tk==='topic')return {parent:target};
+    if(tk==='topic'||tk==='branch')return nodes[drag.id]&&nodes[drag.id].parent===target?null:{parent:target};
     if(tk==='item')return {parent:nodes[target].parent,before:target};
     return null;
   }
   if(drag.kind==='topic'){
-    if(tk==='branch')return nodes[drag.id]&&nodes[drag.id].parent===target?null:{parent:target};
-    if(tk==='topic')return {parent:nodes[target].parent,before:target};
-    return null;
+    if(tk!=='topic'&&tk!=='branch')return null;
+    if(nodes[drag.id]&&nodes[drag.id].parent===target)return null;
+    if(mapDescendants(nodes,drag.id).includes(target))return null;
+    return {parent:target};
   }
   if(drag.kind==='branch')return tk==='branch'?{swap:target}:null;
   return null;
@@ -1831,12 +1862,12 @@ function mapProjects(){
 }
 
 // ── Writes
-function mapAdd(parent){
+function mapAdd(parent,want){
   const pid=mapPid,nodes=mapNodes(pid),pk=mapKindOf(nodes,parent);
-  if(pk==='item')return;
-  const kind=pk==='root'?'branch':pk==='branch'?'topic':'item';
+  if(pk==='item'||!pk)return;
+  const kind=pk==='root'?'branch':want==='item'?'item':'topic';
   const id=newKey('todo/maps/'+pid+'/nodes');
-  const title={branch:'New branch',topic:'New topic',item:'New item'}[kind];
+  const title={branch:'New sub-topic',topic:'New topic',item:'New item'}[kind];
   mapGrow={id,parent};mapSel='';mapInline=id;
   upd({[MP(pid,id)]:{parent,kind,title,order:mapOrderFor(nodes,parent,null)}});
 }
@@ -1867,6 +1898,14 @@ function mapSetColor(id,c){
   if(id==='root')upd({['todo/maps/'+pid+'/color']:c||null});
   else if(mapNodes(pid)[id])upd({[MP(pid,id)+'/color']:c||null});
 }
+function mapNudge(id,dir){
+  const pid=mapPid,nodes=mapNodes(pid),n=nodes[id];if(!n)return;
+  const isItem=mapKindOf(nodes,id)==='item';
+  const sib=mapKids(nodes,n.parent).filter(([k])=>(mapKindOf(nodes,k)==='item')===isItem);
+  const i=sib.findIndex(([k])=>k===id),j=i+dir;if(i<0||j<0||j>=sib.length)return;
+  const [oid,o]=sib[j];let a=n.order||0,b=o.order||0;if(a===b)b=a+dir;
+  upd({[MP(pid,id)+'/order']:b,[MP(pid,oid)+'/order']:a});
+}
 function mapToList(id){
   const pid=mapPid,n=mapNodes(pid)[id];if(!n||n.taskId)return;
   const tid=newKey('todo/tasks');
@@ -1896,8 +1935,7 @@ function mapApplyDrop(drag,rule){
     upd({[MP(pid,id)]:{parent:rule.parent,kind:'item',title:t.title||'(untitled)',order,taskId:drag.id,...(t.dueDate?{due:t.dueDate}:{}),...(t.notes?{desc:t.notes}:{})}});
     return;
   }
-  const kind=mapKindOf(nodes,rule.parent)==='topic'?'item':'topic';
-  upd({[MP(pid,drag.id)+'/parent']:rule.parent,[MP(pid,drag.id)+'/order']:order,[MP(pid,drag.id)+'/kind']:kind});
+  upd({[MP(pid,drag.id)+'/parent']:rule.parent,[MP(pid,drag.id)+'/order']:order,[MP(pid,drag.id)+'/kind']:drag.kind});
 }
 let mapNoFlip=false;
 function mapMoveBy(id,dx,dy){
@@ -2009,17 +2047,24 @@ function renderMap(anim){
   const rc=mapColorOf(pid,nodes,'root');
   cards.push(`<div class="mp-card mp-root${mapSel==='root'?' sel':''}" data-nid="root" style="${mcStyle(rc)}left:${lay.C.root.x}px;top:${lay.C.root.y}px;width:${MW.root}px;height:${MH.root}px"${P.description?` title="${esc(P.description)}"`:''}>
     <span class="mp-k">Main topic</span><span class="mp-t">${esc(mt)}</span><button class="mp-plus" type="button" data-madd="root" title="Add a branch" aria-label="Add a branch">+</button></div>`);
+  const topicCard=(tid,tn)=>{
+    const tr=lay.C[tid];if(!tr)return;
+    const items=mapItemsOf(nodes,tid);
+    cards.push(`<div class="mp-card mp-topic${mapSel===tid?' sel':''}" data-nid="${tid}" data-mkind="topic" style="${mcStyle(mapColorOf(pid,nodes,tid))}left:${tr.x}px;top:${tr.y}px;width:${tr.w}px;height:${tr.h}px">
+      <div class="mp-th"><span class="mp-t">${esc(tn.title)}</span>${mapNote(tn.desc)}${tn.due?`<span class="mp-td">${esc(fmtMD(parseYmd(tn.due)))}</span>`:''}</div>
+      <ol class="mp-items">${items.length?items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join(''):'<li class="mp-empty">Nothing here yet</li>'}</ol>
+      <button class="mp-add" type="button" data-madd="${tid}" data-mwant="item">+ Add item</button>
+      <button class="mp-plus" type="button" data-madd="${tid}" data-mwant="topic" title="Add a topic inside" aria-label="Add a topic inside">+</button></div>`);
+    for(const [k,kn] of mapTopicsOf(nodes,tid))topicCard(k,kn);
+  };
   for(const [bid,b] of mapKids(nodes,'root')){
-    const r=lay.C[bid];
+    const r=lay.C[bid],items=mapItemsOf(nodes,bid);
     cards.push(`<div class="mp-card mp-branch${mapSel===bid?' sel':''}" data-nid="${bid}" data-mkind="branch" style="${mcStyle(mapColorOf(pid,nodes,bid))}left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px">
-      <span class="mp-k">Sub-topic${mapNote(b.desc)}</span><span class="mp-t">${esc(b.title)}</span><button class="mp-plus" type="button" data-madd="${bid}" title="Add a topic" aria-label="Add a topic">+</button></div>`);
-    for(const [tid,tn] of mapKids(nodes,bid)){
-      const tr=lay.C[tid],items=mapKids(nodes,tid);
-      cards.push(`<div class="mp-card mp-topic${mapSel===tid?' sel':''}" data-nid="${tid}" data-mkind="topic" style="${mcStyle(mapColorOf(pid,nodes,tid))}left:${tr.x}px;top:${tr.y}px;width:${tr.w}px;height:${tr.h}px">
-        <div class="mp-th"><span class="mp-t">${esc(tn.title)}</span>${mapNote(tn.desc)}${tn.due?`<span class="mp-td">${esc(fmtMD(parseYmd(tn.due)))}</span>`:''}</div>
-        <ol class="mp-items">${items.length?items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join(''):'<li class="mp-empty">Nothing here yet</li>'}</ol>
-        <button class="mp-add" type="button" data-madd="${tid}">+ Add item</button></div>`);
-    }
+      <div class="mp-bh"><span class="mp-k">Sub-topic${mapNote(b.desc)}</span><span class="mp-t">${esc(b.title)}</span></div>
+      ${items.length?`<ol class="mp-items">${items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join('')}</ol>`:''}
+      <button class="mp-add" type="button" data-madd="${bid}" data-mwant="item">+ Add item</button>
+      <button class="mp-plus" type="button" data-madd="${bid}" data-mwant="topic" title="Add a topic" aria-label="Add a topic">+</button></div>`);
+    for(const [tid,tn] of mapTopicsOf(nodes,bid))topicCard(tid,tn);
   }
   const b=lay.box,paths=lay.L.map(l=>{const c=mapColorOf(pid,nodes,l.to);return `<path d="${l.d}" data-to="${l.to}" pathLength="1"${c?` class="c" style="stroke:${c}"`:''}/>`}).join('');
   const svg=`<svg class="map-links" style="left:${b.x-40}px;top:${b.y-40}px;width:${b.w+80}px;height:${b.h+80}px" viewBox="${b.x-40} ${b.y-40} ${b.w+80} ${b.h+80}" aria-hidden="true">${paths}</svg>`;
@@ -2111,8 +2156,8 @@ function mapPickOpenAt(open){
 }
 function mapPositions(lay,nodes){
   const P={};for(const [id,r] of Object.entries(lay.C))P[id]={x:r.x,y:r.y};
-  for(const [tid] of Object.entries(lay.C).filter(([,r])=>r.kind==='topic'))
-    mapKids(nodes,tid).forEach(([iid],i)=>{const r=lay.C[tid];P[iid]={x:r.x,y:r.y+M_HEAD+3+i*M_ROW,parent:tid}});
+  for(const [cid,r] of Object.entries(lay.C).filter(([,r])=>r.kind==='topic'||r.kind==='branch'))
+    mapItemsOf(nodes,cid).forEach(([iid],i)=>{P[iid]={x:r.x,y:r.y+mapHeadH(r.kind)+3+i*M_ROW,parent:cid}});
   return P;
 }
 function mapSwatches(pid,nodes,id){
@@ -2138,13 +2183,15 @@ function mapPanelHTML(pid,nodes){
       <div class="fld"><span class="lbl">Side</span><div class="seg" role="group" aria-label="Side">${segHTML([['career','Career'],['openyap','OpenYap']],side,'data-mside-set')}</div></div>
       <label class="check"><input type="checkbox" data-mact-chk="private"${m.private?' checked':''}> Private (kept out of reports)</label>
       </div>
-      <div class="mp-pf"><button class="btn" type="button" data-madd="root">+ Add branch</button></div></div>`;
+      <div class="mp-pf"><button class="btn" type="button" data-madd="root">+ Add sub-topic</button></div></div>`;
   }
   const n=nodes[mapSel];if(!n){mapSel='';return ''}
   const kind=mapKindOf(nodes,mapSel),t=n.taskId?tasks[n.taskId]:null,due=(t&&t.dueDate)||n.due||'';
   const kids=mapDescendants(nodes,mapSel).length;
   return `<div class="mp-panel" data-mpanel="${mapSel}">
-    <div class="mp-ph"><span class="mp-k">${{branch:'Sub-topic',topic:'Topic',item:'Item'}[kind]}</span><button class="icon-btn" type="button" data-mact="close" aria-label="Close">${ICON.x}</button></div>
+    <div class="mp-ph"><span class="mp-k">${{branch:'Sub-topic',topic:'Topic',item:'Item'}[kind]}</span>
+      <span class="mp-nudge"><button class="icon-btn" type="button" data-mnudge="-1" title="Move earlier" aria-label="Move earlier">↑</button><button class="icon-btn" type="button" data-mnudge="1" title="Move later" aria-label="Move later">↓</button>
+      <button class="icon-btn" type="button" data-mact="close" aria-label="Close">${ICON.x}</button></span></div>
     <div class="mp-pb">
     <label class="fld"><span class="lbl">Title</span><input class="txt" id="mpTitle" data-mf="title" value="${esc(n.title||'')}"></label>
     ${mapDescHTML(n.desc,kind==='item'?(t?'Also saved as the task\'s notes':'Details, links, what done looks like'):'What this covers')}
@@ -2156,7 +2203,7 @@ function mapPanelHTML(pid,nodes){
     </div>
     <div class="mp-pf">
       ${kind==='item'?(t?'':'<button class="btn" type="button" data-mact="list">Add to list</button>')
-        :`<button class="btn" type="button" data-madd="${mapSel}">+ ${kind==='branch'?'Topic':'Item'}</button>`}
+        :`<button class="btn" type="button" data-madd="${mapSel}" data-mwant="topic">+ Topic</button><button class="btn" type="button" data-madd="${mapSel}" data-mwant="item">+ Item</button>`}
       <button class="btn ghost danger" type="button" data-mact="del" title="${kids?`Also deletes the ${kids} inside`:'Delete'}">Delete${kids?` (+${kids})`:''}</button>
     </div></div>`;
 }
@@ -2224,7 +2271,7 @@ function mpStartDrag(info,x,y){
   const nodes0=mapNodes(mapPid);
   if(info.kind==='branch'||info.kind==='topic'){
     // The card follows the pointer, and a branch brings its topics with it.
-    const ids=[info.id,...(info.kind==='branch'?mapKids(nodes0,info.id).map(([k])=>k):[])];
+    const ids=[info.id,...mapDescendants(nodes0,info.id).filter(k=>mapKindOf(nodes0,k)==='topic')];
     mpDrag.move=ids.map(id=>$(`#mapWorld [data-nid="${id}"]`)).filter(Boolean);
     mpDrag.move.forEach(el=>el.classList.add('mp-moving'));
     $$('.map-links path').forEach(p=>{if(ids.includes(p.dataset.to))p.style.opacity='.15'});
@@ -2323,7 +2370,8 @@ function mapClick(t){
   if(t.closest('[data-mdelno]')){mapDelAsk='';$('#mpPickList').innerHTML=mapPickListHTML();return true}
   const pp=t.closest('[data-mpid]');if(pp){mapPickOpen=false;mapPick(pp.dataset.mpid);return true}
   if(t.closest('.mp-pick'))return true;
-  const ad=t.closest('[data-madd]');if(ad){mapAdd(ad.dataset.madd);return true}
+  const ad=t.closest('[data-madd]');if(ad){mapAdd(ad.dataset.madd,ad.dataset.mwant);return true}
+  const nu=t.closest('[data-mnudge]');if(nu){mapNudge(mapSel,+nu.dataset.mnudge);return true}
   const ss=t.closest('[data-mside-set]');if(ss){mapProjSide(ss.dataset.msideSet);return true}
   const mc=t.closest('[data-mcolor]');if(mc){mapSetColor(mapSel,mc.dataset.mcolor);return true}
   const a=t.closest('[data-mact]');
@@ -2356,14 +2404,26 @@ function roadmapData(pid,today){
   const nodes=mapNodes(pid),P=projects[pid]||{};
   const item=(id,n)=>{const t=n.taskId?tasks[n.taskId]:null,due=(t&&t.dueDate)||n.due||'',done=!!(t&&t.completed);
     return {id,title:n.title||(t&&t.title)||'(untitled)',desc:n.desc||'',color:mapColorOf(pid,nodes,id),start:n.start||'',due,done,inList:!!t,status:done?'done':due&&due<today?'overdue':'open'}};
-  const lanes=mapKids(nodes,'root').map(([bid,b])=>({id:bid,title:b.title||'',desc:b.desc||'',color:mapColorOf(pid,nodes,bid),topics:mapKids(nodes,bid).map(([tid,tn])=>{
-    const items=mapKids(nodes,tid).map(([iid,i])=>item(iid,i)),ds=items.flatMap(i=>[i.start,i.due]).concat([tn.start,tn.due]).filter(Boolean).sort();
-    return {id:tid,title:tn.title||'',desc:tn.desc||'',color:mapColorOf(pid,nodes,tid),start:ds[0]||'',end:ds[ds.length-1]||'',items};
-  })}));
-  const all=lanes.flatMap(l=>l.topics.flatMap(t=>[t.start,t.end])).filter(Boolean).sort();
-  const undated=[];for(const l of lanes)for(const t of l.topics)for(const i of t.items)if(!i.due&&!i.start)undated.push({...i,lane:l.title,topic:t.title});
+  // Topics nest, so each lane lists them depth-first with their depth and path; a topic's span
+  // covers everything under it.
+  const flat=(tid,tn,depth,path,out)=>{
+    const items=mapItemsOf(nodes,tid).map(([iid,i])=>item(iid,i)),me={id:tid,title:tn.title||'',desc:tn.desc||'',depth,path:path.concat(tn.title||''),
+      color:mapColorOf(pid,nodes,tid),items,start:'',end:''};
+    out.push(me);const at=out.length;
+    for(const [k,kn] of mapTopicsOf(nodes,tid))flat(k,kn,depth+1,me.path,out);
+    const ds=out.slice(at-1).flatMap(t=>t.items.flatMap(i=>[i.start,i.due])).concat([tn.start,tn.due]).concat(out.slice(at).flatMap(t=>[t.start,t.end])).filter(Boolean).sort();
+    me.start=ds[0]||'';me.end=ds[ds.length-1]||'';
+  };
+  const lanes=mapKids(nodes,'root').map(([bid,b])=>{
+    const topics=[];for(const [tid,tn] of mapTopicsOf(nodes,bid))flat(tid,tn,0,[],topics);
+    return {id:bid,title:b.title||'',desc:b.desc||'',color:mapColorOf(pid,nodes,bid),items:mapItemsOf(nodes,bid).map(([iid,i])=>item(iid,i)),topics};
+  });
+  const all=lanes.flatMap(l=>l.topics.flatMap(t=>[t.start,t.end]).concat(l.items.flatMap(i=>[i.start,i.due]))).filter(Boolean).sort();
+  const undated=[];
+  for(const l of lanes){for(const i of l.items)if(!i.due&&!i.start)undated.push({...i,lane:l.title,topic:''});
+    for(const t of l.topics)for(const i of t.items)if(!i.due&&!i.start)undated.push({...i,lane:l.title,topic:t.path.join(' / ')})}
   return {pid,name:P.name||'Project',title:(maps[pid]&&maps[pid].title)||P.name||'',lanes,min:all[0]||'',max:all[all.length-1]||'',undated,today,
-    dated:lanes.reduce((a,l)=>a+l.topics.reduce((b,t)=>b+t.items.filter(i=>i.due||i.start).length,0),0)};
+    dated:lanes.reduce((a,l)=>a+l.items.filter(i=>i.due||i.start).length+l.topics.reduce((b,t)=>b+t.items.filter(i=>i.due||i.start).length,0),0)};
 }
 function buildRoadmap(o){
   const R=roadmapData(o.pid),k=pdfKit(o.paper,'landscape'),{doc,P,W,H}=k,M=40;k.M=M;
@@ -2395,22 +2455,24 @@ function buildRoadmap(o){
     const need=h=>{if(y+h>H-M-14){doc.addPage();header(true);cols()}};
     const top=y;
     for(const l of R.lanes){
-      if(!l.topics.some(t=>t.start||t.end))continue;
+      if(!l.topics.some(t=>t.start||t.end)&&!l.items.some(i=>i.due||i.start))continue;
       need(20);setT(k,'bold',9.5,l.color?hexRgb(l.color):P.ink);doc.text(fit(doc,l.title,170),M,y+10);
       doc.setDrawColor(...P.rule);doc.setLineWidth(.5);doc.line(M,y+15,RX,y+15);y+=20;
+      const mark=(i,ind)=>{
+        need(12);setT(k,'normal',7.5,i.status==='overdue'?late:P.muted);doc.text(fit(doc,i.title,150-ind),M+16+ind,y+8);
+        const c=i.done?P.muted:i.status==='overdue'?late:i.color?hexRgb(i.color):acc;doc.setFillColor(...c);doc.setDrawColor(...c);
+        if(i.start&&i.due){const a2=X(i.start),b2=Math.max(X(i.due)+px,a2+3);doc.rect(a2,y+3,b2-a2,5,'F')}
+        else{const x=X(i.due||i.start)+px/2;doc.lines([[4,4],[-4,4],[-4,-4]],x,y+1.5,[1,1],'F',true)}
+        y+=12;
+      };
+      for(const i of l.items)if(i.due||i.start)mark(i,-8);
       for(const t of l.topics){
         if(!t.start&&!t.end)continue;
-        need(16);setT(k,'bold',8,P.body);doc.text(fit(doc,t.title,160),M+8,y+9);
+        const ind=Math.min(t.depth,4)*10;
+        need(16);setT(k,'bold',8,P.body);doc.text(fit(doc,t.title,160-ind),M+8+ind,y+9);
         const a=X(t.start||t.end),b=Math.max(X(t.end||t.start)+px,a+3);
         doc.setFillColor(...(t.color?mix(hexRgb(t.color),.72):soft));doc.rect(a,y+2,b-a,9,'F');y+=15;
-        for(const i of t.items){
-          if(!i.due&&!i.start)continue;
-          need(12);setT(k,'normal',7.5,i.status==='overdue'?late:P.muted);doc.text(fit(doc,i.title,150),M+16,y+8);
-          const c=i.done?P.muted:i.status==='overdue'?late:i.color?hexRgb(i.color):acc;doc.setFillColor(...c);doc.setDrawColor(...c);
-          if(i.start&&i.due){const a2=X(i.start),b2=Math.max(X(i.due)+px,a2+3);doc.rect(a2,y+3,b2-a2,5,'F')}
-          else{const x=X(i.due||i.start)+px/2;doc.lines([[4,4],[-4,4],[-4,-4]],x,y+1.5,[1,1],'F',true)}
-          y+=12;
-        }
+        for(const i of t.items)if(i.due||i.start)mark(i,ind);
       }
     }
     const tx=X(R.today);
@@ -2425,7 +2487,7 @@ function buildRoadmap(o){
   const need2=h=>{if(y+h>H-M-14){doc.addPage();header(true);th()}};
   setT(k,'bold',12,P.ink);doc.text('Schedule',M,y+4);y+=20;th();
   for(const l of R.lanes){
-    const rows=l.topics.flatMap(t=>t.items.filter(i=>i.due||i.start).map(i=>({...i,topic:t.title})))
+    const rows=l.items.filter(i=>i.due||i.start).map(i=>({...i,topic:l.title})).concat(l.topics.flatMap(t=>t.items.filter(i=>i.due||i.start).map(i=>({...i,topic:t.path.join(' / ')}))))
       .sort((a,b)=>(a.due||a.start)<(b.due||b.start)?-1:1);
     if(!rows.length)continue;
     need2(30);setT(k,'bold',9.5,l.color?hexRgb(l.color):acc);doc.text(fit(doc,l.title,W-2*M),M,y+2);y+=14;
@@ -2441,7 +2503,7 @@ function buildRoadmap(o){
   }
   if(R.undated.length){
     need2(34);setT(k,'bold',9.5,P.ink);doc.text('Not scheduled',M,y+2);y+=14;
-    for(const r of R.undated){const dl=r.desc?wrap(doc,r.desc,W-2*M-24,1):[];need2(13+dl.length*10);setT(k,'normal',8.5,P.muted);doc.text(fit(doc,r.title,240),cx[0],y);doc.text(fit(doc,r.lane+' / '+r.topic,300),cx[1],y);y+=13;
+    for(const r of R.undated){const dl=r.desc?wrap(doc,r.desc,W-2*M-24,1):[];need2(13+dl.length*10);setT(k,'normal',8.5,P.muted);doc.text(fit(doc,r.title,240),cx[0],y);doc.text(fit(doc,r.topic?r.lane+' / '+r.topic:r.lane,300),cx[1],y);y+=13;
       if(dl.length){setT(k,'normal',7.5,P.muted);doc.text(dl[0],cx[0]+10,y-2);y+=12}}
   }
   pageNumbers(k,'Roadmap - '+R.name);
@@ -3106,7 +3168,7 @@ if(auth){
     if(ok)listen();else unlisten();
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
-window.__oym={mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>
