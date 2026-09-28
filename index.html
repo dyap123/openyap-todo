@@ -2136,7 +2136,7 @@ function buildRoadmap(o){
       }
     }
     const tx=X(R.today);
-    if(tx>=LX&&tx<=RX){doc.setDrawColor(...late);doc.setLineWidth(.8);doc.line(tx,top-8,tx,Math.min(y,H-M-10));setT(k,'bold',7,late);doc.text('Today',tx+2,top-10)}
+    if(tx>=LX&&tx<=RX){doc.setDrawColor(...late);doc.setLineWidth(.8);const ly=Math.min(y,H-M-10);doc.line(tx,top-8,tx,ly);setT(k,'bold',7,late);doc.text('Today',tx+3,ly-2)}
   }else{
     setT(k,'normal',10,P.muted);doc.text('No dates yet. Give items a start or due date on the Map to see them on a timeline.',M,y+10);y+=24;
   }
