@@ -494,7 +494,36 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 /* ── Map ─────────────────────────────────────────────────────────────────
    The paper mind-map sheet: flat cards, 1px rules, one side colour. Motion lives in JS. */
 .wrap.wide{max-width:1480px}
-.map-bar{display:flex;align-items:center;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
+.map-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 12px;flex-wrap:wrap;position:relative;z-index:20}
+.mp-switch{position:relative;min-width:0;flex:0 1 auto}
+.mp-cur{display:flex;align-items:center;gap:10px;height:38px;padding:0 10px 0 14px;border:1px solid var(--line-2);border-radius:10px;background:var(--surface);max-width:100%;min-width:0}
+.mp-cur:hover,.mp-cur[aria-expanded="true"]{border-color:var(--text)}
+.mp-cur i,.mp-prow i{width:8px;height:8px;border-radius:50%;background:var(--side-c);flex-shrink:0}
+.mp-cur .nm{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-cur .sd{font:11px var(--mono);color:var(--muted);white-space:nowrap}
+.mp-cur .cv{display:inline-flex;color:var(--muted);transition:transform .2s}
+.mp-cur[aria-expanded="true"] .cv{transform:rotate(180deg)}
+.mp-pick{position:absolute;left:0;top:calc(100% + 6px);width:360px;max-width:calc(100vw - 24px);max-height:min(460px,calc(100vh - 170px));display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line-2);border-radius:12px;box-shadow:0 18px 44px rgba(0,0,0,.16);overflow:hidden;transform-origin:top left}
+.mp-psearch{padding:10px 10px 6px}.mp-psearch .txt{height:34px}
+.mp-plist{overflow:auto;padding:2px 6px 8px;flex:1;min-height:0;overscroll-behavior:contain}
+.mp-pg{font:600 9.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:10px 8px 4px}
+.mp-prow{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;column-gap:10px;align-items:center;padding:7px 6px 7px 10px;border-radius:8px;cursor:pointer}
+.mp-prow i{grid-row:1/3}
+.mp-prow .nm{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
+.mp-prow .lk{display:inline-flex;color:var(--faint)}
+.mp-prow .mt{grid-column:2;font:10.5px var(--mono);color:var(--muted)}
+.mp-prow .mp-pdel{grid-column:3;grid-row:1/3;opacity:0;transition:opacity .15s}
+.mp-prow:hover{background:var(--raise)}.mp-prow:hover .mp-pdel,.mp-prow .mp-pdel:focus{opacity:1}
+.mp-prow .mp-pdel:hover{color:var(--danger)}
+.mp-prow .mp-pdel:disabled{cursor:not-allowed;color:var(--faint)}.mp-prow .mp-pdel:disabled:hover{color:var(--faint)}
+.mp-prow.cur{background:var(--raise)}.mp-prow.cur .nm{font-weight:600}
+.mp-prow.ask{display:block;cursor:default;background:color-mix(in srgb,var(--danger) 7%,var(--surface));border:1px solid color-mix(in srgb,var(--danger) 35%,transparent);padding:10px}
+.mp-pask{display:grid;gap:3px;font-size:12.5px;color:var(--body);margin-bottom:9px}.mp-pask b{color:var(--text);font-size:13px}
+.mp-pbtns{display:flex;flex-wrap:wrap;gap:6px}.mp-pbtns .btn{height:30px;padding:0 10px;font-size:12.5px}
+.btn.danger-fill{background:var(--danger);border-color:var(--danger);color:#fff}
+.mp-pempty{padding:14px 10px;font-size:12.5px;color:var(--muted)}
+.mp-pnew{display:flex;gap:6px;padding:8px 10px 10px;border-top:1px solid var(--line)}.mp-pnew .txt{height:32px}.mp-pnew .btn{height:32px}
+@media (hover:none){.mp-prow .mp-pdel{opacity:.7}}
 .map-pills{display:flex;gap:6px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;padding:2px}
 .map-pills::-webkit-scrollbar{display:none}
 .map-pill{height:30px;padding:0 13px;border-radius:999px;border:1px solid var(--line-2);font-size:12.5px;color:var(--muted);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;flex-shrink:0}
@@ -506,7 +535,7 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 .map-tools{display:flex;gap:6px;flex-shrink:0}
 .map-tools .btn{height:30px;padding:0 11px}
 .mp-count{font:11px var(--mono);color:var(--muted);margin-left:2px}
-.map-stage{position:relative;height:calc(100vh - 176px);min-height:480px;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+.map-stage{position:relative;height:calc(100vh - 176px);height:calc(100dvh - 176px);min-height:480px;border:1px solid var(--line);border-radius:14px;overflow:hidden;
   background-color:var(--bg);background-image:radial-gradient(var(--line-2) 1px,transparent 1.3px);background-size:24px 24px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
 .map-stage.panning{cursor:grabbing}
 .map-empty{display:flex;align-items:center;justify-content:center;color:var(--muted)}
@@ -516,6 +545,10 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 .mp-card{position:absolute;background:var(--surface);border:1px solid var(--line-2);border-radius:10px;cursor:pointer;transition:border-color .15s,box-shadow .2s}
 .mp-card:hover{border-color:var(--muted)}
 .mp-card.sel{border-color:var(--text);box-shadow:0 0 0 3px color-mix(in srgb,var(--text) 9%,transparent)}
+.mp-card.sel .mp-t,.mp-item.sel .t{cursor:text}
+.mp-inl{width:100%;min-width:0;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--text);border-radius:5px;padding:1px 5px;margin:-2px -6px;outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--text) 10%,transparent)}
+.mp-root .mp-inl{text-align:center}
+.mp-card.editing,.mp-item.editing{overflow:visible}
 .mp-k{font:600 9px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .mp-root{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 18px;background:var(--raise);border:1.5px solid var(--mc,var(--text))}
 .mp-root .mp-t{font-size:19px;font-weight:600;letter-spacing:-.015em;line-height:1.2;margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -558,6 +591,7 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 .mp-bloom .mp-card,.mp-bloom .mp-item,.mp-bloom .mp-empty{opacity:0}
 .mp-bloom .map-links path{stroke-dasharray:1;stroke-dashoffset:1}
 .mp-lift{opacity:.3}
+.mp-moving{pointer-events:none;z-index:4;box-shadow:0 16px 40px rgba(0,0,0,.18);border-color:var(--text)}
 .mp-no{opacity:.45}
 .mp-ok{border-color:var(--side-c)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--side-c) 24%,transparent);opacity:1}
 body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
@@ -1073,7 +1107,7 @@ function logDone(raw,side){
 
 // ═══ Rendering ═══════════════════════════════════════════════════════════
 let rTimer=0,deferred=false,pointerDown=false;
-function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new')&&/^(INPUT|TEXTAREA)$/.test(a.tagName))}
+function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new,.mp-pick,#mapWorld')&&/^(INPUT|TEXTAREA)$/.test(a.tagName))}
 function schedule(){_entries=null;if(rTimer)return;rTimer=setTimeout(()=>{rTimer=0;render()},16)}
 function render(force){
   if(!force&&(editingText()||pointerDown)){deferred=true;return}
@@ -1624,7 +1658,13 @@ let mapPid=LS.get('oym_mappid','');
 let mapSel='';            // selected card or item ('root' is the project card)
 let mapFocus=false;       // focus the panel's title field after the next paint
 let mapTray=false;        // the Unplaced tasks drawer
-let mapNewOpen=false;     // the New project field
+let mapNewOpen=false;     // unused since the switcher: new projects are made from its footer
+let mapPickOpen=false;    // the project switcher's list
+let mapInline='';         // a bubble whose title is being typed in place
+let mapPickQ='';          // its search
+let mapDelAsk='';         // a project waiting on the delete confirmation
+ICON.trash='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 4.5h9M6.5 4.5V3h3v1.5M5 4.5l.6 8.5h4.8l.6-8.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+ICON.chev='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4.5 6.5 8 10l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const mapCam={};          // pid -> {x,y,k}
 let mapPrev=null;         // id -> {x,y} of the last paint, for FLIP moves
 let mapBloomPid='';       // the project whose entrance already played
@@ -1662,6 +1702,20 @@ const mapTopicH=(nodes,tid)=>M_HEAD+Math.max(1,mapKids(nodes,tid).length)*M_ROW+
 
 // Pure: world rectangles for every card and the connector paths. Same input, same drawing,
 // on every device.
+// An elbow from parent to child: vertical when the child sits above or below, horizontal when it
+// sits beside. Siblings share their middle leg, which is what draws the sheet's bus lines.
+function mapLink(a,b,orient){
+  const ca={x:a.x+a.w/2,y:a.y+a.h/2},cb={x:b.x+b.w/2,y:b.y+b.h/2},dx=cb.x-ca.x,dy=cb.y-ca.y;
+  // The sheet's direction wins (top/bottom branches run vertical, side branches horizontal) so a
+  // column keeps its shared line; geometry decides only when no direction is given.
+  const vert=orient?orient==='v':Math.abs(dy)-(a.h+b.h)/2>Math.abs(dx)-(a.w+b.w)/2;
+  if(vert){
+    const y1=dy<0?a.y:a.y+a.h,y2=dy<0?b.y+b.h:b.y,m=Math.round((y1+y2)/2);
+    return `M${ca.x} ${y1}V${m}H${cb.x}V${y2}`;
+  }
+  const x1=dx<0?a.x:a.x+a.w,x2=dx<0?b.x+b.w:b.x,m=Math.round((x1+x2)/2),y2=b.kind==='topic'?b.y+Math.min(b.h/2,34):cb.y;
+  return `M${x1} ${ca.y}H${m}V${y2}H${x2}`;
+}
 function mapLayout(nodes){
   const C={root:{x:-MW.root/2,y:-MH.root/2,w:MW.root,h:MH.root,kind:'root'}},L=[];
   const side={top:[],left:[],right:[],bottom:[]};
@@ -1713,6 +1767,19 @@ function mapLayout(nodes){
       });
       void hmax;
     }
+  }
+  // Where you dragged things: a branch's offset moves its whole group, a topic's its own card.
+  // Fit clears them all and the sheet layout above comes back.
+  const off=n=>({x:+(n&&n.dx)||0,y:+(n&&n.dy)||0});
+  for(const [bid,bn] of mapKids(nodes,'root')){
+    const ob=off(bn);if(C[bid]){C[bid].x+=ob.x;C[bid].y+=ob.y}
+    for(const [tid,tn] of mapKids(nodes,bid)){const ot=off(tn);if(C[tid]){C[tid].x+=ob.x+ot.x;C[tid].y+=ob.y+ot.y}}
+  }
+  L.length=0;
+  for(const [bid] of mapKids(nodes,'root')){
+    const o=C[bid]&&(C[bid].slot==='top'||C[bid].slot==='bottom')?'v':'h';
+    if(C[bid])L.push({to:bid,d:mapLink(C.root,C[bid],o)});
+    for(const [tid] of mapKids(nodes,bid))if(C[tid])L.push({to:tid,d:mapLink(C[bid],C[tid],o)});
   }
   let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
   for(const r of Object.values(C)){x0=Math.min(x0,r.x);y0=Math.min(y0,r.y);x1=Math.max(x1,r.x+r.w);y1=Math.max(y1,r.y+r.h)}
@@ -1770,7 +1837,7 @@ function mapAdd(parent){
   const kind=pk==='root'?'branch':pk==='branch'?'topic':'item';
   const id=newKey('todo/maps/'+pid+'/nodes');
   const title={branch:'New branch',topic:'New topic',item:'New item'}[kind];
-  mapGrow={id,parent};mapSel=id;mapFocus=true;
+  mapGrow={id,parent};mapSel='';mapInline=id;
   upd({[MP(pid,id)]:{parent,kind,title,order:mapOrderFor(nodes,parent,null)}});
 }
 function mapSave(id,f,v){
@@ -1832,12 +1899,54 @@ function mapApplyDrop(drag,rule){
   const kind=mapKindOf(nodes,rule.parent)==='topic'?'item':'topic';
   upd({[MP(pid,drag.id)+'/parent']:rule.parent,[MP(pid,drag.id)+'/order']:order,[MP(pid,drag.id)+'/kind']:kind});
 }
+let mapNoFlip=false;
+function mapMoveBy(id,dx,dy){
+  const pid=mapPid,n=mapNodes(pid)[id];if(!n)return;
+  // The card is already where it was dropped; the next paint must not fly it in from the old spot.
+  mapNoFlip=true;
+  upd({[MP(pid,id)+'/dx']:Math.round((+n.dx||0)+dx),[MP(pid,id)+'/dy']:Math.round((+n.dy||0)+dy)});
+}
+function mapTidy(){
+  const pid=mapPid,nodes=mapNodes(pid),moved=Object.entries(nodes).filter(([,n])=>n&&(n.dx||n.dy));
+  if(moved.length){
+    const up={},back={};
+    for(const [id,n] of moved){up[MP(pid,id)+'/dx']=null;up[MP(pid,id)+'/dy']=null;back[MP(pid,id)+'/dx']=n.dx||null;back[MP(pid,id)+'/dy']=n.dy||null}
+    upd(up);toast(`Tidied ${moved.length} moved bubble${moved.length===1?'':'s'} back into place`,'Undo',()=>upd(back));
+  }
+  const nodes2={};for(const [id,n] of Object.entries(nodes))nodes2[id]={...n,dx:0,dy:0};
+  mapTween(mapFitCam(mapLayout(nodes2)));
+}
 function mapNewProject(name){
   name=name.trim();if(!name)return;
   const id=newKey('todo/projects'),side=mSide||'career';
   upd({['todo/projects/'+id]:{name,color:'',icon:'',status:'active',description:'',targetDate:'',createdAt:new Date().toISOString(),order:Date.now()},
        ['todo/sides/'+id]:{side,private:false},['todo/maps/'+id+'/title']:name});
-  mapNewOpen=false;mapPid=id;LS.set('oym_mappid',id);mapSel='root';mapFocus=true;renderMap();
+  mapNewOpen=false;mapPickOpen=false;mapPid=id;LS.set('oym_mappid',id);mapSel='root';mapFocus=true;renderMap();
+}
+const mapProjTasks=pid=>Object.entries(tasks).filter(([,t])=>t&&t.projectId===pid);
+const mapProjLocked=pid=>pid===oyProjectId();
+function mapDeleteProject(pid,withTasks){
+  const P=projects[pid];if(!P||mapProjLocked(pid))return;
+  const snap={p:P,s:sideMap[pid]||null,m:maps[pid]||null,t:{}},up={};
+  up['todo/projects/'+pid]=null;up['todo/sides/'+pid]=null;up['todo/maps/'+pid]=null;
+  for(const [id,t] of mapProjTasks(pid)){
+    snap.t[id]=t;
+    if(withTasks)up[TP(id)]=null;
+    else{
+      // Keep the task where it was: its side and privacy came from the project, so pin them on it.
+      up[TP(id)+'/projectId']='';up[TP(id)+'/side']=taskSide(t);
+      if(taskPrivate(t))up[TP(id)+'/private']=true;
+    }
+  }
+  const n=Object.keys(snap.t).length;
+  mapDelAsk='';
+  if(mapPid===pid){const next=mapProjects().find(([id])=>id!==pid);mapPid=next?next[0]:'';LS.set('oym_mappid',mapPid);mapSel='';mapTray=false}
+  upd(up);
+  toast(`Deleted ${P.name||'project'}`+(n?(withTasks?` and ${n} task${n===1?'':'s'}`:`; ${n} task${n===1?'':'s'} kept`):''),'Undo',()=>{
+    const back={['todo/projects/'+pid]:snap.p,['todo/sides/'+pid]:snap.s,['todo/maps/'+pid]:snap.m};
+    for(const [id,t] of Object.entries(snap.t))back[TP(id)]=t;
+    upd(back);
+  });
 }
 function mapProjSide(v){upd({['todo/sides/'+mapPid+'/side']:v})}
 function mapProjPrivate(){const m=projSide(mapPid)||{};upd({['todo/sides/'+mapPid+'/private']:!m.private,['todo/sides/'+mapPid+'/side']:m.side||projSideOf(mapPid)})}
@@ -1882,14 +1991,17 @@ function renderMap(anim){
   const plist=mapProjects();
   if(!projects[mapPid]&&plist.length){mapPid=plist[0][0];LS.set('oym_mappid',mapPid)}
   const pid=mapPid,P=projects[pid];
-  const pills=plist.map(([id,p])=>`<button class="map-pill" type="button" data-mpid="${id}" aria-pressed="${id===pid}" style="--side-c:var(--${projSideOf(id)})"><i></i>${esc(p.name||'Untitled')}</button>`).join('');
+  const cnt=P?Object.keys(mapNodes(pid)).length:0;
   const bar=`<div class="map-bar">
-    <div class="map-pills">${pills}${mapNewOpen?`<form class="map-new" data-mform="new"><input class="txt" id="mapNewName" placeholder="Project name" autocomplete="off"><button class="btn primary" type="submit">Create</button></form>`
-      :'<button class="map-pill ghost" type="button" data-mact="new">+ New project</button>'}</div>
+    <div class="mp-switch">
+      <button class="mp-cur" type="button" data-mact="pick" aria-haspopup="listbox" aria-expanded="${mapPickOpen}" style="--side-c:var(--${P?projSideOf(pid):'career'})">
+        <i></i><span class="nm">${P?esc(P.name||'Untitled'):'Pick a project'}</span>${P?`<span class="sd">${SIDE_NAME[projSideOf(pid)]} · ${cnt} bubble${cnt===1?'':'s'}</span>`:''}<span class="cv">${ICON.chev}</span></button>
+      ${mapPickOpen?mapPickHTML():''}
+    </div>
     <div class="map-tools">
       ${P?`<button class="btn" type="button" data-mact="tray">Unplaced <span class="mp-count">${mapUnplaced(pid).length}</span></button>
       <button class="btn" type="button" data-mact="zout" aria-label="Zoom out">−</button><button class="btn" type="button" data-mact="zin" aria-label="Zoom in">+</button>
-      <button class="btn" type="button" data-mact="fit">Fit</button><button class="btn primary" type="button" data-mact="roadmap">Roadmap PDF</button>`:''}
+      <button class="btn" type="button" data-mact="fit" title="Tidy everything back into the sheet layout and show it all">Fit</button><button class="btn primary" type="button" data-mact="roadmap">Roadmap PDF</button>`:''}
     </div></div>`;
   if(!P){host.innerHTML=bar+'<div class="map-stage map-empty" id="mapStage"><p>Create a project to start a map.</p></div>';return}
   const nodes=mapNodes(pid),lay=mapLayout(nodes),side=projSideOf(pid),mt=(maps[pid]&&maps[pid].title)||P.name;
@@ -1923,6 +2035,79 @@ function renderMap(anim){
   else mapFlip(lay);
   mapPrev=mapPositions(lay,nodes);mapGrow=null;
   if(mapFocus){mapFocus=false;const i=$('#mpTitle');if(i){i.focus();i.select()}}
+  if(mapInline)mapInlineEdit(mapInline);
+  mapFitPanel();
+}
+// The panel is pinned to what is visible, not to the stage: 100vh counts browser chrome on
+// iPad and iPhone, so a panel sized to the stage ran off the bottom of the screen.
+function mapFitPanel(){
+  const pn=$('.mp-panel'),st=$('#mapStage');if(!pn||!st)return;
+  if(window.innerWidth<=820){pn.style.cssText='';return}
+  const r=st.getBoundingClientRect(),vh=window.visualViewport?visualViewport.height:window.innerHeight;
+  const top=Math.max(r.top+12,12),bottom=Math.min(r.bottom-12,vh-12);
+  pn.style.position='fixed';pn.style.top=top+'px';pn.style.right=Math.max(12,window.innerWidth-r.right+12)+'px';
+  pn.style.maxHeight=Math.max(200,bottom-top)+'px';
+}
+window.addEventListener('scroll',()=>{if(view==='map')mapFitPanel()},{passive:true});
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>{if(view==='map')mapFitPanel()});
+// Type a title straight into its bubble: Enter or clicking away saves, Escape leaves it as it was.
+function mapInlineEdit(id){
+  const el=$(`#mapWorld [data-nid="${id}"]`);if(!el){return}
+  const tl=el.classList.contains('mp-item')?$('.t',el):$('.mp-t',el);if(!tl||$('.mp-inl',el))return;
+  const nodes=mapNodes(mapPid),old=id==='root'?((maps[mapPid]&&maps[mapPid].title)||(projects[mapPid]||{}).name||''):((nodes[id]||{}).title||'');
+  const inp=document.createElement('input');inp.className='mp-inl';inp.value=old;inp.maxLength=160;inp.setAttribute('aria-label','Title');
+  tl.textContent='';tl.appendChild(inp);el.classList.add('editing');
+  inp.focus();inp.select();
+  let done=false;
+  const finish=save=>{
+    if(done)return;done=true;mapInline='';
+    const v=inp.value.trim();
+    if(save&&v&&v!==old){if(id==='root')mapSave('root','mtitle',v);else mapSave(id,'title',v)}
+    renderMap();
+  };
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();finish(true)}
+    else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();finish(false)}
+  });
+  inp.addEventListener('blur',()=>finish(true));
+}
+function mapPickListHTML(){
+  const q=mapPickQ.trim().toLowerCase(),plist=mapProjects().filter(([,p])=>!q||(p.name||'').toLowerCase().includes(q));
+  if(!plist.length)return `<p class="mp-pempty">${q?'No project matches “'+esc(mapPickQ.trim())+'”. Press Enter to create it.':'No projects yet.'}</p>`;
+  return SIDES.map(sd=>{
+    const rows=plist.filter(([id])=>projSideOf(id)===sd);if(!rows.length)return '';
+    return `<div class="mp-pg">${SIDE_NAME[sd]}</div>`+rows.map(([id,p])=>{
+      const nb=Object.keys(mapNodes(id)).length,nt=mapProjTasks(id).filter(([,t])=>!t.completed).length,priv=!!(projSide(id)||{}).private;
+      if(mapDelAsk===id){
+        const all=mapProjTasks(id).length;
+        return `<div class="mp-prow ask" data-mrow="${id}"><div class="mp-pask"><b>Delete ${esc(p.name||'Untitled')}?</b>
+          <span>Its map (${nb} bubble${nb===1?'':'s'}) goes. ${all?`It has ${all} task${all===1?'':'s'} in your list.`:'No tasks are attached.'} You can undo right after.</span></div>
+          <div class="mp-pbtns">${all?`<button class="btn" type="button" data-mdelgo="keep">Keep tasks</button><button class="btn danger-fill" type="button" data-mdelgo="all">Delete tasks too</button>`
+            :`<button class="btn danger-fill" type="button" data-mdelgo="keep">Delete</button>`}<button class="btn ghost" type="button" data-mdelno>Cancel</button></div></div>`;
+      }
+      const lock=mapProjLocked(id);
+      return `<div class="mp-prow${id===mapPid?' cur':''}" role="option" aria-selected="${id===mapPid}" data-mpid="${id}" style="--side-c:var(--${sd})">
+        <i></i><span class="nm">${esc(p.name||'Untitled')}${priv?`<span class="lk" title="Private">${ICON.lock}</span>`:''}</span>
+        <span class="mt">${nb?nb+' bubble'+(nb===1?'':'s'):'No map yet'}${nt?' · '+nt+' open':''}</span>
+        <button class="icon-btn mp-pdel" type="button" data-mdel="${id}" ${lock?'disabled title="OpenYap is the home of the OpenYap side, so it stays"':'title="Delete project"'} aria-label="Delete ${esc(p.name||'project')}">${ICON.trash}</button></div>`;
+    }).join('');
+  }).join('');
+}
+function mapPickHTML(){
+  return `<div class="mp-pick" role="listbox" aria-label="Projects">
+    <div class="mp-psearch"><input class="txt" id="mapPickQ" data-mpq placeholder="Find or create a project" value="${esc(mapPickQ)}" autocomplete="off" spellcheck="false"></div>
+    <div class="mp-plist" id="mpPickList">${mapPickListHTML()}</div>
+    <form class="mp-pnew" data-mform="new"><input class="txt" id="mapNewName" placeholder="New project name" autocomplete="off"><button class="btn primary" type="submit">Create</button></form>
+  </div>`;
+}
+function mapPickOpenAt(open){
+  mapPickOpen=open;mapDelAsk='';if(open)mapPickQ='';
+  if(!open){$('.mp-pick')?.remove();$('.mp-cur')?.setAttribute('aria-expanded','false');return}
+  renderMap();
+  const pk=$('.mp-pick');
+  fx(pk,{opacity:[0,1],translateY:[-6,0],scale:[.98,1],duration:260,ease:'out(4)'});
+  fx($$('.mp-prow,.mp-pg',pk),{opacity:[0,1],translateX:[-6,0],duration:240,delay:stg(18,{start:40}),ease:'out(3)'});
+  if(window.innerWidth>820)$('#mapPickQ')?.focus();
 }
 function mapPositions(lay,nodes){
   const P={};for(const [id,r] of Object.entries(lay.C))P[id]={x:r.x,y:r.y};
@@ -1996,6 +2181,7 @@ function mapBloom(lay){
   fx($$('.mp-item,.mp-empty',w),{opacity:[0,1],translateX:[-10,0],duration:420,delay:stg(11,{start:820}),ease:'out(3)'});
 }
 function mapFlip(lay){
+  if(mapNoFlip){mapNoFlip=false;return}
   if(!mapPrev||!canAnim())return;
   const w=$('#mapWorld');if(!w)return;
   const now=mapPositions(lay,mapNodes(mapPid));
@@ -2033,8 +2219,20 @@ function mpDragInfo(el){
   return {kind:mapKindOf(mapNodes(mapPid),it.dataset.nid),id:it.dataset.nid,title:n.title||'',el:it};
 }
 function mpStartDrag(info,x,y){
-  mpDrag={...info,rule:null,target:''};
-  info.el.classList.add('mp-lift');document.body.classList.add('mp-dragging');
+  mpDrag={...info,rule:null,target:'',x0:x,y0:y};
+  document.body.classList.add('mp-dragging');
+  const nodes0=mapNodes(mapPid);
+  if(info.kind==='branch'||info.kind==='topic'){
+    // The card follows the pointer, and a branch brings its topics with it.
+    const ids=[info.id,...(info.kind==='branch'?mapKids(nodes0,info.id).map(([k])=>k):[])];
+    mpDrag.move=ids.map(id=>$(`#mapWorld [data-nid="${id}"]`)).filter(Boolean);
+    mpDrag.move.forEach(el=>el.classList.add('mp-moving'));
+    $$('.map-links path').forEach(p=>{if(ids.includes(p.dataset.to))p.style.opacity='.15'});
+    for(const el of $$('#mapWorld [data-nid]'))if(!ids.includes(el.dataset.nid))el.classList.toggle('mp-no',!mapDropRule(nodes0,info,el.dataset.nid));
+    if(navigator.vibrate)navigator.vibrate(10);
+    return;
+  }
+  info.el.classList.add('mp-lift');
   const g=document.createElement('div');g.className='mp-ghost';g.textContent=info.title||'(untitled)';document.body.appendChild(g);mpDrag.ghost=g;
   g.style.transform=`translate3d(${x+14}px,${y+10}px,0)`;
   fx(g,{scale:[.6,1],opacity:[0,1],duration:260,ease:'outBack(2)'});
@@ -2043,16 +2241,28 @@ function mpStartDrag(info,x,y){
   if(navigator.vibrate)navigator.vibrate(10);
 }
 function mpMoveDrag(x,y){
-  mpDrag.ghost.style.transform=`translate3d(${x+14}px,${y+10}px,0)`;
+  if(mpDrag.move){const k=(mapCam[mapPid]||{k:1}).k,dx=(x-mpDrag.x0)/k,dy=(y-mpDrag.y0)/k;
+    mpDrag.move.forEach(el=>{el.style.transform=`translate(${dx}px,${dy}px)`})}
+  else mpDrag.ghost.style.transform=`translate3d(${x+14}px,${y+10}px,0)`;
   const el=document.elementFromPoint(x,y),t=el&&el.closest&&el.closest('#mapWorld [data-nid]');
   const id=t?t.dataset.nid:'',rule=id?mapDropRule(mapNodes(mapPid),mpDrag,id):null;
   if(id!==mpDrag.target){$$('.mp-ok').forEach(e=>e.classList.remove('mp-ok'));if(rule&&t){t.classList.add('mp-ok');fx(t,{scale:[1.03,1],duration:260,ease:'out(3)'})}}
   mpDrag.target=id;mpDrag.rule=rule;
 }
-function mpEndDrag(drop){
+function mpEndDrag(drop,x,y){
   const d=mpDrag;mpDrag=null;if(!d)return;
   d.el.classList.remove('mp-lift');document.body.classList.remove('mp-dragging');
   $$('.mp-ok,.mp-no').forEach(e=>e.classList.remove('mp-ok','mp-no'));
+  if(d.move){
+    mpClickBlock=Date.now()+400;
+    if(drop&&d.rule){mapApplyDrop(d,d.rule);return}
+    const k=(mapCam[mapPid]||{k:1}).k,dx=((x??d.x0)-d.x0)/k,dy=((y??d.y0)-d.y0)/k;
+    if(drop&&Math.hypot(dx,dy)>3){mapMoveBy(d.id,dx,dy);return}
+    // Nothing happened: spring back.
+    d.move.forEach(el=>{el.classList.remove('mp-moving');if(canAnim()){const m=/translate\(([-\d.]+)px, ?([-\d.]+)px\)/.exec(el.style.transform)||[0,0,0];el.style.transform='';fx(el,{translateX:[+m[1],0],translateY:[+m[2],0],duration:520,ease:'outElastic(1,.7)'})}else el.style.transform=''});
+    $$('.map-links path').forEach(p=>p.style.opacity='');
+    return;
+  }
   if(drop&&d.rule){d.ghost.remove();mapApplyDrop(d,d.rule);mpClickBlock=Date.now()+400}
   else if(canAnim()){const r=d.el.getBoundingClientRect();fx(d.ghost,{translateX:r.left,translateY:r.top,opacity:0,scale:.7,duration:320,ease:'in(2)',onComplete:()=>d.ghost.remove()})}
   else d.ghost.remove();
@@ -2091,7 +2301,7 @@ document.addEventListener('pointermove',e=>{
 },{passive:false});
 function mpUp(e){
   mpPts.delete(e.pointerId);
-  if(mpPress&&mpPress.id===e.pointerId){clearTimeout(mpPress.timer);if(mpDrag)mpEndDrag(e.type==='pointerup');mpPress=null;return}
+  if(mpPress&&mpPress.id===e.pointerId){clearTimeout(mpPress.timer);if(mpDrag)mpEndDrag(e.type==='pointerup',e.clientX,e.clientY);mpPress=null;return}
   if(mpPan&&(mpPan.id===e.pointerId||mpPan.pinch)){if(mpPan.moved)mpClickBlock=Date.now()+250;mpPan=null;$('#mapStage')?.classList.remove('panning')}
 }
 document.addEventListener('pointerup',mpUp);document.addEventListener('pointercancel',mpUp);
@@ -2105,17 +2315,23 @@ window.addEventListener('resize',()=>{if(view==='map')mapApplyCam()});
 
 // Clicks inside the map. Returns true when it handled the click.
 function mapClick(t){
+  if(mapPickOpen&&!t.closest('.mp-switch'))mapPickOpenAt(false);
   if(!t.closest('#mapHost'))return false;
   if(Date.now()<mpClickBlock)return true;
-  const pp=t.closest('[data-mpid]');if(pp){mapPick(pp.dataset.mpid);return true}
+  const dl=t.closest('[data-mdel]');if(dl){if(!dl.disabled){mapDelAsk=dl.dataset.mdel;$('#mpPickList').innerHTML=mapPickListHTML();fx($('.mp-prow.ask'),{opacity:[0,1],scale:[.98,1],duration:220,ease:'out(3)'})}return true}
+  const dg=t.closest('[data-mdelgo]');if(dg){mapDeleteProject(mapDelAsk,dg.dataset.mdelgo==='all');mapPickOpen=false;renderMap();return true}
+  if(t.closest('[data-mdelno]')){mapDelAsk='';$('#mpPickList').innerHTML=mapPickListHTML();return true}
+  const pp=t.closest('[data-mpid]');if(pp){mapPickOpen=false;mapPick(pp.dataset.mpid);return true}
+  if(t.closest('.mp-pick'))return true;
   const ad=t.closest('[data-madd]');if(ad){mapAdd(ad.dataset.madd);return true}
   const ss=t.closest('[data-mside-set]');if(ss){mapProjSide(ss.dataset.msideSet);return true}
   const mc=t.closest('[data-mcolor]');if(mc){mapSetColor(mapSel,mc.dataset.mcolor);return true}
   const a=t.closest('[data-mact]');
   if(a){const k=a.dataset.mact;
-    if(k==='new'){mapNewOpen=true;renderMap();$('#mapNewName')?.focus()}
+    if(k==='pick')mapPickOpenAt(!mapPickOpen);
+    else if(k==='new'){mapPickOpenAt(true);$('#mapNewName')?.focus()}
     else if(k==='tray'){mapTray=!mapTray;renderMap();if(mapTray)fx($('.mp-tray'),{translateX:[-24,0],opacity:[0,1],duration:380,ease:'out(4)'})}
-    else if(k==='fit'){const lay=mapLayout(mapNodes(mapPid));mapTween(mapFitCam(lay))}
+    else if(k==='fit')mapTidy();
     else if(k==='zin')mapZoom(1.2);
     else if(k==='zout')mapZoom(1/1.2);
     else if(k==='roadmap'){EX.tab='roadmap';EX.rpid=mapPid;saveEX();openExport()}
@@ -2125,8 +2341,10 @@ function mapClick(t){
     return true;
   }
   if(t.closest('.mp-panel,.mp-tray,[data-open]'))return !t.closest('[data-open]');
+  if(t.closest('.mp-inl'))return true;
   const nd=t.closest('#mapWorld [data-nid]');
-  if(nd){const id=nd.dataset.nid,was=mapSel;mapSel=id===was?'':id;renderMap();
+  if(nd&&nd.dataset.nid===mapSel&&t.closest('.mp-t,.mp-item .t,.mp-th')){mapInline=mapSel;mapInlineEdit(mapSel);return true}
+  if(nd){const id=nd.dataset.nid,was=mapSel;if(id===was)return true;mapSel=id;renderMap();
     if(mapSel)fx($('.mp-panel'),{translateY:[10,0],opacity:[0,1],duration:320,ease:'out(4)'});return true}
   if(t.closest('#mapStage')&&mapSel){mapSel='';renderMap();return true}
   return !!t.closest('#mapStage');
@@ -2798,6 +3016,7 @@ document.addEventListener('input',e=>{
   if(t.dataset.f==='notes'){const id=t.closest('.editor').dataset.id;notesPending=[id,t.value];clearTimeout(notesTimer);notesTimer=setTimeout(flushNotes,700)}
   else if(t.id==='doneSearch'){doneF.q=t.value;renderDone()}
   else if(t.id==='exName'){EX.name=t.value;LS.set('oym_name',EX.name)}
+  else if(t.id==='mapPickQ'){mapPickQ=t.value;mapDelAsk='';$('#mpPickList').innerHTML=mapPickListHTML()}
 });
 document.addEventListener('focusout',e=>{if(deferred&&e.target.closest&&e.target.closest('.editor'))setTimeout(()=>{if(deferred)render()},0)});
 // A re-render between mousedown and mouseup would swallow the click, so hold renders until the pointer lifts.
@@ -2811,10 +3030,14 @@ document.addEventListener('keydown',e=>{
     if(!$('#exBack').hidden){closeExport();return}
     if(!$('#themePop').hidden){closeThemes();$('#themeBtn').focus();return}
     if(openId){closeEditor();return}
-    if(view==='map'&&(mapSel||mapNewOpen)){mapSel='';mapNewOpen=false;renderMap();return}
+    if(view==='map'&&mapPickOpen){mapPickOpenAt(false);$('.mp-cur')?.focus();return}
+    if(view==='map'&&mapSel){mapSel='';renderMap();return}
     return;
   }
   if(e.key==='Enter'&&t.tagName==='INPUT'&&t.dataset&&t.dataset.mf&&t.closest('.mp-panel')){e.preventDefault();t.blur();return}
+  if(e.key==='Enter'&&t.id==='mapPickQ'){e.preventDefault();
+    const q=t.value.trim().toLowerCase(),m=mapProjects().filter(([,p])=>(p.name||'').toLowerCase().includes(q));
+    if(q&&!m.length){mapPickOpen=false;mapNewProject(t.value)}else if(m.length){mapPickOpen=false;mapPick(m[0][0])}return}
   if(e.key==='Enter'&&t.classList&&t.classList.contains('e-title')){e.preventDefault();saveField(t.closest('.editor').dataset.id,'title',t.value);closeEditor();return}
   if((e.key==='Enter'||e.key===' ')&&t.matches&&t.matches('[role="button"][data-act],[role="button"][data-open]')){e.preventDefault();t.click();return}
   if(t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;
@@ -2883,7 +3106,7 @@ if(auth){
     if(ok)listen();else unlisten();
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
-window.__oym={mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>

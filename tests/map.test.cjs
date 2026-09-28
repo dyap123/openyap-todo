@@ -60,6 +60,7 @@ async function boot(seed) {
   const todo = { projects: { '-P25PXSq33unJ506PF3n': { name: 'OpenYap', status: 'active', order: 1 } }, sides: {}, maps: {}, tasks: {
     tLoose: { title: 'Loose OpenYap task', projectId: '-P25PXSq33unJ506PF3n', completed: false, priority: 'medium', dueDate: '', order: 1 },
     tDone: { title: 'Finished one', projectId: '-P25PXSq33unJ506PF3n', completed: true, completedAt: '2026-09-01T00:00:00Z', order: 2 },
+    tDB: { title: 'Measure the kitchen', projectId: '-map02-diamondbar', completed: false, priority: 'medium', dueDate: '2026-10-16', order: 3 },
   }, history: {} };
   for (const [k, v] of Object.entries(seedBody)) { const p = k.split('/'); todo[p[1]][p[2]] = v; }
   const { w, d, db } = await boot({ todo });
@@ -112,13 +113,16 @@ async function boot(seed) {
   console.log('the view');
   d.querySelector('[data-view="map"]').click();
   await new Promise(r => setTimeout(r, 30));
-  d.querySelector(`[data-mpid="${OY}"]`).click();
+  d.querySelector('.mp-cur').click();
+  ok('the switcher lists every project, grouped by side', d.querySelectorAll('.mp-prow').length === 5 && [...d.querySelectorAll('.mp-pg')].map(g => g.textContent).join() === 'Career,OpenYap');
+  d.querySelector(`.mp-prow[data-mpid="${OY}"]`).click();
   await new Promise(r => setTimeout(r, 400));
+  ok('picking closes the list', !d.querySelector('.mp-pick'));
   ok('the map renders', !!d.querySelector('#mapWorld .mp-root'));
   eq('one card per branch and topic plus the main topic', d.querySelectorAll('#mapWorld .mp-card').length, 1 + 4 + 12);
   eq('items are numbered rows inside their topic', d.querySelectorAll('#mapWorld .mp-item').length, 58 - 16);
   ok('a connector per card', d.querySelectorAll('.map-links path').length === 16);
-  ok('the selected project pill is pressed', d.querySelector(`[data-mpid="${OY}"]`).getAttribute('aria-pressed') === 'true');
+  ok('the switcher shows the current project', d.querySelector('.mp-cur .nm').textContent === 'OpenYap' && /58 bubbles/.test(d.querySelector('.mp-cur').textContent));
   eq('unplaced lists open project tasks not on the map', M.mapUnplaced(OY).map(([k]) => k), ['tLoose']);
 
   console.log('dating an item makes it a task, in one write');
@@ -202,6 +206,78 @@ async function boot(seed) {
   ok('a coloured, described roadmap still builds', Buffer.from(pdf2.output('arraybuffer')).slice(0, 5).toString() === '%PDF-');
   void mu0;
 
+  console.log('typing in the bubble');
+  M.setMapPid(OY); await tick();
+  const nb0 = M.mapKids(M.maps[OY].nodes, 'root').length;
+  d.querySelector('#mapWorld .mp-root .mp-plus').click(); await tick();
+  const nb = M.mapKids(M.maps[OY].nodes, 'root').map(([k]) => k).find(k => !M.mapKids(M.maps[OY].nodes, 'root').slice(0, nb0).some(([x]) => x === k));
+  const inl = d.querySelector(`#mapWorld [data-nid="${nb}"] .mp-inl`);
+  ok('a new branch opens with its title ready to type', !!inl && d.activeElement === inl);
+  ok('and no side panel', !d.querySelector('.mp-panel'));
+  inl.value = 'Operations'; inl.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await tick();
+  eq('Enter saves the title', db.get(`todo/maps/${OY}/nodes/${nb}/title`), 'Operations');
+  ok('and the bubble shows it', d.querySelector(`#mapWorld [data-nid="${nb}"] .mp-t`).textContent === 'Operations');
+  d.querySelector(`#mapWorld [data-nid="${nb}"] .mp-plus`).click(); await tick();
+  const nt = M.mapKids(M.maps[OY].nodes, nb)[0][0], inl2 = d.querySelector(`#mapWorld [data-nid="${nt}"] .mp-inl`);
+  ok('a new topic too', !!inl2);
+  inl2.value = 'Should not stick'; inl2.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); await tick();
+  eq('Escape keeps the old title', db.get(`todo/maps/${OY}/nodes/${nt}/title`), 'New topic');
+  d.querySelector(`#mapWorld [data-nid="${nb}"]`).click(); await tick();
+  ok('one click opens the panel', !!d.querySelector(`.mp-panel[data-mpanel="${nb}"]`));
+  d.querySelector(`#mapWorld [data-nid="${nb}"] .mp-t`).click(); await tick();
+  ok('a click on the selected title edits it in place', !!d.querySelector(`#mapWorld [data-nid="${nb}"] .mp-inl`));
+  d.querySelector(`#mapWorld [data-nid="${nb}"] .mp-inl`).blur(); await tick();
+  ok('the panel sits inside what is visible', (() => { const pn = d.querySelector('.mp-panel'); return pn && pn.style.position === 'fixed' && parseFloat(pn.style.maxHeight) > 0; })());
+  M.mapDelete(nb); await tick();
+
+  console.log('moving bubbles, and Fit tidying them back');
+  M.setMapPid(OY); await tick();
+  const before = M.mapLayout(M.maps[OY].nodes), bL = bLeft, tL = M.mapKids(M.maps[OY].nodes, bL)[0][0];
+  M.mapMoveBy(bL, -120, 40); await tick();
+  const after = M.mapLayout(M.maps[OY].nodes);
+  eq('a moved branch lands where it was dropped', [after.C[bL].x - before.C[bL].x, after.C[bL].y - before.C[bL].y], [-120, 40]);
+  eq('and brings its topics along', [after.C[tL].x - before.C[tL].x, after.C[tL].y - before.C[tL].y], [-120, 40]);
+  ok('its connector is redrawn to the new spot', after.L.find(l => l.to === bL).d !== before.L.find(l => l.to === bL).d);
+  M.mapMoveBy(tL, 0, 60); await tick();
+  eq('a topic can move on its own too', M.mapLayout(M.maps[OY].nodes).C[tL].y - before.C[tL].y, 100);
+  eq('the card is painted at the new spot', d.querySelector(`#mapWorld [data-nid="${tL}"]`).style.top, M.mapLayout(M.maps[OY].nodes).C[tL].y + 'px');
+  d.querySelector('[data-mact="fit"]').click(); await tick();
+  ok('Fit puts everything back into the sheet layout', JSON.stringify(M.mapLayout(M.maps[OY].nodes).C) === JSON.stringify(before.C));
+  ok('and says how many it tidied', /Tidied 2 moved bubbles/.test(d.querySelector('#toast').textContent));
+  d.querySelector('#toastAct').click(); await tick();
+  eq('Undo brings the arrangement back', M.mapLayout(M.maps[OY].nodes).C[tL].y - before.C[tL].y, 100);
+  d.querySelector('[data-mact="fit"]').click(); await tick();
+  const r1 = { x: 0, y: 0, w: 100, h: 40 }, up1 = M.mapLink(r1, { x: 0, y: -200, w: 100, h: 40 }), side1 = M.mapLink(r1, { x: 300, y: 0, w: 100, h: 40 });
+  ok('a child above gets a vertical elbow, a child beside a horizontal one', /^M50 0V/.test(up1) && /^M100 20H/.test(side1));
+
+  console.log('projects: find, create, delete');
+  d.querySelector('.mp-cur').click();
+  const q = d.querySelector('#mapPickQ'); q.value = 'diam'; q.dispatchEvent(new w.Event('input', { bubbles: true }));
+  eq('search filters the list', [...d.querySelectorAll('.mp-prow .nm')].map(e => e.textContent), ['Diamond Bar']);
+  ok('OpenYap cannot be deleted', (() => { q.value = ''; q.dispatchEvent(new w.Event('input', { bubbles: true })); return d.querySelector(`[data-mdel="${OY}"]`).disabled; })());
+  d.querySelector('[data-mdel="-map02-diamondbar"]').click();
+  ok('delete asks first, with the task count', /1 task in your list/.test(d.querySelector('.mp-prow.ask').textContent));
+  d.querySelector('[data-mdelno]').click();
+  ok('Cancel backs out', !d.querySelector('.mp-prow.ask') && !!db.get('todo/projects/-map02-diamondbar'));
+  d.querySelector('[data-mdel="-map02-diamondbar"]').click();
+  d.querySelector('[data-mdelgo="keep"]').click(); await tick();
+  ok('the project, its side and its map are gone', !db.get('todo/projects/-map02-diamondbar') && !db.get('todo/sides/-map02-diamondbar') && !db.get('todo/maps/-map02-diamondbar'));
+  const kept = db.get('todo/tasks/tDB');
+  eq('Keep tasks keeps them where they were: unassigned, same side, still private', [kept.projectId, kept.side, kept.private], ['', 'career', true]);
+  d.querySelector('#toastAct').click(); await tick();
+  ok('Undo restores the project, the map and the task', !!db.get('todo/projects/-map02-diamondbar') && Object.keys(db.get('todo/maps/-map02-diamondbar/nodes')).length === 20 && db.get('todo/tasks/tDB').projectId === '-map02-diamondbar');
+  d.querySelector('.mp-cur').click();
+  d.querySelector('[data-mdel="-map02-diamondbar"]').click();
+  d.querySelector('[data-mdelgo="all"]').click(); await tick();
+  ok('Delete tasks too removes them', !db.get('todo/tasks/tDB') && !db.get('todo/projects/-map02-diamondbar'));
+  d.querySelector('#toastAct').click(); await tick();
+  d.querySelector('.mp-cur').click();
+  const q2 = d.querySelector('#mapPickQ'); q2.value = 'Garage build';
+  q2.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await tick();
+  const gid = Object.entries(db.get('todo/projects')).find(([, p]) => p.name === 'Garage build');
+  ok('Enter on a new name creates the project and opens it', !!gid && d.querySelector('.mp-cur .nm').textContent === 'Garage build');
+  M.setMapPid(OY);
+
   console.log('roadmap');
   M.setMapPid(AI);
   const aiN = M.maps[AI].nodes, cyber = 'n002', cItems = M.mapKids(aiN, cyber).map(([k]) => k);
@@ -227,7 +303,7 @@ async function boot(seed) {
   console.log('export sheet');
   d.querySelector('#exportBtn').click();
   d.querySelector('[data-extab="roadmap"]').click();
-  ok('the Roadmap tab lists mapped projects', d.querySelectorAll('[data-exrpid]').length === 5);
+  ok('the Roadmap tab lists mapped projects', d.querySelectorAll('[data-exrpid]').length === 6);
   ok('and counts what will print', /dated item/.test(d.querySelector('#rmCount').textContent));
 
   console.log(`\nmap: ${pass} passed, ${fail} failed`);
