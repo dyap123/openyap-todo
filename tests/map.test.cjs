@@ -353,6 +353,41 @@ async function boot(seed) {
   const empty = M.buildRoadmap({ pid: '-map04-concrete', paper: 'a4' });
   ok('an empty map still exports', Buffer.from(empty.output('arraybuffer')).slice(0, 5).toString() === '%PDF-');
 
+  console.log('timeline (Gantt of the map)');
+  M.setMapPid(AI);
+  d.querySelector('[data-view="timeline"]').click(); await tick();
+  ok('the Timeline tab draws the map as a Gantt', !!d.querySelector('#tlHost .gt') && d.querySelector('#tlHost .mp-cur .nm').textContent === 'AI in Construction');
+  const lanesShown = [...d.querySelectorAll('.gt-lane .gt-t')].map(e => e.textContent);
+  ok('lanes are sub-topics with dates (undated hidden by default)', lanesShown.length >= 1 && lanesShown.every(t => ['Enterprise Policies', 'Existing Data', 'Field Use', 'Core Functions'].includes(t)));
+  const bars = d.querySelectorAll('.gt-b').length, dias = d.querySelectorAll('.gt-m').length;
+  eq('a dated item with start and due is a bar, due only a diamond', [bars, dias], [1, 1]);
+  const R2 = M.roadmapData(AI);
+  eq('rows skip undated items until asked', M.gtRows(R2, { undated: false }).filter(r => r.type === 'item').length, 2);
+  ok('Undated shows every item', M.gtRows(R2, { undated: true }).filter(r => r.type === 'item').length === 49);
+  eq('folding a lane hides its rows', M.gtRows(R2, { undated: true, fold: new Set([R2.lanes[0].id]) }).filter(r => r.lane === R2.lanes[0].id).length, 0);
+  d.querySelector('[data-gact="und"]').click(); await tick();
+  ok('the Undated switch shows the rest', d.querySelectorAll('.gt-set').length === 47);
+  const cell = d.querySelector('.gt-set'), itemId = cell.dataset.gset;
+  cell.dispatchEvent(new w.MouseEvent('click', { bubbles: true, clientX: 18 * 10 + 5 }));
+  await tick();
+  const setDue = db.get(`todo/maps/${AI}/nodes/${itemId}/due`);
+  ok('clicking a day on an undated row gives it that due date', !!setDue && !!db.get(`todo/maps/${AI}/nodes/${itemId}/taskId`));
+  // Drag the bar one week later.
+  const bar = d.querySelector('.gt-b'), bid2 = bar.dataset.gbar, s0 = db.get(`todo/maps/${AI}/nodes/${bid2}/start`), e0 = db.get(`todo/maps/${AI}/nodes/${bid2}/due`);
+  const pe = (type, x, target) => { const ev = new w.MouseEvent(type, { bubbles: true, clientX: x, button: 0 }); (target || d).dispatchEvent(ev); };
+  pe('pointerdown', 100, bar); pe('pointermove', 100 + 18 * 7); pe('pointerup', 100 + 18 * 7); await tick();
+  const addD = (ds, n) => { const x = new Date(ds + 'T00:00:00'); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); };
+  eq('dragging a bar moves both dates', [db.get(`todo/maps/${AI}/nodes/${bid2}/start`), db.get(`todo/maps/${AI}/nodes/${bid2}/due`)], [addD(s0, 7), addD(e0, 7)]);
+  const bar2 = d.querySelector(`.gt-b[data-gbar="${bid2}"]`);
+  pe('pointerdown', 100, bar2.querySelector('.gt-h.r')); pe('pointermove', 100 + 18 * 3); pe('pointerup', 100 + 18 * 3); await tick();
+  eq('dragging the end moves only the due date', [db.get(`todo/maps/${AI}/nodes/${bid2}/start`), db.get(`todo/maps/${AI}/nodes/${bid2}/due`)], [addD(s0, 7), addD(e0, 10)]);
+  await new Promise(r => setTimeout(r, 400));  // a release right after a drag is not a click
+  d.querySelector('[data-gscale="month"]').click(); await tick();
+  ok('Months zooms out', d.querySelector('#gtScroll').getAttribute('style').includes('--px:5px'));
+  d.querySelector(`[data-gopen="${bid2}"]`).click(); await tick();
+  ok('a name opens that bubble in the map', !!d.querySelector('#v-map:not([hidden])') && !!d.querySelector(`.mp-panel[data-mpanel="${bid2}"]`));
+  d.querySelector('[data-gscale]') ; w.localStorage.setItem('oym_gtund', '0');
+
   console.log('export sheet');
   d.querySelector('#exportBtn').click();
   d.querySelector('[data-extab="roadmap"]').click();

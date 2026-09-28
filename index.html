@@ -617,6 +617,49 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 .mp-tray-row .t{flex:1;min-width:0}.mp-tray-row .d{font:10.5px var(--mono);color:var(--muted)}
 .mp-tray-row:hover{border-color:var(--muted)}
 .wrapseg{flex-wrap:wrap;height:auto}
+/* ── Timeline (Gantt of the map) ── */
+.gt{position:relative;overflow:auto;height:calc(100vh - 176px);height:calc(100dvh - 176px);min-height:420px;border:1px solid var(--line);border-radius:14px;background:var(--bg);overscroll-behavior:contain}
+.gt-in{position:relative;min-width:100%}
+.gt-head{position:sticky;top:0;z-index:4;display:flex;background:var(--surface);border-bottom:1px solid var(--line-2)}
+.gt-corner{position:sticky;left:0;z-index:5;width:var(--gl);flex-shrink:0;background:var(--surface);border-right:1px solid var(--line-2);padding:10px 14px;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.gt-sub{font-size:11.5px;color:var(--muted)}
+.gt-scale{position:relative;height:50px;flex-shrink:0}
+.gt-mos,.gt-tks{position:absolute;left:0;right:0;height:25px}.gt-mos{top:0}.gt-tks{top:25px}
+.gt-mo{position:absolute;top:6px;font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;padding-left:6px;border-left:1px solid var(--line-2)}
+.gt-tk{position:absolute;top:5px;font:10.5px var(--mono);color:var(--muted);padding-left:4px}
+.gt-body{position:relative}
+.gt-grid{position:absolute;top:0;bottom:0;pointer-events:none}.gt-grid i{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+.gt-row{position:relative;display:flex;height:30px;align-items:stretch}
+.gt-row:hover .gt-track{background:color-mix(in srgb,var(--text) 3%,transparent)}
+.gt-lane{height:36px;border-top:1px solid var(--line-2)}
+.gt-name{position:sticky;left:0;z-index:3;width:var(--gl);flex-shrink:0;display:flex;align-items:center;gap:4px;background:var(--bg);border-right:1px solid var(--line-2);padding-right:10px;min-width:0}
+.gt-row:hover .gt-name{background:var(--raise)}
+.gt-lane .gt-name{background:var(--surface);box-shadow:inset 3px 0 0 var(--mc,var(--side-c,var(--text)))}
+.gt-fold{width:18px;height:18px;display:inline-grid;place-items:center;color:var(--muted);flex-shrink:0;border-radius:4px;transition:transform .2s}
+.gt-fold[aria-expanded="false"]{transform:rotate(-90deg)}.gt-fold.sp{visibility:hidden}.gt-fold:hover{color:var(--text);background:var(--raise)}
+.gt-t{flex:1;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px;color:var(--body);padding:0}
+.gt-t:hover{color:var(--text);text-decoration:underline;text-underline-offset:3px}
+.gt-lane .gt-t{font-weight:600;font-size:13.5px;color:var(--text)}.gt-topic .gt-t{font-weight:600;color:var(--text)}
+.gt-meta{font:10.5px var(--mono);color:var(--muted);white-space:nowrap}
+.gt-track{position:relative;flex:1}
+.gt-sum{position:absolute;top:50%;height:8px;margin-top:-4px;border-radius:2px;background:color-mix(in srgb,var(--mc,var(--text)) 30%,transparent);border:1px solid color-mix(in srgb,var(--mc,var(--text)) 55%,transparent);transform-origin:left center}
+.gt-lane .gt-sum{height:10px;margin-top:-5px;background:color-mix(in srgb,var(--mc,var(--text)) 18%,transparent)}
+.gt-b{position:absolute;top:7px;height:16px;border-radius:5px;background:var(--mc,var(--accent));cursor:grab;transform-origin:left center;box-shadow:0 1px 0 rgba(0,0,0,.06)}
+.gt-b:hover{filter:brightness(1.08)}
+.gt-b.drag,.gt-m.drag{cursor:grabbing;box-shadow:0 6px 18px rgba(0,0,0,.2);z-index:2}
+.gt-h{position:absolute;top:0;bottom:0;width:8px;cursor:ew-resize}.gt-h.l{left:-2px}.gt-h.r{right:-2px}
+.gt-m{position:absolute;top:8px;width:14px;height:14px;margin-left:-7px;cursor:grab}
+.gt-m i{position:absolute;inset:2px;transform:rotate(45deg);background:var(--mc,var(--accent));border-radius:2px}
+.gt-b.late,.gt-m.late i{background:var(--danger)}
+.gt-b.done,.gt-m.done i{background:var(--faint)}
+.gt-row .gt-set{position:absolute;inset:0;cursor:copy;display:flex;align-items:center}
+.gt-set span{margin-left:12px;font-size:11px;color:var(--faint);opacity:0;transition:opacity .15s;position:sticky;left:calc(var(--gl) + 12px)}
+.gt-row:hover .gt-set span{opacity:1}
+.gt-today{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--danger);z-index:2;pointer-events:none;transform-origin:top}
+.gt-today span{position:sticky;top:54px;display:inline-block;margin-left:5px;margin-top:4px;font:600 10px var(--mono);color:var(--danger);background:var(--bg);padding:0 3px;border-radius:3px}
+.gt-tip{position:fixed;left:0;top:0;z-index:90;pointer-events:none;padding:4px 8px;border-radius:6px;background:var(--text);color:var(--bg);font:500 11.5px var(--mono)}
+.gt-none,.gt-empty{padding:28px 18px;color:var(--muted);font-size:13px}
+@media (max-width:820px){.gt{height:calc(100dvh - 160px)}.gt-meta{display:none}}
 @media (max-width:820px){
   .map-stage{height:calc(100vh - 160px);border-radius:12px}
   .mp-panel{position:fixed;left:8px;right:8px;top:auto;bottom:max(8px,env(safe-area-inset-bottom));width:auto;max-height:min(72vh,calc(100dvh - 120px));z-index:60;box-shadow:0 -6px 30px rgba(0,0,0,.18)}
@@ -755,7 +798,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
   </section>
 
   <section id="v-timeline" class="view" aria-label="Timeline" hidden>
-    <div class="wrap" id="tlHost"></div>
+    <div class="wrap wide" id="tlHost"></div>
   </section>
 
   <section id="v-calendar" class="view" aria-label="Calendar" hidden>
@@ -1123,7 +1166,7 @@ function render(force){
   renderHeader();
   if(view==='tasks')renderTasks(anim);
   else if(view==='dashboard')renderDash(anim);
-  else if(view==='timeline')renderTimeline(anim);
+  else if(view==='timeline')renderGantt(anim);
   else if(view==='calendar')renderCalendar(anim);
   else if(view==='map')renderMap(anim);
   else if(view==='done')renderDone(anim);
@@ -1959,7 +2002,7 @@ function mapNewProject(name){
   const id=newKey('todo/projects'),side=mSide||'career';
   upd({['todo/projects/'+id]:{name,color:'',icon:'',status:'active',description:'',targetDate:'',createdAt:new Date().toISOString(),order:Date.now()},
        ['todo/sides/'+id]:{side,private:false},['todo/maps/'+id+'/title']:name});
-  mapNewOpen=false;mapPickOpen=false;mapPid=id;LS.set('oym_mappid',id);mapSel='root';mapFocus=true;renderMap();
+  mapNewOpen=false;mapPickOpen=false;mapPid=id;LS.set('oym_mappid',id);mapSel=view==='map'?'root':'';mapFocus=view==='map';mapRe();
 }
 const mapProjTasks=pid=>Object.entries(tasks).filter(([,t])=>t&&t.projectId===pid);
 const mapProjLocked=pid=>pid===oyProjectId();
@@ -2029,13 +2072,7 @@ function renderMap(anim){
   const plist=mapProjects();
   if(!projects[mapPid]&&plist.length){mapPid=plist[0][0];LS.set('oym_mappid',mapPid)}
   const pid=mapPid,P=projects[pid];
-  const cnt=P?Object.keys(mapNodes(pid)).length:0;
-  const bar=`<div class="map-bar">
-    <div class="mp-switch">
-      <button class="mp-cur" type="button" data-mact="pick" aria-haspopup="listbox" aria-expanded="${mapPickOpen}" style="--side-c:var(--${P?projSideOf(pid):'career'})">
-        <i></i><span class="nm">${P?esc(P.name||'Untitled'):'Pick a project'}</span>${P?`<span class="sd">${SIDE_NAME[projSideOf(pid)]} · ${cnt} bubble${cnt===1?'':'s'}</span>`:''}<span class="cv">${ICON.chev}</span></button>
-      ${mapPickOpen?mapPickHTML():''}
-    </div>
+  const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}
     <div class="map-tools">
       ${P?`<button class="btn" type="button" data-mact="tray">Unplaced <span class="mp-count">${mapUnplaced(pid).length}</span></button>
       <button class="btn" type="button" data-mact="zout" aria-label="Zoom out">−</button><button class="btn" type="button" data-mact="zin" aria-label="Zoom in">+</button>
@@ -2116,6 +2153,16 @@ function mapInlineEdit(id){
   });
   inp.addEventListener('blur',()=>finish(true));
 }
+// The project switcher, shared by the Map and the Timeline.
+function mapSwitchHTML(pid,P){
+  const cnt=P?Object.keys(mapNodes(pid)).length:0;
+  return `<div class="mp-switch">
+      <button class="mp-cur" type="button" data-mact="pick" aria-haspopup="listbox" aria-expanded="${mapPickOpen}" style="--side-c:var(--${P?projSideOf(pid):'career'})">
+        <i></i><span class="nm">${P?esc(P.name||'Untitled'):'Pick a project'}</span>${P?`<span class="sd">${SIDE_NAME[projSideOf(pid)]} · ${cnt} bubble${cnt===1?'':'s'}</span>`:''}<span class="cv">${ICON.chev}</span></button>
+      ${mapPickOpen?mapPickHTML():''}
+    </div>`;
+}
+const mapRe=()=>{if(view==='map')renderMap();else if(view==='timeline')renderGantt()};
 function mapPickListHTML(){
   const q=mapPickQ.trim().toLowerCase(),plist=mapProjects().filter(([,p])=>!q||(p.name||'').toLowerCase().includes(q));
   if(!plist.length)return `<p class="mp-pempty">${q?'No project matches “'+esc(mapPickQ.trim())+'”. Press Enter to create it.':'No projects yet.'}</p>`;
@@ -2148,7 +2195,7 @@ function mapPickHTML(){
 function mapPickOpenAt(open){
   mapPickOpen=open;mapDelAsk='';if(open)mapPickQ='';
   if(!open){$('.mp-pick')?.remove();$('.mp-cur')?.setAttribute('aria-expanded','false');return}
-  renderMap();
+  mapRe();
   const pk=$('.mp-pick');
   fx(pk,{opacity:[0,1],translateY:[-6,0],scale:[.98,1],duration:260,ease:'out(4)'});
   fx($$('.mp-prow,.mp-pg',pk),{opacity:[0,1],translateX:[-6,0],duration:240,delay:stg(18,{start:40}),ease:'out(3)'});
@@ -2247,9 +2294,9 @@ function mapFlip(lay){
   if(moved)fx($$('.map-links path',w),{opacity:[.15,1],duration:520,delay:120,ease:'out(2)'});
 }
 function mapPick(pid){
-  if(pid===mapPid){renderMap();return}
-  const go=()=>{mapPid=pid;LS.set('oym_mappid',pid);mapSel='';mapTray=false;renderMap()};
-  const w=$('#mapWorld');
+  if(pid===mapPid){mapRe();return}
+  const go=()=>{mapPid=pid;LS.set('oym_mappid',pid);mapSel='';mapTray=false;if(view==='map')renderMap();else{animNext=true;render(true)}};
+  const w=view==='map'&&$('#mapWorld');
   if(!w||!canAnim()){go();return}
   fx($$('.mp-card',w),{translateX:el=>-(parseFloat(el.style.left)+el.offsetWidth/2)*.8,translateY:el=>-(parseFloat(el.style.top)+el.offsetHeight/2)*.8,
     scale:.3,opacity:0,duration:300,delay:stg(6),ease:'in(3)'});
@@ -2363,10 +2410,10 @@ window.addEventListener('resize',()=>{if(view==='map')mapApplyCam()});
 // Clicks inside the map. Returns true when it handled the click.
 function mapClick(t){
   if(mapPickOpen&&!t.closest('.mp-switch'))mapPickOpenAt(false);
-  if(!t.closest('#mapHost'))return false;
+  if(!t.closest('#mapHost')&&!(t.closest('#tlHost')&&t.closest('.mp-switch')))return false;
   if(Date.now()<mpClickBlock)return true;
   const dl=t.closest('[data-mdel]');if(dl){if(!dl.disabled){mapDelAsk=dl.dataset.mdel;$('#mpPickList').innerHTML=mapPickListHTML();fx($('.mp-prow.ask'),{opacity:[0,1],scale:[.98,1],duration:220,ease:'out(3)'})}return true}
-  const dg=t.closest('[data-mdelgo]');if(dg){mapDeleteProject(mapDelAsk,dg.dataset.mdelgo==='all');mapPickOpen=false;renderMap();return true}
+  const dg=t.closest('[data-mdelgo]');if(dg){mapDeleteProject(mapDelAsk,dg.dataset.mdelgo==='all');mapPickOpen=false;mapRe();return true}
   if(t.closest('[data-mdelno]')){mapDelAsk='';$('#mpPickList').innerHTML=mapPickListHTML();return true}
   const pp=t.closest('[data-mpid]');if(pp){mapPickOpen=false;mapPick(pp.dataset.mpid);return true}
   if(t.closest('.mp-pick'))return true;
@@ -2397,6 +2444,178 @@ function mapClick(t){
   if(t.closest('#mapStage')&&mapSel){mapSel='';renderMap();return true}
   return !!t.closest('#mapStage');
 }
+
+// ═══ Timeline: the map as a Gantt chart ══════════════════════════════════
+// Same project, same data as the Map (roadmapData). Lanes are sub-topics; topics nest by depth;
+// items are bars (start and due) or diamonds (due only). Drag a bar to move it, an end to change
+// that date; click an undated item's track to give it a due date on that day.
+let gtScale=LS.get('oym_gtscale','week');if(!['week','month'].includes(gtScale))gtScale='week';
+let gtUndated=LS.get('oym_gtund','0')==='1';
+let gtFold=new Set((()=>{try{return JSON.parse(LS.get('oym_gtfold','[]'))||[]}catch(e){return []}})());
+let gtDrag=null,gtClickBlock=0,gtSeenPid='';
+const GT_PX={week:18,month:5},gtLeft=()=>window.innerWidth<=820?170:300;
+const gtDay=864e5;
+function gtRange(R,today){
+  const t=parseYmd(today),lo=[R.min,ymd(addDays(t,-14))].filter(Boolean).sort()[0],hi=[R.max,ymd(addDays(t,56))].filter(Boolean).sort().pop();
+  const d0=mondayOf(parseYmd(lo)),d1=addDays(mondayOf(parseYmd(hi)),14);
+  return {d0,d1,days:Math.round((d1-d0)/gtDay)};
+}
+// Pure: the rows to draw, honouring folds and the undated switch.
+function gtRows(R,opts){
+  const und=opts&&opts.undated,fold=(opts&&opts.fold)||new Set(),rows=[];
+  const dated=i=>!!(i.due||i.start);
+  for(const l of R.lanes){
+    const span=[...l.items.flatMap(i=>[i.start,i.due]),...l.topics.flatMap(t=>[t.start,t.end])].filter(Boolean).sort();
+    const kids=[];
+    for(const i of l.items)if(und||dated(i))kids.push({type:'item',...i,depth:1,lane:l.id});
+    let skip=Infinity;
+    for(const t of l.topics){
+      if(t.depth>skip)continue;skip=Infinity;
+      if(!und&&!t.start&&!t.end)continue;
+      const f=fold.has(t.id);
+      kids.push({type:'topic',...t,depth:t.depth+1,color:t.color||l.color,folded:f,lane:l.id});
+      if(f){skip=t.depth;continue}
+      for(const i of t.items)if(und||dated(i))kids.push({type:'item',...i,depth:t.depth+2,lane:l.id});
+    }
+    if(!kids.length&&!und&&!span.length)continue;
+    rows.push({type:'lane',id:l.id,title:l.title,color:l.color,start:span[0]||'',end:span[span.length-1]||'',depth:0,folded:fold.has(l.id),n:kids.length});
+    if(!fold.has(l.id))rows.push(...kids);
+  }
+  return rows;
+}
+function gtRowHTML(r,X,px,today){
+  const chev=(r.type==='lane'||r.type==='topic')?`<button class="gt-fold" type="button" data-gfold="${r.id}" aria-label="${r.folded?'Expand':'Collapse'}" aria-expanded="${!r.folded}">${ICON.chev}</button>`:'<span class="gt-fold sp"></span>';
+  let bar='',meta='';
+  if(r.type==='item'){
+    const late=r.status==='overdue',cls=`${r.done?' done':''}${late?' late':''}`;
+    if(r.start&&r.due){
+      const x=X(r.start),w=Math.max(px,X(r.due)+px-x);
+      bar=`<div class="gt-b${cls}" data-gbar="${r.id}" data-edge="move" style="left:${x}px;width:${w}px" title="${esc(r.title)}: ${esc(fmtMD(parseYmd(r.start)))} to ${esc(fmtMD(parseYmd(r.due)))}"><span class="gt-h l" data-edge="start"></span><span class="gt-h r" data-edge="end"></span></div>`;
+      meta=fmtMD(parseYmd(r.due));
+    }else if(r.due||r.start){
+      const d=r.due||r.start;
+      bar=`<div class="gt-m${cls}" data-gbar="${r.id}" data-edge="${r.due?'due':'start'}" style="left:${X(d)+px/2}px" title="${esc(r.title)}: ${esc(fmtMD(parseYmd(d)))}"><i></i></div>`;
+      meta=fmtMD(parseYmd(d));
+    }else bar=`<div class="gt-set" data-gset="${r.id}"><span>Click a day to set the due date</span></div>`;
+  }else if(r.start||r.end){
+    const x=X(r.start||r.end),w=Math.max(px,X(r.end||r.start)+px-x);
+    bar=`<div class="gt-sum" style="left:${x}px;width:${w}px"></div>`;
+    meta=r.start&&r.end&&r.start!==r.end?fmtMD(parseYmd(r.start))+' – '+fmtMD(parseYmd(r.end)):fmtMD(parseYmd(r.start||r.end));
+  }
+  return `<div class="gt-row gt-${r.type}" data-grow="${r.id}" style="${mcStyle(r.color)}">
+    <div class="gt-name" style="padding-left:${10+r.depth*14}px">${chev}<button class="gt-t" type="button" data-gopen="${r.id}" title="Open in the map">${esc(r.title||'(untitled)')}${r.desc?mapNote(r.desc):''}</button><span class="gt-meta">${esc(meta)}</span></div>
+    <div class="gt-track">${bar}</div></div>`;
+}
+function renderGantt(anim){
+  const host=$('#tlHost');if(!host)return;
+  if(!(ready.tasks&&ready.maps)){host.innerHTML='<p class="empty">Loading…</p>';return}
+  const plist=mapProjects();
+  if(!projects[mapPid]&&plist.length){mapPid=plist[0][0];LS.set('oym_mappid',mapPid)}
+  const pid=mapPid,P=projects[pid],today=ymd(new Date());
+  const old=$('#gtScroll'),keep=old&&gtSeenPid===pid?{l:old.scrollLeft,t:old.scrollTop}:null;
+  const R=P?roadmapData(pid,today):null;
+  const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}
+    <div class="map-tools">${P?`
+      <div class="seg" role="group" aria-label="Scale">${segHTML([['week','Weeks'],['month','Months']],gtScale,'data-gscale')}</div>
+      <button class="btn" type="button" data-gact="today">Today</button>
+      <button class="btn" type="button" data-gact="und" aria-pressed="${gtUndated}" title="Show items without dates">Undated <span class="mp-count">${R.undated.length}</span></button>
+      <button class="btn primary" type="button" data-gact="pdf">Roadmap PDF</button>`:''}</div></div>`;
+  if(!P){host.innerHTML=bar+'<div class="gt-empty">Create a project on the Map to see its timeline.</div>';return}
+  const rows=gtRows(R,{undated:gtUndated,fold:gtFold});
+  const {d0,days}=gtRange(R,today),px=GT_PX[gtScale],W=days*px;
+  const X=ds=>Math.round((parseYmd(ds)-d0)/gtDay)*px;
+  // Scale: month labels on top, week (or month) ticks underneath, grid lines through the body.
+  const months=[],ticks=[],lines=[];
+  for(let d=new Date(d0.getFullYear(),d0.getMonth(),1);d<addDays(d0,days);d=new Date(d.getFullYear(),d.getMonth()+1,1)){
+    const x=Math.max(0,Math.round((d-d0)/gtDay)*px);months.push(`<span class="gt-mo" style="left:${x}px">${MONL[d.getMonth()]}${d.getMonth()===0||!months.length?' '+d.getFullYear():''}</span>`);
+    if(gtScale==='month'&&d>=d0)lines.push(x);
+  }
+  if(gtScale==='week')for(let i=0;i*7<days;i++){const d=addDays(d0,i*7),x=i*7*px;ticks.push(`<span class="gt-tk" style="left:${x}px">${d.getDate()}</span>`);lines.push(x)}
+  const tx=X(today);
+  const empty=!rows.length?`<div class="gt-none">${R.dated?'':'No dates yet. '}Turn on <b>Undated</b> to see every item, then click a day on its row to give it a due date.</div>`:'';
+  host.innerHTML=bar+`<div class="gt" id="gtScroll" style="--gl:${gtLeft()}px;--px:${px}px">
+    <div class="gt-in" style="width:${gtLeft()+W}px">
+      <div class="gt-head"><div class="gt-corner"><span class="mp-k">${esc(P.name)}</span><span class="gt-sub">${rows.filter(r=>r.type==='item').length} shown${R.undated.length&&!gtUndated?` · ${R.undated.length} undated hidden`:''}</span></div>
+        <div class="gt-scale" style="width:${W}px"><div class="gt-mos">${months.join('')}</div><div class="gt-tks">${ticks.join('')}</div></div></div>
+      <div class="gt-body">
+        <div class="gt-grid" style="left:${gtLeft()}px;width:${W}px">${lines.map(x=>`<i style="left:${x}px"></i>`).join('')}</div>
+        ${rows.map(r=>gtRowHTML(r,X,px,today)).join('')}${empty}
+        <div class="gt-today" style="left:${gtLeft()+tx+px/2}px"><span>Today</span></div>
+      </div></div></div>`;
+  const sc=$('#gtScroll');
+  if(keep){sc.scrollLeft=keep.l;sc.scrollTop=keep.t}
+  else sc.scrollLeft=Math.max(0,tx-(sc.clientWidth-gtLeft())*.2);
+  const first=gtSeenPid!==pid;gtSeenPid=pid;
+  if((anim||first)&&canAnim()){
+    const rs=$$('.gt-row',sc).slice(0,60);
+    fx(rs,{opacity:[0,1],translateX:[-10,0],duration:420,delay:stg(16),ease:'out(3)'});
+    fx($$('.gt-b,.gt-sum',sc).slice(0,80),{scaleX:[0,1],duration:720,delay:stg(14,{start:180}),ease:'out(4)'});
+    fx($$('.gt-m',sc).slice(0,80),{scale:[0,1],duration:620,delay:stg(14,{start:260}),ease:'outBack(2)'});
+    fx($('.gt-today',sc),{scaleY:[0,1],opacity:[0,1],duration:700,delay:220,ease:'out(3)'});
+    fx($$('.gt-mo,.gt-tk',sc),{opacity:[0,1],duration:420,delay:stg(8),ease:'out(2)'});
+  }
+}
+// Clicks on the timeline. Returns true when handled.
+function gtClick(t,e){
+  if(!t.closest('#tlHost'))return false;
+  if(Date.now()<gtClickBlock)return true;
+  const sc=t.closest('[data-gscale]');if(sc){gtScale=sc.dataset.gscale;LS.set('oym_gtscale',gtScale);const s=$('#gtScroll'),mid=s?(s.scrollLeft+(s.clientWidth-gtLeft())/2)/GT_PX[gtScale==='week'?'month':'week']:0;gtSeenPid='';renderGantt(true);if(s&&mid){const n=$('#gtScroll');n.scrollLeft=Math.max(0,mid*GT_PX[gtScale]-(n.clientWidth-gtLeft())/2)}return true}
+  const ga=t.closest('[data-gact]');
+  if(ga){const k=ga.dataset.gact;
+    if(k==='today'){const s=$('#gtScroll'),td=$('.gt-today');if(s&&td)s.scrollTo({left:Math.max(0,parseFloat(td.style.left)-gtLeft()-(s.clientWidth-gtLeft())*.2),behavior:'smooth'});fx(td,{scaleX:[3,1],duration:600,ease:'out(3)'})}
+    else if(k==='und'){gtUndated=!gtUndated;LS.set('oym_gtund',gtUndated?'1':'0');renderGantt(true)}
+    else if(k==='pdf'){EX.tab='roadmap';EX.rpid=mapPid;saveEX();openExport()}
+    return true;
+  }
+  const fo=t.closest('[data-gfold]');if(fo){const id=fo.dataset.gfold;gtFold.has(id)?gtFold.delete(id):gtFold.add(id);LS.set('oym_gtfold',JSON.stringify([...gtFold]));renderGantt();return true}
+  const op=t.closest('[data-gopen]');if(op){const id=op.dataset.gopen;mapSel=mapNodes(mapPid)[id]?id:'';setView('map');return true}
+  const st=t.closest('[data-gset]');
+  if(st&&e){const tr=st.closest('.gt-track'),r=tr.getBoundingClientRect(),row=R0();
+    const day=Math.max(0,Math.floor((e.clientX-r.left)/GT_PX[gtScale]));
+    const ds=ymd(addDays(gtRange(row,ymd(new Date())).d0,day));
+    mapSave(st.dataset.gset,'due',ds);return true}
+  return !!t.closest('.mp-switch,.gt');
+}
+const R0=()=>roadmapData(mapPid,ymd(new Date()));
+// Drag a bar (move), one of its ends (start / end), or a diamond (its date).
+document.addEventListener('pointerdown',e=>{
+  const b=e.target.closest&&e.target.closest('#gtScroll [data-gbar]');if(!b||e.button>0)return;
+  const id=b.dataset.gbar,n=mapNodes(mapPid)[id];if(!n)return;
+  const t=n.taskId?tasks[n.taskId]:null,due=(t&&t.dueDate)||n.due||'';
+  const edge=e.target.closest('[data-edge]').dataset.edge;
+  gtDrag={id,el:b,edge,x0:e.clientX,start:n.start||'',due,dd:0,left:parseFloat(b.style.left),width:parseFloat(b.style.width)||0,tip:null};
+  b.classList.add('drag');e.preventDefault();
+});
+document.addEventListener('pointermove',e=>{
+  if(!gtDrag)return;
+  const px=GT_PX[gtScale],dd=Math.round((e.clientX-gtDrag.x0)/px),g=gtDrag;
+  if(dd===g.dd)return;g.dd=dd;
+  const S=g.start?parseYmd(g.start):null,D=g.due?parseYmd(g.due):null;
+  let ns=g.start,nd=g.due;
+  if(g.edge==='move'){if(S)ns=ymd(addDays(S,dd));if(D)nd=ymd(addDays(D,dd))}
+  else if(g.edge==='start'){ns=ymd(addDays(S,dd));if(D&&ns>g.due)ns=g.due}
+  else if(g.edge==='end'){nd=ymd(addDays(D,dd));if(S&&nd<g.start)nd=g.start}
+  else if(g.edge==='due')nd=ymd(addDays(D,dd));
+  else if(g.edge==='start1')ns=ymd(addDays(S,dd));
+  g.ns=ns;g.nd=nd;
+  const off=g.edge==='start'?Math.round((parseYmd(ns)-S)/gtDay)*px:g.edge==='end'?0:dd*px;
+  if(g.el.classList.contains('gt-b')){
+    const w=g.edge==='start'?g.width-off:g.edge==='end'?g.width+Math.round((parseYmd(nd)-D)/gtDay)*px:g.width;
+    g.el.style.left=(g.left+(g.edge==='end'?0:off))+'px';g.el.style.width=Math.max(px,w)+'px';
+  }else g.el.style.left=(g.left+dd*px)+'px';
+  if(!g.tip){g.tip=document.createElement('div');g.tip.className='gt-tip';document.body.appendChild(g.tip)}
+  g.tip.textContent=(ns&&nd?fmtMD(parseYmd(ns))+' – '+fmtMD(parseYmd(nd)):fmtMD(parseYmd(nd||ns)));
+  g.tip.style.transform=`translate3d(${e.clientX+12}px,${e.clientY-30}px,0)`;
+},{passive:false});
+function gtEnd(){
+  const g=gtDrag;gtDrag=null;if(!g)return;
+  g.el.classList.remove('drag');if(g.tip)g.tip.remove();
+  if(!g.dd){return}
+  gtClickBlock=Date.now()+350;
+  if(g.ns!==g.start&&g.ns)mapSave(g.id,'start',g.ns);
+  if(g.nd!==g.due&&g.nd)mapSave(g.id,'due',g.nd);
+}
+document.addEventListener('pointerup',gtEnd);document.addEventListener('pointercancel',gtEnd);
 
 // ═══ Roadmap (data + PDF) ════════════════════════════════════════════════
 function roadmapData(pid,today){
@@ -3017,6 +3236,7 @@ document.addEventListener('click',e=>{
   if(Date.now()<dragClickBlock&&t.closest('[data-drag-id]')){e.preventDefault();return}
   if(!$('#themePop').hidden&&!t.closest('#themePop')&&!t.closest('#themeBtn'))closeThemes();
   if(mapClick(t))return;
+  if(gtClick(t,e))return;
   const act=t.closest('[data-act]');
   if(act){const host=act.closest('[data-id]');if(host)handleAct(act.dataset.act,host.dataset.id,act);return}
   const v=t.closest('[data-view]');if(v){setView(v.dataset.view);return}
@@ -3168,7 +3388,7 @@ if(auth){
     if(ok)listen();else unlisten();
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
-window.__oym={mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>
