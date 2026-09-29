@@ -1,3 +1,11 @@
+## 2026-09-29 — change project tracking category
+
+Tasks project groups and selected Map/Gantt project headers expose a shared keyboard-accessible category chooser. The old Map root category segment routes through the same chooser. Copy explains that open tasks and completed work move too; custom tracking categories use the existing side model.
+
+One UID-scoped atomic update changes the project side leaf, every canonical project task side, and matching history side snapshots. History explicitly belonging to another project remains untouched; legacy snapshots without projectId follow their linked project task. No IDs, dates, completion metadata, privacy flags, project records or map coordinates are rewritten. Success selects and expands the destination Tasks project and restores visible focus. Failed writes keep the chooser actionable; account changes clear it and stale results cannot select old projects or show old errors.
+
+Validation: project-category behavior checks cover atomicity, preservation, completed filtering, failure and account isolation; synthetic Chrome checks desktop/mobile moves and focus without external traffic or live writes. Screenshots are in /private/tmp/oy-todo-project-category-{desktop,mobile}.png. No developer commit/deploy.
+
 # OpenYap Todo — development log
 
 ## 2026-09-29 — same-canvas chronology, project navigation and Settings

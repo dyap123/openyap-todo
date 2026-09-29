@@ -18,16 +18,17 @@ function makeDB(seed) {
     for (let i = 0; i < ks.length - 1; i++) { if (o[ks[i]] == null || typeof o[ks[i]] !== 'object') o[ks[i]] = {}; o = o[ks[i]]; }
     if (v === null || v === undefined) delete o[ks[ks.length - 1]]; else o[ks[ks.length - 1]] = JSON.parse(JSON.stringify(v));
   };
-  let n = 0;
+  let n = 0, nextUpdate=null;
+  const interceptNextUpdate=handler=>{nextUpdate=handler};
   const fire = () => listeners.forEach(l => { const v = get(l.p); l.cb({ val: () => (v === undefined ? null : JSON.parse(JSON.stringify(v))) }); });
   const ref = (p = '') => ({
     on: (ev, cb) => { if (p === '.info/connected') { cb({ val: () => true }); return; } listeners.push({ p, cb }); const v = get(p); cb({ val: () => (v === undefined ? null : JSON.parse(JSON.stringify(v))) }); },
     off: () => { for (let i = listeners.length - 1; i >= 0; i--) if (listeners[i].p === p) listeners.splice(i, 1); },
     push: () => ({ key: '-k' + String(++n).padStart(4, '0') }),
-    update: o => { updates.push(o); for (const [k, v] of Object.entries(o)) set((p ? p + '/' : '') + k, v); fire(); return Promise.resolve(); },
+    update: o => { if(nextUpdate){const handler=nextUpdate;nextUpdate=null;return handler(o,()=>ref(p).update(o))} updates.push(o); for (const [k, v] of Object.entries(o)) set((p ? p + '/' : '') + k, v); fire(); return Promise.resolve(); },
     set: v => { set(p, v); fire(); return Promise.resolve(); },
   });
-  return { data, updates, get, ref, listeners };
+  return { data, updates, get, ref, listeners, interceptNextUpdate };
 }
 
 async function boot(seed, options={}) {

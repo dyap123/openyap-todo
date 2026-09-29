@@ -104,3 +104,7 @@ Click a Google event in the month grid or selected day's agenda to read its deta
 **Create invite in Google Calendar** opens Google's event composer for the selected day. An event detail can also prefill a new invite with that event's title, dates, description and location. Review the details and account, add guests, then save/send in Google Calendar. Todo does not send invitations or change the original event. Calendar authorization remains read-only.
 
 The public [privacy page](privacy.html) describes this data flow. See [Google verification](docs/google-verification.md) for the administrator's production verification steps; the unverified-app warning requires Google's approval, not a client-side workaround.
+
+Project categories can be changed with the Category button under a Tasks PROJECT header or beside the selected Map project. The chooser moves all project tasks and matching completed-work history to the destination category in one workspace update. Custom categories are supported; privacy, map layout, IDs, dates and completion details are preserved. The destination project opens automatically in Tasks.
+
+Category regression checks: `node tests/project-category.test.cjs`; synthetic Chrome responsive/focus check: `node tests/project-category-browser.cjs` (requires Playwright and local Chrome).
