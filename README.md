@@ -4,17 +4,25 @@ A responsive, installable web app for private tasks, mind maps, chronological pl
 
 ## Planning
 
-Open **Map → Chronology**. Actual task tiles orbit the main topic, ordered clockwise by start date (or due date when no start exists). Text stays upright. Eight tiles per page keep dense and equal-date plans usable; the full ordered list always exposes every task. Missing, malformed or reversed dates stay in Unscheduled. The event strip, date slider and shared Gantt playhead preview when work happens without changing tasks. Playback follows the active page; reduced motion keeps tiles stationary while dates advance. Small screens scroll within a centered orbit scene.
+Open **Map → Chronology** to animate the existing map cards into chronological order on the same canvas. Cards arrange clockwise around the main topic by their earliest scheduled work; the actual task rows within them sort by start/due date. Native browser animation moves the original elements, without depending on a downloaded animation library. **Back to map** restores your saved layout, row order and camera. No separate clock, orbit scene or duplicate task list is created.
+
+Play or scrub the shared Map/Gantt timeline to color scheduled cards and rows as **Past schedule**, **Active now**, or **Upcoming**. Invalid or absent dates remain neutral **Unscheduled**. Preview colors use the displayed whole date and never change completion. Reduced motion repositions cards without animation. Pan, pinch or zoom to explore; **Fit** in preview fits the camera without tidying saved offsets. Spatial dragging/nudging is disabled until Back to map; intentional task/date/completion edits remain available.
 
 **Show / Hide descriptions** controls descriptions in the mind map and Chronology. Select a task tile/item for its details and **Mark complete**, with an editable local completion date/time. Existing completed items support date correction and reopening. Future or impossible completion times are rejected; an old completion without a timestamp remains explicitly unknown. Completing a repeating item logs one occurrence and advances its next due date. Topic panels list their descendant tasks as an actionable checklist.
 
 New map items are task-backed immediately. Existing unlinked items become tasks only when explicitly added to the list, dated, or completed. Linked titles, notes and dates derive from the canonical task. Completion writes the task and Done history atomically so Calendar, Tasks, Done and Gantt agree.
 
-**Complete project / Reopen project** appears at the top of Map, Chronology and Gantt. It changes the project status without marking tasks complete or deleting data. In **Tasks → Manage categories**, create or rename tracking categories and choose their colors. Career and OpenYap are the original tracking categories; custom categories share the same task `side` and project `sides/{projectId}` mapping. Category metadata lives at `trackingCategories/{id}` in the signed-in workspace; it is separate from the older task `category` classification (work/routine/project). All views and PDF exports include custom categories; column exports paginate in pairs.
+**Complete project / Reopen project** appears at the top of Map, Chronology and Gantt. It changes the project status without marking tasks complete or deleting data. Use the top-right **Settings** gear from any view to create or rename tracking categories and choose their colors. Career and OpenYap are the original tracking categories; custom categories share the same task `side` and project `sides/{projectId}` mapping. Category metadata lives at `trackingCategories/{id}` in the signed-in workspace; it is separate from the older task `category` classification (work/routine/project). All views and PDF exports include custom categories; column exports paginate in pairs.
+
+### Projects and completed work
+
+Each tracking category's Tasks page presents expandable **PROJECT** sections with actual project names, status and counts. Projects start collapsed, including empty/completed projects; archived maps remain accessible. Expand a project to see its open tasks and add a task directly to it. **No project** keeps unassigned/orphaned tasks accessible. Explicit task category assignments are respected even when they differ from the project's category, so a task never disappears between categories. In-progress links and Calendar/Dashboard links reveal the matching category and project before opening its task editor.
+
+**Dashboard** is the final navigation tab and includes the full **Completed tasks** log: periods, category filters, search, backdated logging, reopening and exports remain available. A project's **View completed tasks** link applies an exact project-ID filter, with **Show all projects** to clear it. Older saved Done-view preferences and task footer links open this embedded log.
 
 ### Markdown for agents
 
-**Download Markdown** or **Copy Markdown** in Map/Chronology produces an agent-readable `.md` snapshot directly from current canonical data. It includes the project/main topic, project status/privacy, tracking category/color, nested branches/topics, task checkboxes, descriptions, start/due dates, recorded completion timestamps and stable project/node/task IDs. Unscheduled tasks stay undated; unplaced tasks are included separately. Repeating task checkboxes describe the current occurrence.
+**Markdown** in the Map toolbar opens **Download .md** and **Copy Markdown** options. Either produces an agent-readable `.md` snapshot directly from current canonical data. It includes the project/main topic, project status/privacy, tracking category/color, nested branches/topics, task checkboxes, descriptions, start/due dates, recorded completion timestamps and stable project/node/task IDs. Unscheduled tasks stay undated; unplaced tasks are included separately. Repeating task checkboxes describe the current occurrence.
 
 The export is a snapshot, not a second editable database or an automatic agent connection. Give the Markdown to an agent to discuss or plan changes, then use its stable IDs to relate changes back to the app. Editing the downloaded file does not write Firebase. Live agent access would require separately authorized access to that user's workspace; no public task endpoint is introduced.
 
@@ -62,8 +70,10 @@ Use Node with `jsdom@24` and `jspdf@2.5.1` available in `NODE_PATH`; the rules t
 node tests/map.test.cjs
 node tests/universal.test.cjs
 node tests/orbit.test.cjs
+node tests/navigation.test.cjs
 # Optional real Chrome verification; requires playwright:
-node tests/orbit-browser.cjs
+node tests/navigation-browser.cjs
+# tests/orbit-browser.cjs remains an alias for the same browser regression.
 cd firebase
 firebase emulators:exec --only database --project demo-openyap-todo "node rules.test.cjs"
 ```

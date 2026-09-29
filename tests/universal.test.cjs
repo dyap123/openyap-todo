@@ -17,9 +17,9 @@ const fixture=(name='Alpha secret')=>({projects:{p:{name:'Private project',statu
  M.mapSave('early','due','2026-10-04');
  check('map writes stay in UID workspace',()=>{assert(db.updates.every(u=>Object.keys(u).every(p=>p.startsWith('users/alice/todo/'))));assert.equal(db.get('todo/maps/p/nodes/early/due'),'2026-10-03')});
  d.querySelector('[data-view="map"]').click();await tick();d.querySelector('[data-chrono-mode="clock"]').click();
- check('clock rendered with ordered task links',()=>assert.equal(d.querySelectorAll('.clock-list [data-chrono-open]').length,5));
+ check('chronology retains the original map canvas',()=>{assert(d.querySelector('#mapWorld'));assert(!d.querySelector('.orbit-scene'))});
  for(let i=0;i<5;i++)db.ref('users/alice/todo/maps/p/nodes/same'+i).set({parent:'b',kind:'item',title:'Same day '+i,due:'2026-10-10'});await tick();
- check('equal dates retain individually actionable upright tiles',()=>{assert.equal(d.querySelectorAll('.orbit-tile').length,8);assert.equal(d.querySelectorAll('.clock-list [data-chrono-open]').length,10);assert(!d.querySelector('.clock-hand'))});
+ check('equal dates retain individually actionable map task rows',()=>{assert.equal(d.querySelectorAll('#mapWorld .mp-item').length,10);assert(!d.querySelector('.clock-hand'))});
  for(let i=0;i<5;i++)db.ref('users/alice/todo/maps/p/nodes/same'+i).set(null);await tick();
  const before=db.updates.length;const scrub=d.querySelector('[data-chrono-scrub]');scrub.value='1000';scrub.dispatchEvent(new w.Event('input',{bubbles:true}));
  check('scrub previews final date without writing or completing tasks',()=>{assert.equal(d.querySelector('output').textContent,'2026-10-10');assert.equal(db.updates.length,before);assert(!M.tasks.shared.completed)});
@@ -29,11 +29,13 @@ const fixture=(name='Alpha secret')=>({projects:{p:{name:'Private project',statu
  check('playback advances',()=>{assert.equal(d.querySelector('#tlHost [data-chrono-play]').textContent,'Pause');assert(+d.querySelector('#tlHost [data-chrono-scrub]').value>0)});
  d.querySelector('[data-view="tasks"]').click();await tick();
  check('leaving timeline cancels playback',()=>assert.equal(d.querySelector('#tlHost [data-chrono-play]').textContent,'Play timeline'));
+ d.querySelector('[data-project-toggle="p"]').click();
  const row=d.querySelector('[data-id="shared"] [data-act="edit"]');row.click();await tick();const notes=d.querySelector('[data-f="notes"]');notes.value='Delayed Alice note';notes.dispatchEvent(new w.Event('input',{bubbles:true}));
  const stale=db.listeners.find(l=>l.p.endsWith('/tasks')).cb;
  w.__setUser(user('bob'));await tick(750);stale({val:()=>({shared:{title:'Stale Alice'}})});await tick();
  check('account switch drops stale listeners and delayed writes',()=>{assert.equal(M.tasks.shared.title,'Beta only');assert.notEqual(db.get('users/bob/todo/tasks/shared/notes'),'Delayed Alice note');assert(db.listeners.every(l=>l.p.startsWith('users/bob/todo/')))});
  check('account switch clears all prior account DOM and export state',()=>{assert(!d.body.textContent.includes('Alpha secret'));assert.equal(d.querySelector('#mapHost').textContent,'');assert.equal(M.EX.name,'');assert.equal(M.EX.rpid,'')});
+ d.querySelector('[data-project-toggle="p"]').click();
  const dragRow=d.querySelector('[data-id="shared"] .t-main'),touch=new w.Event('pointerdown',{bubbles:true});Object.assign(touch,{pointerType:'touch',button:0,pointerId:8,clientX:40,clientY:120});dragRow.dispatchEvent(touch);await tick(300);
  assert(d.querySelector('.drag-ghost'),'touch drag fixture must create the real ghost');
  w.__setUser(null);await tick();

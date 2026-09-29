@@ -39,6 +39,7 @@ async function boot(seed, options={}) {
   const dom = new JSDOM(html, {
     runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://dyap123.github.io/openyap-todo/',
     beforeParse(w) {
+      for(const [key,value] of Object.entries(options.storage||{}))w.localStorage.setItem(key,value);
       const NativeDate=w.Date;w.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:['2026-09-28T12:00:00-07:00']))}static now(){return +new NativeDate('2026-09-28T12:00:00-07:00')}};
       w.matchMedia = () => ({ matches: true, addListener() {}, removeListener() {}, addEventListener() {} }); // reduced motion
       w.jspdf = require('jspdf');

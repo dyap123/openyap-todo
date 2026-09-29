@@ -1,5 +1,15 @@
 # OpenYap Todo — development log
 
+## 2026-09-29 — same-canvas chronology, project navigation and Settings
+
+The user's clarification supersedes the separate orbit scene below: Chronology now animates the existing `mapWorld` cards and item rows into a temporary chronological layout, using native Web Animations on the original DOM elements. Back restores captured camera and persisted manual layout/order exactly. Cards/rows read their past/active/upcoming/unscheduled color from the displayed whole preview date; completion remains a separate fact. Preview Fit never clears offsets, spatial drag/nudge is blocked, and reduced motion uses immediate static positioning. The old standalone orbit renderer is removed.
+
+Tasks now group under named expandable PROJECT sections in each tracking category, including empty/completed projects and archived projects with maps. Canonical taskSide determines placement; cross-category project tasks retain an appropriate section rather than vanishing. No-project tasks remain visible, in-progress summaries link to their single task row, and deep links expand/select their actual project/category. Group task creation sets the canonical project ID. The final Dashboard tab now owns the full existing completed-work log; saved Done preferences/deep links redirect there and project completion filters use exact project IDs.
+
+Category forms moved into a globally accessible Settings gear/dialog with inert background, focus handling, Escape/close and account-state clearing. Markdown is one toolbar popup with Download .md and Copy options, viewport-bounded positioning and keyboard navigation. No-project controls are disabled.
+
+Synthetic verification covers same DOM identity, exact layout/camera restoration, no preview writes, milestone color boundaries, category/project visibility, Settings drafts, embedded Done reopening and account clearing. Real Chrome with external requests blocked proves running native animations, intermediate position interpolation, desktop/mobile layout, Markdown keyboard handling and static reduced motion. `tests/orbit-browser.cjs` delegates to the current navigation browser test so the earlier command remains valid. No developer deployment or live-data changes.
+
 ## 2026-09-29 — orbit chronology, actionable map tasks and tracking categories
 
 Chronology replaces the literal clock face with actual upright task tiles orbiting the main topic. Tiles are chronological, paged eight at a time with an always-available ordered list; playback/scrubbing follow the active page. The mobile scene is scroll-contained and centered by default. Reduced motion freezes tile positions while explicit playback can still advance the date/event cue. Descriptions toggle in both map presentations. Gantt continues sharing the read-only schedule cursor.

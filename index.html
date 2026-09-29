@@ -783,6 +783,8 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 
 .category-manager{padding:10px 0}.category-forms{max-width:640px;display:grid;gap:10px;padding:16px 0}.category-forms form{display:flex;gap:8px}.category-forms input[type=text],.category-forms .txt{min-width:0;flex:1}.category-forms input[type=color]{height:38px;width:48px;flex-shrink:0}.project-status{display:flex;gap:10px;align-items:center;font-size:11px;color:var(--muted)}.map-bar{flex-wrap:wrap}.sides{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.d-top{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.switch .seg{flex-wrap:wrap}.tl-day{display:block}.tl-lane{margin:12px 0}.tl-spine{display:none}@media(max-width:820px){.sides{grid-template-columns:1fr}.category-forms form{flex-wrap:wrap}}
 .with-descriptions .mp-bh:has(.map-description){height:100px}.with-descriptions .mp-th:has(.map-description){height:76px;display:grid;grid-template-columns:1fr auto;gap:2px;padding-top:8px;padding-bottom:8px}.with-descriptions .mp-th .map-description{grid-column:1/-1;grid-row:2}.with-descriptions .mp-bh .mp-k{display:flex;flex-direction:column}.with-descriptions .mp-bh .map-description{order:1}.mp-item:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.settings-button svg{width:21px;height:21px}.settings-back{z-index:110}.settings-sheet{width:min(620px,calc(100vw - 24px));max-height:calc(100dvh - 32px);overflow:auto;padding:24px}.settings-head{display:flex;justify-content:space-between;align-items:center;gap:16px}.settings-head h2{font-size:20px}.task-project{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;overflow:hidden}.project-toggle{display:grid;grid-template-columns:1fr auto;gap:5px 12px;width:100%;padding:15px;text-align:left;background:var(--surface);color:var(--text);border:0;cursor:pointer}.project-kind{font:10px var(--mono);color:var(--side-c);letter-spacing:.12em;grid-column:1}.project-toggle strong{grid-column:1;font-size:16px;overflow-wrap:anywhere}.project-count{grid-column:1;font-size:11px;color:var(--muted)}.project-toggle>span:last-child{grid-column:2;grid-row:1/4;align-self:center}.project-tasks{padding:4px 10px 12px}.project-add{margin:10px 0}.project-completed{margin:12px 0 0}.task-running{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:0;padding:12px 0}.task-running .now-label{margin:0}.dashboard-done{padding-top:20px;scroll-margin-top:90px}.dashboard-done h2{font-size:22px;margin-bottom:20px}.markdown-control{position:relative}.markdown-menu{position:absolute;top:calc(100% + 6px);right:0;z-index:75;width:190px;padding:8px;border:1px solid var(--line-2);border-radius:10px;background:var(--bg);box-shadow:0 10px 30px #0004;display:grid;gap:6px}.markdown-menu[hidden]{display:none}.markdown-menu .btn{text-align:left}.project-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}@media(max-width:820px){.settings-sheet{padding:16px}.markdown-menu{left:0;right:auto}.acts{gap:7px}.task-project{margin-bottom:10px}}
+.map-preview-legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:11px;margin:0 0 12px}.map-preview-legend>span[data-time-state]{border-left:5px solid var(--preview-color);padding-left:7px}[data-time-state=past]{--preview-color:#8893a3}[data-time-state=active]{--preview-color:#e2a336}[data-time-state=upcoming]{--preview-color:#0090ff}[data-time-state=unscheduled]{--preview-color:#666976}.chrono-preview .mp-card[data-time-state]{--mc:var(--preview-color)!important;border-color:var(--preview-color);box-shadow:inset 0 3px 0 var(--preview-color)}.chrono-preview .mp-item[data-time-state]{box-shadow:inset 4px 0 0 var(--preview-color);background:color-mix(in srgb,var(--preview-color) 13%,var(--surface));color:var(--text)}.chrono-preview .mp-item.done .t{text-decoration:line-through}.chrono-preview .mp-card,.chrono-preview .mp-item{cursor:pointer}.chrono-preview .mp-add,.chrono-preview .mp-plus{opacity:.7}.map-preview-legend .hint{flex:1;min-width:200px}
 </style>
 </head>
 <body>
@@ -807,14 +809,14 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
     <span class="offline" id="offline" hidden>Offline</span>
     <nav class="tabs" role="tablist" aria-label="Views">
       <button class="tab" role="tab" data-view="tasks">Tasks</button>
-      <button class="tab" role="tab" data-view="dashboard">Dashboard</button>
       <button class="tab" role="tab" data-view="timeline">Timeline</button>
       <button class="tab" role="tab" data-view="calendar">Calendar</button>
       <button class="tab" role="tab" data-view="map">Map</button>
-      <button class="tab" role="tab" data-view="done">Done</button>
+      <button class="tab" role="tab" data-view="dashboard">Dashboard</button>
     </nav>
     <div class="acts">
       <button class="btn" id="exportBtn">Export</button>
+<button class="icon-btn settings-button" id="settingsBtn" aria-label="Settings" title="Settings" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 3-1 3-3 1 1 3-2 2 2 2-1 3 3 1 1 3h6l1-3 3-1-1-3 2-2-2-2 1-3-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></svg></button>
       <button class="theme-btn" id="themeBtn" aria-label="Change theme" title="Theme"><span></span></button>
     </div>
   </div>
@@ -824,12 +826,14 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
   <section id="v-tasks" class="view" aria-label="Tasks">
     <div class="wrap">
       <div class="switch"><div class="seg" role="group" aria-label="Side" id="mswitch"></div></div>
-      <div id="categoryHost"></div><div class="sides" id="sides"></div>
+      <div class="sides" id="sides"></div>
     </div>
   </section>
 
-  <section id="v-done" class="view" aria-label="Done" hidden>
-    <div class="wrap">
+  <section id="v-dashboard" class="view" aria-label="Dashboard" hidden>
+    <div class="wrap" id="dashHost"></div>
+  <section id="dashboardDone" class="dashboard-done" aria-label="Completed tasks">
+    <div class="wrap"><h2 id="completedHeading" tabindex="-1">Completed tasks</h2>
       <div class="bar">
         <div class="seg" role="group" aria-label="Period" data-g="range"></div>
         <div class="seg" role="group" aria-label="Side" data-g="dside"></div>
@@ -845,8 +849,6 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
     </div>
   </section>
 
-  <section id="v-dashboard" class="view" aria-label="Dashboard" hidden>
-    <div class="wrap" id="dashHost"></div>
   </section>
 
   <section id="v-timeline" class="view" aria-label="Timeline" hidden>
@@ -882,6 +884,8 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
     </div>
   </div>
 </div>
+
+<div class="back settings-back" id="settingsBack" hidden><section class="sheet settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="settings-head"><h2 id="settingsTitle">Settings</h2><button class="btn" data-settings-close>Close</button></div><div id="categoryHost"></div></section></div>
 
 <div class="pop" id="themePop" role="dialog" aria-label="Theme" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -984,14 +988,15 @@ const OY_RE=/open\s?yap|\bai\b|\bllm\b|claude|minimax|deepseek/i;
 
 let tasks={},hist={},projects={},sideMap={};
 const ready={tasks:false,hist:false,maps:false};
-const VIEWS=['tasks','dashboard','timeline','calendar','map','done'];
-let view=LS.get('oym_view','tasks');if(!VIEWS.includes(view))view='tasks';
+const VIEWS=['tasks','timeline','calendar','map','dashboard'];
+let view=LS.get('oym_view','tasks');if(view==='done')view='dashboard';if(!VIEWS.includes(view))view='tasks';
 // The Drive notes feature was removed; forget any connector saved on this device.
 LS.del('oym_name');LS.del('oym_exbtitle');LS.del('oym_bridge');LS.del('oym_bridge_setup');LS.del('oym_upside');
 let mSide=LS.get('oym_mside','career');if(!SIDES.includes(mSide))mSide='career';
 let openId=null;
+const projectExpanded=new Set();let settingsOpen=false,markdownOpen=false;
 let lastAddSide='career';
-const doneF={range:LS.get('oym_drange','week'),side:LS.get('oym_dside','all'),q:''};
+const doneF={range:LS.get('oym_drange','week'),side:LS.get('oym_dside','all'),q:'',projectId:''};
 let logSide=LS.get('oym_logside','career');if(!SIDES.includes(logSide))logSide='career';
 
 // ═══ Sides and privacy ═══════════════════════════════════════════════════
@@ -1039,7 +1044,7 @@ function entries(){
   for(const [id,t] of Object.entries(tasks)){
     if(!t||!t.completed||!t.completedAt||t.logHidden||(t.repeat||'none')!=='none'||best.has(id))continue;
     best.set(id,{key:'t:'+id,hid:null,taskId:id,title:t.title||'(untitled)',notes:t.notes||'',completedAt:t.completedAt,
-      projectName:projName(t.projectId),side:taskSide(t),private:taskPrivate(t),routine:false,timeSpent:t.timeSpent||0,reopenable:true});
+      projectId:t.projectId||'',projectName:projName(t.projectId),side:taskSide(t),private:taskPrivate(t),routine:false,timeSpent:t.timeSpent||0,reopenable:true});
   }
   _entries=out.concat([...best.values()]).sort((a,b)=>a.completedAt<b.completedAt?1:a.completedAt>b.completedAt?-1:0);
   return _entries;
@@ -1052,7 +1057,7 @@ function rowEntry(hid,h,t,oneShot){
   else if(t)priv=taskPrivate(t);
   else{const m=projSide(h.projectId);priv=!!(m&&m.private)||h.category==='personal'}
   return {key:'h:'+hid,hid,taskId:h.taskId||null,title:h.title||'(untitled)',notes:h.notes||'',completedAt:h.completedAt,
-    projectName:h.projectName||projName(h.projectId),side,private:priv,routine:h.category==='routine',timeSpent:h.timeSpent||0,reopenable:oneShot};
+    projectId:h.projectId||t?.projectId||'',projectName:h.projectName||projName(h.projectId),side,private:priv,routine:h.category==='routine',timeSpent:h.timeSpent||0,reopenable:oneShot};
 }
 function rangeBounds(r){
   const now=new Date(),mon=mondayOf(now);
@@ -1135,11 +1140,11 @@ function parseQuick(raw,past){
   return {title:s.replace(/\s+/g,' ').trim(),urgent,due,notes};
 }
 
-function addTask(side,raw){
+function addTask(side,raw,pid=''){
   const p=parseQuick(raw);
   if(!p.title)return false;
   const key=newKey('todo/tasks');
-  upd({[TP(key)]:buildTask({title:p.title,priority:p.urgent?'high':'medium',dueDate:p.due,notes:p.notes,...sideFields(side)})});
+  upd({[TP(key)]:buildTask({title:p.title,priority:p.urgent?'high':'medium',dueDate:p.due,notes:p.notes,...sideFields(side),...(pid&&projects[pid]?{projectId:pid}:{})})});
   return true;
 }
 function startTask(id){
@@ -1216,7 +1221,7 @@ function logDone(raw,side){
 
 // ═══ Rendering ═══════════════════════════════════════════════════════════
 let rTimer=0,deferred=false,pointerDown=false;
-function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new,.mp-pick,#mapWorld,.category-forms')&&/^(INPUT|TEXTAREA)$/.test(a.tagName))}
+function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new,.mp-pick,#mapWorld,.category-forms,[data-add]')&&/^(INPUT|TEXTAREA)$/.test(a.tagName))}
 function schedule(){_entries=null;if(rTimer)return;rTimer=setTimeout(()=>{rTimer=0;render()},16)}
 function render(force){
   if(!force&&(editingText()||pointerDown)){deferred=true;return}
@@ -1225,11 +1230,10 @@ function render(force){
   const loaded=ready.tasks&&ready.hist,anim=animNext&&loaded;if(loaded)animNext=false;
   renderHeader();
   if(view==='tasks')renderTasks(anim);
-  else if(view==='dashboard')renderDash(anim);
+  else if(view==='dashboard'){renderDash(anim);renderDone(anim)}
   else if(view==='timeline')renderGantt(anim);
   else if(view==='calendar')renderCalendar(anim);
   else if(view==='map')renderMap(anim);
-  else if(view==='done')renderDone(anim);
   if(!$('#exBack').hidden)renderExportLive();
 }
 function renderHeader(){
@@ -1239,14 +1243,15 @@ function renderHeader(){
   $$('.view').forEach(v=>v.hidden=v.id!=='v-'+view);
 }
 function setView(v){
-  chronoPause();
+  const completed=v==='done';if(completed)v='dashboard';
+  closeMarkdown(false);chronoPause();
   if(openId){flushNotes();openId=null}
   view=v;if(v==='calendar'&&googleToken&&googleLoadedMonth!==ymd(calCursor))googleCalendarLoad();LS.set('oym_view',v);hideTip();
   if(v==='timeline')tlWeeks=4;
   animNext=true;render(true);
   const tab=$(`.tab[data-view="${v}"]`);
   fx(tab,{scale:[.92,1],translateY:[2,0],duration:420,ease:'out(4)'});
-  window.scrollTo(0,0);
+  if(completed){$('#completedHeading').scrollIntoView({block:'start'});$('#completedHeading').focus({preventScroll:true})}else window.scrollTo(0,0);
 }
 
 function applyCategories(){
@@ -1264,7 +1269,31 @@ async function saveTrackingCategory(id,name,color){
   if(!id)id='cat-'+newKey('todo/trackingCategories');if(!categoryIdOk(id))throw new Error('Invalid category.');
   await upd({['todo/trackingCategories/'+id]:{name,color}});return id;
 }
-function categoriesHTML(){return `<div class="category-manager"><button class="btn" data-category-toggle>${categoryEditor?'Close categories':'Manage categories'}</button>${categoryEditor?`<div class="category-forms"><p class="hint">Tracking categories organize tasks and projects. Choose a name and color.</p>${SIDES.map(id=>`<form data-category-form="${id}"><input class="txt" name="name" aria-label="Category name" maxlength="48" value="${esc(SIDE_NAME[id])}" required><input type="color" name="color" aria-label="Category color" value="${categoryColorOk(trackingCategories[id]?.color)?trackingCategories[id].color:(id==='career'?'#5ec2d6':'#7c9cff')}"><button class="btn">Save</button></form>`).join('')}<form data-category-form=""><input class="txt" name="name" aria-label="New category name" maxlength="48" placeholder="New category" required><input type="color" name="color" aria-label="New category color" value="#4aa88b"><button class="btn primary">Create category</button></form><p data-category-error role="status"></p></div>`:''}</div>`}
+function categoriesHTML(){return `<div class="category-manager"><h3>Tracking categories</h3><div class="category-forms"><p class="hint">Tracking categories organize tasks and projects. Choose a name and color.</p>${SIDES.map(id=>`<form data-category-form="${id}"><input class="txt" name="name" aria-label="Category name" maxlength="48" value="${esc(SIDE_NAME[id])}" required><input type="color" name="color" aria-label="Category color" value="${categoryColorOk(trackingCategories[id]?.color)?trackingCategories[id].color:(id==='career'?'#5ec2d6':'#7c9cff')}"><button class="btn">Save</button></form>`).join('')}<form data-category-form=""><input class="txt" name="name" aria-label="New category name" maxlength="48" placeholder="New category" required><input type="color" name="color" aria-label="New category color" value="#4aa88b"><button class="btn primary">Create category</button></form><p data-category-error role="status"></p></div></div>`}
+function openSettings(){
+  if(openId)flushNotes();closeMarkdown(false);settingsOpen=true;categoryEditor=true;
+  $('#categoryHost').innerHTML=categoriesHTML();$('#settingsBack').hidden=false;$('#settingsBtn').setAttribute('aria-expanded','true');
+  for(const el of $$('header.top,main,footer.foot'))el.inert=true;
+  $('[data-settings-close]').focus();
+}
+function closeSettings(focus=true){
+  settingsOpen=false;categoryEditor=false;$('#settingsBack').hidden=true;$('#categoryHost').innerHTML='';$('#settingsBtn').setAttribute('aria-expanded','false');
+  for(const el of $$('header.top,main,footer.foot'))el.inert=false;
+  if(focus)$('#settingsBtn').focus();
+}
+function taskProjectKey(side,pid){return side+'|'+(pid||'unassigned')}
+function taskProjectGroups(side){
+  const groups=new Map();
+  for(const [pid,p] of Object.entries(projects))if(p&&projSideOf(pid)===side&&(p.status!=='archived'||maps[pid]))groups.set(pid,{pid,project:p,items:[]});
+  for(const [id,t] of Object.entries(tasks))if(t&&taskSide(t)===side){const pid=projects[t.projectId]?t.projectId:'';if(!groups.has(pid))groups.set(pid,{pid,project:projects[pid]||null,items:[]});groups.get(pid).items.push([id,t])}
+  if(!groups.has(''))groups.set('',{pid:'',project:null,items:[]});
+  return [...groups.values()].sort((a,b)=>!a.pid?1:!b.pid?-1:(a.project.order||0)-(b.project.order||0)||String(a.project.name).localeCompare(String(b.project.name)));
+}
+function taskGroupsHTML(side){return taskProjectGroups(side).map(g=>{
+  const key=taskProjectKey(side,g.pid),expanded=g.pid?projectExpanded.has(key):!projectExpanded.has(key),open=g.items.filter(([,t])=>!t.completed).sort((a,b)=>Number(!!b[1].doing)-Number(!!a[1].doing)||cmpTask(a,b)),done=g.items.length-open.length;
+  const dom='project-'+side+'-'+(g.pid||'unassigned');
+  return `<section class="task-project" data-project-group="${esc(g.pid)}"><button class="project-toggle" data-project-toggle="${esc(g.pid)}" data-project-side="${side}" aria-expanded="${expanded}" aria-controls="${esc(dom)}"><span class="project-kind">${g.pid?'PROJECT':'TASKS'}</span><strong>${esc(g.project?.name||'No project')}</strong><span class="project-count">${open.length} open${done?' · '+done+' completed':''}${g.project?.status&&g.project.status!=='active'?' · '+esc(g.project.status):''}</span><span aria-hidden="true">${expanded?'−':'+'}</span></button><div id="${esc(dom)}" class="project-tasks"${expanded?'':' hidden'}>${expanded?`<ul class="list">${open.length?open.map(([id,t])=>taskRow(id,t)).join(''):'<li class="list-empty">No open tasks.</li>'}</ul>${g.pid?`<form class="add project-add" data-add="${side}" data-add-project="${esc(g.pid)}"><input aria-label="Add a task to ${esc(g.project.name)}" placeholder="Add a task to this project"><button class="btn" type="submit">Add</button></form>`:''}${done?`<button class="link project-completed" data-project-completed="${esc(g.pid)}" data-project-side="${side}">View completed tasks</button>`:''}`:''}</div></section>`;
+}).join('')}
 function buildSides(){
   sidesDirty=false;
   $('#dragDock').innerHTML=SIDES.map(s=>`<div class="drag-target" data-drop-side="${s}" style="--side-c:var(--${s})">${esc(SIDE_NAME[s])}</div>`).join('');
@@ -1279,7 +1308,7 @@ function buildSides(){
         </form>
         <div class="add-hint">@fri or @9/30 sets a due date. A lone ! marks it urgent. // adds a note.</div>
       </div>
-      <div class="body"><ul class="list" data-list></ul><div class="side-foot" data-foot></div></div>
+      <div class="body"><div data-list></div><div class="side-foot" data-foot></div></div>
     </div>`).join('');
 }
 function cmpTask([,a],[,b]){
@@ -1303,7 +1332,6 @@ function dueLabel(ds){
 }
 function renderTasks(anim){
   if(sidesDirty)buildSides();
-  $('#categoryHost').innerHTML=categoriesHTML();
   const today=ymd(new Date()),doneToday=sideZeros();
   for(const e of entries()){if(ymd(new Date(e.completedAt))!==today)break;doneToday[e.side]++}
   const counts={};
@@ -1311,9 +1339,9 @@ function renderTasks(anim){
     const el=$(`.side[data-side="${side}"]`),{doing,rest,count}=openFor(side);el.classList.toggle('mobile-selected',side===mSide);
     counts[side]=count;
     el.querySelector('[data-count]').textContent=count?count+' open':'';
-    renderNow(el.querySelector('[data-now]'),doing);
-    el.querySelector('[data-list]').innerHTML=rest.length?rest.map(([id,t])=>taskRow(id,t)).join('')
-      :`<li class="list-empty">${ready.tasks?(doing.length?'Nothing else queued. Add a task above.':'No open tasks. Add one above.'):'Loading…'}</li>`;
+    const now=el.querySelector('[data-now]');now.hidden=!doing.length;now.className='now task-running';
+    now.innerHTML=doing.length?`<span class="now-label">In progress</span>${doing.map(([id,t])=>`<button class="link" data-open="${esc(id)}">${esc(t.title)}</button>`).join('')}`:'';
+    el.querySelector('[data-list]').innerHTML=taskGroupsHTML(side);
     const n=doneToday[side];
     el.querySelector('[data-foot]').innerHTML=ready.hist?`<button data-go-done="${side}">${n?n+' finished today':'Nothing finished yet today'}</button>`:'';
   }
@@ -1357,7 +1385,7 @@ function taskRow(id,t){
   return `<li class="task" data-id="${id}" data-drag-id="${id}" draggable="true">
     <button class="ck" data-act="complete" aria-label="Complete ${esc(t.title)}"></button>
     <div class="t-main" data-act="edit" role="button" tabindex="0" title="Drag to the other side or click to edit"><div class="t-title">${esc(t.title||'(untitled)')}</div>${meta.length?`<div class="t-meta">${meta.join('')}</div>`:''}</div>
-    <button class="t-go" data-act="start" aria-label="Start ${esc(t.title)}" title="Start">${ICON.play}</button>
+    <button class="t-go" data-act="${t.doing?'pause':'start'}" aria-label="${t.doing?'Pause':'Start'} ${esc(t.title)}" title="${t.doing?'Pause':'Start'}">${t.doing?'Ⅱ':ICON.play}</button>
   </li>`;
 }
 function editorHTML(id,t){
@@ -1381,7 +1409,7 @@ function editorHTML(id,t){
   </div>`;
 }
 let pendingFocus=false,notesTimer=0,notesPending=null;
-function openEditor(id){if(openId&&openId!==id)flushNotes();openId=id;pendingFocus=true;render(true);animateEditor()}
+function openEditor(id){const t=tasks[id];if(!t)return;if(t.completed){doneF.projectId=t.projectId||'';doneF.side=taskSide(t);doneF.range='all';doneF.q=t.title||'';$('#doneSearch').value=doneF.q;setView('done');return}if(openId&&openId!==id)flushNotes();if(view!=='tasks')setView('tasks');mSide=taskSide(t);LS.set('oym_mside',mSide);if(projects[t.projectId])projectExpanded.add(taskProjectKey(mSide,t.projectId));else projectExpanded.delete(taskProjectKey(mSide,''));openId=id;pendingFocus=true;render(true);animateEditor();$(`.editor[data-id="${id}"]`)?.scrollIntoView({block:'nearest'})}
 function closeEditor(){flushNotes();openId=null;render(true)}
 function flushNotes(){if(notesPending){clearTimeout(notesTimer);const [id,v]=notesPending;notesPending=null;saveField(id,'notes',v)}}
 
@@ -1393,7 +1421,7 @@ function renderDone(anim){
   $('[data-g="dside"]').innerHTML=segHTML([['all','All'],...sideOptions()],doneF.side,'data-dside');
   $('[data-g="logside"]').innerHTML=segHTML(sideOptions(),logSide,'data-logside');
   const all=entries();doneByKey=new Map(all.map(e=>[e.key,e]));
-  let list=all.filter(e=>inRange(e,doneF.range)&&(doneF.side==='all'||e.side===doneF.side));
+  let list=all.filter(e=>inRange(e,doneF.range)&&(doneF.side==='all'||e.side===doneF.side)&&(!doneF.projectId||e.projectId===doneF.projectId));
   const q=doneF.q.trim().toLowerCase();
   if(q)list=list.filter(e=>(e.title+' '+e.notes+' '+e.projectName).toLowerCase().includes(q));
   const c=sideZeros();let priv=0;
@@ -1408,6 +1436,7 @@ function renderDone(anim){
     // Bulk actions only appear while searching, to re-sort old history in one go.
     if(q)sum+=`<span class="bulk">${SIDES.map(s=>`<button class="link" data-bulk="side" data-v="${s}">Move all to ${esc(SIDE_NAME[s])}</button>`).join('')}<button class="link" data-bulk="private" data-v="1">Make all private</button><button class="link" data-bulk="private" data-v="0">Include all in reports</button></span>`;
   }
+  if(doneF.projectId)sum=`<span class="completed-project-filter">Project: ${esc(projects[doneF.projectId]?.name||doneF.projectId)} <button class="link" data-completed-clear>Show all projects</button></span> `+sum;
   $('#doneSummary').innerHTML=sum;
   if(!n){
     $('#doneList').innerHTML=ready.hist?`<p class="done-empty">${q?'Nothing matches that search.':doneF.range==='week'?'Nothing finished this week yet. Complete a task, or log one above.':'Nothing finished in this period.'}</p>`:'';
@@ -1509,7 +1538,7 @@ function animateTasks(){
   fx($$('.task',host).slice(0,28),{opacity:[0,1],translateY:[8,0],duration:440,delay:stg(28,{start:170}),ease:'out(3)'});
 }
 function animateDone(){
-  const host=$('#v-done');
+  const host=$('#dashboardDone');
   fx($$('.bar,.summary,.logadd',host),{opacity:[0,1],translateY:[8,0],duration:500,delay:stg(65),ease:'out(3)'});
   fx($$('.wk,.done-empty',host).slice(0,16),{opacity:[0,1],translateY:[12,0],duration:520,delay:stg(55,{start:160}),ease:'out(3)'});
 }
@@ -1881,7 +1910,7 @@ const mapSlot=i=>i<4?MAP_SLOTS[i]:(i%2?'right':'left');
 // A sub-topic (branch) and a topic are both cards that hold item rows; a topic may also hold
 // topics of its own, to any depth. Items are always rows inside the card they belong to.
 const M_BHEAD=64,M_THEAD=40,M_LGAP=56,M_RGAP=46;
-const mapItemsOf=(nodes,id)=>mapKids(nodes,id).filter(([k])=>mapKindOf(nodes,k)==='item');
+const mapItemsOf=(nodes,id)=>{const items=mapKids(nodes,id).filter(([k])=>mapKindOf(nodes,k)==='item');return mapPresentation==='clock'?items.sort((a,b)=>(mapChronoDates.get(a[0])?.start??Infinity)-(mapChronoDates.get(b[0])?.start??Infinity)||(a[1].order||0)-(b[1].order||0)):items};
 const mapTopicsOf=(nodes,id)=>mapKids(nodes,id).filter(([k])=>mapKindOf(nodes,k)==='topic');
 function mapCardH(nodes,id,kind){
   const n=mapItemsOf(nodes,id).length;
@@ -2075,6 +2104,7 @@ function mapSetColor(id,c){
   else if(mapNodes(pid)[id])upd({[MP(pid,id)+'/color']:c||null});
 }
 function mapNudge(id,dir){
+  if(mapPresentation==='clock'){toast('Back to map to rearrange your saved layout');return}
   const pid=mapPid,nodes=mapNodes(pid),n=nodes[id];if(!n)return;
   const isItem=mapKindOf(nodes,id)==='item';
   const sib=mapKids(nodes,n.parent).filter(([k])=>(mapKindOf(nodes,k)==='item')===isItem);
@@ -2099,6 +2129,7 @@ function mapDelete(id){
   });
 }
 function mapApplyDrop(drag,rule){
+  if(mapPresentation==='clock')return;
   const pid=mapPid,nodes=mapNodes(pid);
   if(rule.swap){
     const a=nodes[drag.id],b=nodes[rule.swap];
@@ -2115,12 +2146,14 @@ function mapApplyDrop(drag,rule){
 }
 let mapNoFlip=false;
 function mapMoveBy(id,dx,dy){
+  if(mapPresentation==='clock')return;
   const pid=mapPid,n=mapNodes(pid)[id];if(!n)return;
   // The card is already where it was dropped; the next paint must not fly it in from the old spot.
   mapNoFlip=true;
   upd({[MP(pid,id)+'/dx']:Math.round((+n.dx||0)+dx),[MP(pid,id)+'/dy']:Math.round((+n.dy||0)+dy)});
 }
 function mapTidy(){
+  if(mapPresentation==='clock'){mapCam[mapPid]=mapChronoFit(mapChronoLayout(mapNodes(mapPid)));mapApplyCam();return}
   const pid=mapPid,nodes=mapNodes(pid),moved=Object.entries(nodes).filter(([,n])=>n&&(n.dx||n.dy));
   if(moved.length){
     const up={},back={};
@@ -2131,6 +2164,7 @@ function mapTidy(){
   mapTween(mapFitCam(mapLayout(nodes2)));
 }
 function mapNewProject(name){
+  closeMarkdown(false);mapChronoLeave();
   name=name.trim();if(!name)return;
   const id=newKey('todo/projects'),side=mSide||'career';
   upd({['todo/projects/'+id]:{name,color:'',icon:'',status:'active',description:'',targetDate:'',createdAt:new Date().toISOString(),order:Date.now()},
@@ -2205,23 +2239,22 @@ function renderMap(anim){
   const plist=mapProjects();
   if(!projects[mapPid]&&plist.length){mapPid=plist[0][0];LS.set('oym_mappid',mapPid)}
   const pid=mapPid,P=projects[pid];
-  if(mapPresentation==='clock'&&P){renderClock();return}
   const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}${projectStatusHTML(pid,P)}
-    <div class="map-tools"><button class="btn" data-chrono-mode="clock">Chronology</button>${mapDescriptionToggle()}<button class="btn" data-map-markdown>Download Markdown</button><button class="btn" data-map-copy>Copy Markdown</button>
+    <div class="map-tools"><button class="btn" data-chrono-mode="${mapPresentation==='clock'?'map':'clock'}" aria-pressed="${mapPresentation==='clock'}" ${P?'':'disabled'}>${mapPresentation==='clock'?'Back to map':'Chronology'}</button>${mapDescriptionToggle()}${markdownControlHTML()}
       ${P?`<button class="btn" type="button" data-mact="tray">Unplaced <span class="mp-count">${mapUnplaced(pid).length}</span></button>
       <button class="btn" type="button" data-mact="zout" aria-label="Zoom out">−</button><button class="btn" type="button" data-mact="zin" aria-label="Zoom in">+</button>
-      <button class="btn" type="button" data-mact="fit" title="Tidy everything back into the sheet layout and show it all">Fit</button><button class="btn primary" type="button" data-mact="roadmap">Roadmap PDF</button>`:''}
+      <button class="btn" type="button" data-mact="fit" title="${mapPresentation==='clock'?'Fit the preview without changing your saved layout':'Tidy everything back into the sheet layout and show it all'}">Fit</button><button class="btn primary" type="button" data-mact="roadmap">Roadmap PDF</button>`:''}
     </div></div>`;
   if(!P){host.innerHTML=bar+'<div class="map-stage map-empty" id="mapStage"><p>Create a project to start a map.</p></div>';return}
-  const nodes=mapNodes(pid),lay=mapLayout(nodes),side=projSideOf(pid),mt=(maps[pid]&&maps[pid].title)||P.name;
+  const nodes=mapNodes(pid),lay=mapPresentation==='clock'?mapChronoLayout(nodes):mapLayout(nodes),side=projSideOf(pid),mt=(maps[pid]&&maps[pid].title)||P.name;
   const cards=[];
   const rc=mapColorOf(pid,nodes,'root');
-  cards.push(`<div class="mp-card mp-root${mapSel==='root'?' sel':''}" data-nid="root" style="${mcStyle(rc)}left:${lay.C.root.x}px;top:${lay.C.root.y}px;width:${MW.root}px;height:${lay.C.root.h}px"${P.description?` title="${esc(P.description)}"`:''}>
+  cards.push(`<div class="mp-card mp-root${mapSel==='root'?' sel':''}" data-nid="root" role="button" tabindex="0" style="${mcStyle(rc)}left:${lay.C.root.x}px;top:${lay.C.root.y}px;width:${MW.root}px;height:${lay.C.root.h}px"${P.description?` title="${esc(P.description)}"`:''}>
     <span class="mp-k">Main topic</span><span class="mp-t">${esc(mt)}</span>${mapNote(P.description)}<button class="mp-plus" type="button" data-madd="root" title="Add a branch" aria-label="Add a branch">+</button></div>`);
   const topicCard=(tid,tn)=>{
     const tr=lay.C[tid];if(!tr)return;
     const items=mapItemsOf(nodes,tid);
-    cards.push(`<div class="mp-card mp-topic${mapSel===tid?' sel':''}" data-nid="${tid}" data-mkind="topic" style="${mcStyle(mapColorOf(pid,nodes,tid))}left:${tr.x}px;top:${tr.y}px;width:${tr.w}px;height:${tr.h}px">
+    cards.push(`<div class="mp-card mp-topic${mapSel===tid?' sel':''}" data-nid="${tid}" data-mkind="topic" role="button" tabindex="0" style="${mcStyle(mapColorOf(pid,nodes,tid))}left:${tr.x}px;top:${tr.y}px;width:${tr.w}px;height:${tr.h}px">
       <div class="mp-th"><span class="mp-t">${esc(tn.title)}</span>${mapNote(tn.desc)}${tn.due?`<span class="mp-td">${esc(fmtMD(parseYmd(tn.due)))}</span>`:''}</div>
       <ol class="mp-items">${items.length?items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join(''):'<li class="mp-empty">Nothing here yet</li>'}</ol>
       <button class="mp-add" type="button" data-madd="${tid}" data-mwant="item">+ Add item</button>
@@ -2230,7 +2263,7 @@ function renderMap(anim){
   };
   for(const [bid,b] of mapKids(nodes,'root')){
     const r=lay.C[bid],items=mapItemsOf(nodes,bid);
-    cards.push(`<div class="mp-card mp-branch${mapSel===bid?' sel':''}" data-nid="${bid}" data-mkind="branch" style="${mcStyle(mapColorOf(pid,nodes,bid))}left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px">
+    cards.push(`<div class="mp-card mp-branch${mapSel===bid?' sel':''}" data-nid="${bid}" data-mkind="branch" role="button" tabindex="0" style="${mcStyle(mapColorOf(pid,nodes,bid))}left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px">
       <div class="mp-bh"><span class="mp-k">Sub-topic${mapNote(b.desc)}</span><span class="mp-t">${esc(b.title)}</span></div>
       ${items.length?`<ol class="mp-items">${items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join('')}</ol>`:''}
       <button class="mp-add" type="button" data-madd="${bid}" data-mwant="item">+ Add item</button>
@@ -2243,7 +2276,7 @@ function renderMap(anim){
   const tray=mapTray?`<aside class="mp-tray"><div class="mp-tray-h"><b>Unplaced</b><span>${un.length} open task${un.length===1?'':'s'} in ${esc(P.name)}</span><button class="icon-btn" type="button" data-mact="tray" aria-label="Close">${ICON.x}</button></div>
     ${un.length?un.map(([id,t])=>`<div class="mp-tray-row" data-tid="${id}"><span class="t">${esc(t.title||'(untitled)')}</span>${t.dueDate?`<span class="d">${esc(fmtMD(parseYmd(t.dueDate)))}</span>`:''}</div>`).join('')
       :'<p class="hint">Every open task in this project is on the map.</p>'}<p class="hint">Drag a task onto a topic to place it.</p></aside>`:'';
-  host.innerHTML=bar+`<div class="map-stage" id="mapStage" style="--side-c:var(--${side})"><div class="map-world${mapDescriptions?' with-descriptions':''}" id="mapWorld">${svg}${cards.join('')}</div>${tray}${mapPanelHTML(pid,nodes)}</div>`;
+  host.innerHTML=bar+`<div id="mapPreview">${mapChronoControls()}</div><div class="map-stage" id="mapStage" style="--side-c:var(--${side})"><div class="map-world${mapDescriptions?' with-descriptions':''}${mapPresentation==='clock'?' chrono-preview':''}" id="mapWorld">${svg}${cards.join('')}</div>${tray}${mapPanelHTML(pid,nodes)}</div>`;
   const first=!mapCam[pid];if(first)mapCam[pid]=mapFitCam(lay);
   mapApplyCam();
   const bloom=(anim||mapBloomPid!==pid)&&canAnim();
@@ -2252,7 +2285,7 @@ function renderMap(anim){
   mapPrev=mapPositions(lay,nodes);mapGrow=null;
   if(mapFocus){mapFocus=false;const i=$('#mpTitle');if(i){i.focus();i.select()}}
   if(mapInline)mapInlineEdit(mapInline);
-  mapFitPanel();
+  mapFitPanel();if(mapPresentation==='clock'){chronoModel=chronoData();chronoPaint()}
 }
 // The panel is pinned to what is visible, not to the stage: 100vh counts browser chrome on
 // iPad and iPhone, so a panel sized to the stage ran off the bottom of the screen.
@@ -2371,7 +2404,7 @@ function mapPanelHTML(pid,nodes){
   const kids=mapDescendants(nodes,mapSel).length;
   return `<div class="mp-panel" data-mpanel="${mapSel}">
     <div class="mp-ph"><span class="mp-k">${{branch:'Sub-topic',topic:'Topic',item:'Item'}[kind]}</span>
-      <span class="mp-nudge"><button class="icon-btn" type="button" data-mnudge="-1" title="Move earlier" aria-label="Move earlier">↑</button><button class="icon-btn" type="button" data-mnudge="1" title="Move later" aria-label="Move later">↓</button>
+      <span class="mp-nudge"><button class="icon-btn" type="button" data-mnudge="-1" ${mapPresentation==='clock'?'disabled':''} title="Move earlier" aria-label="Move earlier">↑</button><button class="icon-btn" type="button" data-mnudge="1" ${mapPresentation==='clock'?'disabled':''} title="Move later" aria-label="Move later">↓</button>
       <button class="icon-btn" type="button" data-mact="close" aria-label="Close">${ICON.x}</button></span></div>
     <div class="mp-pb">
     <label class="fld"><span class="lbl">Title</span><input class="txt" id="mpTitle" data-mf="title" value="${esc(t?t.title||'':n.title||'')}"></label>
@@ -2427,6 +2460,7 @@ function mapFlip(lay){
   if(moved)fx($$('.map-links path',w),{opacity:[.15,1],duration:520,delay:120,ease:'out(2)'});
 }
 function mapPick(pid){
+  closeMarkdown(false);mapChronoLeave();
   chronoPause();chronoProgress=0;
   if(pid===mapPid){mapRe();return}
   const epoch=authEpoch;const go=()=>{if(epoch!==authEpoch)return;mapPid=pid;orbitTask='';orbitPage=0;LS.set('oym_mappid',pid);mapSel='';mapTray=false;if(view==='map')renderMap();else{animNext=true;render(true)}};
@@ -2500,7 +2534,7 @@ document.addEventListener('pointerdown',e=>{
   if(e.target.closest('button,input,textarea,select,label,.mp-panel,.mp-tray-h'))return;
   mpPts.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(mpPts.size===2){mpPress&&clearTimeout(mpPress.timer);mpPress=null;const [a,b]=[...mpPts.values()];mpPan={pinch:Math.hypot(a.x-b.x,a.y-b.y)};return}
-  const info=mpDragInfo(e.target);
+  const info=mapPresentation==='clock'?null:mpDragInfo(e.target);
   if(info){mpPress={info,id:e.pointerId,x:e.clientX,y:e.clientY,mouse:e.pointerType==='mouse',timer:e.pointerType==='mouse'?0:setTimeout(()=>{if(mpPress){mpStartDrag(mpPress.info,mpPress.x,mpPress.y);mpPress.live=true}},260)};return}
   if(e.target.closest('.mp-tray'))return;
   const c=mapCam[mapPid];if(!c)return;
@@ -3571,15 +3605,22 @@ document.addEventListener('click',e=>{
   const t=e.target;
   if(Date.now()<dragClickBlock&&t.closest('[data-drag-id]')){e.preventDefault();return}
   if(!$('#themePop').hidden&&!t.closest('#themePop')&&!t.closest('#themeBtn'))closeThemes();
+  if(t.closest('#settingsBtn')){openSettings();return}
+  if(t.closest('[data-settings-close]')||t===$('#settingsBack')){closeSettings();return}
+  if(t.closest('#settingsBack'))return;
+  if(markdownOpen&&!t.closest('.markdown-control'))closeMarkdown(false);
+  const projectToggle=t.closest('[data-project-toggle]');if(projectToggle){const key=taskProjectKey(projectToggle.dataset.projectSide,projectToggle.dataset.projectToggle);if(openId)closeEditor();projectExpanded.has(key)?projectExpanded.delete(key):projectExpanded.add(key);renderTasks();$(`[data-project-side="${projectToggle.dataset.projectSide}"][data-project-toggle="${projectToggle.dataset.projectToggle}"]`)?.focus();return}
+  const projectDone=t.closest('[data-project-completed]');if(projectDone){doneF.side=projectDone.dataset.projectSide;doneF.range='all';doneF.projectId=projectDone.dataset.projectCompleted;doneF.q='';$('#doneSearch').value='';setView('done');return}
   if(mapClick(t))return;
   if(gtClick(t,e))return;
   const act=t.closest('[data-act]');
   if(act){const host=act.closest('[data-id]');if(host)handleAct(act.dataset.act,host.dataset.id,act);return}
   const v=t.closest('[data-view]');if(v){setView(v.dataset.view);return}
   const ms=t.closest('[data-mside]');if(ms){mSide=ms.dataset.mside;LS.set('oym_mside',mSide);renderTasks();return}
-  const gd=t.closest('[data-go-done]');if(gd){doneF.side=gd.dataset.goDone;doneF.range='week';LS.set('oym_dside',doneF.side);LS.set('oym_drange','week');setView('done');return}
+  const gd=t.closest('[data-go-done]');if(gd){doneF.projectId='';doneF.side=gd.dataset.goDone;doneF.range='week';LS.set('oym_dside',doneF.side);LS.set('oym_drange','week');setView('done');return}
+  if(t.closest('[data-completed-clear]')){doneF.projectId='';renderDone();return}
   const r=t.closest('[data-range]');if(r){doneF.range=r.dataset.range;LS.set('oym_drange',doneF.range);renderDone();return}
-  const ds=t.closest('[data-dside]');if(ds){doneF.side=ds.dataset.dside;LS.set('oym_dside',doneF.side);if(SIDES.includes(doneF.side)){logSide=doneF.side;LS.set('oym_logside',logSide)}renderDone();return}
+  const ds=t.closest('[data-dside]');if(ds){doneF.projectId='';doneF.side=ds.dataset.dside;LS.set('oym_dside',doneF.side);if(SIDES.includes(doneF.side)){logSide=doneF.side;LS.set('oym_logside',logSide)}renderDone();return}
   const lsd=t.closest('[data-logside]');if(lsd){logSide=lsd.dataset.logside;LS.set('oym_logside',logSide);renderDone();$('#logInput').focus();return}
   const bk=t.closest('[data-bulk]');if(bk){bulkAct(bk.dataset.bulk,bk.dataset.v);return}
   const da=t.closest('[data-dact]');if(da){const e2=doneByKey.get(da.closest('[data-key]').dataset.key);if(e2)doneAct(da.dataset.dact,e2);return}
@@ -3618,11 +3659,11 @@ function handleAct(act,id,el){
 }
 document.addEventListener('submit',e=>{
   const f=e.target;e.preventDefault();
-  if(f.dataset.add){const inp=f.querySelector('input');lastAddSide=f.dataset.add;if(addTask(f.dataset.add,inp.value))inp.value=''}
+  if(f.dataset.add){const inp=f.querySelector('input');lastAddSide=f.dataset.add;if(addTask(f.dataset.add,inp.value,f.dataset.addProject||''))inp.value=''}
   else if(f.id==='logAdd'){const inp=$('#logInput');if(logDone(inp.value,logSide))inp.value=''}
   else if(f.dataset.mform==='new')mapNewProject($('#mapNewName').value);
 });
-document.addEventListener('focusin',e=>{const f=e.target.closest&&e.target.closest('[data-add]');if(f)lastAddSide=f.dataset.add});
+document.addEventListener('focusin',e=>{if(markdownOpen&&!e.target.closest?.('.markdown-control'))closeMarkdown(false);const f=e.target.closest&&e.target.closest('[data-add]');if(f)lastAddSide=f.dataset.add});
 document.addEventListener('change',e=>{
   const t=e.target;
   if(t.dataset.f){const ed=t.closest('.editor');if(ed){if(t.dataset.f==='notes'){notesPending=null;clearTimeout(notesTimer)}saveField(ed.dataset.id,t.dataset.f,t.value)}return}
@@ -3648,7 +3689,14 @@ document.addEventListener('pointerup',liftPointer,true);
 document.addEventListener('pointercancel',liftPointer,true);
 document.addEventListener('keydown',e=>{
   const t=e.target;
+  if(markdownOpen&&t.closest?.('.markdown-menu')&&['ArrowDown','ArrowUp','Home','End'].includes(e.key)){e.preventDefault();const options=$$('.markdown-menu [role="menuitem"]'),i=options.indexOf(t);options[e.key==='Home'?0:e.key==='End'?options.length-1:(i+(e.key==='ArrowDown'?1:options.length-1))%options.length].focus();return}
+  if(settingsOpen){
+    if(e.key==='Escape'){e.preventDefault();closeSettings();return}
+    if(e.key==='Tab'){const elements=$$('#settingsBack button,#settingsBack input'),first=elements[0],last=elements.at(-1);if(e.shiftKey&&t===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&t===last){e.preventDefault();first.focus()}}
+    return;
+  }
   if(e.key==='Escape'){
+    if(markdownOpen){closeMarkdown();return}
     if(!$('#exBack').hidden){closeExport();return}
     if(!$('#themePop').hidden){closeThemes();$('#themeBtn').focus();return}
     if(openId){closeEditor();return}
@@ -3798,35 +3846,66 @@ function projectSetComplete(pid,complete){
   return upd({['todo/projects/'+pid+'/status']:complete?'done':'active',['todo/projects/'+pid+'/completedAt']:complete?new Date().toISOString():null});
 }
 function projectStatusHTML(pid,P){return P?`<div class="project-status"><span>${P.status==='done'?'Project completed':'Active project'}</span><button class="btn" data-project-complete="${esc(pid)}" data-project-done="${P.status==='done'}">${P.status==='done'?'Reopen project':'Complete project'}</button></div>`:''}
+function markdownControlHTML(){return `<div class="markdown-control"><button class="btn" data-markdown-toggle aria-expanded="${markdownOpen}" aria-haspopup="menu" ${projects[mapPid]?'':'disabled'}>Markdown</button><div class="markdown-menu" role="menu"${markdownOpen?'':' hidden'}><button class="btn" role="menuitem" data-map-markdown>Download .md</button><button class="btn" role="menuitem" data-map-copy>Copy Markdown</button></div></div>`}
+window.addEventListener('resize',()=>{if(markdownOpen)closeMarkdown(false)});
+function closeMarkdown(focus=true){markdownOpen=false;$$('[data-markdown-toggle]').forEach(el=>el.setAttribute('aria-expanded','false'));$$('.markdown-menu').forEach(el=>el.hidden=true);if(focus)$('[data-markdown-toggle]')?.focus()}
 function mapDescriptionToggle(){return `<button class="btn" data-map-descriptions aria-pressed="${mapDescriptions}">${mapDescriptions?'Hide':'Show'} descriptions</button>`}
-function chronoTaskButton(t,i,dated,cls='chrono-task'){
-  return `<button class="${cls}" data-chrono-open="${esc(t.id)}" data-chrono-node="${t.node}"><span>${dated?(i+1)+'. ':''}${esc(t.title)}</span>${mapDescriptions&&t.desc?`<span class="orbit-description">${esc(t.desc)}</span>`:''}<small>${t.invalid?(t.invalid==='reversed'?'End precedes start — edit dates':'Invalid date — edit dates'):dated?esc(t.start&&t.due?t.start+' → '+t.due:t.start||t.due):'Unscheduled'}${t.done?' · Completed':''}</small></button>`;
+let mapChronoReturn=null,mapChronoDates=new Map();
+function mapChronoSchedule(nodes=mapNodes(mapPid)){
+  const data=chronoData(),dates=new Map(data.dated.filter(t=>t.node).map(t=>[t.id,{start:t.day,end:t.end}]));
+  for(const id of Object.keys(nodes))if(mapKindOf(nodes,id)!=='item'){
+    const spans=[id,...mapDescendants(nodes,id)].map(k=>dates.get(k)).filter(Boolean);
+    if(spans.length)dates.set(id,{start:Math.min(...spans.map(t=>t.start)),end:Math.max(...spans.map(t=>t.end))});
+  }
+  return dates;
 }
-function renderClock(){
-  const previous=$('.orbit-viewport'),scroll=previous?{left:previous.scrollLeft,top:previous.scrollTop}:null;
-  const c=chronoModel=chronoData(),P=projects[mapPid],pages=Math.max(1,Math.ceil(c.dated.length/8));
-  orbitPage=Math.max(0,Math.min(orbitPage,pages-1));
-  const first=orbitPage*8,visible=c.dated.slice(first,first+8);
-  const tiles=visible.map((t,j)=>`<div class="orbit-slot" data-orbit-index="${first+j}" data-orbit-angle="${j/visible.length*360-90}">${chronoTaskButton(t,first+j,true,'orbit-tile')}</div>`).join('');
-  const row=(t,i,dated)=>`<li data-chrono-row="${dated?i:'undated'}">${chronoTaskButton(t,i,dated)}</li>`;
-  const selected=orbitTask&&tasks[orbitTask];
-  const panel=selected?`<div class="mp-panel" data-orbit-task="${esc(orbitTask)}"><div class="mp-ph"><b>Task</b><button class="btn" data-orbit-close>Close</button></div><div class="mp-pb"><h3>${esc(selected.title)}</h3><p>${esc(selected.notes||'')}</p>${mapTaskControls(orbitTask,'')}<button class="btn" data-open="${esc(orbitTask)}">Edit task</button></div></div>`:mapPanelHTML(mapPid,mapNodes(mapPid));
-  $('#mapHost').innerHTML=`<div class="map-bar">${mapSwitchHTML(mapPid,P)}${projectStatusHTML(mapPid,P)}<div class="map-tools"><button class="btn" data-chrono-mode="map">Mind map</button>${mapDescriptionToggle()}<button class="btn" data-map-markdown>Download Markdown</button><button class="btn" data-map-copy>Copy Markdown</button><button class="btn primary" data-chrono-gantt>Gantt timeline</button></div></div>${chronoControls()}<div class="orbit-events" aria-label="Scheduled events">${c.dated.map((t,i)=>`<button class="btn" data-chrono-jump="${i}">${esc(chronoDate(t.day))} · ${esc(t.title)}</button>`).join('')}</div><div class="clock-layout"><section class="orbit-section"><h2>Chronology</h2><p class="hint">Tasks run clockwise around your main topic. Play the timeline to bring the plan to life.</p><div class="orbit-viewport" tabindex="0" aria-label="Task orbit. Scroll to explore; every task is also listed below."><div class="orbit-scene"><div class="orbit-track"></div><div class="orbit-center"><small>Main topic</small><strong>${esc(maps[mapPid]?.title||P.name)}</strong><output data-orbit-active aria-live="off"></output></div>${tiles}</div></div>${pages>1?`<div class="orbit-pages"><button class="btn" data-orbit-page="-1" ${orbitPage?'':'disabled'}>Previous</button><span>Tasks ${first+1}–${first+visible.length} of ${c.dated.length}</span><button class="btn" data-orbit-page="1" ${orbitPage+1<pages?'':'disabled'}>Next</button></div>`:''}<p class="hint">${reduceMotion()?'Reduced motion: tiles stay still. Scrub or select an event to explore.':'Tiles stay upright while the orbit rotates.'}</p></section><section class="clock-list"><h3>Scheduled · ${c.dated.length}</h3><ol>${c.dated.map((t,i)=>row(t,i,true)).join('')}</ol><h3>Unscheduled · ${c.undated.length}</h3><ul>${c.undated.map((t,i)=>row(t,i,false)).join('')}</ul></section></div>${panel}`;
-  const viewport=$('.orbit-viewport');viewport.scrollLeft=scroll?scroll.left:Math.max(0,(viewport.scrollWidth-viewport.clientWidth)/2);viewport.scrollTop=scroll?scroll.top:Math.max(0,(viewport.scrollHeight-viewport.clientHeight)/2);
-  chronoPaint();
+function mapChronoLayout(nodes){
+  const lay=mapLayout(nodes),dates=mapChronoSchedule(nodes),cards=Object.entries(lay.C).filter(([id])=>id!=='root');
+  cards.sort((a,b)=>(dates.get(a[0])?.start??Infinity)-(dates.get(b[0])?.start??Infinity)||a[0].localeCompare(b[0]));
+  const diagonal=Math.max(240,...cards.map(([,r])=>Math.hypot(r.w,r.h))),radius=Math.max(330,cards.length>1?diagonal/(2*Math.sin(Math.PI/cards.length))+60:diagonal/2+180);
+  cards.forEach(([id,r],i)=>{const angle=-Math.PI/2+i*2*Math.PI/cards.length;r.x=Math.cos(angle)*radius-r.w/2;r.y=Math.sin(angle)*radius-r.h/2});
+  lay.L=cards.map(([id])=>({to:id,d:mapLink(lay.C[nodes[id].parent]||lay.C.root,lay.C[id])}));
+  const rects=Object.values(lay.C),x=Math.min(...rects.map(r=>r.x)),y=Math.min(...rects.map(r=>r.y));
+  lay.box={x,y,w:Math.max(...rects.map(r=>r.x+r.w))-x,h:Math.max(...rects.map(r=>r.y+r.h))-y};mapChronoDates=dates;
+  return lay;
 }
-window.addEventListener('resize',()=>{const el=$('.orbit-viewport');if(el){el.scrollLeft=Math.max(0,(el.scrollWidth-el.clientWidth)/2);el.scrollTop=Math.max(0,(el.scrollHeight-el.clientHeight)/2)}});
+function mapChronoFit(lay){const {w,h}=mapStageSize(),b=lay.box,k=Math.min(1.1,Math.max(.03,Math.min((w-60)/b.w,(h-60)/b.h)));return {x:-(b.x+b.w/2)*k,y:-(b.y+b.h/2)*k,k}}
+function mapChronoControls(){return mapPresentation==='clock'?chronoControls()+`<div class="map-preview-legend"><span data-time-state="past">Past schedule</span><span data-time-state="active">Active now</span><span data-time-state="upcoming">Upcoming</span><span data-time-state="unscheduled">Unscheduled</span><span class="hint">Preview date colors · completion is unchanged. Pan/zoom to explore. Layout moves are disabled; Back restores your layout.</span><button class="btn" data-chrono-gantt>Gantt timeline</button></div>`:''}
+function mapChronoPaint(){
+  const day=Math.round((chronoModel||chronoData()).lo+chronoProgress*((chronoModel||chronoData()).hi-(chronoModel||chronoData()).lo));
+  $$('#mapWorld [data-nid]').forEach(el=>{const span=mapChronoDates.get(el.dataset.nid);if(mapPresentation!=='clock'||el.dataset.nid==='root'){delete el.dataset.timeState;el.removeAttribute('aria-description');return}el.dataset.timeState=!span?'unscheduled':day<span.start?'upcoming':day>span.end?'past':'active';el.setAttribute('aria-description','Schedule preview: '+el.dataset.timeState)});
+}
+function mapChronoToggle(enable){
+  chronoPause();closeMarkdown(false);const world=$('#mapWorld');if(!world)return;
+  const before=new Map($$('[data-nid]',world).map(el=>[el,{x:parseFloat(el.style.left)||0,y:parseFloat(el.style.top)||0,top:el.offsetTop}])),oldTransform=world.style.transform;
+  if(enable){mapChronoReturn={pid:mapPid,cam:{...(mapCam[mapPid]||{x:0,y:0,k:1})}};mapPresentation='clock'}else mapPresentation='map';
+  const nodes=mapNodes(mapPid),lay=enable?mapChronoLayout(nodes):mapLayout(nodes);
+  // Reorder the real existing item nodes, preserving focus/actions and DOM identity.
+  for(const card of $$('.mp-card',world)){
+    const list=$(':scope > .mp-items',card);if(!list)continue;
+    const rows=new Map($$(':scope > [data-nid]',list).map(el=>[el.dataset.nid,el]));
+    for(const [id] of mapItemsOf(nodes,card.dataset.nid)){const row=rows.get(id);if(row)list.appendChild(row)}
+    $$(':scope > .mp-item .n',list).forEach((el,i)=>el.textContent=i+1);
+  }
+  for(const el of $$('.mp-card',world)){const r=lay.C[el.dataset.nid];if(r){el.style.left=r.x+'px';el.style.top=r.y+'px'}}
+  const svg=$('.map-links',world),b=lay.box;
+  if(svg){svg.style.left=(b.x-40)+'px';svg.style.top=(b.y-40)+'px';svg.style.width=(b.w+80)+'px';svg.style.height=(b.h+80)+'px';svg.setAttribute('viewBox',`${b.x-40} ${b.y-40} ${b.w+80} ${b.h+80}`);for(const link of lay.L)$(`[data-to="${link.to}"]`,svg)?.setAttribute('d',link.d)}
+  $('#mapPreview').innerHTML=mapChronoControls();world.classList.toggle('chrono-preview',enable);
+  const button=$('[data-chrono-mode]');button.dataset.chronoMode=enable?'map':'clock';button.textContent=enable?'Back to map':'Chronology';button.setAttribute('aria-pressed',String(enable));$('[data-mact="fit"]').title=enable?'Fit the preview without changing your saved layout':'Tidy everything back into the sheet layout and show it all';
+  mapCam[mapPid]=enable?mapChronoFit(lay):(mapChronoReturn?.pid===mapPid?{...mapChronoReturn.cam}:mapFitCam(lay));mapApplyCam();
+  if(!reduceMotion()){
+    for(const [el,old] of before){if(!el.animate)continue;const isItem=el.classList.contains('mp-item'),dx=isItem?0:old.x-(parseFloat(el.style.left)||0),dy=isItem?old.top-el.offsetTop:old.y-(parseFloat(el.style.top)||0);if(dx||dy)el.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:'translate(0,0)'}],{duration:850,easing:'cubic-bezier(.2,.8,.2,1)'})}
+    if(world.animate&&oldTransform!==world.style.transform)world.animate([{transform:oldTransform},{transform:world.style.transform}],{duration:850,easing:'cubic-bezier(.2,.8,.2,1)'});
+  }
+  mapPrev=mapPositions(lay,nodes);chronoModel=chronoData();chronoPaint();if(!enable)mapChronoReturn=null;
+}
+function mapChronoLeave(){if(mapPresentation!=='clock')return;if(mapChronoReturn?.pid===mapPid)mapCam[mapPid]={...mapChronoReturn.cam};mapChronoReturn=null;mapChronoDates.clear();mapPresentation='map'}
+
 function chronoPaint(){
-  const c=chronoModel||chronoData(),day=c.lo+chronoProgress*(c.hi-c.lo),date=c.dated.length?chronoDate(Math.round(day)):'No scheduled dates';
+  const c=chronoModel||chronoData(),day=Math.round(c.lo+chronoProgress*(c.hi-c.lo)),date=c.dated.length?chronoDate(Math.round(day)):'No scheduled dates';
   $$('[data-chrono-date]').forEach(el=>el.textContent=date);$$('[data-chrono-scrub]').forEach(el=>el.value=Math.round(chronoProgress*1000));
   $$('[data-chrono-play]').forEach(el=>el.textContent=chronoFrame?'Pause':'Play timeline');
-  const rotation=reduceMotion()?0:chronoProgress*360;
-  $$('[data-orbit-angle]').forEach(el=>{const angle=(+el.dataset.orbitAngle+rotation)*Math.PI/180;el.style.transform=`translate(${Math.cos(angle)*245}px,${Math.sin(angle)*245}px)`});
-  const active=c.dated.filter(t=>t.day<=day).at(-1);
-  if(chronoFrame&&view==='map'&&mapPresentation==='clock'&&active){const page=Math.floor(c.dated.indexOf(active)/8);if(page!==orbitPage){orbitPage=page;renderClock();return}}
-  $$('[data-orbit-active]').forEach(el=>el.textContent=active?active.title:'No scheduled tasks');
-  $$('[data-orbit-index]').forEach(el=>el.classList.toggle('active',c.dated[+el.dataset.orbitIndex]===active));
-  $$('[data-chrono-jump]').forEach(el=>el.classList.toggle('primary',c.dated[+el.dataset.chronoJump]===active));
+  mapChronoPaint();
   $$('[data-chrono-point],[data-chrono-row]').forEach(el=>{const t=c.dated[+(el.dataset.chronoPoint??el.dataset.chronoRow)];el.classList.toggle('reached',!!t&&t.day<=day)});
   const head=$('.gt-playhead');if(head){head.style.left=(gtLeft()+(day-chronoDay(head.dataset.chronoOrigin))*Number(head.dataset.chronoPx))+'px';head.hidden=!c.dated.length}
   const byId=new Map(c.dated.filter(t=>t.node).map(t=>[t.id,t]));
@@ -3838,29 +3917,30 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)chronoPause
 window.addEventListener('pagehide',chronoPause);
 document.addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t)return;
-  if(t.hasAttribute('data-chrono-mode')){chronoPause();mapPresentation=t.dataset.chronoMode;renderMap();}
+  if(t.hasAttribute('data-chrono-mode'))mapChronoToggle(t.dataset.chronoMode==='clock');
   if(t.hasAttribute('data-chrono-gantt'))setView('timeline');
   if(t.hasAttribute('data-chrono-play')){if(chronoFrame)chronoPause();else if(chronoData().dated.length){if(chronoProgress>=1)chronoProgress=0;chronoFrame=requestAnimationFrame(chronoTick);chronoPaint()}}
   if(t.hasAttribute('data-chrono-reset')){chronoPause();chronoProgress=0;chronoPaint()}
   if(t.hasAttribute('data-chrono-open')){chronoPause();orbitTask=t.dataset.chronoNode==='true'?'':t.dataset.chronoOpen;mapSel=t.dataset.chronoNode==='true'?t.dataset.chronoOpen:'';renderMap()}
-  if(t.hasAttribute('data-map-descriptions')){mapDescriptions=!mapDescriptions;if(mapPresentation==='map'){mapCam[mapPid]=mapFitCam(mapLayout(mapNodes(mapPid)));mapPrev=null}renderMap()}
-  if(t.hasAttribute('data-orbit-page')){chronoPause();orbitPage+=+t.dataset.orbitPage;renderClock()}
-  if(t.hasAttribute('data-orbit-close')){orbitTask='';renderClock()}
-  if(t.hasAttribute('data-chrono-jump')){chronoPause();const c=chronoData(),i=+t.dataset.chronoJump;chronoProgress=(c.dated[i].day-c.lo)/c.span;orbitPage=Math.floor(i/8);renderClock()}
+  if(t.hasAttribute('data-map-descriptions')){mapDescriptions=!mapDescriptions;mapCam[mapPid]=mapPresentation==='clock'?mapChronoFit(mapChronoLayout(mapNodes(mapPid))):mapFitCam(mapLayout(mapNodes(mapPid)));mapPrev=null;renderMap()}
+
+
+
   if(t.hasAttribute('data-map-item')){orbitTask='';mapSel=t.dataset.mapItem;renderMap()}
   if(t.hasAttribute('data-map-complete'))mapCompleteAction(t);
   if(t.hasAttribute('data-project-complete')){projectSetComplete(t.dataset.projectComplete,t.dataset.projectDone!=='true').catch(()=>{})}
-  if(t.hasAttribute('data-map-markdown'))mapDownloadMarkdown();
-  if(t.hasAttribute('data-map-copy')){const epoch=authEpoch;Promise.resolve().then(()=>navigator.clipboard.writeText(mapMarkdown(mapPid))).then(()=>{if(epoch===authEpoch)toast('Markdown copied')}).catch(()=>{if(epoch===authEpoch)toast('Copy unavailable. Use Download Markdown.')})}
-  if(t.hasAttribute('data-category-toggle')){categoryEditor=!categoryEditor;renderTasks()}
+  if(t.hasAttribute('data-markdown-toggle')){markdownOpen=!markdownOpen;t.setAttribute('aria-expanded',String(markdownOpen));const menu=$('.markdown-menu',t.parentElement);menu.hidden=!markdownOpen;if(markdownOpen){const r=t.getBoundingClientRect();menu.style.position='fixed';menu.style.left=Math.max(8,Math.min(r.left,window.innerWidth-menu.offsetWidth-8))+'px';menu.style.right='auto';menu.style.top=Math.max(8,Math.min(r.bottom+6,window.innerHeight-menu.offsetHeight-8))+'px';$('[role="menuitem"]',t.parentElement).focus()}}
+  if(t.hasAttribute('data-map-markdown')){mapDownloadMarkdown();closeMarkdown()}
+  if(t.hasAttribute('data-map-copy')){closeMarkdown();const epoch=authEpoch;Promise.resolve().then(()=>navigator.clipboard.writeText(mapMarkdown(mapPid))).then(()=>{if(epoch===authEpoch)toast('Markdown copied')}).catch(()=>{if(epoch===authEpoch)toast('Copy unavailable. Use Download Markdown.')})}
+
 
 
 });
-document.addEventListener('input',e=>{if(e.target.hasAttribute('data-chrono-scrub')){chronoPause();chronoProgress=Number(e.target.value)/1000;const c=chronoData(),day=c.lo+chronoProgress*(c.hi-c.lo),i=c.dated.findLastIndex(t=>t.day<=day);if(view==='map'&&mapPresentation==='clock'&&i>=0&&Math.floor(i/8)!==orbitPage){orbitPage=Math.floor(i/8);renderClock()}else chronoPaint()}});
+document.addEventListener('input',e=>{if(e.target.hasAttribute('data-chrono-scrub')){chronoPause();chronoProgress=Number(e.target.value)/1000;chronoPaint()}});
 
 document.addEventListener('submit',async e=>{
   const form=e.target.closest('[data-category-form]');if(!form)return;e.preventDefault();
-  const epoch=authEpoch;try{await saveTrackingCategory(form.dataset.categoryForm,form.elements.name.value,form.elements.color.value);if(epoch===authEpoch)renderTasks()}catch(err){if(epoch===authEpoch&&$('[data-category-error]'))$('[data-category-error]').textContent=err.message}
+  if(form.dataset.saving)return;form.dataset.saving='true';const epoch=authEpoch;try{await saveTrackingCategory(form.dataset.categoryForm,form.elements.name.value,form.elements.color.value);if(epoch===authEpoch&&settingsOpen){$('#categoryHost').innerHTML=categoriesHTML();$('[data-settings-close]').focus()}}catch(err){if(epoch===authEpoch&&$('[data-category-error]'))$('[data-category-error]').textContent=err.message}finally{delete form.dataset.saving}
 });
 
 // Calendar authorization is separate from Firebase identity. Tokens and fetched events live
@@ -3961,14 +4041,14 @@ function listen(){
   const ref=db.ref('.info/connected'),cb=s=>{if(epoch===authEpoch)$('#offline').hidden=!!s.val()};ref.on('value',cb);subscriptions.push([ref,cb]);
 }
 function unlisten(){
-  authEpoch++;listening=false;for(const [ref,cb] of subscriptions)ref.off('value',cb);subscriptions=[];
+  authEpoch++;mapChronoLeave();closeSettings(false);closeMarkdown(false);projectExpanded.clear();listening=false;for(const [ref,cb] of subscriptions)ref.off('value',cb);subscriptions=[];
   chronoPause();chronoProgress=0;chronoModel=null;googleCalendarClear();
   tasks={};hist={};projects={};sideMap={};maps={};trackingCategories={};categoryEditor=false;applyCategories();_entries=null;ready.tasks=ready.hist=ready.maps=false;
   openId=null;mapSel='';orbitTask='';orbitPage=0;mapDescriptions=false;mapPid='';mapPickOpen=false;mapTray=false;gtSeenPid='';
   // Remove retained edit and undo callbacks before a different account can use them.
   for(const el of $$('[data-g="logside"],[data-g="dside"]'))el.innerHTML='';EX.side='both';EX.dside='both';
   clearTimeout(notesTimer);notesPending=null;hideToast();$('#toast').innerHTML='';
-  $('#exBack').hidden=true;for(const id of ['categoryHost','mswitch','dashHost','tlHost','calHost','mapHost','doneList','doneSummary','exBody']){const el=document.getElementById(id);if(el)el.innerHTML=''};EX.name='';EX.btitle='';EX.rpid='';EX.over={};doneF.q='';$('#doneSearch').value='';$('#logInput').value='';gtFold.clear();gtDrag?.tip?.remove();gtDrag=null;mpDrag?.ghost?.remove();mpDrag=null;document.body.classList.remove('mp-dragging');endDrag();$$('.mp-ghost,.drag-ghost').forEach(el=>el.remove());hideTip();if(tipEl)tipEl.textContent='';mpPan=null;if(mpPress)clearTimeout(mpPress.timer);mpPress=null;mpPts.clear();if(touchPress)clearTimeout(touchPress.timer);touchPress=null;dragState=null;pointerDown=false;deferred=false;buildSides();render(true);
+  $('#exBack').hidden=true;for(const id of ['categoryHost','mswitch','dashHost','tlHost','calHost','mapHost','doneList','doneSummary','exBody']){const el=document.getElementById(id);if(el)el.innerHTML=''};EX.name='';EX.btitle='';EX.rpid='';EX.over={};doneF.q='';doneF.projectId='';$('#doneSearch').value='';$('#logInput').value='';gtFold.clear();gtDrag?.tip?.remove();gtDrag=null;mpDrag?.ghost?.remove();mpDrag=null;document.body.classList.remove('mp-dragging');endDrag();$$('.mp-ghost,.drag-ghost').forEach(el=>el.remove());hideTip();if(tipEl)tipEl.textContent='';mpPan=null;if(mpPress)clearTimeout(mpPress.timer);mpPress=null;mpPts.clear();if(touchPress)clearTimeout(touchPress.timer);touchPress=null;dragState=null;pointerDown=false;deferred=false;buildSides();render(true);
 }
 async function signIn(){
   gateMsg('');const prov=new firebase.auth.GoogleAuthProvider();prov.setCustomParameters({prompt:'select_account'});
@@ -3999,7 +4079,7 @@ if(auth){
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-window.__oym={mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>
