@@ -288,7 +288,8 @@ async function boot(seed) {
   const bi = M.mapKids(M.maps[OY].nodes, bTop).map(([k]) => k).find(k => M.mapKindOf(M.maps[OY].nodes, k) === 'item');
   ok('a sub-topic takes items too, shown as rows in its card', !!bi && !!d.querySelector(`#mapWorld .mp-branch[data-nid="${bTop}"] .mp-item[data-nid="${bi}"]`));
   d.activeElement && d.activeElement.blur && d.activeElement.blur(); await tick();
-  db.ref().update({ [`todo/maps/${OY}/nodes/${bi}/due`]: '2026-10-20', [`todo/maps/${OY}/nodes/${sub}/start`]: '2026-11-02', [`todo/maps/${OY}/nodes/${sub}/due`]: '2026-11-30' }); await tick();
+  M.mapSave(bi,'due','2026-10-20');
+  db.ref().update({ [`todo/maps/${OY}/nodes/${sub}/start`]: '2026-11-02', [`todo/maps/${OY}/nodes/${sub}/due`]: '2026-11-30' }); await tick();
   const RN = M.roadmapData(OY, '2026-09-28'), ln = RN.lanes.find(l => l.id === bTop);
   ok('the roadmap carries a sub-topic\'s own items', ln.items.some(i => i.id === bi && i.due === '2026-10-20'));
   const nested = ln.topics.find(t => t.id === sub), parent = ln.topics.find(t => t.id === tp);

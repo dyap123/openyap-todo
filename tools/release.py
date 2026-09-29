@@ -48,7 +48,7 @@ def release(root, harness, dry_run=False):
         print('Local preflight passed. Release will run oy check, Todo tests and demo rules tests, fetch origin/main, require fast-forward ancestry, deploy only openyap-todo database rules, then push this exact commit to main. No network or live writes performed.')
         return
     run([str(harness), 'check'], root)
-    for test in ('tests/map.test.cjs', 'tests/universal.test.cjs', 'tests/migration.test.cjs'):
+    for test in ('tests/map.test.cjs', 'tests/universal.test.cjs', 'tests/orbit.test.cjs', 'tests/calendar-actions.test.cjs', 'tests/migration.test.cjs'):
         run(['node', test], root)
     run(['python3', 'tests/release.test.py'], root)
     # Emulator logs must not modify the tracked historical database-debug.log.

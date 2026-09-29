@@ -4,14 +4,24 @@ A responsive, installable web app for private tasks, mind maps, chronological pl
 
 ## Planning
 
-Open **Map → Clock chronology**. Tasks run clockwise from the earliest scheduled date at the top to the latest. Start dates take precedence over due dates for ordering; due dates determine the end of a duration. Equal dates share a numbered range marker, with individual tasks in the ordered list. Missing, malformed or reversed dates are listed separately. Click a task to edit its dates. Linked map items read their linked task's due date; tasks outside the map appear once in the clock.
+Open **Map → Chronology**. Actual task tiles orbit the main topic, ordered clockwise by start date (or due date when no start exists). Text stays upright. Eight tiles per page keep dense and equal-date plans usable; the full ordered list always exposes every task. Missing, malformed or reversed dates stay in Unscheduled. The event strip, date slider and shared Gantt playhead preview when work happens without changing tasks. Playback follows the active page; reduced motion keeps tiles stationary while dates advance. Small screens scroll within a centered orbit scene.
 
-Clock and Gantt share **Play timeline**, **Pause**, **Reset** and a date slider. This is a schedule preview, not a simulation of recorded completion. It never writes data. Playback is opt-in, stops when leaving the view, hiding the tab or changing accounts, and does not automatically play when reduced motion is requested. Gantt previews mapped items; the clock also includes the project's unplaced tasks.
+**Show / Hide descriptions** controls descriptions in the mind map and Chronology. Select a task tile/item for its details and **Mark complete**, with an editable local completion date/time. Existing completed items support date correction and reopening. Future or impossible completion times are rejected; an old completion without a timestamp remains explicitly unknown. Completing a repeating item logs one occurrence and advances its next due date. Topic panels list their descendant tasks as an actionable checklist.
+
+New map items are task-backed immediately. Existing unlinked items become tasks only when explicitly added to the list, dated, or completed. Linked titles, notes and dates derive from the canonical task. Completion writes the task and Done history atomically so Calendar, Tasks, Done and Gantt agree.
+
+**Complete project / Reopen project** appears at the top of Map, Chronology and Gantt. It changes the project status without marking tasks complete or deleting data. In **Tasks → Manage categories**, create or rename tracking categories and choose their colors. Career and OpenYap are the original tracking categories; custom categories share the same task `side` and project `sides/{projectId}` mapping. Category metadata lives at `trackingCategories/{id}` in the signed-in workspace; it is separate from the older task `category` classification (work/routine/project). All views and PDF exports include custom categories; column exports paginate in pairs.
+
+### Markdown for agents
+
+**Download Markdown** or **Copy Markdown** in Map/Chronology produces an agent-readable `.md` snapshot directly from current canonical data. It includes the project/main topic, project status/privacy, tracking category/color, nested branches/topics, task checkboxes, descriptions, start/due dates, recorded completion timestamps and stable project/node/task IDs. Unscheduled tasks stay undated; unplaced tasks are included separately. Repeating task checkboxes describe the current occurrence.
+
+The export is a snapshot, not a second editable database or an automatic agent connection. Give the Markdown to an agent to discuss or plan changes, then use its stable IDs to relate changes back to the app. Editing the downloaded file does not write Firebase. Live agent access would require separately authorized access to that user's workspace; no public task endpoint is introduced.
 
 ## Accounts and storage
 
 - Email/password creation, sign-in and password reset use Firebase Authentication. Google sign-in uses Firebase's Google provider.
-- Regular users read/write only `users/{auth.uid}/todo/{tasks,history,projects,sides,maps}`. The UID, never an email entered into a form, identifies their workspace. RTDB rules deny cross-user reads, writes, deletes and multipath updates.
+- Regular users read/write only `users/{auth.uid}/todo/{tasks,history,projects,sides,maps,trackingCategories}`. The UID, never an email entered into a form, identifies their workspace. RTDB rules deny cross-user reads, writes, deletes and multipath updates.
 - The existing verified owner `dyap123@gmail.com` retains the original `todo/` workspace. The release migration copies only this node into the new isolated project; integrations that still use the old project must be reconfigured separately. Everyone else, including an unverified account using that address, gets only their UID workspace.
 - New accounts start empty. Creating a project in Map establishes the first planning workspace.
 - Account changes detach listeners, invalidate late callbacks, cancel notes and playback, clear data and hidden view/export DOM, and discard Calendar credentials. Exports already downloaded or explicitly opened outside the app remain the user's files.
@@ -51,6 +61,9 @@ Use Node with `jsdom@24` and `jspdf@2.5.1` available in `NODE_PATH`; the rules t
 ```sh
 node tests/map.test.cjs
 node tests/universal.test.cjs
+node tests/orbit.test.cjs
+# Optional real Chrome verification; requires playwright:
+node tests/orbit-browser.cjs
 cd firebase
 firebase emulators:exec --only database --project demo-openyap-todo "node rules.test.cjs"
 ```
@@ -73,3 +86,11 @@ node tools/migrate_todo.cjs --apply /absolute/private/backup/todo-release.json
 Prepare refuses an existing backup and writes mode 0600. Apply refuses nonempty destination, changed source, invalid backup or loose permissions, conditionally creates destination with `If-Match: null_etag`, then verifies canonical hashes and unchanged source. Stop old-project editing during this short cutover; the script never deletes or reconciles records. Keep the private backup. No Auth credentials/users are copied; verified owner email selects the migrated `/todo` even with the new project's UID.
 
 The application has no runtime fallback to the old project. Firebase configuration is public; admin credentials and backup data must never enter this repository.
+
+### Calendar details and invitations
+
+Click a Google event in the month grid or selected day's agenda to read its details and guests. Available HTTPS Zoom, Google Meet and Teams links open directly; conference video links are also supported. Calendar descriptions are displayed as plain text, never executed as HTML. Dates use the device's time zone, and all-day end dates are exclusive.
+
+**Create invite in Google Calendar** opens Google's event composer for the selected day. An event detail can also prefill a new invite with that event's title, dates, description and location. Review the details and account, add guests, then save/send in Google Calendar. Todo does not send invitations or change the original event. Calendar authorization remains read-only.
+
+The public [privacy page](privacy.html) describes this data flow. See [Google verification](docs/google-verification.md) for the administrator's production verification steps; the unverified-app warning requires Google's approval, not a client-side workaround.

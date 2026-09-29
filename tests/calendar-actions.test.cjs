@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict');
+const {boot}=require('./app-harness.cjs');
+const tick=()=>new Promise(r=>setTimeout(r,60));
+(async()=>{
+ let oauth,reads=0;
+ const events=[{id:'meeting',summary:'Design review with a long readable title',start:{dateTime:'2026-09-28T14:00:00-07:00'},end:{dateTime:'2026-09-28T15:00:00-07:00'},description:'<p>Review the plan</p><p><a href="https://acme.zoom.us/j/123?pwd=secret">Join here</a></p><script>window.hacked=true</script><img src=x onerror="window.hacked=true">',location:'Office or https://meet.google.com/abc-defg-hij',htmlLink:'https://calendar.google.com/calendar/event?eid=abc',attendees:[{email:'guest@example.com',responseStatus:'accepted'}],organizer:{email:'host@example.com'},conferenceData:{entryPoints:[{entryPointType:'video',uri:'https://acme.zoom.us/j/123?pwd=secret'}]}},{id:'day',summary:'Retreat',start:{date:'2026-09-28'},end:{date:'2026-09-30'},description:'https://zoom.us.evil.test/j/123 https://teams.microsoft.com/l/meetup-join/abc',hangoutLink:'javascript:alert(1)',htmlLink:'data:text/html,bad'}];
+ const {w,d,db}=await boot({users:{a:{todo:{tasks:{},history:{}}}}},{user:{uid:'a',email:'a@example.com'},google:{accounts:{oauth2:{initTokenClient:o=>(oauth=o,{requestAccessToken(){}}),hasGrantedAllScopes:()=>true}}},fetch:async()=>{reads++;return {ok:true,json:async()=>({items:events})}}});
+ d.querySelector('[data-view="calendar"]').click();w.__oym.googleCalendarConnect();oauth.callback({access_token:'memory-only',scope:'allowed'});await tick();
+ const buttons=[...d.querySelectorAll('.cal-agenda-list [data-google-event]')];assert.equal(buttons.length,2);assert(buttons.every(b=>b.children[0].classList.contains('cal-a-dot')),'dot occupies marker column, never title');
+ d.querySelector('[data-google-event="0"]').click();
+ const detail=d.querySelector('#calGoogleDetail');assert(detail);assert.match(detail.textContent,/guest@example.com.*accepted/);assert.match(detail.textContent,/host@example.com/);assert.match(detail.textContent,/Review the plan/);assert(!detail.querySelector('script,img'));assert(!w.hacked);
+ assert.equal(detail.querySelectorAll('a[href*="acme.zoom.us"]').length,1,'duplicate conference URL deduplicated');assert(detail.querySelector('a[href*="meet.google.com"]'));
+ assert.equal(d.activeElement.id,'calGoogleTitle');
+ const invite=new URL([...detail.querySelectorAll('a')].find(a=>a.textContent.includes('new invite')).href);assert.equal(invite.searchParams.get('dates'),'20260928T210000Z/20260928T220000Z');assert.equal(invite.searchParams.get('text'),events[0].summary);assert(!invite.searchParams.has('add'),'guests must be deliberately added in composer');assert(!invite.searchParams.get('details').includes('<p>'));
+ assert([...detail.querySelectorAll('a')].every(a=>a.rel.includes('noopener')));assert.equal(reads,1);assert.equal(db.updates.length,0,'details and compose handoff never write to database');
+ d.querySelector('[data-google-event="1"]').click();const second=d.querySelector('#calGoogleDetail');assert.match(second.textContent,/Through 2026-09-29/);assert(![...second.querySelectorAll('a')].some(a=>new URL(a.href).hostname==='zoom.us.evil.test'));assert(!second.querySelector('a[href^="javascript:"],a[href^="data:"]'));assert(second.querySelector('a[href*="teams.microsoft.com"]'));
+ const allday=new URL([...second.querySelectorAll('a')].find(a=>a.textContent.includes('new invite')).href);assert.equal(allday.searchParams.get('dates'),'20260928/20260930');
+ d.querySelector('[data-google-detail-close]').click();assert(!d.querySelector('#calGoogleDetail'));
+ d.querySelector('[data-google-event="0"]').click();w.__setUser({uid:'b',email:'b@example.com'});await tick();assert(!d.body.textContent.includes(events[0].summary));assert(!d.querySelector('a[href*="pwd=secret"]'));
+ w.close();console.log('calendar-actions: event detail, safe links, compose handoff, date bounds and account isolation passed');
+})().catch(e=>{console.error(e);process.exit(1)});

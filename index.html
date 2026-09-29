@@ -407,14 +407,27 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 .cal-agenda{display:grid;grid-template-columns:180px minmax(0,1fr);gap:30px;margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
 .cal-agenda h3{font-size:14px;margin:0 0 3px;font-weight:600}
 .cal-agenda-head p{font-size:12px;color:var(--muted);margin:0}
-.cal-agenda-list{display:grid}
+.cal-agenda-list{display:grid;min-width:0}
 .cal-a-row{display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:11px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;min-width:0}
 .cal-a-row[data-open]{cursor:pointer}
 .cal-a-row[data-open]:hover .cal-a-title{text-decoration:underline;text-decoration-color:var(--line-2);text-underline-offset:3px}
 .cal-a-dot{width:7px;height:7px;border-radius:50%;background:var(--side-c);align-self:center}
 .cal-a-row.k-done .cal-a-dot{background:transparent;box-shadow:inset 0 0 0 1px var(--side-c)}
 .cal-a-title{overflow-wrap:anywhere}
-.cal-a-meta{font-size:11px;color:var(--muted);white-space:nowrap}
+.cal-a-meta{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+.cal-a-row.k-google{width:100%;text-align:left;cursor:pointer}
+.cal-a-row.k-google:hover{background:var(--surface)}
+.cal-a-row.k-google .cal-a-meta{grid-column:2 / -1}
+.cal-detail{margin-top:20px;padding:20px;border:1px solid var(--line-2);border-radius:12px;min-width:0;scroll-margin-top:20px}
+.cal-detail h3{font-size:19px;margin:0;overflow-wrap:anywhere}
+.cal-detail-head,.cal-detail-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cal-detail-head h3{flex:1;min-width:180px}
+.cal-detail dl{display:grid;grid-template-columns:100px minmax(0,1fr);gap:12px;margin:20px 0;font-size:13px}
+.cal-detail dt{color:var(--muted)}
+.cal-detail dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;min-width:0}
+.cal-detail-actions a{white-space:normal;text-align:center}
+.cal-invite-hint{margin-top:10px;font-size:12px;color:var(--muted)}
+@media(max-width:520px){.cal-a-row{grid-template-columns:8px minmax(0,1fr)}.cal-a-meta{grid-column:2}.cal-detail{padding:16px}.cal-detail dl{grid-template-columns:1fr;gap:5px}.cal-detail dd{margin-bottom:10px}}
 .cal-a-row.is-late .cal-a-meta{color:var(--danger)}
 
 /* ── Export sheet ── */
@@ -472,7 +485,7 @@ button.cal-event:hover{background:var(--raise);color:var(--text)}
 .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,12px);z-index:80;display:flex;align-items:center;gap:16px;max-width:calc(100vw - 32px);background:var(--raise);color:var(--text);border:1px solid var(--line-2);border-radius:10px;padding:10px 14px;font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:opacity .18s,transform .18s}
 .toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .toast span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.foot{padding:40px 32px 36px;font-size:12px;color:var(--muted)}
+.foot{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:40px 32px 36px;font-size:12px;color:var(--muted)}
 .foot a{color:var(--muted);text-underline-offset:3px}
 .foot a:hover{color:var(--text)}
 
@@ -687,7 +700,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
   .switch .seg button{flex:1;padding:6px 10px}
   .sides{grid-template-columns:1fr}
   .side{padding:0 0 40px!important;border-left:0!important;grid-row:auto;display:block}
-  .sides[data-m="career"] .side[data-side="openyap"],.sides[data-m="openyap"] .side[data-side="career"]{display:none}
+  .sides .side:not(.mobile-selected){display:none}
   .side-head{display:none}
   .now{margin-top:18px}
   .now-title{font-size:23px}
@@ -760,6 +773,16 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 .google-calendar>div{flex:1;min-width:220px}.google-calendar p{margin-top:4px}.clock-layout button:focus-visible{outline:2px solid var(--accent)}
 @media(max-width:820px){.clock-layout{grid-template-columns:1fr;gap:8px}.chrono-controls{gap:8px}.chrono-controls input{width:145px}.map-bar{flex-wrap:wrap}.map-tools{flex-wrap:wrap;max-width:100%;flex-shrink:1}.gt{height:calc(100dvh - 280px);min-height:260px}.google-calendar .btn{min-height:40px}.clock-face svg{max-width:420px}}
 
+
+/* Orbit uses a scroll-contained world so task text remains readable on small screens. */
+.orbit-section{min-width:0}.orbit-section h2{font-size:19px}.orbit-viewport{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:18px;margin:14px 0;background:var(--surface)}
+.orbit-scene{position:relative;width:700px;height:700px;margin:auto}.orbit-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:190px;min-height:120px;padding:20px;display:flex;flex-direction:column;gap:10px;text-align:center;background:var(--bg);border:1px solid var(--accent);border-radius:50%;overflow-wrap:anywhere}.orbit-center small,.orbit-center output{font-size:11px;color:var(--muted)}
+.orbit-track{position:absolute;inset:105px;border:1px dashed var(--line-2);border-radius:50%}.orbit-slot{position:absolute;left:50%;top:50%;width:0;height:0}.orbit-tile{position:absolute;transform:translate(-50%,-50%);width:170px;max-height:150px;overflow:auto;display:flex;flex-direction:column;gap:7px;text-align:left;padding:12px;border-radius:12px;border:1px solid var(--line-2);background:var(--bg);color:var(--text);box-shadow:0 4px 14px #0001;cursor:pointer;overflow-wrap:anywhere}.orbit-tile small{font-size:10px;color:var(--muted)}.orbit-slot.active .orbit-tile{border:2px solid var(--accent);box-shadow:0 0 20px #8883}.orbit-description{font-size:11px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.orbit-events{display:flex;gap:8px;overflow:auto;padding:8px 0 16px}.orbit-events button{flex-shrink:0;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.orbit-pages{display:flex;gap:12px;align-items:center;justify-content:center;font-size:12px}.clock-layout{grid-template-columns:minmax(0,2fr) minmax(220px,1fr)}
+.map-description{display:block;font-size:10px;font-weight:400;color:var(--muted);line-height:16px;max-height:32px;overflow:hidden;margin-top:4px}.mp-k .map-description{letter-spacing:normal;text-transform:none}.mp-item.with-description{height:48px}.mp-item.with-description .t{white-space:nowrap;line-height:16px}.map-item-description{display:block;font-size:10px;line-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}.map-task-controls{display:grid;gap:10px;padding:12px 0;border-top:1px solid var(--line);margin-top:12px}.map-task-controls .txt{width:100%;min-width:0}.map-checklist{display:grid;gap:6px;margin-top:16px}.map-checklist button{text-align:left;white-space:normal}.clock-layout~.mp-panel{position:fixed;top:150px;max-height:calc(100dvh - 180px);z-index:60}.orbit-tile:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:820px){.clock-layout{grid-template-columns:1fr}.clock-layout~.mp-panel{top:auto;bottom:8px;max-height:70dvh}.orbit-viewport{max-height:540px}}
+
+.category-manager{padding:10px 0}.category-forms{max-width:640px;display:grid;gap:10px;padding:16px 0}.category-forms form{display:flex;gap:8px}.category-forms input[type=text],.category-forms .txt{min-width:0;flex:1}.category-forms input[type=color]{height:38px;width:48px;flex-shrink:0}.project-status{display:flex;gap:10px;align-items:center;font-size:11px;color:var(--muted)}.map-bar{flex-wrap:wrap}.sides{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.d-top{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.switch .seg{flex-wrap:wrap}.tl-day{display:block}.tl-lane{margin:12px 0}.tl-spine{display:none}@media(max-width:820px){.sides{grid-template-columns:1fr}.category-forms form{flex-wrap:wrap}}
+.with-descriptions .mp-bh:has(.map-description){height:100px}.with-descriptions .mp-th:has(.map-description){height:76px;display:grid;grid-template-columns:1fr auto;gap:2px;padding-top:8px;padding-bottom:8px}.with-descriptions .mp-th .map-description{grid-column:1/-1;grid-row:2}.with-descriptions .mp-bh .mp-k{display:flex;flex-direction:column}.with-descriptions .mp-bh .map-description{order:1}.mp-item:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 </style>
 </head>
 <body>
@@ -773,7 +796,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
     <button class="btn primary" type="submit">Sign in</button>
     <button class="btn" type="button" id="createAccount">Create account</button>
     <button class="link" type="button" id="resetPassword">Reset password</button>
-  </form><div class="gate-msg" id="gateMsg" role="status"></div>
+  </form><p><a href="./privacy.html">Privacy policy</a></p><div class="gate-msg" id="gateMsg" role="status"></div>
 </div></div>
 <div class="ambient" aria-hidden="true">
   <i class="ambient-orb"></i><i class="ambient-orb"></i><i class="ambient-orb"></i><i class="ambient-line"></i>
@@ -801,7 +824,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
   <section id="v-tasks" class="view" aria-label="Tasks">
     <div class="wrap">
       <div class="switch"><div class="seg" role="group" aria-label="Side" id="mswitch"></div></div>
-      <div class="sides" id="sides"></div>
+      <div id="categoryHost"></div><div class="sides" id="sides"></div>
     </div>
   </section>
 
@@ -839,7 +862,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
   </section>
 </main>
 
-<footer class="foot wrap"><span id="whoami"></span><button class="signout" type="button" id="signOutBtn" hidden>Sign out</button></footer>
+<footer class="foot wrap"><span id="whoami"></span><a href="./privacy.html">Privacy</a><button class="signout" type="button" id="signOutBtn" hidden>Sign out</button></footer>
 
 <div class="back" id="exBack" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="exTitle">
@@ -948,7 +971,13 @@ const TP=id=>'todo/tasks/'+id;
 // ═══ State ═══════════════════════════════════════════════════════════════
 const SIDES=['career','openyap'];
 const SIDE_NAME={career:'Career',openyap:'OpenYap'};
-const other=s=>s==='career'?'openyap':'career';
+const other=s=>SIDES[(SIDES.indexOf(s)+1)%SIDES.length];
+let trackingCategories={},categoryEditor=false,sidesDirty=false;
+const sideZeros=()=>Object.fromEntries(SIDES.map(s=>[s,0]));
+const sideTotal=o=>SIDES.reduce((n,s)=>n+(o[s]||0),0);
+const sideOptions=()=>SIDES.map(s=>[s,esc(SIDE_NAME[s])]);
+const categoryIdOk=id=>['career','openyap'].includes(id)||/^cat-[a-zA-Z0-9_-]{1,100}$/.test(id);
+const categoryColorOk=c=>/^#[0-9a-f]{6}$/i.test(c||'');
 const PRI_RANK={high:0,medium:1,low:2};
 // Legacy tasks have no side. OpenYap-flavored titles land on the OpenYap side.
 const OY_RE=/open\s?yap|\bai\b|\bllm\b|claude|minimax|deepseek/i;
@@ -975,7 +1004,7 @@ function projSide(pid){
   return null;
 }
 function taskSide(t){
-  if(t.side==='career'||t.side==='openyap')return t.side;
+  if(SIDES.includes(t.side))return t.side;
   const m=projSide(t.projectId);
   if(m&&SIDES.includes(m.side))return m.side;
   return OY_RE.test(t.title||'')?'openyap':'career';
@@ -1017,7 +1046,7 @@ function entries(){
 }
 function rowEntry(hid,h,t,oneShot){
   let side=h.side;
-  if(!SIDES.includes(side))side=t?taskSide(t):(projSide(h.projectId)?.side||(OY_RE.test(h.title||'')?'openyap':'career'));
+  if(!SIDES.includes(side))side=t?taskSide(t):(SIDES.includes(projSide(h.projectId)?.side)?projSide(h.projectId).side:(OY_RE.test(h.title||'')?'openyap':'career'));
   let priv;
   if(h.private!=null)priv=!!h.private;
   else if(t)priv=taskPrivate(t);
@@ -1187,11 +1216,11 @@ function logDone(raw,side){
 
 // ═══ Rendering ═══════════════════════════════════════════════════════════
 let rTimer=0,deferred=false,pointerDown=false;
-function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new,.mp-pick,#mapWorld')&&/^(INPUT|TEXTAREA)$/.test(a.tagName))}
+function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new,.mp-pick,#mapWorld,.category-forms')&&/^(INPUT|TEXTAREA)$/.test(a.tagName))}
 function schedule(){_entries=null;if(rTimer)return;rTimer=setTimeout(()=>{rTimer=0;render()},16)}
 function render(force){
   if(!force&&(editingText()||pointerDown)){deferred=true;return}
-  deferred=false;
+  deferred=false;if(sidesDirty)buildSides();
   // The entrance animation belongs to the first render with data after a view switch.
   const loaded=ready.tasks&&ready.hist,anim=animNext&&loaded;if(loaded)animNext=false;
   renderHeader();
@@ -1220,15 +1249,33 @@ function setView(v){
   window.scrollTo(0,0);
 }
 
+function applyCategories(){
+  for(const side of SIDES)document.documentElement.style.removeProperty('--'+side);
+  SIDES.splice(0,SIDES.length,'career','openyap');for(const key of Object.keys(SIDE_NAME))delete SIDE_NAME[key];
+  Object.assign(SIDE_NAME,{career:'Career',openyap:'OpenYap'});
+  for(const [id,c] of Object.entries(trackingCategories)){if(!categoryIdOk(id)||!c||typeof c.name!=='string'||!c.name.trim()||!categoryColorOk(c.color))continue;if(!SIDES.includes(id))SIDES.push(id);SIDE_NAME[id]=c.name.trim().slice(0,48);document.documentElement.style.setProperty('--'+id,c.color)}
+  if(!SIDES.includes(mSide))mSide='career';if(!SIDES.includes(logSide))logSide='career';
+  if(!SIDES.includes(doneF.side)&&doneF.side!=='all')doneF.side='all';
+  _entries=null;sidesDirty=true;
+}
+async function saveTrackingCategory(id,name,color){
+  name=String(name||'').trim();if(!name||name.length>48)throw new Error('Use a category name between 1 and 48 characters.');
+  if(!categoryColorOk(color))throw new Error('Choose a valid color.');
+  if(!id)id='cat-'+newKey('todo/trackingCategories');if(!categoryIdOk(id))throw new Error('Invalid category.');
+  await upd({['todo/trackingCategories/'+id]:{name,color}});return id;
+}
+function categoriesHTML(){return `<div class="category-manager"><button class="btn" data-category-toggle>${categoryEditor?'Close categories':'Manage categories'}</button>${categoryEditor?`<div class="category-forms"><p class="hint">Tracking categories organize tasks and projects. Choose a name and color.</p>${SIDES.map(id=>`<form data-category-form="${id}"><input class="txt" name="name" aria-label="Category name" maxlength="48" value="${esc(SIDE_NAME[id])}" required><input type="color" name="color" aria-label="Category color" value="${categoryColorOk(trackingCategories[id]?.color)?trackingCategories[id].color:(id==='career'?'#5ec2d6':'#7c9cff')}"><button class="btn">Save</button></form>`).join('')}<form data-category-form=""><input class="txt" name="name" aria-label="New category name" maxlength="48" placeholder="New category" required><input type="color" name="color" aria-label="New category color" value="#4aa88b"><button class="btn primary">Create category</button></form><p data-category-error role="status"></p></div>`:''}</div>`}
 function buildSides(){
+  sidesDirty=false;
+  $('#dragDock').innerHTML=SIDES.map(s=>`<div class="drag-target" data-drop-side="${s}" style="--side-c:var(--${s})">${esc(SIDE_NAME[s])}</div>`).join('');
   $('#sides').innerHTML=SIDES.map(s=>`
-    <div class="side" data-side="${s}" data-side-label="${SIDE_NAME[s]}">
-      <div class="side-head"><h2 class="side-name">${SIDE_NAME[s]}</h2><span class="side-count" data-count></span></div>
+    <div class="side" style="--side-c:var(--${s})" data-side="${s}" data-side-label="${esc(SIDE_NAME[s])}">
+      <div class="side-head"><h2 class="side-name">${esc(SIDE_NAME[s])}</h2><span class="side-count" data-count></span></div>
       <div class="now empty" data-now></div>
       <div class="addwrap">
         <form class="add" data-add="${s}" autocomplete="off">
           <span class="plus" aria-hidden="true"></span>
-          <input type="text" placeholder="Add a task" aria-label="Add a ${SIDE_NAME[s]} task" enterkeyhint="done">
+          <input type="text" placeholder="Add a task" aria-label="Add a ${esc(SIDE_NAME[s])} task" enterkeyhint="done">
         </form>
         <div class="add-hint">@fri or @9/30 sets a due date. A lone ! marks it urgent. // adds a note.</div>
       </div>
@@ -1255,11 +1302,13 @@ function dueLabel(ds){
   return {txt:fmtMD(d),cls:''};
 }
 function renderTasks(anim){
-  const today=ymd(new Date()),doneToday={career:0,openyap:0};
+  if(sidesDirty)buildSides();
+  $('#categoryHost').innerHTML=categoriesHTML();
+  const today=ymd(new Date()),doneToday=sideZeros();
   for(const e of entries()){if(ymd(new Date(e.completedAt))!==today)break;doneToday[e.side]++}
   const counts={};
   for(const side of SIDES){
-    const el=$(`.side[data-side="${side}"]`),{doing,rest,count}=openFor(side);
+    const el=$(`.side[data-side="${side}"]`),{doing,rest,count}=openFor(side);el.classList.toggle('mobile-selected',side===mSide);
     counts[side]=count;
     el.querySelector('[data-count]').textContent=count?count+' open':'';
     renderNow(el.querySelector('[data-now]'),doing);
@@ -1269,7 +1318,7 @@ function renderTasks(anim){
     el.querySelector('[data-foot]').innerHTML=ready.hist?`<button data-go-done="${side}">${n?n+' finished today':'Nothing finished yet today'}</button>`:'';
   }
   $('#sides').dataset.m=mSide;
-  $('#mswitch').innerHTML=SIDES.map(s=>`<button data-mside="${s}" aria-pressed="${s===mSide}">${SIDE_NAME[s]}${counts[s]?' <span class="dim">'+counts[s]+'</span>':''}</button>`).join('');
+  $('#mswitch').innerHTML=SIDES.map(s=>`<button data-mside="${s}" aria-pressed="${s===mSide}">${esc(SIDE_NAME[s])}${counts[s]?' <span class="dim">'+counts[s]+'</span>':''}</button>`).join('');
   if(openId){const inp=$(`.editor[data-id="${openId}"] .e-title`);if(inp&&document.activeElement!==inp&&!editingText()&&pendingFocus){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);pendingFocus=false}}
   if(anim)animateTasks();
 }
@@ -1319,7 +1368,7 @@ function editorHTML(id,t){
     <div class="e-row">
       <label class="e-field">Due <input type="date" data-f="dueDate" value="${esc(t.dueDate||'')}"></label>
       <button class="chip urgent" data-act="urgent" aria-pressed="${t.priority==='high'}">Urgent</button>
-      <div class="seg sm" role="group" aria-label="Side">${SIDES.map(s=>`<button data-act="side" data-v="${s}" aria-pressed="${s===side}">${SIDE_NAME[s]}</button>`).join('')}</div>
+      <div class="seg sm" role="group" aria-label="Side">${SIDES.map(s=>`<button data-act="side" data-v="${s}" aria-pressed="${s===side}">${esc(SIDE_NAME[s])}</button>`).join('')}</div>
       <button class="chip" data-act="private" aria-pressed="${priv}" title="Private tasks are left out of reports">Private</button>
     </div>
     <div class="e-row e-foot">
@@ -1341,23 +1390,23 @@ function segHTML(items,cur,attr){return items.map(([v,l])=>`<button type="button
 let doneByKey=new Map();
 function renderDone(anim){
   $('[data-g="range"]').innerHTML=segHTML(RANGES,doneF.range,'data-range');
-  $('[data-g="dside"]').innerHTML=segHTML([['all','All'],['career','Career'],['openyap','OpenYap']],doneF.side,'data-dside');
-  $('[data-g="logside"]').innerHTML=segHTML(SIDES.map(s=>[s,SIDE_NAME[s]]),logSide,'data-logside');
+  $('[data-g="dside"]').innerHTML=segHTML([['all','All'],...sideOptions()],doneF.side,'data-dside');
+  $('[data-g="logside"]').innerHTML=segHTML(sideOptions(),logSide,'data-logside');
   const all=entries();doneByKey=new Map(all.map(e=>[e.key,e]));
   let list=all.filter(e=>inRange(e,doneF.range)&&(doneF.side==='all'||e.side===doneF.side));
   const q=doneF.q.trim().toLowerCase();
   if(q)list=list.filter(e=>(e.title+' '+e.notes+' '+e.projectName).toLowerCase().includes(q));
-  const c={career:0,openyap:0};let priv=0;
+  const c=sideZeros();let priv=0;
   for(const e of list){c[e.side]++;if(e.private)priv++}
   const n=list.length;
   let sum='';
   if(!ready.hist)sum='Loading…';
   else if(n){
     sum=`${n} finished ${RANGE_PHRASE[doneF.range]}`+(q?' matching “'+esc(doneF.q.trim())+'”':'');
-    if(doneF.side==='all')sum+=`: ${c.career} Career, ${c.openyap} OpenYap.`;else sum+='.';
+    if(doneF.side==='all')sum+=': '+SIDES.map(s=>c[s]+' '+esc(SIDE_NAME[s])).join(', ')+'.';else sum+='.';
     if(priv)sum+=` <span class="dim">${priv} private, left out of reports.</span>`;
     // Bulk actions only appear while searching, to re-sort old history in one go.
-    if(q)sum+=`<span class="bulk">${SIDES.map(s=>`<button class="link" data-bulk="side" data-v="${s}">Move all to ${SIDE_NAME[s]}</button>`).join('')}<button class="link" data-bulk="private" data-v="1">Make all private</button><button class="link" data-bulk="private" data-v="0">Include all in reports</button></span>`;
+    if(q)sum+=`<span class="bulk">${SIDES.map(s=>`<button class="link" data-bulk="side" data-v="${s}">Move all to ${esc(SIDE_NAME[s])}</button>`).join('')}<button class="link" data-bulk="private" data-v="1">Make all private</button><button class="link" data-bulk="private" data-v="0">Include all in reports</button></span>`;
   }
   $('#doneSummary').innerHTML=sum;
   if(!n){
@@ -1393,10 +1442,10 @@ function doneRow(e){
   const d=new Date(e.completedAt),pn=shownProject(e.projectName,e.side);
   return `<div class="drow${e.private?' is-priv':''}" data-key="${esc(e.key)}" style="--side-c:var(--${e.side})">
     <span class="d-date">${DOW[d.getDay()]} ${d.getDate()}</span>
-    <span class="d-dot" title="${SIDE_NAME[e.side]}"></span>
+    <span class="d-dot" title="${esc(SIDE_NAME[e.side])}"></span>
     <div class="d-main"><span class="d-title">${esc(e.title)}</span>${pn?`<span class="d-proj">${esc(pn)}</span>`:''}${e.routine?'<span class="d-proj">Recurring check</span>':''}${e.private?`<span class="d-lock" title="Private: left out of reports">${ICON.lock}</span>`:''}</div>
     <div class="d-acts">
-      <button class="icon-btn" data-dact="side" title="Move to ${SIDE_NAME[other(e.side)]}" aria-label="Move to ${SIDE_NAME[other(e.side)]}">${ICON.swap}</button>
+      <button class="icon-btn" data-dact="side" title="Move to ${esc(SIDE_NAME[other(e.side)])}" aria-label="Move to ${esc(SIDE_NAME[other(e.side)])}">${ICON.swap}</button>
       <button class="icon-btn" data-dact="private" title="${e.private?'Include in reports':'Make private'}" aria-label="${e.private?'Include in reports':'Make private'}">${e.private?ICON.unlock:ICON.lock}</button>
       ${e.reopenable?`<button class="icon-btn" data-dact="reopen" title="Reopen" aria-label="Reopen">${ICON.undo}</button>`:''}
       <button class="icon-btn" data-dact="remove" title="Remove from log" aria-label="Remove from log">${ICON.x}</button>
@@ -1492,9 +1541,9 @@ let dashTable=LS.get('oym_dashtable','0')==='1';
 const WEEKS_SHOWN=12,HEAT_WEEKS=26;
 function dashData(){
   const E=entries(),now=new Date(),today=sod(now),mon=mondayOf(now),lastMon=addDays(mon,-7);
-  const zero=()=>({career:0,openyap:0});
+  const zero=()=>(sideZeros());
   const wk=zero(),lwk=zero(),tracked=zero(),byDay=new Map();
-  const weeks=[];for(let i=WEEKS_SHOWN-1;i>=0;i--)weeks.push({start:addDays(mon,-7*i),career:0,openyap:0});
+  const weeks=[];for(let i=WEEKS_SHOWN-1;i>=0;i--)weeks.push({start:addDays(mon,-7*i),...sideZeros()});
   for(const e of E){
     const d=new Date(e.completedAt);
     if(d>=mon){wk[e.side]++;tracked[e.side]+=e.timeSpent||0}else if(d>=lastMon)lwk[e.side]++;
@@ -1520,32 +1569,32 @@ const heatBin=n=>n<=0?0:n<=2?1:n<=4?2:n<=7?3:4;
 function renderDash(anim){
   const host=$('#dashHost');
   if(!ready.tasks||!ready.hist){host.innerHTML='<p class="hint" style="padding:40px 0">Loading…</p>';return}
-  const D=dashData(),total=D.wk.career+D.wk.openyap,last=D.lwk.career+D.lwk.openyap,diff=total-last;
+  const D=dashData(),total=sideTotal(D.wk),last=sideTotal(D.lwk),diff=total-last;
   const cmp=diff>0?`${diff} more than last week`:diff<0?`${-diff} fewer than last week`:'Same as last week';
   const tile=s=>{
     const t=D.nowT[s],meta=[`${D.open[s]} open`];
     if(D.over[s])meta.push(`<span class="late">${D.over[s]} overdue</span>`);
     if(D.tracked[s]>=60000)meta.push(`${fmtDur(D.tracked[s])} tracked`);
     return `<div class="tile" style="--side-c:var(--${s})">
-      <div class="tile-h">${SIDE_NAME[s]}</div>
+      <div class="tile-h">${esc(SIDE_NAME[s])}</div>
       <div class="tile-n" data-count="${D.wk[s]}">${D.wk[s]}</div>
       <div class="tile-l">finished this week, ${D.lwk[s]} last week</div>
       <div class="tile-meta">${meta.join(', ')}</div>
       <div class="tile-now">${t?`<b>Now</b> ${esc(t.title)}`:'Nothing in progress'}</div>
     </div>`;
   };
-  const max=Math.max(1,...D.weeks.map(w=>Math.max(w.career,w.openyap)));
+  const max=Math.max(1,...D.weeks.map(w=>Math.max(...SIDES.map(s=>w[s]))));
   const wrow=s=>{
     const sum=D.weeks.reduce((a,w)=>a+w[s],0);
     let peak=-1;D.weeks.forEach((w,i)=>{if(w[s]>0&&(peak<0||w[s]>D.weeks[peak][s]))peak=i});
     const cols=D.weeks.map((w,i)=>{
       const v=w[s],h=v/max*100,cap=v>0&&(i===peak||i===WEEKS_SHOWN-1);
-      return `<div class="wcol" style="--h:${h.toFixed(2)}%" data-tip="${v}|${SIDE_NAME[s]}, week of ${fmtMD(w.start)}">${cap?`<span class="wcap">${v}</span>`:''}<span class="wbar${v?' nz':''}"></span></div>`;
+      return `<div class="wcol" style="--h:${h.toFixed(2)}%" data-tip="${v}|${esc(SIDE_NAME[s])}, week of ${fmtMD(w.start)}">${cap?`<span class="wcap">${v}</span>`:''}<span class="wbar${v?' nz':''}"></span></div>`;
     }).join('');
-    return `<div class="wrow" style="--side-c:var(--${s})"><div class="wlab"><b>${SIDE_NAME[s]}</b><span>${sum} in 12 weeks</span></div><div class="wplot">${cols}</div></div>`;
+    return `<div class="wrow" style="--side-c:var(--${s})"><div class="wlab"><b>${esc(SIDE_NAME[s])}</b><span>${sum} in 12 weeks</span></div><div class="wplot">${cols}</div></div>`;
   };
   const xl=D.weeks.map((w,i)=>`<span>${i%4===0||i===WEEKS_SHOWN-1?esc(fmtMD(w.start)):''}</span>`).join('');
-  const table=dashTable?`<table class="wtable"><thead><tr><th>Week of</th><th>Career</th><th>OpenYap</th></tr></thead><tbody>${D.weeks.slice().reverse().map(w=>`<tr><td>${esc(fmtMDY(w.start))}</td><td>${w.career}</td><td>${w.openyap}</td></tr>`).join('')}</tbody></table>`:'';
+  const table=dashTable?`<table class="wtable"><thead><tr><th>Week of</th>${SIDES.map(s=>`<th>${esc(SIDE_NAME[s])}</th>`).join('')}</tr></thead><tbody>${D.weeks.slice().reverse().map(w=>`<tr><td>${esc(fmtMDY(w.start))}</td>${SIDES.map(s=>`<td>${w[s]}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'';
   // Heatmap: 26 weeks by 7 days, one sequential hue.
   let cells='',months='',prevM=-1,lastMonthCol=-9;
   for(let c=0;c<HEAT_WEEKS;c++){
@@ -1555,13 +1604,13 @@ function renderDash(anim){
     for(let r=0;r<7;r++){
       const day=addDays(ws,r);
       if(day>D.today){cells+='<i class="hc is-f"></i>';continue}
-      const n=D.byDay.get(ymd(day))||{career:0,openyap:0},sum=n.career+n.openyap;
-      cells+=`<i class="hc" data-b="${heatBin(sum)}" data-tip="${sum}|finished ${DOW[day.getDay()]}, ${fmtMD(day)}: ${n.career} Career, ${n.openyap} OpenYap"></i>`;
+      const n=D.byDay.get(ymd(day))||sideZeros(),sum=sideTotal(n);
+      cells+=`<i class="hc" data-b="${heatBin(sum)}" data-tip="${sum}|finished ${DOW[day.getDay()]}, ${fmtMD(day)}: ${SIDES.map(s=>n[s]+' '+esc(SIDE_NAME[s])).join(', ')}"></i>`;
     }
   }
   const up=D.upcoming.slice(0,8).map(({id,t,side})=>{
     const late=t.dueDate<ymd(D.today),dl=dueLabel(t.dueDate);
-    return `<div class="up-row" data-open="${id}" role="button" tabindex="0" style="--side-c:var(--${side})" title="${late?'Overdue':'Due'} ${esc(fmtMD(parseYmd(t.dueDate)))}, ${SIDE_NAME[side]}">
+    return `<div class="up-row" data-open="${id}" role="button" tabindex="0" style="--side-c:var(--${side})" title="${late?'Overdue':'Due'} ${esc(fmtMD(parseYmd(t.dueDate)))}, ${esc(SIDE_NAME[side])}">
       <span class="up-d${late?' late':''}">${late?esc(fmtMD(parseYmd(t.dueDate))):dl.txt}</span><span class="d-dot"></span><span class="up-t">${esc(t.title)}</span></div>`;
   }).join('');
   const more=D.upcoming.length>8?`<div class="up-more">and ${D.upcoming.length-8} more with dates</div>`:'';
@@ -1573,7 +1622,7 @@ function renderDash(anim){
       ${SIDES.map(tile).join('')}
     </div>
     <section>
-      <div class="sec-h"><h3>Finished per week</h3><span>Same scale for both sides<button class="link" data-dash="table">${dashTable?'Hide table':'Show as a table'}</button></span></div>
+      <div class="sec-h"><h3>Finished per week</h3><span>Same scale for all categories<button class="link" data-dash="table">${dashTable?'Hide table':'Show as a table'}</button></span></div>
       <div class="weeks">${SIDES.map(wrow).join('')}<div class="wx" aria-hidden="true">${xl}</div></div>
       ${table}
     </section>
@@ -1606,6 +1655,7 @@ function renderDash(anim){
 // Due dates and completed work use the same normalized side colors as the
 // rest of the app. The six-week grid keeps adjacent-month context visible.
 const CAL_DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+let calGoogleSelected=-1;
 let calCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),calSelected=ymd(new Date());
 function calendarData(cursor=calCursor){
   const first=new Date(cursor.getFullYear(),cursor.getMonth(),1),start=mondayOf(first),end=addDays(start,42),byDay=new Map();
@@ -1619,24 +1669,69 @@ function calendarData(cursor=calCursor){
     const k=ymd(new Date(e.completedAt));
     add(k,{kind:'done',title:e.title||'(untitled)',side:e.side,private:e.private,at:e.completedAt});
   }
-  for(const e of googleEvents)for(const k of googleEventDays(e,start,end))add(k,{kind:'google',title:e.summary||'(No title)',meta:e.start.date?'All day':fmtTime(new Date(e.start.dateTime)),at:e.start.dateTime||e.start.date});
+  for(const [googleIndex,e] of googleEvents.entries())for(const k of googleEventDays(e,start,end))add(k,{kind:'google',googleIndex,title:e.summary||'(No title)',meta:e.start.date?'All day':fmtTime(new Date(e.start.dateTime)),at:e.start.dateTime||e.start.date});
   for(const a of byDay.values())a.sort((x,y)=>(x.kind==='due'?0:1)-(y.kind==='due'?0:1)||(x.urgent?-1:0)-(y.urgent?-1:0)||String(y.at||'').localeCompare(String(x.at||'')));
   let due=0,done=0;
   for(const [k,a] of byDay)if(k.slice(0,7)===ymd(first).slice(0,7))for(const x of a){if(x.kind==='due')due++;else if(x.kind==='done')done++}
   return {first,start,end,byDay,todayK,due,done};
 }
 function calEvent(e){
-  if(e.kind==='google')return `<span class="cal-event k-google" style="--side-c:var(--accent)" title="${esc(e.meta)}"><i class="cal-mark"></i><span>G · ${esc(e.title)}</span></span>`;
+  if(e.kind==='google')return `<button type="button" data-google-event="${e.googleIndex}" class="cal-event k-google" style="--side-c:var(--accent)" title="${esc(e.meta)}"><i class="cal-mark"></i><span>G · ${esc(e.title)}</span></button>`;
   const tag=e.kind==='due'?'button':'span',open=e.id?` data-open="${e.id}"`:'';
   const title=(e.kind==='due'?(e.late?'Overdue: ':'Due: '):'Finished: ')+(e.title||'');
   return `<${tag} class="cal-event k-${e.kind}${e.late?' is-late':''}" style="--side-c:var(--${e.side})"${open} title="${esc(title)}"><i class="cal-mark"></i><span>${esc(e.title)}</span></${tag}>`;
 }
 function calAgendaRow(e){
-  if(e.kind==='google')return `<div class="cal-a-row"><span class="cal-a-title">${esc(e.title)}</span><span class="cal-a-meta">${esc(e.meta)} · Google Calendar</span></div>`;
+  if(e.kind==='google')return `<button type="button" data-google-event="${e.googleIndex}" class="cal-a-row k-google" style="--side-c:var(--accent)"><i class="cal-a-dot"></i><span class="cal-a-title">${esc(e.title)}</span><span class="cal-a-meta">${esc(e.meta)} · Google Calendar · View details</span></button>`;
   const open=e.id?` data-open="${e.id}" role="button" tabindex="0"`:'';
   const meta=e.kind==='due'?(e.late?'Overdue':e.urgent?'Due, urgent':'Due'):(e.private?'Finished, private':'Finished');
-  return `<div class="cal-a-row k-${e.kind}${e.late?' is-late':''}" style="--side-c:var(--${e.side})"${open}><i class="cal-a-dot"></i><span class="cal-a-title">${esc(e.title)}</span><span class="cal-a-meta">${esc(meta)} · ${SIDE_NAME[e.side]}</span></div>`;
+  return `<div class="cal-a-row k-${e.kind}${e.late?' is-late':''}" style="--side-c:var(--${e.side})"${open}><i class="cal-a-dot"></i><span class="cal-a-title">${esc(e.title)}</span><span class="cal-a-meta">${esc(meta)} · ${esc(SIDE_NAME[e.side])}</span></div>`;
 }
+// Calendar HTML is untrusted. Read text in an inert template; render only escaped text and
+// HTTPS links. Meeting passwords in URLs remain in memory, like the rest of the event.
+function calPlainText(value){
+  const template=document.createElement('template');template.innerHTML=String(value||'');
+  template.content.querySelectorAll('script,style,iframe,object').forEach(n=>n.remove());
+  template.content.querySelectorAll('br').forEach(n=>n.replaceWith('\n'));
+  template.content.querySelectorAll('p,div,li').forEach(n=>n.append('\n'));
+  return template.content.textContent.trim();
+}
+function calSafeURL(value){try{const u=new URL(String(value||''));return u.protocol==='https:'&&!u.username&&!u.password?u.href:''}catch{return ''}}
+function calMeetingLinks(e){
+  const links=new Map(),add=(raw,conference=false)=>{
+    const href=calSafeURL(raw);if(!href)return;const host=new URL(href).hostname.toLowerCase();
+    const zoom=host==='zoom.us'||host.endsWith('.zoom.us')||host==='zoom.com'||host.endsWith('.zoom.com');
+    const meet=host==='meet.google.com',teams=host==='teams.microsoft.com'||host==='teams.live.com';
+    if(conference||zoom||meet||teams)links.set(href,{href,label:zoom?'Join Zoom':meet?'Join Google Meet':teams?'Join Teams':'Join video meeting'});
+  };
+  for(const p of e.conferenceData?.entryPoints||[])if(p.entryPointType==='video')add(p.uri,true);
+  add(e.hangoutLink,true);
+  const template=document.createElement('template');template.innerHTML=String(e.description||'');
+  template.content.querySelectorAll('a[href]').forEach(a=>add(a.getAttribute('href')));
+  for(const raw of (calPlainText(e.description)+' '+(e.location||'')).match(/https:\/\/[^\s<>"']+/gi)||[])add(raw.replace(/[),.;]+$/,''));
+  return [...links.values()];
+}
+function calInviteURL(e){
+  const q=new URLSearchParams({action:'TEMPLATE',text:e?.summary||''});
+  const stamp=d=>{const t=new Date(d);return Number.isFinite(+t)?t.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z'):''};
+  const start=e?.start?.date?e.start.date.replace(/-/g,''):stamp(e?.start?.dateTime);
+  const end=e?.end?.date?e.end.date.replace(/-/g,''):stamp(e?.end?.dateTime);
+  if(start&&end)q.set('dates',start+'/'+end);
+  else{const day=parseYmd(calSelected);q.set('dates',ymd(day).replace(/-/g,'')+'/'+ymd(addDays(day,1)).replace(/-/g,''))}
+  if(e?.description)q.set('details',calPlainText(e.description));
+  if(e?.location)q.set('location',e.location);
+  return 'https://calendar.google.com/calendar/render?'+q;
+}
+function calGoogleDetail(){
+  const e=googleEvents[calGoogleSelected];if(!e)return '';
+  const allDay=!!e.start?.date, date=d=>new Date(d).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
+  const when=allDay?`${e.start.date} · All day${e.end?.date?' · Through '+ymd(addDays(parseYmd(e.end.date),-1)):''}`:`${date(e.start.dateTime)} – ${date(e.end?.dateTime||e.start.dateTime)}`;
+  const guests=(e.attendees||[]).map(a=>[a.displayName,a.email,a.responseStatus].filter(Boolean).join(' · ')).join('\n');
+  const organizer=e.organizer?.displayName||e.organizer?.email||'';
+  const original=calSafeURL(e.htmlLink),links=calMeetingLinks(e);
+  return `<section id="calGoogleDetail" class="cal-detail" aria-labelledby="calGoogleTitle"><div class="cal-detail-head"><h3 id="calGoogleTitle" tabindex="-1">${esc(e.summary||'(No title)')}</h3><button class="btn" data-google-detail-close>Close details</button></div><dl><dt>When</dt><dd>${esc(when)}${allDay?'':'\n'+esc(Intl.DateTimeFormat().resolvedOptions().timeZone)}</dd>${e.location?`<dt>Location</dt><dd>${esc(e.location)}</dd>`:''}${organizer?`<dt>Organizer</dt><dd>${esc(organizer)}</dd>`:''}${guests?`<dt>Guests</dt><dd>${esc(guests)}</dd>`:''}${e.description?`<dt>Description</dt><dd>${esc(calPlainText(e.description))}</dd>`:''}</dl><div class="cal-detail-actions">${links.map(l=>`<a class="btn primary" href="${esc(l.href)}" target="_blank" rel="noopener noreferrer">${esc(l.label)}</a>`).join('')}${original?`<a class="btn" href="${esc(original)}" target="_blank" rel="noopener noreferrer">Open in Google Calendar</a>`:''}<a class="btn" href="${esc(calInviteURL(e))}" target="_blank" rel="noopener noreferrer">Create a new invite from this event</a></div><p class="cal-invite-hint">A new invite opens in Google Calendar. Review the details, add guests, then save and send there. This does not change the original event or send anything from Todo.</p></section>`;
+}
+
 function renderCalendar(anim){
   const host=$('#calHost');
   if(!ready.tasks||!ready.hist){host.innerHTML='<p class="hint" style="padding:40px 0">Loading…</p>';return}
@@ -1655,7 +1750,7 @@ function renderCalendar(anim){
   host.innerHTML=`<div class="cal">
     <div class="cal-top"><div class="cal-title"><h2>${MONL[C.first.getMonth()]} ${C.first.getFullYear()}</h2><p>${C.due} due · ${C.done} finished this month</p></div>
       <div class="cal-nav"><button class="icon-btn" data-cal-nav="prev" aria-label="Previous month">‹</button><button class="btn" data-cal-nav="today">Today</button><button class="icon-btn" data-cal-nav="next" aria-label="Next month">›</button></div></div>
-    ${googleCalendarControls()}<div class="cal-legend"><span style="--side-c:var(--career)"><i></i>Career</span><span style="--side-c:var(--openyap)"><i></i>OpenYap</span><span>Solid due · ring finished</span></div>
+    ${googleCalendarControls()}${calGoogleDetail()}<div class="cal-legend">${SIDES.map(s=>`<span style="--side-c:var(--${s})"><i></i>${esc(SIDE_NAME[s])}</span>`).join('')}<span>Solid due · ring finished</span></div>
     <div class="cal-weekdays" aria-hidden="true">${CAL_DOW.map(d=>`<span>${d}</span>`).join('')}</div>
     <div class="cal-grid">${days.join('')}</div>
     <section class="cal-agenda" aria-live="polite"><div class="cal-agenda-head"><h3>${DOWL[selected.getDay()]}, ${fmtMDY(selected)}</h3><p>${sub}</p></div><div class="cal-agenda-list">${agenda.length?agenda.map(calAgendaRow).join(''):'<p class="hint">Choose another day, or add a due date to a task.</p>'}</div></section>
@@ -1673,7 +1768,7 @@ let tlWeeks=4,tlPrevStart='';
 const tlStartKey=()=>ymd(addDays(mondayOf(new Date()),-7*(tlWeeks-1)));
 function timelineData(){
   const now=new Date(),todayK=ymd(now),startK=tlStartKey(),days=new Map();
-  const add=(k,side,item)=>{let d=days.get(k);if(!d){d={key:k,career:[],openyap:[]};days.set(k,d)}d[side].push(item)};
+  const add=(k,side,item)=>{let d=days.get(k);if(!d){d={key:k,...Object.fromEntries(SIDES.map(s=>[s,[]]))};days.set(k,d)}d[side].push(item)};
   const RANK={now:0,late:1,'due-today':2,due:3,done:4};
   for(const [id,t] of Object.entries(tasks)){
     if(!t||t.completed)continue;const side=taskSide(t);
@@ -1689,7 +1784,7 @@ function timelineData(){
     add(k,e.side,{kind:'done',title:e.title,at:e.completedAt,priv:e.private,
       meta:[shownProject(e.projectName,e.side),e.routine?'Recurring check':'',e.timeSpent?fmtDur(e.timeSpent):''].filter(Boolean).join(', ')});
   }
-  if(!days.has(todayK))days.set(todayK,{key:todayK,career:[],openyap:[]});
+  if(!days.has(todayK))days.set(todayK,{key:todayK,...Object.fromEntries(SIDES.map(s=>[s,[]]))});
   for(const d of days.values())for(const s of SIDES)d[s].sort((a,b)=>RANK[a.kind]-RANK[b.kind]||String(b.at||'').localeCompare(String(a.at||'')));
   return {keys:[...days.keys()].sort().reverse(),days,todayK,finished,older};
 }
@@ -1706,19 +1801,17 @@ function renderTimeline(anim){
     const d=parseYmd(k),wkK=ymd(mondayOf(d)),day=T.days.get(k),isToday=k===T.todayK,isFuture=k>T.todayK;
     if(wkK!==curWeek){
       curWeek=wkK;
-      const n=[...T.days.values()].filter(x=>ymd(mondayOf(parseYmd(x.key)))===wkK).reduce((a,x)=>a+x.career.filter(i=>i.kind==='done').length+x.openyap.filter(i=>i.kind==='done').length,0);
+      const n=[...T.days.values()].filter(x=>ymd(mondayOf(parseYmd(x.key)))===wkK).reduce((a,x)=>a+SIDES.reduce((n,s)=>n+x[s].filter(i=>i.kind==='done').length,0),0);
       const label=wkK===thisMon?'This week':wkK>thisMon?(wkK===ymd(addDays(mondayOf(new Date()),7))?'Next week':'Week of '+fmtMD(parseYmd(wkK))):'Week of '+fmtMD(parseYmd(wkK));
       html+=`<div class="tl-week"><span>${esc(label)}${n?`, ${n} finished`:''}</span></div>`;
     }
     const isNew=tlPrevStart&&k<tlPrevStart;
     html+=`<section class="tl-day${isToday?' is-today':''}${isFuture?' is-future':''}"${isNew?' data-new':''}>
-      <div class="tl-lane" data-lane="career" style="--side-c:var(--career)">${day.career.map(i=>tlItem(i,'career')).join('')}</div>
-      <div class="tl-date"><span>${isToday?'Today':DOW[d.getDay()]+' '+(d.getMonth()+1)+'/'+d.getDate()}</span></div>
-      <div class="tl-lane" data-lane="openyap" style="--side-c:var(--openyap)">${day.openyap.map(i=>tlItem(i,'openyap')).join('')}</div>
+      <div class="tl-date"><span>${isToday?'Today':DOW[d.getDay()]+' '+(d.getMonth()+1)+'/'+d.getDate()}</span></div>${SIDES.map(s=>`<div class="tl-lane" data-lane="${s}" style="--side-c:var(--${s})"><b>${esc(SIDE_NAME[s])}</b>${day[s].map(i=>tlItem(i,s)).join('')}</div>`).join('')}
     </section>`;
   }
   host.innerHTML=`<div class="tl-top"><h2>Timeline</h2><p>${T.finished} finished in the last ${tlWeeks} weeks. Due dates sit above today.</p></div>
-    <div class="tl-cols"><span style="--side-c:var(--career)">Career<i></i></span><span></span><span style="--side-c:var(--openyap)"><i></i>OpenYap</span></div>
+
     <div class="tl"><div class="tl-spine"></div>${html}</div>
     <div class="tl-more">${T.older?`<button class="btn" data-tl="more">Show four more weeks</button>`:'<p class="hint">That is everything you have finished.</p>'}</div>`;
   const prev=tlPrevStart;tlPrevStart='';
@@ -1740,6 +1833,7 @@ function renderTimeline(anim){
 // An item becomes a task only when it gets a date or "Add to list" (then taskId links them).
 let maps={};
 let mapPid=LS.get('oym_mappid','');
+let mapDescriptions=false;
 let mapSel='';            // selected card or item ('root' is the project card)
 let mapFocus=false;       // focus the panel's title field after the next paint
 let mapTray=false;        // the Unplaced tasks drawer
@@ -1791,8 +1885,8 @@ const mapItemsOf=(nodes,id)=>mapKids(nodes,id).filter(([k])=>mapKindOf(nodes,k)=
 const mapTopicsOf=(nodes,id)=>mapKids(nodes,id).filter(([k])=>mapKindOf(nodes,k)==='topic');
 function mapCardH(nodes,id,kind){
   const n=mapItemsOf(nodes,id).length;
-  if(kind==='branch')return M_BHEAD+(n?n*M_ROW+6:0)+M_FOOT;
-  return M_THEAD+Math.max(1,n)*M_ROW+M_FOOT;
+  if(kind==='branch')return M_BHEAD+(mapDescriptions&&nodes[id]?.desc?36:0)+(n?n*(mapDescriptions?48:M_ROW)+6:0)+M_FOOT;
+  return M_THEAD+Math.max(1,n)*(mapDescriptions?48:M_ROW)+M_FOOT+(mapDescriptions&&nodes[id]?.desc?36:0);
 }
 const mapHeadH=kind=>kind==='branch'?M_BHEAD:M_THEAD;
 
@@ -1815,10 +1909,10 @@ function mapLink(a,b,orient){
 // Pure: world rectangles for every card and the connector paths. Same input, same drawing,
 // on every device. The sheet's layout, extended outward one level per nesting depth.
 function mapLayout(nodes){
-  const C={root:{x:-MW.root/2,y:-MH.root/2,w:MW.root,h:MH.root,kind:'root'}},L=[];
+  const rootH=MH.root+(mapDescriptions?36:0),C={root:{x:-MW.root/2,y:-rootH/2,w:MW.root,h:rootH,kind:'root'}},L=[];
   const side={top:[],left:[],right:[],bottom:[]};
   mapKids(nodes,'root').forEach(([id],i)=>side[mapSlot(i)].push(id));
-  const TW=MW.topic,BW=MW.branch,rx=MW.root/2,ry=MH.root/2;
+  const TW=MW.topic,BW=MW.branch,rx=MW.root/2,ry=rootH/2;
   const seen=new Set();
   const kidsT=id=>seen.has(id)?[]:(seen.add(id),mapTopicsOf(nodes,id).map(([k])=>k));
   // Columns (left, right): a subtree is as tall as its card or its children stacked, whichever
@@ -1928,7 +2022,7 @@ const MP=(pid,id)=>'todo/maps/'+pid+'/nodes/'+id;
 const projSideOf=pid=>{const m=projSide(pid);return m&&SIDES.includes(m.side)?m.side:'career'};
 function mapTaskFor(pid,node,extra){
   const side=projSideOf(pid);
-  return buildTask({title:node.title||'(untitled)',projectId:pid,side,category:side==='openyap'?'project':'work',notes:node.desc||'',...extra});
+  return buildTask({title:node.title||'(untitled)',projectId:pid,side,category:side==='openyap'?'project':'work',notes:node.desc||'',startDate:node.start||'',dueDate:node.due||'',...extra});
 }
 function mapLinkedIds(pid){const s=new Set();for(const n of Object.values(mapNodes(pid)))if(n&&n.taskId)s.add(n.taskId);return s}
 function mapUnplaced(pid){
@@ -1936,7 +2030,7 @@ function mapUnplaced(pid){
   return Object.entries(tasks).filter(([id,t])=>t&&t.projectId===pid&&!t.completed&&!linked.has(id)).sort(cmpTask);
 }
 function mapProjects(){
-  return Object.entries(projects).filter(([id,p])=>p&&(maps[id]||!['done','archived'].includes(p.status)))
+  return Object.entries(projects).filter(([id,p])=>p&&(maps[id]||p.status!=='archived'))
     .sort((a,b)=>(maps[b[0]]?1:0)-(maps[a[0]]?1:0)||(a[1].order||0)-(b[1].order||0));
 }
 
@@ -1948,7 +2042,9 @@ function mapAdd(parent,want){
   const id=newKey('todo/maps/'+pid+'/nodes');
   const title={branch:'New sub-topic',topic:'New topic',item:'New item'}[kind];
   mapGrow={id,parent};mapSel='';mapInline=id;
-  upd({[MP(pid,id)]:{parent,kind,title,order:mapOrderFor(nodes,parent,null)}});
+  const node={parent,kind,title,order:mapOrderFor(nodes,parent,null)},up={};
+  if(kind==='item'){node.taskId=newKey('todo/tasks');up[TP(node.taskId)]=mapTaskFor(pid,node)}
+  up[MP(pid,id)]=node;upd(up);
 }
 function mapSave(id,f,v){
   const pid=mapPid,nodes=mapNodes(pid),n=nodes[id];
@@ -1964,6 +2060,7 @@ function mapSave(id,f,v){
   else if(f==='desc'){const d=v.trim().slice(0,2000);up[MP(pid,id)+'/desc']=d||null;if(n.taskId&&tasks[n.taskId])up[TP(n.taskId)+'/notes']=d}
   else if(f==='start'||f==='due'){
     up[MP(pid,id)+'/'+f]=v||null;
+    if(f==='start'&&n.taskId&&tasks[n.taskId])up[TP(n.taskId)+'/startDate']=v||'';
     if(f==='due'&&mapKindOf(nodes,id)==='item'){
       if(n.taskId&&tasks[n.taskId])up[TP(n.taskId)+'/dueDate']=v||'';
       else if(v){const tid=newKey('todo/tasks');up[TP(tid)]=mapTaskFor(pid,n,{dueDate:v});up[MP(pid,id)+'/taskId']=tid;toast('Added to your list: '+(n.title||'item'))}
@@ -1986,7 +2083,7 @@ function mapNudge(id,dir){
   upd({[MP(pid,id)+'/order']:b,[MP(pid,oid)+'/order']:a});
 }
 function mapToList(id){
-  const pid=mapPid,n=mapNodes(pid)[id];if(!n||n.taskId)return;
+  const pid=mapPid,n=mapNodes(pid)[id];if(!n||(n.taskId&&tasks[n.taskId]))return;
   const tid=newKey('todo/tasks');
   upd({[TP(tid)]:mapTaskFor(pid,n,{dueDate:n.due||''}),[MP(pid,id)+'/taskId']:tid});
   toast('Added to your list: '+(n.title||'item'));
@@ -2065,7 +2162,7 @@ function mapDeleteProject(pid,withTasks){
     upd(back);
   });
 }
-function mapProjSide(v){upd({['todo/sides/'+mapPid+'/side']:v})}
+function mapProjSide(v){if(!SIDES.includes(v))return;const up={['todo/sides/'+mapPid+'/side']:v};for(const [id] of mapProjTasks(mapPid))up[TP(id)+'/side']=v;upd(up)}
 function mapProjPrivate(){const m=projSide(mapPid)||{};upd({['todo/sides/'+mapPid+'/private']:!m.private,['todo/sides/'+mapPid+'/side']:m.side||projSideOf(mapPid)})}
 
 // ── Camera
@@ -2094,12 +2191,12 @@ function mapZoom(f,cx,cy){
 }
 
 // ── Render
-const mapNote=d=>d?`<span class="mp-note" title="${esc(d)}">${ICON.note}</span>`:'';
+const mapNote=(d,compact=false)=>d&&mapDescriptions&&!compact?`<span class="map-description" title="${esc(d)}">${esc(d)}</span>`:d?`<span class="mp-note" title="${esc(d)}">${ICON.note}</span>`:'';
 function mapItemRow(pid,id,n,i){
-  const t=n.taskId?tasks[n.taskId]:null,due=(t&&t.dueDate)||n.due||'',done=!!(t&&t.completed);
+  const t=n.taskId?tasks[n.taskId]:null,due=t?t.dueDate||'':n.due||'',done=!!t?.completed,desc=t?t.notes||'':n.desc||'';
   const late=!done&&due&&due<ymd(new Date()),c=n.color&&mapColorOk(n.color)?n.color:'';
-  return `<li class="mp-item${done?' done':''}${late?' late':''}${mapSel===id?' sel':''}${c?' own':''}" data-nid="${id}" data-mkind="item" style="${mcStyle(c)}"${n.desc?` title="${esc(n.desc)}"`:''}>
-    <span class="n">${i+1}</span><span class="t">${esc(n.title||(t&&t.title)||'(untitled)')}</span>${n.desc?`<span class="mp-note">${ICON.note}</span>`:''}
+  return `<li class="mp-item${mapDescriptions?' with-description':''}${done?' done':''}${late?' late':''}${mapSel===id?' sel':''}${c?' own':''}" data-nid="${id}" data-mkind="item" role="button" tabindex="0" style="${mcStyle(c)}"${n.desc?` title="${esc(n.desc)}"`:''}>
+    <span class="n">${i+1}</span><span class="t">${esc((t&&t.title)||n.title||'(untitled)')}${mapDescriptions&&desc?`<small class="map-item-description">${esc(desc)}</small>`:''}</span>${!mapDescriptions&&desc?`<span class="mp-note">${ICON.note}</span>`:''}
     ${due?`<span class="d">${esc(fmtMD(parseYmd(due)))}</span>`:''}${t?`<span class="dot" title="${done?'Done':'In your list'}"></span>`:''}</li>`;
 }
 function renderMap(anim){
@@ -2109,8 +2206,8 @@ function renderMap(anim){
   if(!projects[mapPid]&&plist.length){mapPid=plist[0][0];LS.set('oym_mappid',mapPid)}
   const pid=mapPid,P=projects[pid];
   if(mapPresentation==='clock'&&P){renderClock();return}
-  const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}
-    <div class="map-tools"><button class="btn" data-chrono-mode="clock">Clock chronology</button>
+  const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}${projectStatusHTML(pid,P)}
+    <div class="map-tools"><button class="btn" data-chrono-mode="clock">Chronology</button>${mapDescriptionToggle()}<button class="btn" data-map-markdown>Download Markdown</button><button class="btn" data-map-copy>Copy Markdown</button>
       ${P?`<button class="btn" type="button" data-mact="tray">Unplaced <span class="mp-count">${mapUnplaced(pid).length}</span></button>
       <button class="btn" type="button" data-mact="zout" aria-label="Zoom out">−</button><button class="btn" type="button" data-mact="zin" aria-label="Zoom in">+</button>
       <button class="btn" type="button" data-mact="fit" title="Tidy everything back into the sheet layout and show it all">Fit</button><button class="btn primary" type="button" data-mact="roadmap">Roadmap PDF</button>`:''}
@@ -2119,8 +2216,8 @@ function renderMap(anim){
   const nodes=mapNodes(pid),lay=mapLayout(nodes),side=projSideOf(pid),mt=(maps[pid]&&maps[pid].title)||P.name;
   const cards=[];
   const rc=mapColorOf(pid,nodes,'root');
-  cards.push(`<div class="mp-card mp-root${mapSel==='root'?' sel':''}" data-nid="root" style="${mcStyle(rc)}left:${lay.C.root.x}px;top:${lay.C.root.y}px;width:${MW.root}px;height:${MH.root}px"${P.description?` title="${esc(P.description)}"`:''}>
-    <span class="mp-k">Main topic</span><span class="mp-t">${esc(mt)}</span><button class="mp-plus" type="button" data-madd="root" title="Add a branch" aria-label="Add a branch">+</button></div>`);
+  cards.push(`<div class="mp-card mp-root${mapSel==='root'?' sel':''}" data-nid="root" style="${mcStyle(rc)}left:${lay.C.root.x}px;top:${lay.C.root.y}px;width:${MW.root}px;height:${lay.C.root.h}px"${P.description?` title="${esc(P.description)}"`:''}>
+    <span class="mp-k">Main topic</span><span class="mp-t">${esc(mt)}</span>${mapNote(P.description)}<button class="mp-plus" type="button" data-madd="root" title="Add a branch" aria-label="Add a branch">+</button></div>`);
   const topicCard=(tid,tn)=>{
     const tr=lay.C[tid];if(!tr)return;
     const items=mapItemsOf(nodes,tid);
@@ -2146,7 +2243,7 @@ function renderMap(anim){
   const tray=mapTray?`<aside class="mp-tray"><div class="mp-tray-h"><b>Unplaced</b><span>${un.length} open task${un.length===1?'':'s'} in ${esc(P.name)}</span><button class="icon-btn" type="button" data-mact="tray" aria-label="Close">${ICON.x}</button></div>
     ${un.length?un.map(([id,t])=>`<div class="mp-tray-row" data-tid="${id}"><span class="t">${esc(t.title||'(untitled)')}</span>${t.dueDate?`<span class="d">${esc(fmtMD(parseYmd(t.dueDate)))}</span>`:''}</div>`).join('')
       :'<p class="hint">Every open task in this project is on the map.</p>'}<p class="hint">Drag a task onto a topic to place it.</p></aside>`:'';
-  host.innerHTML=bar+`<div class="map-stage" id="mapStage" style="--side-c:var(--${side})"><div class="map-world" id="mapWorld">${svg}${cards.join('')}</div>${tray}${mapPanelHTML(pid,nodes)}</div>`;
+  host.innerHTML=bar+`<div class="map-stage" id="mapStage" style="--side-c:var(--${side})"><div class="map-world${mapDescriptions?' with-descriptions':''}" id="mapWorld">${svg}${cards.join('')}</div>${tray}${mapPanelHTML(pid,nodes)}</div>`;
   const first=!mapCam[pid];if(first)mapCam[pid]=mapFitCam(lay);
   mapApplyCam();
   const bloom=(anim||mapBloomPid!==pid)&&canAnim();
@@ -2173,7 +2270,7 @@ if(window.visualViewport)visualViewport.addEventListener('resize',()=>{if(view==
 function mapInlineEdit(id){
   const el=$(`#mapWorld [data-nid="${id}"]`);if(!el){return}
   const tl=el.classList.contains('mp-item')?$('.t',el):$('.mp-t',el);if(!tl||$('.mp-inl',el))return;
-  const nodes=mapNodes(mapPid),old=id==='root'?((maps[mapPid]&&maps[mapPid].title)||(projects[mapPid]||{}).name||''):((nodes[id]||{}).title||'');
+  const nodes=mapNodes(mapPid),old=id==='root'?((maps[mapPid]&&maps[mapPid].title)||(projects[mapPid]||{}).name||''):(tasks[nodes[id]?.taskId]?.title||(nodes[id]||{}).title||'');
   const inp=document.createElement('input');inp.className='mp-inl';inp.value=old;inp.maxLength=160;inp.setAttribute('aria-label','Title');
   tl.textContent='';tl.appendChild(inp);el.classList.add('editing');
   inp.focus();inp.select();
@@ -2195,7 +2292,7 @@ function mapSwitchHTML(pid,P){
   const cnt=P?Object.keys(mapNodes(pid)).length:0;
   return `<div class="mp-switch">
       <button class="mp-cur" type="button" data-mact="pick" aria-haspopup="listbox" aria-expanded="${mapPickOpen}" style="--side-c:var(--${P?projSideOf(pid):'career'})">
-        <i></i><span class="nm">${P?esc(P.name||'Untitled'):'Pick a project'}</span>${P?`<span class="sd">${SIDE_NAME[projSideOf(pid)]} · ${cnt} bubble${cnt===1?'':'s'}</span>`:''}<span class="cv">${ICON.chev}</span></button>
+        <i></i><span class="nm">${P?esc(P.name||'Untitled'):'Pick a project'}</span>${P?`<span class="sd">${esc(SIDE_NAME[projSideOf(pid)])} · ${cnt} bubble${cnt===1?'':'s'}</span>`:''}<span class="cv">${ICON.chev}</span></button>
       ${mapPickOpen?mapPickHTML():''}
     </div>`;
 }
@@ -2205,7 +2302,7 @@ function mapPickListHTML(){
   if(!plist.length)return `<p class="mp-pempty">${q?'No project matches “'+esc(mapPickQ.trim())+'”. Press Enter to create it.':'No projects yet.'}</p>`;
   return SIDES.map(sd=>{
     const rows=plist.filter(([id])=>projSideOf(id)===sd);if(!rows.length)return '';
-    return `<div class="mp-pg">${SIDE_NAME[sd]}</div>`+rows.map(([id,p])=>{
+    return `<div class="mp-pg">${esc(SIDE_NAME[sd])}</div>`+rows.map(([id,p])=>{
       const nb=Object.keys(mapNodes(id)).length,nt=mapProjTasks(id).filter(([,t])=>!t.completed).length,priv=!!(projSide(id)||{}).private;
       if(mapDelAsk===id){
         const all=mapProjTasks(id).length;
@@ -2241,7 +2338,7 @@ function mapPickOpenAt(open){
 function mapPositions(lay,nodes){
   const P={};for(const [id,r] of Object.entries(lay.C))P[id]={x:r.x,y:r.y};
   for(const [cid,r] of Object.entries(lay.C).filter(([,r])=>r.kind==='topic'||r.kind==='branch'))
-    mapItemsOf(nodes,cid).forEach(([iid],i)=>{P[iid]={x:r.x,y:r.y+mapHeadH(r.kind)+3+i*M_ROW,parent:cid}});
+    mapItemsOf(nodes,cid).forEach(([iid],i)=>{P[iid]={x:r.x,y:r.y+mapHeadH(r.kind)+(mapDescriptions&&nodes[cid]?.desc?36:0)+3+i*(mapDescriptions?48:M_ROW),parent:cid}});
   return P;
 }
 function mapSwatches(pid,nodes,id){
@@ -2263,27 +2360,26 @@ function mapPanelHTML(pid,nodes){
       <label class="fld"><span class="lbl">Name</span><input class="txt" id="mpTitle" data-mf="name" value="${esc(P.name||'')}"></label>
       <label class="fld"><span class="lbl">Main topic</span><input class="txt" data-mf="mtitle" value="${esc((maps[pid]&&maps[pid].title)||'')}" placeholder="${esc(P.name||'')}"></label>
       ${mapDescHTML(P.description,'What this project is for')}
-      ${mapSwatches(pid,nodes,'root')}
-      <div class="fld"><span class="lbl">Side</span><div class="seg" role="group" aria-label="Side">${segHTML([['career','Career'],['openyap','OpenYap']],side,'data-mside-set')}</div></div>
+      ${mapSwatches(pid,nodes,'root')}${mapChecklist(pid,nodes,'root')}
+      <div class="fld"><span class="lbl">Side</span><div class="seg" role="group" aria-label="Side">${segHTML(sideOptions(),side,'data-mside-set')}</div></div>
       <label class="check"><input type="checkbox" data-mact-chk="private"${m.private?' checked':''}> Private (kept out of reports)</label>
       </div>
       <div class="mp-pf"><button class="btn" type="button" data-madd="root">+ Add sub-topic</button></div></div>`;
   }
   const n=nodes[mapSel];if(!n){mapSel='';return ''}
-  const kind=mapKindOf(nodes,mapSel),t=n.taskId?tasks[n.taskId]:null,due=(t&&t.dueDate)||n.due||'';
+  const kind=mapKindOf(nodes,mapSel),t=n.taskId?tasks[n.taskId]:null,due=t?t.dueDate||'':n.due||'';
   const kids=mapDescendants(nodes,mapSel).length;
   return `<div class="mp-panel" data-mpanel="${mapSel}">
     <div class="mp-ph"><span class="mp-k">${{branch:'Sub-topic',topic:'Topic',item:'Item'}[kind]}</span>
       <span class="mp-nudge"><button class="icon-btn" type="button" data-mnudge="-1" title="Move earlier" aria-label="Move earlier">↑</button><button class="icon-btn" type="button" data-mnudge="1" title="Move later" aria-label="Move later">↓</button>
       <button class="icon-btn" type="button" data-mact="close" aria-label="Close">${ICON.x}</button></span></div>
     <div class="mp-pb">
-    <label class="fld"><span class="lbl">Title</span><input class="txt" id="mpTitle" data-mf="title" value="${esc(n.title||'')}"></label>
-    ${mapDescHTML(n.desc,kind==='item'?(t?'Also saved as the task\'s notes':'Details, links, what done looks like'):'What this covers')}
+    <label class="fld"><span class="lbl">Title</span><input class="txt" id="mpTitle" data-mf="title" value="${esc(t?t.title||'':n.title||'')}"></label>
+    ${mapDescHTML(t?t.notes||'':n.desc,kind==='item'?(t?'Also saved as the task\'s notes':'Details, links, what done looks like'):'What this covers')}
     ${mapSwatches(pid,nodes,mapSel)}
-    <div class="mp-dates"><label class="fld"><span class="lbl">Start</span><input class="txt" type="date" data-mf="start" value="${esc(n.start||'')}"></label>
+    <div class="mp-dates"><label class="fld"><span class="lbl">Start</span><input class="txt" type="date" data-mf="start" value="${esc(t?t.startDate??n.start??'':n.start||'')}"></label>
       <label class="fld"><span class="lbl">${kind==='item'?'Due':'Finish'}</span><input class="txt" type="date" data-mf="due" value="${esc(kind==='item'?due:(n.due||''))}"></label></div>
-    ${kind==='item'?(t?`<div class="mp-linked"><span class="dot"></span>${t.completed?'Done in your list':'In your list'}<button class="link" type="button" data-open="${n.taskId}">Open</button></div>`
-      :'<p class="hint">A due date adds it to your list.</p>'):''}
+    ${kind==='item'?mapTaskControls(n.taskId||'',mapSel):mapChecklist(pid,nodes,mapSel)}
     </div>
     <div class="mp-pf">
       ${kind==='item'?(t?'':'<button class="btn" type="button" data-mact="list">Add to list</button>')
@@ -2333,7 +2429,7 @@ function mapFlip(lay){
 function mapPick(pid){
   chronoPause();chronoProgress=0;
   if(pid===mapPid){mapRe();return}
-  const epoch=authEpoch;const go=()=>{if(epoch!==authEpoch)return;mapPid=pid;LS.set('oym_mappid',pid);mapSel='';mapTray=false;if(view==='map')renderMap();else{animNext=true;render(true)}};
+  const epoch=authEpoch;const go=()=>{if(epoch!==authEpoch)return;mapPid=pid;orbitTask='';orbitPage=0;LS.set('oym_mappid',pid);mapSel='';mapTray=false;if(view==='map')renderMap();else{animNext=true;render(true)}};
   const w=view==='map'&&$('#mapWorld');
   if(!w||!canAnim()){go();return}
   fx($$('.mp-card',w),{translateX:el=>-(parseFloat(el.style.left)+el.offsetWidth/2)*.8,translateY:el=>-(parseFloat(el.style.top)+el.offsetHeight/2)*.8,
@@ -2541,7 +2637,7 @@ function gtRowHTML(r,X,px,today){
     meta=r.start&&r.end&&r.start!==r.end?fmtMD(parseYmd(r.start))+' – '+fmtMD(parseYmd(r.end)):fmtMD(parseYmd(r.start||r.end));
   }
   return `<div class="gt-row gt-${r.type}" data-grow="${r.id}" style="${mcStyle(r.color)}">
-    <div class="gt-name" style="padding-left:${10+r.depth*14}px">${chev}<button class="gt-t" type="button" data-gopen="${r.id}" title="Open in the map">${esc(r.title||'(untitled)')}${r.desc?mapNote(r.desc):''}</button><span class="gt-meta">${esc(meta)}</span></div>
+    <div class="gt-name" style="padding-left:${10+r.depth*14}px">${chev}<button class="gt-t" type="button" data-gopen="${r.id}" title="Open in the map">${esc(r.title||'(untitled)')}${r.desc?mapNote(r.desc,true):''}</button><span class="gt-meta">${esc(meta)}</span></div>
     <div class="gt-track">${bar}</div></div>`;
 }
 function renderGantt(anim){
@@ -2552,7 +2648,7 @@ function renderGantt(anim){
   const pid=mapPid,P=projects[pid],today=ymd(new Date());
   const old=$('#gtScroll'),keep=old&&gtSeenPid===pid?{l:old.scrollLeft,t:old.scrollTop}:null;
   const R=P?roadmapData(pid,today):null;
-  const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}
+  const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}${projectStatusHTML(pid,P)}
     <div class="map-tools">${P?`
       <div class="seg" role="group" aria-label="Scale">${segHTML([['week','Weeks'],['month','Months']],gtScale,'data-gscale')}</div>
       <button class="btn" type="button" data-gact="today">Today</button>
@@ -2660,8 +2756,8 @@ document.addEventListener('pointerup',gtEnd);document.addEventListener('pointerc
 function roadmapData(pid,today,only){
   today=today||ymd(new Date());
   const nodes=only||mapNodes(pid),P=projects[pid]||{};
-  const item=(id,n)=>{const t=n.taskId?tasks[n.taskId]:null,due=(t&&t.dueDate)||n.due||'',done=!!(t&&t.completed);
-    return {id,title:n.title||(t&&t.title)||'(untitled)',desc:n.desc||'',color:mapColorOf(pid,nodes,id),start:n.start||'',due,done,inList:!!t,status:done?'done':due&&due<today?'overdue':'open'}};
+  const item=(id,n)=>{const t=n.taskId?tasks[n.taskId]:null,due=t?t.dueDate||'':n.due||'',done=!!t?.completed,desc=t?t.notes||'':n.desc||'';
+    return {id,title:t?.title||n.title||'(untitled)',desc,color:mapColorOf(pid,nodes,id),start:t?t.startDate??n.start??'':n.start||'',due,done,inList:!!t,status:done?'done':due&&due<today?'overdue':'open'}};
   // Topics nest, so each lane lists them depth-first with their depth and path; a topic's span
   // covers everything under it.
   const flat=(tid,tn,depth,path,out)=>{
@@ -2956,6 +3052,7 @@ function pdfKit(paper,orient){
   const th=curTheme();
   const P={ink:[28,31,36],body:[64,70,80],muted:[118,124,134],rule:[208,213,219],line:[208,215,224],dot:[168,175,184],
     acc:hexRgb(th.print),career:hexRgb(th.pc),openyap:hexRgb(th.po),font:th.mono?'courier':'helvetica'};
+  for(const side of SIDES)if(categoryColorOk(trackingCategories[side]?.color))P[side]=hexRgb(trackingCategories[side].color);else if(!P[side])P[side]=P.acc;
   return {doc,P,F:P.font,W:doc.internal.pageSize.getWidth(),H:doc.internal.pageSize.getHeight()};
 }
 function fit(doc,s,w){s=pc(s);if(doc.getTextWidth(s)<=w)return s;while(s.length>1&&doc.getTextWidth(s+'...')>w)s=s.slice(0,-1);return s.trimEnd()+'...'}
@@ -2988,18 +3085,18 @@ function buildReport(o){
   }
   const need=h=>{if(y+h>H-M-10){doc.addPage();head(false);return true}return false};
   head(true);
-  const cnt={career:0,openyap:0};o.items.forEach(e=>cnt[e.side]++);
+  const cnt=sideZeros();o.items.forEach(e=>cnt[e.side]++);
   let s=o.items.length+' task'+(o.items.length===1?'':'s')+' completed';
-  if(o.side==='both')s+=': '+cnt.career+' Career, '+cnt.openyap+' OpenYap';
+  if(o.side==='both')s+=': '+SIDES.map(side=>cnt[side]+' '+SIDE_NAME[side]).join(', ');
   if(o.routine.length)s+='. Plus '+o.routine.length+' recurring check'+(o.routine.length===1?'':'s');
-  setT(k,'normal',11,P.ink);doc.text(pc(s+'.'),M,y);y+=26;
+  setT(k,'normal',11,P.ink);const summary=wrap(doc,s+'.',R-M);doc.text(summary,M,y);y+=summary.length*13+13;
   if(!o.items.length&&!o.routine.length){setT(k,'normal',10.5,P.muted);doc.text('Nothing was completed in this period.',M,y)}
   const sides=o.side==='both'?SIDES:[o.side];
   const colW=R-M-14-122;
   for(const side of sides){
     const list=o.items.filter(e=>e.side===side);if(!list.length)continue;
     if(sides.length>1){
-      need(70);setT(k,'bold',13,P[side]);doc.text(SIDE_NAME[side],M,y);
+      need(70);setT(k,'bold',13,P[side]);doc.text(fit(doc,SIDE_NAME[side],R-M-35),M,y);
       setT(k,'normal',10,P.muted);doc.text(String(list.length),R,y,{align:'right'});
       y+=8;doc.setDrawColor(...P.rule);doc.setLineWidth(.6);doc.line(M,y,R,y);y+=20;
     }
@@ -3048,7 +3145,7 @@ const TPLS=[
    svg:'<svg viewBox="0 0 48 62" aria-hidden="true" fill="none" stroke="currentColor"><rect x=".5" y=".5" width="47" height="61" rx="3" opacity=".45"/><path d="M5 8h38" stroke-width="1.6"/><path d="M5 14h20M5 32h18M5 50h20" stroke-width="1.6"/><path d="M5 19h38M5 23h38M5 27h38M5 37h38M5 41h38M5 45h38M5 55h38M5 59h24" opacity=".45"/></svg>'},
   {id:'review',name:'Weekly review',desc:'Finished and open lists, then prompts for the week ahead.',
    svg:'<svg viewBox="0 0 48 62" aria-hidden="true" fill="none" stroke="currentColor"><rect x=".5" y=".5" width="47" height="61" rx="3" opacity=".45"/><path d="M5 8h38" stroke-width="1.6"/><path d="M5 14h14M27 14h14" stroke-width="1.6"/><path d="M5 19h16M5 23h14M5 27h16M5 31h12M27 19h16M27 23h13M27 27h16M5 41h38M5 45h38M5 53h38M5 57h38" opacity=".45"/></svg>'},
-  {id:'split',name:'Two columns',desc:'Career and OpenYap side by side, lines under each task.',
+  {id:'split',name:'Two columns',desc:'Tracking categories side by side, lines under each task.',
    svg:'<svg viewBox="0 0 48 62" aria-hidden="true" fill="none" stroke="currentColor"><rect x=".5" y=".5" width="47" height="61" rx="3" opacity=".45"/><path d="M5 8h38" stroke-width="1.6"/><path d="M24 12v46" stroke-width="1.2"/><path d="M5 15h12M28 15h12" stroke-width="1.6"/><path d="M5 20h16M5 24h16M5 28h16M28 20h15M28 24h15M28 28h15M5 38h16M5 42h16M28 38h15M28 42h15" opacity=".45"/><path d="M5 33h10M28 33h11" stroke-width="1.6"/></svg>'},
   {id:'dots',name:'Dot grid',desc:'A checklist on top and dot grid for sketching and mapping.',
    svg:'<svg viewBox="0 0 48 62" aria-hidden="true" fill="none" stroke="currentColor"><rect x=".5" y=".5" width="47" height="61" rx="3" opacity=".45"/><path d="M5 8h38" stroke-width="1.6"/><path d="M5 14h16M5 18h12M27 14h14M27 18h10" stroke-width="1.4"/><g fill="currentColor" stroke="none" opacity=".6"><circle cx="6" cy="26" r=".8"/><circle cx="13" cy="26" r=".8"/><circle cx="20" cy="26" r=".8"/><circle cx="27" cy="26" r=".8"/><circle cx="34" cy="26" r=".8"/><circle cx="41" cy="26" r=".8"/><circle cx="6" cy="33" r=".8"/><circle cx="13" cy="33" r=".8"/><circle cx="20" cy="33" r=".8"/><circle cx="27" cy="33" r=".8"/><circle cx="34" cy="33" r=".8"/><circle cx="41" cy="33" r=".8"/><circle cx="6" cy="40" r=".8"/><circle cx="13" cy="40" r=".8"/><circle cx="20" cy="40" r=".8"/><circle cx="27" cy="40" r=".8"/><circle cx="34" cy="40" r=".8"/><circle cx="41" cy="40" r=".8"/><circle cx="6" cy="47" r=".8"/><circle cx="13" cy="47" r=".8"/><circle cx="20" cy="47" r=".8"/><circle cx="27" cy="47" r=".8"/><circle cx="34" cy="47" r=".8"/><circle cx="41" cy="47" r=".8"/><circle cx="6" cy="54" r=".8"/><circle cx="13" cy="54" r=".8"/><circle cx="20" cy="54" r=".8"/><circle cx="27" cy="54" r=".8"/><circle cx="34" cy="54" r=".8"/><circle cx="41" cy="54" r=".8"/></g></svg>'}
@@ -3144,6 +3241,8 @@ function tplBlocks(k){
   for(let i=0;i<k.o.blanks;i++){doc.addPage();const t=dumpHead(k,'Notes');ruled(k,M,W-M,t+30,H-M,G)}
 }
 function tplReview(k){
+  if(k.d.sides.length>2){const all=k.d.sides;for(let i=0;i<all.length;i+=2){if(i)k.doc.addPage();tplReview({...k,d:{...k.d,sides:all.slice(i,i+2)}})}return}
+
   const {doc,P,W,H,M}=k,sides=k.d.sides,gap=24,cw=(W-2*M-gap*(sides.length-1))/sides.length;
   const y0=dumpHead(k,'Weekly review')+28,bottom=H-M-10;let colEnd=y0;
   sides.forEach((side,i)=>{
@@ -3178,6 +3277,8 @@ function tplReview(k){
   for(let i=0;i<k.o.blanks;i++){doc.addPage();const t=dumpHead(k,'Notes');ruled(k,M,W-M,t+30,H-M,G)}
 }
 function tplSplit(k){
+  if(k.d.sides.length>2){const all=k.d.sides;for(let i=0;i<all.length;i+=2){if(i)k.doc.addPage();tplSplit({...k,d:{...k.d,sides:all.slice(i,i+2)}})}return}
+
   const {doc,P,W,H,M}=k,sides=k.d.sides,gap=22,cw=(W-2*M-gap*(sides.length-1))/sides.length,G=22,bottom=H-M;
   const queues=sides.map(s=>(k.d.groups.find(g=>g.side===s)||{tasks:[]}).tasks.slice());
   const blockH=t=>{setT(k,'normal',10,P.ink);return wrap(doc,t.title,cw-12,3).length*12.5+(taskMeta(t)?10:0)+3*G+8};
@@ -3204,6 +3305,8 @@ function tplSplit(k){
   for(let i=0;i<k.o.blanks;i++){doc.addPage();const t=dumpHead(k,'Notes');ruled(k,M,W-M,t+30,H-M,G)}
 }
 function tplDots(k){
+  if(k.d.sides.length>2){const all=k.d.sides;for(let i=0;i<all.length;i+=2){if(i)k.doc.addPage();tplDots({...k,d:{...k.d,sides:all.slice(i,i+2)}})}return}
+
   const {doc,P,W,H,M}=k,sides=k.d.sides,gap=22,cw=(W-2*M-gap*(sides.length-1))/sides.length,L=14;
   const grid=(y1)=>{doc.setFillColor(...P.dot);for(let y=y1;y<=H-M;y+=18)for(let x=M;x<=W-M+.1;x+=18)doc.circle(x,y,.6,'F')};
   const lists=sides.map(s=>(k.d.groups.find(g=>g.side===s)||{tasks:[]}).tasks.slice());
@@ -3290,7 +3393,7 @@ function renderExport(){
   }else if(EX.tab==='report'){
     body.innerHTML=`<div style="display:grid;gap:16px">
       <div class="fld"><span class="lbl">Period</span><div class="seg" role="group" aria-label="Period">${segHTML(RANGES,EX.range,'data-exrange')}</div></div>
-      <div class="fld"><span class="lbl">Side</span><div class="seg" role="group" aria-label="Side">${segHTML([['both','Both'],['career','Career'],['openyap','OpenYap']],EX.side,'data-exside')}</div></div>
+      <div class="fld"><span class="lbl">Side</span><div class="seg" role="group" aria-label="Side">${segHTML([['both','All'],...sideOptions()],EX.side,'data-exside')}</div></div>
       <div class="fld"><label class="lbl" for="exName">Name on report</label><input class="txt" id="exName" value="${esc(EX.name)}" placeholder="Your name and title"></div>
       <div class="fld"><span class="lbl">Include</span><div class="checks"><label class="check"><input type="checkbox" data-exc="notes"${EX.notes?' checked':''}> Task notes</label><label class="check"><input type="checkbox" data-exc="routine"${EX.routine?' checked':''}> <span id="exRoutineLbl">Recurring checks</span></label></div></div>
       <div class="pick-head"><span id="exCount"></span><button class="link" data-ex="all">Select all</button><button class="link" data-ex="none">Clear</button></div>
@@ -3300,7 +3403,7 @@ function renderExport(){
   }else{
     body.innerHTML=`<div style="display:grid;gap:16px">
       <div class="tpls" role="radiogroup" aria-label="Template">${TPLS.map(t=>`<button class="tpl" role="radio" aria-checked="${t.id===EX.tpl}" data-tpl="${t.id}">${t.svg}<span class="tpl-name">${t.name}</span><span class="tpl-desc">${t.desc}</span></button>`).join('')}</div>
-      <div class="fld"><span class="lbl">Tasks</span><div class="seg" role="group" aria-label="Tasks">${segHTML([['both','Both'],['career','Career'],['openyap','OpenYap']],EX.dside,'data-exdside')}</div></div>
+      <div class="fld"><span class="lbl">Tasks</span><div class="seg" role="group" aria-label="Tasks">${segHTML([['both','All'],...sideOptions()],EX.dside,'data-exdside')}</div></div>
       <div class="fld"><span class="lbl">Include</span><div class="checks"><label class="check"><input type="checkbox" data-exc="wins"${EX.wins?' checked':''}> What I finished this week</label></div></div>
       <div class="fld"><span class="lbl">Blank pages</span><div class="seg" role="group" aria-label="Blank pages at the end">${segHTML([['0','None'],['1','1'],['2','2'],['3','3']],String(EX.blanks),'data-exblanks')}</div></div>
       <div class="fld"><span class="lbl">Paper</span><div class="seg" role="group" aria-label="Paper size">${segHTML([['letter','Letter'],['a4','A4']],EX.paper,'data-expaper')}</div></div>
@@ -3318,7 +3421,7 @@ function renderExportLive(){
     $('#exCount').textContent=rows.length?`${inc} of ${rows.length} tasks selected`:'No finished tasks in this period';
     $('#exRoutineLbl').textContent='Recurring checks'+(rout?' ('+rout+')':'');
     const st=pick.scrollTop;
-    pick.innerHTML=rows.length?rows.map(e=>{const d=new Date(e.completedAt);return `<label class="pick-row"><input type="checkbox" data-key="${esc(e.key)}"${included(e)?' checked':''}><span class="pk-date">${DOW[d.getDay()]} ${d.getMonth()+1}/${d.getDate()}</span><span class="pk-title">${esc(e.title)}</span><span class="pk-tag">${e.private?'Private':SIDE_NAME[e.side]}</span></label>`}).join('')
+    pick.innerHTML=rows.length?rows.map(e=>{const d=new Date(e.completedAt);return `<label class="pick-row"><input type="checkbox" data-key="${esc(e.key)}"${included(e)?' checked':''}><span class="pk-date">${DOW[d.getDay()]} ${d.getMonth()+1}/${d.getDate()}</span><span class="pk-title">${esc(e.title)}</span><span class="pk-tag">${e.private?'Private':esc(SIDE_NAME[e.side])}</span></label>`}).join('')
       :'<div class="pick-empty">Pick another period, or log finished work on the Done tab.</div>';
     pick.scrollTop=st;
   }else if(EX.tab==='brief'){
@@ -3421,7 +3524,7 @@ function moveDragged(side){
   if(!dragState||!side||side===dragState.source)return;
   const t=tasks[dragState.id];if(!t)return;
   setTaskSide(dragState.id,side);
-  toast(`Moved ${t.title||'task'} to ${SIDE_NAME[side]}`);
+  toast(`Moved ${t.title||'task'} to ${esc(SIDE_NAME[side])}`);
   const target=$(`.side[data-side="${side}"]`);fx(target,{scale:[.99,1],duration:360,ease:'out(4)'});
 }
 function endDrag(){
@@ -3484,6 +3587,8 @@ document.addEventListener('click',e=>{
   const dt=t.closest('[data-dash="table"]');if(dt){dashTable=!dashTable;LS.set('oym_dashtable',dashTable?'1':'0');renderDash();return}
   const tm=t.closest('[data-tl="more"]');if(tm){tlPrevStart=tlStartKey();tlWeeks+=4;renderTimeline(true);return}
   const cn=t.closest('[data-cal-nav]');if(cn){const now=new Date();if(cn.dataset.calNav==='today'){calCursor=new Date(now.getFullYear(),now.getMonth(),1);calSelected=ymd(now)}else{const n=cn.dataset.calNav==='prev'?-1:1;calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()+n,1);calSelected=ymd(calCursor)}renderCalendar(true);googleCalendarLoad();return}
+  const ge=t.closest('[data-google-event]');if(ge){calGoogleSelected=Number(ge.dataset.googleEvent);renderCalendar();$('#calGoogleDetail')?.scrollIntoView({block:'nearest'});$('#calGoogleTitle')?.focus({preventScroll:true});return}
+  if(t.closest('[data-google-detail-close]')){calGoogleSelected=-1;renderCalendar();return}
   const cd=t.closest('[data-cal-day]');if(cd){calSelected=cd.dataset.calDay;renderCalendar(true);return}
   if(t.closest('#exportBtn')){openExport();return}
   if(t.closest('#themeBtn')){$('#themePop').hidden?openThemes():closeThemes();return}
@@ -3535,7 +3640,7 @@ document.addEventListener('input',e=>{
   else if(t.id==='exBTitle'){EX.btitle=t.value;}
   else if(t.id==='mapPickQ'){mapPickQ=t.value;mapDelAsk='';$('#mpPickList').innerHTML=mapPickListHTML()}
 });
-document.addEventListener('focusout',e=>{if(deferred&&e.target.closest&&e.target.closest('.editor'))setTimeout(()=>{if(deferred)render()},0)});
+document.addEventListener('focusout',e=>{if(deferred&&e.target.closest&&e.target.closest('.editor,.mp-panel,.category-forms'))setTimeout(()=>{if(deferred)render()},0)});
 // A re-render between mousedown and mouseup would swallow the click, so hold renders until the pointer lifts.
 document.addEventListener('pointerdown',()=>{pointerDown=true},true);
 const liftPointer=()=>{pointerDown=false;if(deferred)setTimeout(()=>{if(deferred)render()},0)};
@@ -3556,7 +3661,7 @@ document.addEventListener('keydown',e=>{
     const q=t.value.trim().toLowerCase(),m=mapProjects().filter(([,p])=>(p.name||'').toLowerCase().includes(q));
     if(q&&!m.length){mapPickOpen=false;mapNewProject(t.value)}else if(m.length){mapPickOpen=false;mapPick(m[0][0])}return}
   if(e.key==='Enter'&&t.classList&&t.classList.contains('e-title')){e.preventDefault();saveField(t.closest('.editor').dataset.id,'title',t.value);closeEditor();return}
-  if((e.key==='Enter'||e.key===' ')&&t.matches&&t.matches('[role="button"][data-act],[role="button"][data-open]')){e.preventDefault();t.click();return}
+  if((e.key==='Enter'||e.key===' ')&&t.matches&&t.matches('[role="button"][data-act],[role="button"][data-open],[role="button"][data-nid]')){e.preventDefault();t.click();return}
   if(t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;
   if(e.metaKey||e.ctrlKey||e.altKey)return;
   if(e.key==='n'&&$('#exBack').hidden){
@@ -3580,11 +3685,11 @@ function chronoDay(s){if(!/^\d{4}-\d{2}-\d{2}$/.test(s||''))return null;const d=
 function chronoData(pid=mapPid){
   const items=[],linked=new Set(),nodes=mapNodes(pid);
   for(const [id,n] of Object.entries(nodes)){
-    const t=n.taskId?tasks[n.taskId]:null;if(t)linked.add(n.taskId);
+    const t=n.taskId?tasks[n.taskId]:null;if(t&&linked.has(n.taskId))continue;if(t)linked.add(n.taskId);
     if(mapKindOf(nodes,id)!=='item'&&!n.start&&!n.due)continue;
-    items.push({id,node:true,title:n.title||t?.title||'(untitled)',start:n.start||t?.startDate||'',due:t?t.dueDate||'':n.due||'',done:!!t?.completed});
+    items.push({id,node:true,title:t?.title||n.title||'(untitled)',desc:t?t.notes||'':n.desc||'',start:t?t.startDate??n.start??'':n.start||'',due:t?t.dueDate||'':n.due||'',done:!!t?.completed});
   }
-  for(const [id,t] of Object.entries(tasks))if(t&&t.projectId===pid&&!linked.has(id))items.push({id,node:false,title:t.title||'(untitled)',start:t.startDate||'',due:t.dueDate||'',done:!!t.completed});
+  for(const [id,t] of Object.entries(tasks))if(t&&t.projectId===pid&&!linked.has(id))items.push({id,node:false,title:t.title||'(untitled)',desc:t.notes||'',start:t.startDate||'',due:t.dueDate||'',done:!!t.completed});
   for(const t of items){const a=chronoDay(t.start),b=chronoDay(t.due);t.day=a??b;t.end=b??a;t.invalid=(t.start&&a===null)||(t.due&&b===null)?'invalid':a!==null&&b!==null&&b<a?'reversed':'';if(t.invalid)t.day=null}
   const dated=items.filter(t=>t.day!==null).sort((a,b)=>a.day-b.day||a.end-b.end||a.title.localeCompare(b.title)||a.id.localeCompare(b.id));
   const lo=dated.length?Math.min(...dated.map(t=>t.day)):0,hi=dated.length?Math.max(...dated.map(t=>t.end)):0;
@@ -3592,21 +3697,136 @@ function chronoData(pid=mapPid){
 }
 const chronoDate=d=>new Date(d*86400000).toISOString().slice(0,10);
 function chronoControls(){const c=chronoModel=chronoData();return `<div class="chrono-controls" aria-label="Schedule preview"><button class="btn" data-chrono-play ${c.dated.length?'':'disabled'}>${chronoFrame?'Pause':'Play timeline'}</button><button class="btn" data-chrono-reset>Reset</button><label>Timeline <input type="range" min="0" max="1000" step="1" value="${Math.round(chronoProgress*1000)}" data-chrono-scrub aria-label="Preview date" ${c.dated.length?'':'disabled'}></label><output data-chrono-date>${c.dated.length?chronoDate(c.lo+Math.round(chronoProgress*(c.hi-c.lo))):'No scheduled dates'}</output><span class="hint">Schedule preview · no tasks are changed</span></div>`}
+let orbitPage=0,orbitTask='';
+function mapLocalTime(iso){const d=iso?new Date(iso):new Date();return Number.isFinite(+d)?ymd(d)+'T'+pad(d.getHours())+':'+pad(d.getMinutes()):''}
+function mapCompletionISO(value){
+  if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value||''))throw new Error('Choose a completion date and time.');
+  const d=new Date(value);if(!Number.isFinite(+d)||mapLocalTime(d.toISOString())!==value)throw new Error('That local date or time does not exist.');
+  if(+d>Date.now())throw new Error('Completion must be now or in the past.');
+  return d.toISOString();
+}
+function mapTaskControls(tid,nid){
+  const t=tasks[tid],done=!!t?.completed,repeat=t&&(t.repeat||'none')!=='none';
+  // An old completed record with no timestamp stays unknown until its owner supplies one.
+  const value=done?(t.completedAt?mapLocalTime(t.completedAt):''):mapLocalTime();
+  return `<div class="map-task-controls" data-completion-task="${esc(tid)}" data-completion-node="${esc(nid)}"><b>${done?'Completed':repeat?'Repeating task':'Task'}</b>${done&&!t.completedAt?'<p class="hint">Completion time was not recorded.</p>':''}<label class="fld"><span class="lbl">${done?'Completed at':'Complete at'} · local time</span><input class="txt" type="datetime-local" data-completion-time value="${value}" max="${mapLocalTime()}"></label><button class="btn primary" data-map-complete="save">${done?'Save completion time':repeat?'Complete this occurrence':'Mark complete'}</button>${done?'<button class="btn" data-map-complete="reopen">Reopen task</button>':''}<p class="hint" data-completion-error role="status">${repeat?'Logs this occurrence and schedules the next one.':t?'Shared with Tasks, Done and Calendar.':'Completing creates this task in your list.'}</p></div>`;
+}
+function mapChecklist(pid,nodes,id){
+  const ids=mapDescendants(nodes,id).filter(k=>mapKindOf(nodes,k)==='item');if(!ids.length)return '';
+  return `<div class="map-checklist"><b>Tasks · ${ids.length}</b>${ids.map(k=>{const n=nodes[k],t=tasks[n.taskId];return `<button class="btn" data-map-item="${esc(k)}">${t?.completed?'✓':'○'} ${esc(t?.title||n.title||'(untitled)')}${t?.completedAt?`<small> · ${esc(mapLocalTime(t.completedAt).replace('T',' '))}</small>`:''}</button>`}).join('')}</div>`;
+}
+async function mapSetCompletion(pid,nid,tid,action,value){
+  if(!activeUser||!projects[pid])throw new Error('Open a signed-in project first.');
+  const n=nid?mapNodes(pid)[nid]:null;
+  if(nid&&(!n||mapKindOf(mapNodes(pid),nid)!=='item'))throw new Error('This item is no longer available.');
+  if(n){tid=n.taskId||'';if(tid&&!tasks[tid])throw new Error('Linked task was removed. Add this item to your list again first.');}
+  let t=tasks[tid];const up={};
+  if(!t){if(!n||action==='reopen')throw new Error('Task is no longer available.');tid=newKey('todo/tasks');t=mapTaskFor(pid,n);up[TP(tid)]=t;up[MP(pid,nid)+'/taskId']=tid;}
+  const P=TP(tid),rep=t.repeat||'none';
+  const field=(f,v)=>{if(up[P])up[P][f]=v;else up[P+'/'+f]=v};
+  if(action==='reopen'){
+    field('completed',false);field('completedAt','');field('progress',0);field('logHidden',null);
+    for(const [hid,h] of Object.entries(hist))if(h&&h.taskId===tid&&!h.subId)up['todo/history/'+hid]=null;
+  }else{
+    const iso=mapCompletionISO(value),spent=(t.timeSpent||0)+sessionMs(t);
+    const row={title:t.title||'',notes:t.notes||'',difficulty:t.difficulty||'medium',category:t.category||'work',priority:t.priority||'medium',completedAt:iso,projectId:t.projectId||'',projectName:projName(t.projectId),side:taskSide(t)};
+    if(taskPrivate(t))row.private=true;if(spent)row.timeSpent=spent;
+    const histories=Object.entries(hist).filter(([,h])=>h&&h.taskId===tid&&!h.subId);
+    if(rep==='none'){
+      row.taskId=tid;field('completed',true);field('completedAt',iso);field('progress',100);field('logHidden',null);
+      if(spent)field('timeSpent',spent);
+      // One-shot date edits update the same log entry; duplicates must not survive reopen.
+      const hid=histories[0]?.[0]||newKey('todo/history');up['todo/history/'+hid]=row;
+      for(const [other] of histories.slice(1))up['todo/history/'+other]=null;
+    }else{
+      const td=ymd(new Date(iso));field('dueDate',nextDueDate(t.dueDate&&t.dueDate>td?t.dueDate:td,rep));field('progress',0);field('timeSpent',null);
+      up['todo/history/'+newKey('todo/history')]=row;
+    }
+    field('doing',null);field('doingSince',null);
+  }
+  await upd(up);
+}
+async function mapCompleteAction(button){
+  const el=button.closest('.map-task-controls');if(!el||el.dataset.saving)return;
+  const epoch=authEpoch,pid=mapPid;el.dataset.saving='true';button.disabled=true;
+  try{await mapSetCompletion(pid,el.dataset.completionNode,el.dataset.completionTask,button.dataset.mapComplete,$('[data-completion-time]',el).value);if(epoch===authEpoch&&pid===mapPid)renderMap()}
+  catch(e){if(epoch===authEpoch&&el.isConnected)$('[data-completion-error]',el).textContent=e.message}
+  finally{delete el.dataset.saving;button.disabled=false}
+}
+
+// Markdown is derived on demand from canonical nodes/tasks, never a second mutable store.
+function mapMarkdown(pid){
+  const P=projects[pid];if(!P)throw new Error('Choose a project first.');
+  const text=v=>String(v||'').replace(/\\/g,'\\\\').replace(/([`*_{}\[\]<>#|])/g,'\\$1').replace(/[\r\n]+/g,' ');
+  const nodes=mapNodes(pid),side=projSideOf(pid),lines=[`# ${text(maps[pid]?.title||P.name)}`,'',`- Project: ${text(P.name)}`,`- Project ID: ${text(pid)}`,`- Status: ${text(P.status||'active')}`,`- Tracking category: ${text(SIDE_NAME[side])} (ID: ${text(side)})`];
+  lines.push(`- Private: ${projSide(pid)?.private?'yes':'no'}`);if(categoryColorOk(trackingCategories[side]?.color))lines.push(`- Category color: ${trackingCategories[side].color}`);
+  if(P.completedAt)lines.push(`- Project completed at: ${text(P.completedAt)}`);
+  if(P.description)lines.push('',...String(P.description).split('\n').map(l=>'> '+text(l)));
+  lines.push('','Dates use YYYY-MM-DD; completion timestamps include their UTC offset. Missing dates are unknown. Checkboxes reflect actual completion, not timeline playback.','');
+  const visited=new Set(),linked=new Set();
+  const taskLine=(n,id,depth)=>{
+    const t=n.taskId?tasks[n.taskId]:null;if(t)linked.add(n.taskId);
+    const pad='  '.repeat(depth),title=t?.title||n.title||'(untitled)',desc=t?t.notes||'':n.desc||'';
+    lines.push(`${pad}- [${t?.completed?'x':' '}] ${text(title)}`,`${pad}  - ${id?'Node ID: '+text(id)+'; ':''}${n.taskId?'Task ID: '+text(n.taskId):'Task record not yet created'}`);
+    const start=t?t.startDate??n.start:n.start,due=t?t.dueDate:n.due;
+    if(start)lines.push(`${pad}  - Start: ${text(start)}`);if(due)lines.push(`${pad}  - Due: ${text(due)}`);
+    if(t&&taskPrivate(t))lines.push(`${pad}  - Private: yes`);
+    if(t?.completed)lines.push(`${pad}  - Completed at: ${t.completedAt?text(t.completedAt):'unknown (not recorded)'}`);
+    if(t?.repeat&&t.repeat!=='none')lines.push(`${pad}  - Repeats: ${text(t.repeat)} (checkbox describes the current occurrence)`);
+    if(desc)lines.push(...String(desc).split('\n').map(l=>`${pad}  > ${text(l)}`));
+  };
+  const walk=(id,depth)=>{if(visited.has(id))return;visited.add(id);const n=nodes[id];if(!n)return;
+    if(mapKindOf(nodes,id)==='item'){taskLine(n,id,depth);return}
+    const pad='  '.repeat(depth);lines.push(`${pad}- **${text(n.title||'(untitled)')}**`,`${pad}  - Node ID: ${text(id)}`);
+    if(n.start)lines.push(`${pad}  - Start: ${text(n.start)}`);if(n.due)lines.push(`${pad}  - Finish: ${text(n.due)}`);
+    if(n.desc)lines.push(...String(n.desc).split('\n').map(l=>`${pad}  > ${text(l)}`));
+    for(const [kid] of mapKids(nodes,id))walk(kid,depth+1);
+  };
+  lines.push('## Plan','');for(const [id] of mapKids(nodes,'root'))walk(id,0);
+  const detached=Object.keys(nodes).filter(id=>!visited.has(id));if(detached.length){lines.push('','## Unattached map nodes','');for(const id of detached)walk(id,0)}
+  const unplaced=Object.entries(tasks).filter(([id,t])=>t&&t.projectId===pid&&!linked.has(id));
+  if(unplaced.length){lines.push('','## Tasks not placed on the map','');for(const [id,t] of unplaced)taskLine({taskId:id,title:t.title},'',0)}
+  return lines.join('\n')+'\n';
+}
+function mapDownloadMarkdown(){
+  const content=mapMarkdown(mapPid),url=URL.createObjectURL(new Blob([content],{type:'text/markdown;charset=utf-8'})),a=document.createElement('a');
+  a.href=url;a.download=(projects[mapPid]?.name||'plan').replace(/[^a-z0-9_-]+/gi,'-')+'.md';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function projectSetComplete(pid,complete){
+  if(!projects[pid])return Promise.resolve();
+  return upd({['todo/projects/'+pid+'/status']:complete?'done':'active',['todo/projects/'+pid+'/completedAt']:complete?new Date().toISOString():null});
+}
+function projectStatusHTML(pid,P){return P?`<div class="project-status"><span>${P.status==='done'?'Project completed':'Active project'}</span><button class="btn" data-project-complete="${esc(pid)}" data-project-done="${P.status==='done'}">${P.status==='done'?'Reopen project':'Complete project'}</button></div>`:''}
+function mapDescriptionToggle(){return `<button class="btn" data-map-descriptions aria-pressed="${mapDescriptions}">${mapDescriptions?'Hide':'Show'} descriptions</button>`}
+function chronoTaskButton(t,i,dated,cls='chrono-task'){
+  return `<button class="${cls}" data-chrono-open="${esc(t.id)}" data-chrono-node="${t.node}"><span>${dated?(i+1)+'. ':''}${esc(t.title)}</span>${mapDescriptions&&t.desc?`<span class="orbit-description">${esc(t.desc)}</span>`:''}<small>${t.invalid?(t.invalid==='reversed'?'End precedes start — edit dates':'Invalid date — edit dates'):dated?esc(t.start&&t.due?t.start+' → '+t.due:t.start||t.due):'Unscheduled'}${t.done?' · Completed':''}</small></button>`;
+}
 function renderClock(){
-  const c=chronoModel=chronoData(),P=projects[mapPid],angle=d=>((d-c.lo)/c.span*.92*360)-90;
-  // One marker per date: coincident tasks share a numbered range, rather than hiding
-  // each other on the dial. The ordered list keeps every task individually accessible.
-  const buckets=new Map();c.dated.forEach((t,i)=>{if(!buckets.has(t.day))buckets.set(t.day,[]);buckets.get(t.day).push(i)});
-  const points=[...buckets].map(([day,ids],j)=>{const a=angle(day)*Math.PI/180,r=160-(j%4)*24,label=ids.length===1?String(ids[0]+1):(ids[0]+1)+'–'+(ids.at(-1)+1);return `<g data-chrono-point="${ids[0]}"><title>${esc(chronoDate(day)+' · '+ids.length+' scheduled tasks')}</title><line x1="220" y1="220" x2="${220+Math.cos(a)*r}" y2="${220+Math.sin(a)*r}"/><circle cx="${220+Math.cos(a)*r}" cy="${220+Math.sin(a)*r}" r="${ids.length===1?11:17}"/><text x="${220+Math.cos(a)*r}" y="${224+Math.sin(a)*r}" text-anchor="middle">${label}</text></g>`}).join('');
-  const row=(t,i,dated)=>`<li data-chrono-row="${dated?i:'undated'}"><button class="chrono-task" data-chrono-open="${esc(t.id)}" data-chrono-node="${t.node}"><span>${dated?(i+1)+'. ':''}${esc(t.title)}</span><small>${t.invalid?(t.invalid==='reversed'?'End precedes start — edit dates':'Invalid date — edit dates'):dated?esc(t.start&&t.due?t.start+' → '+t.due:t.start||t.due):'Add a start or due date'}${t.done?' · Completed':''}</small></button></li>`;
-  $('#mapHost').innerHTML=`<div class="map-bar">${mapSwitchHTML(mapPid,P)}<div class="map-tools"><button class="btn" data-chrono-mode="map">Mind map</button><button class="btn primary" data-chrono-gantt>Gantt timeline</button></div></div>${chronoControls()}<div class="clock-layout"><section class="clock-face"><h2>Clock chronology</h2><p class="hint">Earliest at the top, later dates clockwise. Shared dates share a marker. Rings separate nearby dates.</p><svg viewBox="0 0 440 440" role="img" aria-label="Tasks arranged clockwise by their scheduled dates"><circle class="clock-ring" cx="220" cy="220" r="184"/><line class="clock-hand" x1="220" y1="220" x2="220" y2="32"/>${points}<circle cx="220" cy="220" r="6" fill="currentColor"/><text x="220" y="254" text-anchor="middle" data-chrono-date></text></svg><p class="hint">${c.dated.length?chronoDate(c.lo)+' to '+chronoDate(c.hi):'Give tasks dates to begin your timeline.'}</p></section><section class="clock-list"><h3>Scheduled · ${c.dated.length}</h3><ol>${c.dated.map((t,i)=>row(t,i,true)).join('')}</ol><h3>Unscheduled · ${c.undated.length}</h3><ul>${c.undated.map((t,i)=>row(t,i,false)).join('')}</ul></section></div>`;
+  const previous=$('.orbit-viewport'),scroll=previous?{left:previous.scrollLeft,top:previous.scrollTop}:null;
+  const c=chronoModel=chronoData(),P=projects[mapPid],pages=Math.max(1,Math.ceil(c.dated.length/8));
+  orbitPage=Math.max(0,Math.min(orbitPage,pages-1));
+  const first=orbitPage*8,visible=c.dated.slice(first,first+8);
+  const tiles=visible.map((t,j)=>`<div class="orbit-slot" data-orbit-index="${first+j}" data-orbit-angle="${j/visible.length*360-90}">${chronoTaskButton(t,first+j,true,'orbit-tile')}</div>`).join('');
+  const row=(t,i,dated)=>`<li data-chrono-row="${dated?i:'undated'}">${chronoTaskButton(t,i,dated)}</li>`;
+  const selected=orbitTask&&tasks[orbitTask];
+  const panel=selected?`<div class="mp-panel" data-orbit-task="${esc(orbitTask)}"><div class="mp-ph"><b>Task</b><button class="btn" data-orbit-close>Close</button></div><div class="mp-pb"><h3>${esc(selected.title)}</h3><p>${esc(selected.notes||'')}</p>${mapTaskControls(orbitTask,'')}<button class="btn" data-open="${esc(orbitTask)}">Edit task</button></div></div>`:mapPanelHTML(mapPid,mapNodes(mapPid));
+  $('#mapHost').innerHTML=`<div class="map-bar">${mapSwitchHTML(mapPid,P)}${projectStatusHTML(mapPid,P)}<div class="map-tools"><button class="btn" data-chrono-mode="map">Mind map</button>${mapDescriptionToggle()}<button class="btn" data-map-markdown>Download Markdown</button><button class="btn" data-map-copy>Copy Markdown</button><button class="btn primary" data-chrono-gantt>Gantt timeline</button></div></div>${chronoControls()}<div class="orbit-events" aria-label="Scheduled events">${c.dated.map((t,i)=>`<button class="btn" data-chrono-jump="${i}">${esc(chronoDate(t.day))} · ${esc(t.title)}</button>`).join('')}</div><div class="clock-layout"><section class="orbit-section"><h2>Chronology</h2><p class="hint">Tasks run clockwise around your main topic. Play the timeline to bring the plan to life.</p><div class="orbit-viewport" tabindex="0" aria-label="Task orbit. Scroll to explore; every task is also listed below."><div class="orbit-scene"><div class="orbit-track"></div><div class="orbit-center"><small>Main topic</small><strong>${esc(maps[mapPid]?.title||P.name)}</strong><output data-orbit-active aria-live="off"></output></div>${tiles}</div></div>${pages>1?`<div class="orbit-pages"><button class="btn" data-orbit-page="-1" ${orbitPage?'':'disabled'}>Previous</button><span>Tasks ${first+1}–${first+visible.length} of ${c.dated.length}</span><button class="btn" data-orbit-page="1" ${orbitPage+1<pages?'':'disabled'}>Next</button></div>`:''}<p class="hint">${reduceMotion()?'Reduced motion: tiles stay still. Scrub or select an event to explore.':'Tiles stay upright while the orbit rotates.'}</p></section><section class="clock-list"><h3>Scheduled · ${c.dated.length}</h3><ol>${c.dated.map((t,i)=>row(t,i,true)).join('')}</ol><h3>Unscheduled · ${c.undated.length}</h3><ul>${c.undated.map((t,i)=>row(t,i,false)).join('')}</ul></section></div>${panel}`;
+  const viewport=$('.orbit-viewport');viewport.scrollLeft=scroll?scroll.left:Math.max(0,(viewport.scrollWidth-viewport.clientWidth)/2);viewport.scrollTop=scroll?scroll.top:Math.max(0,(viewport.scrollHeight-viewport.clientHeight)/2);
   chronoPaint();
 }
+window.addEventListener('resize',()=>{const el=$('.orbit-viewport');if(el){el.scrollLeft=Math.max(0,(el.scrollWidth-el.clientWidth)/2);el.scrollTop=Math.max(0,(el.scrollHeight-el.clientHeight)/2)}});
 function chronoPaint(){
   const c=chronoModel||chronoData(),day=c.lo+chronoProgress*(c.hi-c.lo),date=c.dated.length?chronoDate(Math.round(day)):'No scheduled dates';
   $$('[data-chrono-date]').forEach(el=>el.textContent=date);$$('[data-chrono-scrub]').forEach(el=>el.value=Math.round(chronoProgress*1000));
   $$('[data-chrono-play]').forEach(el=>el.textContent=chronoFrame?'Pause':'Play timeline');
-  $('.clock-hand')?.setAttribute('transform',`rotate(${chronoProgress*331.2} 220 220)`);
+  const rotation=reduceMotion()?0:chronoProgress*360;
+  $$('[data-orbit-angle]').forEach(el=>{const angle=(+el.dataset.orbitAngle+rotation)*Math.PI/180;el.style.transform=`translate(${Math.cos(angle)*245}px,${Math.sin(angle)*245}px)`});
+  const active=c.dated.filter(t=>t.day<=day).at(-1);
+  if(chronoFrame&&view==='map'&&mapPresentation==='clock'&&active){const page=Math.floor(c.dated.indexOf(active)/8);if(page!==orbitPage){orbitPage=page;renderClock();return}}
+  $$('[data-orbit-active]').forEach(el=>el.textContent=active?active.title:'No scheduled tasks');
+  $$('[data-orbit-index]').forEach(el=>el.classList.toggle('active',c.dated[+el.dataset.orbitIndex]===active));
+  $$('[data-chrono-jump]').forEach(el=>el.classList.toggle('primary',c.dated[+el.dataset.chronoJump]===active));
   $$('[data-chrono-point],[data-chrono-row]').forEach(el=>{const t=c.dated[+(el.dataset.chronoPoint??el.dataset.chronoRow)];el.classList.toggle('reached',!!t&&t.day<=day)});
   const head=$('.gt-playhead');if(head){head.style.left=(gtLeft()+(day-chronoDay(head.dataset.chronoOrigin))*Number(head.dataset.chronoPx))+'px';head.hidden=!c.dated.length}
   const byId=new Map(c.dated.filter(t=>t.node).map(t=>[t.id,t]));
@@ -3622,18 +3842,35 @@ document.addEventListener('click',e=>{
   if(t.hasAttribute('data-chrono-gantt'))setView('timeline');
   if(t.hasAttribute('data-chrono-play')){if(chronoFrame)chronoPause();else if(chronoData().dated.length){if(chronoProgress>=1)chronoProgress=0;chronoFrame=requestAnimationFrame(chronoTick);chronoPaint()}}
   if(t.hasAttribute('data-chrono-reset')){chronoPause();chronoProgress=0;chronoPaint()}
-  if(t.hasAttribute('data-chrono-open')){chronoPause();if(t.dataset.chronoNode==='true'){mapPresentation='map';mapSel=t.dataset.chronoOpen;renderMap()}else{setView('tasks');openEditor(t.dataset.chronoOpen)}}
+  if(t.hasAttribute('data-chrono-open')){chronoPause();orbitTask=t.dataset.chronoNode==='true'?'':t.dataset.chronoOpen;mapSel=t.dataset.chronoNode==='true'?t.dataset.chronoOpen:'';renderMap()}
+  if(t.hasAttribute('data-map-descriptions')){mapDescriptions=!mapDescriptions;if(mapPresentation==='map'){mapCam[mapPid]=mapFitCam(mapLayout(mapNodes(mapPid)));mapPrev=null}renderMap()}
+  if(t.hasAttribute('data-orbit-page')){chronoPause();orbitPage+=+t.dataset.orbitPage;renderClock()}
+  if(t.hasAttribute('data-orbit-close')){orbitTask='';renderClock()}
+  if(t.hasAttribute('data-chrono-jump')){chronoPause();const c=chronoData(),i=+t.dataset.chronoJump;chronoProgress=(c.dated[i].day-c.lo)/c.span;orbitPage=Math.floor(i/8);renderClock()}
+  if(t.hasAttribute('data-map-item')){orbitTask='';mapSel=t.dataset.mapItem;renderMap()}
+  if(t.hasAttribute('data-map-complete'))mapCompleteAction(t);
+  if(t.hasAttribute('data-project-complete')){projectSetComplete(t.dataset.projectComplete,t.dataset.projectDone!=='true').catch(()=>{})}
+  if(t.hasAttribute('data-map-markdown'))mapDownloadMarkdown();
+  if(t.hasAttribute('data-map-copy')){const epoch=authEpoch;Promise.resolve().then(()=>navigator.clipboard.writeText(mapMarkdown(mapPid))).then(()=>{if(epoch===authEpoch)toast('Markdown copied')}).catch(()=>{if(epoch===authEpoch)toast('Copy unavailable. Use Download Markdown.')})}
+  if(t.hasAttribute('data-category-toggle')){categoryEditor=!categoryEditor;renderTasks()}
+
+
 });
-document.addEventListener('input',e=>{if(e.target.hasAttribute('data-chrono-scrub')){chronoPause();chronoProgress=Number(e.target.value)/1000;chronoPaint()}});
+document.addEventListener('input',e=>{if(e.target.hasAttribute('data-chrono-scrub')){chronoPause();chronoProgress=Number(e.target.value)/1000;const c=chronoData(),day=c.lo+chronoProgress*(c.hi-c.lo),i=c.dated.findLastIndex(t=>t.day<=day);if(view==='map'&&mapPresentation==='clock'&&i>=0&&Math.floor(i/8)!==orbitPage){orbitPage=Math.floor(i/8);renderClock()}else chronoPaint()}});
+
+document.addEventListener('submit',async e=>{
+  const form=e.target.closest('[data-category-form]');if(!form)return;e.preventDefault();
+  const epoch=authEpoch;try{await saveTrackingCategory(form.dataset.categoryForm,form.elements.name.value,form.elements.color.value);if(epoch===authEpoch)renderTasks()}catch(err){if(epoch===authEpoch&&$('[data-category-error]'))$('[data-category-error]').textContent=err.message}
+});
 
 // Calendar authorization is separate from Firebase identity. Tokens and fetched events live
 // only in this tab; stale responses are ignored after sign-out, month change or disconnect.
 const GOOGLE_CAL_SCOPE='https://www.googleapis.com/auth/calendar.events.readonly';
 let googleToken='',googleEvents=[],googleExpiry=0,googleExpiryTimer=0,googleRequest=0,googleAbort=null,googleStatus='Not connected',googleLoadedMonth='';
 function googleCalendarClear(message='Not connected'){
-  googleRequest++;googleAbort?.abort();googleAbort=null;clearTimeout(googleExpiryTimer);googleToken='';googleExpiry=0;googleEvents=[];googleLoadedMonth='';googleStatus=message;
+  googleRequest++;googleAbort?.abort();googleAbort=null;clearTimeout(googleExpiryTimer);googleToken='';googleExpiry=0;googleEvents=[];calGoogleSelected=-1;googleLoadedMonth='';googleStatus=message;
 }
-function googleCalendarControls(){return `<div class="google-calendar"><div><b>Google Calendar</b><p class="hint">${esc(googleStatus)} · Primary calendar, read only. Dates display in your device time zone.</p></div><button class="btn" data-google-connect>${googleToken?'Reconnect':'Connect Google Calendar'}</button>${googleToken?'<button class="btn" data-google-refresh>Refresh</button><button class="btn" data-google-disconnect>Disconnect</button>':''}</div>`}
+function googleCalendarControls(){return `<div class="google-calendar"><div><b>Google Calendar</b><p class="hint">${esc(googleStatus)} · Primary calendar, read only. Dates display in your device time zone. Invites open in Google Calendar for you to review, add guests and send.</p></div><a class="btn" href="${esc(calInviteURL())}" target="_blank" rel="noopener noreferrer">Create invite in Google Calendar</a><button class="btn" data-google-connect>${googleToken?'Reconnect':'Connect Google Calendar'}</button>${googleToken?'<button class="btn" data-google-refresh>Refresh</button><button class="btn" data-google-disconnect>Disconnect</button>':''}</div>`}
 function googleEventDays(e,start,end){
   if(e.status==='cancelled'||!e.start||!e.end)return [];
   const all=!!e.start.date,a=all?parseYmd(e.start.date):new Date(e.start.dateTime),b=all?parseYmd(e.end.date):new Date(e.end.dateTime);
@@ -3675,7 +3912,7 @@ async function googleCalendarLoad(){
   if(!googleToken)return;
   if(Date.now()>=googleExpiry){googleCalendarClear('Session expired. Reconnect to refresh events');renderCalendar();return}
   googleAbort?.abort();googleAbort=new AbortController();const signal=googleAbort.signal,request=++googleRequest,epoch=authEpoch;
-  const month=ymd(calCursor),start=mondayOf(calCursor),end=addDays(start,42);googleEvents=[];googleStatus='Loading calendar…';renderCalendar();
+  const month=ymd(calCursor),start=mondayOf(calCursor),end=addDays(start,42);googleEvents=[];calGoogleSelected=-1;googleStatus='Loading calendar…';renderCalendar();
   try{
     const events=[];let next='';
     do{
@@ -3712,11 +3949,11 @@ function listen(){
   if(listening||!db||!workspace)return;listening=true;
   const epoch=authEpoch;
   const fail=e=>{if(epoch!==authEpoch)return;gateMsg('Could not load your workspace: '+e.message);toast('Could not load your workspace. Check access and reconnect.');};
-  for(const field of ['tasks','history','projects','sides','maps']){
+  for(const field of ['trackingCategories','tasks','history','projects','sides','maps']){
     const ref=db.ref(workspace+'/'+field),cb=s=>{
       if(epoch!==authEpoch)return;
       const value=s.val()||{};
-      if(field==='tasks'){tasks=value;ready.tasks=true}else if(field==='history'){hist=value;ready.hist=true}
+      if(field==='trackingCategories'){if(JSON.stringify(trackingCategories)!==JSON.stringify(value)){trackingCategories=value;applyCategories()}}else if(field==='tasks'){tasks=value;ready.tasks=true}else if(field==='history'){hist=value;ready.hist=true}
       else if(field==='projects')projects=value;else if(field==='sides')sideMap=value;else{maps=value;ready.maps=true}
       schedule();
     };ref.on('value',cb,fail);subscriptions.push([ref,cb]);
@@ -3726,11 +3963,12 @@ function listen(){
 function unlisten(){
   authEpoch++;listening=false;for(const [ref,cb] of subscriptions)ref.off('value',cb);subscriptions=[];
   chronoPause();chronoProgress=0;chronoModel=null;googleCalendarClear();
-  tasks={};hist={};projects={};sideMap={};maps={};_entries=null;ready.tasks=ready.hist=ready.maps=false;
-  openId=null;mapSel='';mapPid='';mapPickOpen=false;mapTray=false;gtSeenPid='';
+  tasks={};hist={};projects={};sideMap={};maps={};trackingCategories={};categoryEditor=false;applyCategories();_entries=null;ready.tasks=ready.hist=ready.maps=false;
+  openId=null;mapSel='';orbitTask='';orbitPage=0;mapDescriptions=false;mapPid='';mapPickOpen=false;mapTray=false;gtSeenPid='';
   // Remove retained edit and undo callbacks before a different account can use them.
+  for(const el of $$('[data-g="logside"],[data-g="dside"]'))el.innerHTML='';EX.side='both';EX.dside='both';
   clearTimeout(notesTimer);notesPending=null;hideToast();$('#toast').innerHTML='';
-  $('#exBack').hidden=true;for(const id of ['dashHost','tlHost','calHost','mapHost','doneList','doneSummary','exBody']){const el=document.getElementById(id);if(el)el.innerHTML=''};EX.name='';EX.btitle='';EX.rpid='';EX.over={};doneF.q='';$('#doneSearch').value='';$('#logInput').value='';gtFold.clear();gtDrag?.tip?.remove();gtDrag=null;mpDrag?.ghost?.remove();mpDrag=null;document.body.classList.remove('mp-dragging');endDrag();$$('.mp-ghost,.drag-ghost').forEach(el=>el.remove());hideTip();if(tipEl)tipEl.textContent='';mpPan=null;if(mpPress)clearTimeout(mpPress.timer);mpPress=null;mpPts.clear();if(touchPress)clearTimeout(touchPress.timer);touchPress=null;dragState=null;pointerDown=false;deferred=false;buildSides();render(true);
+  $('#exBack').hidden=true;for(const id of ['categoryHost','mswitch','dashHost','tlHost','calHost','mapHost','doneList','doneSummary','exBody']){const el=document.getElementById(id);if(el)el.innerHTML=''};EX.name='';EX.btitle='';EX.rpid='';EX.over={};doneF.q='';$('#doneSearch').value='';$('#logInput').value='';gtFold.clear();gtDrag?.tip?.remove();gtDrag=null;mpDrag?.ghost?.remove();mpDrag=null;document.body.classList.remove('mp-dragging');endDrag();$$('.mp-ghost,.drag-ghost').forEach(el=>el.remove());hideTip();if(tipEl)tipEl.textContent='';mpPan=null;if(mpPress)clearTimeout(mpPress.timer);mpPress=null;mpPts.clear();if(touchPress)clearTimeout(touchPress.timer);touchPress=null;dragState=null;pointerDown=false;deferred=false;buildSides();render(true);
 }
 async function signIn(){
   gateMsg('');const prov=new firebase.auth.GoogleAuthProvider();prov.setCustomParameters({prompt:'select_account'});
@@ -3761,7 +3999,7 @@ if(auth){
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-window.__oym={workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>

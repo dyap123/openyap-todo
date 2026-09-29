@@ -19,7 +19,7 @@ const fixture=(name='Alpha secret')=>({projects:{p:{name:'Private project',statu
  d.querySelector('[data-view="map"]').click();await tick();d.querySelector('[data-chrono-mode="clock"]').click();
  check('clock rendered with ordered task links',()=>assert.equal(d.querySelectorAll('.clock-list [data-chrono-open]').length,5));
  for(let i=0;i<5;i++)db.ref('users/alice/todo/maps/p/nodes/same'+i).set({parent:'b',kind:'item',title:'Same day '+i,due:'2026-10-10'});await tick();
- check('equal dates share one marker while retaining individual tasks',()=>{assert.equal(d.querySelectorAll('[data-chrono-point]').length,3);assert.equal(d.querySelectorAll('.clock-list [data-chrono-open]').length,10);assert.match(d.querySelector('.clock-face svg').textContent,/3–8/)});
+ check('equal dates retain individually actionable upright tiles',()=>{assert.equal(d.querySelectorAll('.orbit-tile').length,8);assert.equal(d.querySelectorAll('.clock-list [data-chrono-open]').length,10);assert(!d.querySelector('.clock-hand'))});
  for(let i=0;i<5;i++)db.ref('users/alice/todo/maps/p/nodes/same'+i).set(null);await tick();
  const before=db.updates.length;const scrub=d.querySelector('[data-chrono-scrub]');scrub.value='1000';scrub.dispatchEvent(new w.Event('input',{bubbles:true}));
  check('scrub previews final date without writing or completing tasks',()=>{assert.equal(d.querySelector('output').textContent,'2026-10-10');assert.equal(db.updates.length,before);assert(!M.tasks.shared.completed)});
