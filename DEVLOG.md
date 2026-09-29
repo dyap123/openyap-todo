@@ -1,3 +1,11 @@
+## 2026-09-29 — active Tasks and visible unassigned work
+
+Root causes: task groups explicitly included completed projects, running/count summaries ignored project status, and the No project group sorted after every project and could collapse. Top-level OpenYap quick-add also inherited an implicit default project assignment from sideFields.
+
+Tasks now excludes done projects and their tasks from groups, counts and running summaries without changing stored task state. No project is a static, always-expanded heading at the top of each category; null/empty/missing project IDs remain visible. Generic quick-add explicitly leaves projectId empty; existing assignments remain untouched. Dashboard lists completed projects, provides their existing canonical task editors and completion log, and reopens projects explicitly. Deep links to open tasks under done projects land in that Dashboard detail. Export still includes canonical open tasks, independently of main Tasks visibility.
+
+Regression tests cover group order, missing project references, counts/running, unassigned quick-add, Dashboard editing/deep-links/history and project reopen preserving child completion. Synthetic Chrome covers desktop/mobile visibility and reopen focus with blocked external traffic. Dashboard grid/heatmap containment prevents mobile overflow. No live writes, commit or deploy by developer.
+
 ## 2026-09-29 — change project tracking category
 
 Tasks project groups and selected Map/Gantt project headers expose a shared keyboard-accessible category chooser. The old Map root category segment routes through the same chooser. Copy explains that open tasks and completed work move too; custom tracking categories use the existing side model.

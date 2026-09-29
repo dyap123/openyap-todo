@@ -108,3 +108,7 @@ The public [privacy page](privacy.html) describes this data flow. See [Google ve
 Project categories can be changed with the Category button under a Tasks PROJECT header or beside the selected Map project. The chooser moves all project tasks and matching completed-work history to the destination category in one workspace update. Custom categories are supported; privacy, map layout, IDs, dates and completion details are preserved. The destination project opens automatically in Tasks.
 
 Category regression checks: `node tests/project-category.test.cjs`; synthetic Chrome responsive/focus check: `node tests/project-category-browser.cjs` (requires Playwright and local Chrome).
+
+Tasks starts each category with an always-visible **No project** section, including tasks whose old project no longer exists. General quick-add leaves the task unassigned; project quick-add assigns only its named project. Completed projects leave the main Tasks list, counts and running summary. Dashboard → Completed projects keeps their tasks accessible and editable, with an explicit Reopen project action. Project completion/reopening never changes child task completion.
+
+Visibility checks: `node tests/task-visibility.test.cjs` and `node tests/task-visibility-browser.cjs` (synthetic Chrome).
