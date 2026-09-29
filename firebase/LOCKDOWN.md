@@ -1,3 +1,20 @@
+# Current policy (2026-09-28)
+
+The current release target is the isolated `openyap-todo` project. The legacy instructions below are historical only and must not be run for this release.
+
+The current rules preserve the verified owner's legacy `todo/` and add private
+`users/{uid}/todo` workspaces. No legacy records are moved or deleted. All other
+roots stay denied. See [the app setup guide](../README.md) for provider, Calendar,
+authorized-domain, test and release prerequisites. The emulator uses the isolated
+`demo-openyap-todo` project ID.
+
+The historical steps below describe the original lockdown only; they are not the
+release procedure. The world-open rollback shown in old history is unsafe and has
+been removed. Any rollout or rollback must keep both root permissions false and go
+through the reviewed `oy deploy` target.
+
+---
+
 # Locking the legacy database (gen-lang-client-0119642855)
 
 After this, `todo/` answers only to dyap123@gmail.com (verified Google sign-in), and every other
@@ -33,5 +50,4 @@ Foremen tab, which merged YapHound's foreman counts), CUP, SuperYap, Foreman Att
 the old Command Center, OpenYap CC, OpenBreak, OnKlooth, Bid Room, Budget, CS2 Investor, Yap Family
 Trip, Webcor Jeopardy and the Alyssa birthday RSVP.
 
-Undo: `firebase deploy --only database` with `{"rules":{".read":true,".write":true}}`. That is the old,
-world-open state, so use it only as an emergency.
+Rollback: restore the previous owner-only rules through the deployment harness; this disables new user workspaces but never opens the database.

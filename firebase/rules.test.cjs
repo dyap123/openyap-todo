@@ -1,6 +1,6 @@
-// Lockdown rules for the legacy RTDB (gen-lang-client-0119642855), run in the emulator:
-//   cd firebase && NODE_PATH=~/openyap-infra/node_modules firebase emulators:exec --only database "node rules.test.cjs"
-// Only todo/ is open, and only to the owner's verified Google account. Everything else is closed
+// Private workspace rules for the isolated Todo RTDB, run only in the emulator:
+//   cd firebase && NODE_PATH=~/openyap-infra/node_modules firebase emulators:exec --only database --project demo-openyap-todo "node rules.test.cjs"
+// Legacy todo/ is owner-only; users/{uid}/todo belongs only to that UID. Other roots stay closed
 // to everyone (the data stays; ~/openyap-backups/legacy-rtdb-full-2026-09-25.json has a copy).
 const fs = require('fs');
 const { initializeTestEnvironment, assertSucceeds, assertFails } = require('@firebase/rules-unit-testing');
@@ -8,7 +8,7 @@ let pass = 0, fail = 0;
 async function t(name, p) { try { await p; pass++; } catch (e) { fail++; console.log('FAIL', name, e.message); } }
 (async () => {
   const env = await initializeTestEnvironment({
-    projectId: 'gen-lang-client-0119642855',
+    projectId: 'demo-openyap-todo',
     database: { host: '127.0.0.1', port: 9311, rules: fs.readFileSync(__dirname + '/database.rules.json', 'utf8') },
   });
   await env.withSecurityRulesDisabled(async c => {
@@ -34,7 +34,25 @@ async function t(name, p) { try { await p; pass++; } catch (e) { fail++; console
   await t('unverified owner email denied', assertFails(unverified.ref('todo').once('value')));
   await t('other account denied read', assertFails(other.ref('todo').once('value')));
   await t('other account denied write', assertFails(other.ref('todo/tasks/e').set(1)));
+  const alice = env.authenticatedContext('alice', { email: 'alice@example.com', email_verified: false }).database();
+  const bob = env.authenticatedContext('bob', { email: 'bob@example.com', email_verified: true }).database();
+  for (const field of ['tasks','projects','maps','history','sides']) {
+    await t('email user creates own '+field, assertSucceeds(alice.ref('users/alice/todo/'+field+'/a').set({title:'private'})));
+    await t('user reads own '+field, assertSucceeds(alice.ref('users/alice/todo/'+field).once('value')));
+    await t('different UID cannot read '+field, assertFails(bob.ref('users/alice/todo/'+field).once('value')));
+    await t('different UID cannot overwrite '+field, assertFails(bob.ref('users/alice/todo/'+field+'/a').set({title:'attack'})));
+    await t('different UID cannot delete '+field, assertFails(bob.ref('users/alice/todo/'+field+'/a').remove()));
+  }
+  await t('own workspace multipath update', assertSucceeds(alice.ref().update({'users/alice/todo/tasks/t':{title:'linked'},'users/alice/todo/maps/m':{taskId:'t'}})));
+  await t('cross-workspace multipath denied', assertFails(alice.ref().update({'users/alice/todo/tasks/t/title':'attack','users/bob/todo/tasks/t':{title:'attack'}})));
+  await t('own deletion allowed', assertSucceeds(alice.ref('users/alice/todo/history/a').remove()));
+  await t('cannot list users', assertFails(alice.ref('users').once('value')));
+  await t('owner cannot read others', assertFails(owner.ref('users/alice/todo').once('value')));
+  await t('anonymous cannot read private list', assertFails(anon.ref('users/alice/todo').once('value')));
+  await t('anonymous cannot write private list', assertFails(anon.ref('users/alice/todo/tasks/x').set({title:'attack'})));
+  await t('cannot write sibling roles', assertFails(alice.ref('users/alice/admin').set(true)));
+  await t('cannot open legacy list', assertFails(alice.ref('todo').once('value')));
   await env.cleanup();
-  console.log(`legacy lockdown rules: ${pass} passed, ${fail} failed`);
+  console.log(`private workspace rules: ${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
 })();

@@ -5,6 +5,14 @@
     "todo": {
       ".read": "auth != null && auth.token.email === 'dyap123@gmail.com' && auth.token.email_verified === true",
       ".write": "auth != null && auth.token.email === 'dyap123@gmail.com' && auth.token.email_verified === true"
+    },
+    "users": {
+      "$uid": {
+        "todo": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid"
+        }
+      }
     }
   }
 }
