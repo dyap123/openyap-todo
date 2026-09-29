@@ -112,3 +112,5 @@ Category regression checks: `node tests/project-category.test.cjs`; synthetic Ch
 Tasks starts each category with an always-visible **No project** section, including tasks whose old project no longer exists. General quick-add leaves the task unassigned; project quick-add assigns only its named project. Completed projects leave the main Tasks list, counts and running summary. Dashboard → Completed projects keeps their tasks accessible and editable, with an explicit Reopen project action. Project completion/reopening never changes child task completion.
 
 Visibility checks: `node tests/task-visibility.test.cjs` and `node tests/task-visibility-browser.cjs` (synthetic Chrome).
+
+Quick-add supports consecutive Enter submissions without losing focus or the next draft when task snapshots arrive. Failed additions restore their text, or show a Retry action alongside an existing next draft. Keyboard regression: `node tests/quick-add-browser.cjs`; behavior regression: `node tests/quick-add.test.cjs`.

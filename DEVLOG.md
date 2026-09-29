@@ -1,3 +1,11 @@
+## 2026-09-29 — Enter quick-add renders immediately
+
+The focused quick-add input matched editingText, so Firebase snapshots deferred the Tasks render; its focusout also did not flush that deferral. Quick-add now permits snapshot rendering while preserving original form DOM nodes across list/category rebuilds. Focus, next draft, caret and selection survive, while intentional editor focus takes precedence.
+
+Each nonempty Enter clears and submits its own draft, so empty repeat submits no-op and slow acknowledgements do not block the next task. Rejections restore the submitted draft when the input is empty; otherwise a text-safe failed-task row retains it with a Retry action using its original task ID. Async results cannot restore drafts/errors into a different account. Project/category identity and general quick-add's unassigned behavior remain unchanged.
+
+Behavior tests cover focused renders, DOM identity, selection, independent delayed submissions, empty repeated submit, rejection/retry and account isolation. A real Chrome test types Enter into category and project inputs, immediately types the next draft, verifies visible task rows without blur/reload, and checks consecutive mobile entry. All browser data is synthetic with external traffic blocked. No developer commit/deploy/live writes.
+
 ## 2026-09-29 — active Tasks and visible unassigned work
 
 Root causes: task groups explicitly included completed projects, running/count summaries ignored project status, and the No project group sorted after every project and could collapse. Top-level OpenYap quick-add also inherited an implicit default project assignment from sideFields.
