@@ -1,3 +1,9 @@
+## 2026-09-29 — Roadmap map print scale, palette and continuation pages
+
+Roadmap map exports now use the selected project palette as distinct pastel card fills, stronger colored headers/connectors and dark print-safe text. Instead of shrinking a dense full map onto one sheet, the PDF repeats project and ancestor cards as context and continues each branch/topic on its own page; item lists are chunked (two rows with descriptions, four otherwise), and branch-level task rows also get their own page. This preserves filtered selected-subtree output, nested topics, dates/completion badges and descriptions without overlapping the labels. Map-only Roadmap builds use their existing landscape page; Brief map pages and continuations use the selected Letter, A4 or 11 × 17 size.
+
+Validation uses actual jsPDF files plus Poppler page-size/text/raster checks. Synthetic dense maps prove every selected item prints once, excluded/private nodes stay absent, Sunset palette pixels are visible at 11 × 17 raster resolution, and branch text is larger on tabloid than Letter. `tests/roadmap-print-map.test.cjs` is part of the gated release test list. No live data changes, commit or deploy by developer.
+
 ## 2026-09-29 — coordinated map/Gantt palettes and wrapped labels
 
 Map palette is canonical maps/{pid}/palette metadata, selected from four validated options or Original. Branch hue inheritance falls back to the palette only after explicit node/ancestor/root color overrides. Coordinated fill/border/text tones use the app background brightness, preserving high text contrast in light/dark themes. App-theme switching recolors current cards/rows without modifying saved data. Toolbar and root/branch selectors share the same field; Gantt uses the same palette.

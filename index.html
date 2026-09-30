@@ -3004,7 +3004,7 @@ function buildRoadmap(o){
   }
   for(const [id,n] of Object.entries(nodes))if(mapKindOf(nodes,id)!=='item'&&(n.completed||Object.keys(n.completionEvents||{}).length)){need2(28);setT(k,'normal',8.5,P.body);doc.text(fit(doc,n.title+' — '+nodeCompletionLabel(n),W-2*M),M,y);y+=16}
   }
-  if(map){if(time||schedule)doc.addPage();briefMapPage(k,nodes,o.pid,'Map - '+R.name)}
+  if(map)briefMapPages(k,nodes,o.pid,'Map - '+R.name,{paper:o.paper,desc:o.desc,newPage:time||schedule})
   pageNumbers(k,'Roadmap - '+R.name);
   return doc;
 }
@@ -3083,36 +3083,79 @@ function briefOpts(){
 }
 
 // The map page: the picked branches drawn the way the Map draws them, scaled onto one page.
-function briefMapPage(k,nodes,pid,title){
-  const {doc,P}=k,W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight(),M=36;
-  setT(k,'bold',13,P.ink);doc.text(fit(doc,title,W-2*M),M,M+6);
-  const lay=mapLayout(nodes),b=lay.box,top=M+22,s=Math.min((W-2*M)/b.w,(H-top-M-10)/b.h,1.1);
-  const ox=M+((W-2*M)-b.w*s)/2-b.x*s,oy=top+((H-top-M-10)-b.h*s)/2-b.y*s;
-  const X=x=>ox+x*s,Y=y=>oy+y*s,mix=(c,f)=>c.map(v=>Math.round(v+(255-v)*f));
-  doc.setLineWidth(.8);
-  for(const l of lay.L){
-    const c=mapColorOf(pid,nodes,l.to);doc.setDrawColor(...(c?mix(hexRgb(c),.35):P.line));
-    const tk=l.d.match(/[MHV]-?[\d.]+(?: -?[\d.]+)?/g)||[];let cx=0,cy=0;
-    for(const t of tk){const v=t.slice(1).split(' ').map(Number);
-      if(t[0]==='M'){cx=v[0];cy=v[1]}else if(t[0]==='H'){doc.line(X(cx),Y(cy),X(v[0]),Y(cy));cx=v[0]}else{doc.line(X(cx),Y(cy),X(cx),Y(v[0]));cy=v[0]}}
+function mapPrintFragments(nodes,descriptions=mapDescriptions){
+  const out=[];
+  for(const [bid,branch] of mapKids(nodes,'root')){
+    const ownItems=mapItemsOf(nodes,bid),topics=mapTopicsOf(nodes,bid);
+    const chunks=items=>{const size=descriptions?2:4,parts=[];for(let i=0;i<items.length;i+=size)parts.push(items.slice(i,i+size));return parts.length?parts:[[]]};
+    if(ownItems.length)for(const part of chunks(ownItems))out.push({ids:[bid,...part.map(([id])=>id)],branch:bid,topic:''});
+    else if(!topics.length)out.push({ids:[bid],branch:bid,topic:''});
+    const walk=(parent,ancestors)=>{
+      for(const [tid] of mapTopicsOf(nodes,parent)){
+        const items=mapItemsOf(nodes,tid),chain=[...ancestors,tid];
+        for(const part of chunks(items))out.push({ids:[bid,...chain,...part.map(([id])=>id)],branch:bid,topic:tid});
+        walk(tid,chain);
+      }
+    };
+    walk(bid,[]);
   }
-  const fs=f=>Math.max(3.5,f*s);
-  const label=(text,x,y,width,size,align)=>{setT(k,'bold',fs(size),P.ink);let font=fs(size),lines=doc.splitTextToSize(String(text||''),width);while(lines.length>2&&font>3){font-=.25;doc.setFontSize(font);lines=doc.splitTextToSize(String(text||''),width)}doc.text(lines,x,y,{lineHeightFactor:1.15,...(align?{align}:{})})};
-  for(const [id,r] of Object.entries(lay.C)){
-    const n=nodes[id],c=id==='root'?mapColorOf(pid,nodes,'root'):mapColorOf(pid,nodes,id),col=c?hexRgb(c):P.acc;
-    doc.setDrawColor(...(id==='root'?P.ink:P.rule));doc.setLineWidth(id==='root'?1.2:.6);doc.setFillColor(...(MAP_PALETTES[maps[pid]?.palette]?mix(col,.90):[255,255,255]));
-    doc.roundedRect(X(r.x),Y(r.y),r.w*s,r.h*s,4*s,4*s,'FD');
-    if(id==='root'){
-      label((maps[pid]&&maps[pid].title)||(projects[pid]||{}).name||'',X(r.x+r.w/2),Y(r.y+r.h/2)-fs(16)/3,(r.w-28)*s,16,'center');continue;
+  if(!out.length)out.push({ids:[],branch:'',topic:''});
+  return out;
+}
+function briefMapPages(k,nodes,pid,title,opts={}){
+  const {doc,P}=k,allNodes=maps[pid]?.nodes||nodes,oldDescriptions=mapDescriptions;mapDescriptions=!!opts.desc;
+  try{const fragments=mapPrintFragments(nodes,!!opts.desc);fragments.forEach((fragment,index)=>{
+    if(index||opts.newPage)doc.addPage(pdfPaper(opts.paper),'landscape');
+    const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight(),M=34,top=56,bottom=34;
+    const pageNodes={};for(const id of fragment.ids)if(nodes[id])pageNodes[id]=nodes[id];
+    const lay=mapLayout(pageNodes),b=lay.box;
+    const maxScale=opts.paper==='tabloid'?1.8:1.35;
+    const s=Math.min((W-2*M)/Math.max(1,b.w),(H-top-bottom)/Math.max(1,b.h),maxScale);
+    const ox=M+((W-2*M)-b.w*s)/2-b.x*s,oy=top+((H-top-bottom)-b.h*s)/2-b.y*s;
+    const X=x=>ox+x*s,Y=y=>oy+y*s,mix=(c,f)=>c.map(v=>Math.round(v+(255-v)*f));
+    const palette=MAP_PALETTES[maps[pid]?.palette];
+    setT(k,'bold',15,P.ink);doc.text(fit(doc,title+(index?' (continued)':''),W-2*M),M,35);
+    const context=[fragment.branch&&nodes[fragment.branch]?.title,fragment.topic&&nodes[fragment.topic]?.title].filter(Boolean).join('  ›  ');
+    if(context){setT(k,'normal',9,P.muted);doc.text(fit(doc,context,W-2*M),M,49)}
+    doc.setLineWidth(.9);
+    for(const l of lay.L){
+      const c=mapColorOf(pid,allNodes,l.to);doc.setDrawColor(...(c?mix(hexRgb(c),.20):P.line));
+      const tk=l.d.match(/[MHV]-?[\d.]+(?: -?[\d.]+)?/g)||[];let cx=0,cy=0;
+      for(const t of tk){const v=t.slice(1).split(' ').map(Number);
+        if(t[0]==='M'){cx=v[0];cy=v[1]}else if(t[0]==='H'){doc.line(X(cx),Y(cy),X(v[0]),Y(cy));cx=v[0]}else{doc.line(X(cx),Y(cy),X(cx),Y(v[0]));cy=v[0]}}
     }
-    const head=mapHeadH(r.kind);
-    if(r.kind==='branch'){doc.setFillColor(...col);doc.rect(X(r.x),Y(r.y),3*s,r.h*s,'F');
-      setT(k,'bold',fs(7),P.muted);doc.text(n.completed?'DONE '+nodeCompletionDate(n):'SUB-TOPIC',X(r.x+14),Y(r.y+24));label(n.title,X(r.x+14),Y(r.y+46),(r.w-28)*s,14)}
-    else{doc.setFillColor(...mix(col,.86));doc.rect(X(r.x)+.4,Y(r.y)+.4,r.w*s-.8,head*s,'F');
-      if(n.completed){setT(k,'normal',fs(8),P.muted);doc.text('Done '+nodeCompletionDate(n),X(r.x+12),Y(r.y+14))}label(n.title,X(r.x+12),Y(r.y+34),(r.w-28)*s,12)}
-    setT(k,'normal',fs(10),P.body);
-    mapItemsOf(nodes,id).forEach(([iid,it],i)=>{label((i+1)+'. '+(tasks[it.taskId]?.title||it.title||''),X(r.x+12),Y(r.y+head+3+i*(mapDescriptions?70:M_ROW)+16),(r.w-28)*s,10)});
-  }
+    const fs=f=>Math.max(5.5,f*s);
+    const label=(text,x,y,width,size,align,maxLines=2)=>{setT(k,'bold',fs(size),P.ink);let font=fs(size),lines=doc.splitTextToSize(String(text||''),Math.max(1,width));while(lines.length>maxLines&&font>5.5){font-=.25;doc.setFontSize(font);lines=doc.splitTextToSize(String(text||''),Math.max(1,width))}doc.text(lines,x,y,{lineHeightFactor:1.15,...(align?{align}:{})})};
+    for(const [id,r] of Object.entries(lay.C)){
+      const n=pageNodes[id],c=id==='root'?mapColorOf(pid,allNodes,'root'):mapColorOf(pid,allNodes,id),col=c?hexRgb(c):P.acc;
+      const hasPalette=!!palette,fill=hasPalette?mix(col,id==='root'?.78:.84):[255,255,255],border=hasPalette?mix(col,.12):(id==='root'?P.ink:P.rule);
+      doc.setDrawColor(...border);doc.setLineWidth(id==='root'?1.4:.9);doc.setFillColor(...fill);
+      doc.roundedRect(X(r.x),Y(r.y),r.w*s,r.h*s,5*s,5*s,'FD');
+      if(id==='root'){
+        label((maps[pid]&&maps[pid].title)||(projects[pid]||{}).name||'',X(r.x+r.w/2),Y(r.y+r.h/2)-fs(16)/3,(r.w-28)*s,16,'center');continue;
+      }
+      const head=mapHeadH(r.kind),ownItems=mapItemsOf(pageNodes,id);
+      if(hasPalette){doc.setFillColor(...mix(col,.68));doc.roundedRect(X(r.x)+.5,Y(r.y)+.5,Math.max(1,(r.w*s)-1),head*s,4*s,4*s,'F')}
+      if(r.kind==='branch'){
+        doc.setFillColor(...col);doc.rect(X(r.x),Y(r.y),4*s,r.h*s,'F');
+        setT(k,'bold',fs(8),P.body);doc.text(n.completed?'DONE '+nodeCompletionDate(n):'SUB-TOPIC',X(r.x+14),Y(r.y+23));
+        label(n.title,X(r.x+14),Y(r.y+46),(r.w-28)*s,14);
+      }else{
+        if(n.completed){setT(k,'bold',fs(8),P.body);doc.text('Done '+nodeCompletionDate(n),X(r.x+12),Y(r.y+14))}
+        label(n.title,X(r.x+12),Y(r.y+34),(r.w-28)*s,12);
+      }
+      const descY=Y(r.y+head-8);
+      if(opts.desc&&n.desc){setT(k,'normal',fs(7.5),P.body);const dl=wrap(doc,n.desc,(r.w-26)*s,2);dl.forEach((line,j)=>doc.text(line,X(r.x+13),descY+j*fs(8)))}
+      ownItems.forEach(([iid,it],i)=>{
+        const row=Y(r.y+head+(opts.desc&&n.desc?36:0)+3+i*(mapDescriptions?70:M_ROW)),task=tasks[it.taskId],done=!!(task?.completed||it.completed),date=done?nodeCompletionDate(it)||nodeCompletionDate(task||{}):(task?.dueDate||it.due||'');
+        const status=done?'Done '+(date||''):(date?'Due '+fmtMD(parseYmd(date)):'');
+        if(status){setT(k,'normal',fs(7),P.muted);const stat=fit(doc,status,58*s);doc.text(stat,X(r.x+r.w-12)-doc.getTextWidth(stat),row+(opts.desc?fs(62):fs(8)))}
+        const itemNo=mapItemsOf(allNodes,id).findIndex(([key])=>key===iid)+1;
+        label((itemNo||i+1)+'. '+(task?.title||it.title||''),X(r.x+12),row+fs(16),Math.max(12,(r.w-32)*s-(status&&!opts.desc?62*s:0)),10);
+        if(opts.desc&&it.desc){setT(k,'normal',fs(7),P.body);wrap(doc,it.desc,(r.w-28)*s,2).forEach((line,j)=>doc.text(line,X(r.x+16),row+fs(40)+j*fs(8)))}
+      });
+    }
+  })}finally{mapDescriptions=oldDescriptions}
 }
 
 function buildBrief(o){
@@ -3167,7 +3210,7 @@ function buildBrief(o){
   }
   // The map page and the timeline, on landscape pages of their own.
   const fmt=pdfPaper(o.paper);
-  if(o.map){doc.addPage(fmt,'landscape');briefMapPage(k,nodes,o.pid,'Map - '+title)}
+  if(o.map)briefMapPages(k,nodes,o.pid,'Map - '+title,{paper:o.paper,desc:o.desc,newPage:true})
   if(o.time&&R.min){
     doc.addPage(fmt,'landscape');
     const kk={...k,M:40};let yy=40;
@@ -4237,7 +4280,7 @@ if(auth){
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-window.__oym={mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapPrintFragments,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>

@@ -119,7 +119,9 @@ Roadmap PDF has independent Timeline, Schedule and Mind map options, so it can e
 
 Subtopics and nested topics have their own completion date controls. Mark complete, correct the local date/time, or reopen in the map detail panel. Completion history retains each change and its previous date; child-task progress is shown separately and no task is automatically completed. Badges, Markdown and PDF show actual node completion, independently of scheduled dates. Old unknown completion dates remain unknown.
 
-Roadmap checks: `node tests/roadmap-completion.test.cjs` (jsPDF and Poppler `pdftotext`) and `node tests/roadmap-completion-browser.cjs` (Playwright/local Chrome). Synthetic PDF examples are generated under `/private/tmp/oy-todo-*.pdf`.
+Roadmap checks: `node tests/roadmap-completion.test.cjs` (jsPDF and Poppler `pdftotext`), `node tests/roadmap-print-map.test.cjs` (PDF page sizes, continuation content, palette raster pixels and 11 × 17 legibility), and `node tests/roadmap-completion-browser.cjs` (Playwright/local Chrome). Synthetic PDF examples are generated under `/private/tmp/oy-todo-*.pdf`.
+
+Roadmap map pages use the selected project palette in print-safe fills and borders. Dense maps continue by branch/topic path, repeating project context while splitting long task lists into readable pieces; Letter and 11 × 17 pages keep selected nodes, descriptions, and completion/date badges.
 
 Map and Gantt share an Ocean, Forest, Sunset or Violet palette selector, available in their toolbar and project/branch map details. Branches inherit coordinated colors; explicit node/ancestor colors remain overrides. Fill, border and text colors adapt to the app’s light/dark theme. Labels wrap into two measured lines with full text available to assistive technology and hover; shared card/row geometry keeps dates and completion badges separate. PDF map labels also wrap. Gantt has wider labels, separate date metadata, colored bars and an explicit Chronology presentation option opening the existing map preview.
 
