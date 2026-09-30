@@ -778,7 +778,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 .orbit-section{min-width:0}.orbit-section h2{font-size:19px}.orbit-viewport{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:18px;margin:14px 0;background:var(--surface)}
 .orbit-scene{position:relative;width:700px;height:700px;margin:auto}.orbit-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:190px;min-height:120px;padding:20px;display:flex;flex-direction:column;gap:10px;text-align:center;background:var(--bg);border:1px solid var(--accent);border-radius:50%;overflow-wrap:anywhere}.orbit-center small,.orbit-center output{font-size:11px;color:var(--muted)}
 .orbit-track{position:absolute;inset:105px;border:1px dashed var(--line-2);border-radius:50%}.orbit-slot{position:absolute;left:50%;top:50%;width:0;height:0}.orbit-tile{position:absolute;transform:translate(-50%,-50%);width:170px;max-height:150px;overflow:auto;display:flex;flex-direction:column;gap:7px;text-align:left;padding:12px;border-radius:12px;border:1px solid var(--line-2);background:var(--bg);color:var(--text);box-shadow:0 4px 14px #0001;cursor:pointer;overflow-wrap:anywhere}.orbit-tile small{font-size:10px;color:var(--muted)}.orbit-slot.active .orbit-tile{border:2px solid var(--accent);box-shadow:0 0 20px #8883}.orbit-description{font-size:11px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.orbit-events{display:flex;gap:8px;overflow:auto;padding:8px 0 16px}.orbit-events button{flex-shrink:0;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.orbit-pages{display:flex;gap:12px;align-items:center;justify-content:center;font-size:12px}.clock-layout{grid-template-columns:minmax(0,2fr) minmax(220px,1fr)}
-.map-description{display:block;font-size:10px;font-weight:400;color:var(--muted);line-height:16px;max-height:32px;overflow:hidden;margin-top:4px}.mp-k .map-description{letter-spacing:normal;text-transform:none}.mp-item.with-description{height:48px}.mp-item.with-description .t{white-space:nowrap;line-height:16px}.map-item-description{display:block;font-size:10px;line-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}.map-task-controls{display:grid;gap:10px;padding:12px 0;border-top:1px solid var(--line);margin-top:12px}.map-task-controls .txt{width:100%;min-width:0}.map-checklist{display:grid;gap:6px;margin-top:16px}.map-checklist button{text-align:left;white-space:normal}.clock-layout~.mp-panel{position:fixed;top:150px;max-height:calc(100dvh - 180px);z-index:60}.orbit-tile:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.map-description{display:block;font-size:10px;font-weight:400;color:var(--muted);line-height:16px;max-height:32px;overflow:hidden;margin-top:4px}.mp-k .map-description{letter-spacing:normal;text-transform:none}.mp-item.with-description{height:48px}.mp-item.with-description .t{white-space:nowrap;line-height:16px}.map-item-description{display:block;font-size:10px;line-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}.node-completed{position:absolute;top:3px;right:8px;font-size:9px;line-height:12px;color:var(--muted);letter-spacing:normal}.map-task-controls{display:grid;gap:10px;padding:12px 0;border-top:1px solid var(--line);margin-top:12px}.map-task-controls .txt{width:100%;min-width:0}.map-checklist{display:grid;gap:6px;margin-top:16px}.map-checklist button{text-align:left;white-space:normal}.clock-layout~.mp-panel{position:fixed;top:150px;max-height:calc(100dvh - 180px);z-index:60}.orbit-tile:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 @media(max-width:820px){.clock-layout{grid-template-columns:1fr}.clock-layout~.mp-panel{top:auto;bottom:8px;max-height:70dvh}.orbit-viewport{max-height:540px}}
 
 .category-manager{padding:10px 0}.category-forms{max-width:640px;display:grid;gap:10px;padding:16px 0}.category-forms form{display:flex;gap:8px}.category-forms input[type=text],.category-forms .txt{min-width:0;flex:1}.category-forms input[type=color]{height:38px;width:48px;flex-shrink:0}.project-status{display:flex;gap:10px;align-items:center;font-size:11px;color:var(--muted)}.map-bar{flex-wrap:wrap}.sides{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.d-top{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.switch .seg{flex-wrap:wrap}.tl-day{display:block}.tl-lane{margin:12px 0}.tl-spine{display:none}@media(max-width:820px){.sides{grid-template-columns:1fr}.category-forms form{flex-wrap:wrap}}
@@ -2322,7 +2322,7 @@ function renderMap(anim){
     const tr=lay.C[tid];if(!tr)return;
     const items=mapItemsOf(nodes,tid);
     cards.push(`<div class="mp-card mp-topic${mapSel===tid?' sel':''}" data-nid="${tid}" data-mkind="topic" role="button" tabindex="0" style="${mcStyle(mapColorOf(pid,nodes,tid))}left:${tr.x}px;top:${tr.y}px;width:${tr.w}px;height:${tr.h}px">
-      <div class="mp-th"><span class="mp-t">${esc(tn.title)}</span>${mapNote(tn.desc)}${tn.due?`<span class="mp-td">${esc(fmtMD(parseYmd(tn.due)))}</span>`:''}</div>
+      <div class="mp-th"><span class="mp-t">${esc(tn.title)}</span>${tn.completed?`<span class="node-completed" title="${esc(nodeCompletionLabel(tn))}">✓ ${esc(nodeCompletionDate(tn))}</span>`:''}${mapNote(tn.desc)}${tn.due?`<span class="mp-td">${esc(fmtMD(parseYmd(tn.due)))}</span>`:''}</div>
       <ol class="mp-items">${items.length?items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join(''):'<li class="mp-empty">Nothing here yet</li>'}</ol>
       <button class="mp-add" type="button" data-madd="${tid}" data-mwant="item">+ Add item</button>
       <button class="mp-plus" type="button" data-madd="${tid}" data-mwant="topic" title="Add a topic inside" aria-label="Add a topic inside">+</button></div>`);
@@ -2331,7 +2331,7 @@ function renderMap(anim){
   for(const [bid,b] of mapKids(nodes,'root')){
     const r=lay.C[bid],items=mapItemsOf(nodes,bid);
     cards.push(`<div class="mp-card mp-branch${mapSel===bid?' sel':''}" data-nid="${bid}" data-mkind="branch" role="button" tabindex="0" style="${mcStyle(mapColorOf(pid,nodes,bid))}left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px">
-      <div class="mp-bh"><span class="mp-k">Sub-topic${mapNote(b.desc)}</span><span class="mp-t">${esc(b.title)}</span></div>
+      <div class="mp-bh"><span class="mp-k">Sub-topic${b.completed?`<span class="node-completed" title="${esc(nodeCompletionLabel(b))}">✓ ${esc(nodeCompletionDate(b))}</span>`:''}${mapNote(b.desc)}</span><span class="mp-t">${esc(b.title)}</span></div>
       ${items.length?`<ol class="mp-items">${items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join('')}</ol>`:''}
       <button class="mp-add" type="button" data-madd="${bid}" data-mwant="item">+ Add item</button>
       <button class="mp-plus" type="button" data-madd="${bid}" data-mwant="topic" title="Add a topic" aria-label="Add a topic">+</button></div>`);
@@ -2479,7 +2479,7 @@ function mapPanelHTML(pid,nodes){
     ${mapSwatches(pid,nodes,mapSel)}
     <div class="mp-dates"><label class="fld"><span class="lbl">Start</span><input class="txt" type="date" data-mf="start" value="${esc(t?t.startDate??n.start??'':n.start||'')}"></label>
       <label class="fld"><span class="lbl">${kind==='item'?'Due':'Finish'}</span><input class="txt" type="date" data-mf="due" value="${esc(kind==='item'?due:(n.due||''))}"></label></div>
-    ${kind==='item'?mapTaskControls(n.taskId||'',mapSel):mapChecklist(pid,nodes,mapSel)}
+    ${kind==='item'?mapTaskControls(n.taskId||'',mapSel):nodeCompletionControls(pid,mapSel)+mapChecklist(pid,nodes,mapSel)}
     </div>
     <div class="mp-pf">
       ${kind==='item'?(t?'':'<button class="btn" type="button" data-mact="list">Add to list</button>')
@@ -2863,7 +2863,7 @@ function roadmapData(pid,today,only){
   // covers everything under it.
   const flat=(tid,tn,depth,path,out)=>{
     const items=mapItemsOf(nodes,tid).map(([iid,i])=>item(iid,i)),me={id:tid,title:tn.title||'',desc:tn.desc||'',depth,path:path.concat(tn.title||''),
-      color:mapColorOf(pid,nodes,tid),items,start:'',end:''};
+      color:mapColorOf(pid,nodes,tid),completed:!!tn.completed,completedAt:tn.completedAt||'',items,start:'',end:''};
     out.push(me);const at=out.length;
     for(const [k,kn] of mapTopicsOf(nodes,tid))flat(k,kn,depth+1,me.path,out);
     const ds=out.slice(at-1).flatMap(t=>t.items.flatMap(i=>[i.start,i.due])).concat([tn.start,tn.due]).concat(out.slice(at).flatMap(t=>[t.start,t.end])).filter(Boolean).sort();
@@ -2871,12 +2871,12 @@ function roadmapData(pid,today,only){
   };
   const lanes=mapKids(nodes,'root').map(([bid,b])=>{
     const topics=[];for(const [tid,tn] of mapTopicsOf(nodes,bid))flat(tid,tn,0,[],topics);
-    return {id:bid,title:b.title||'',desc:b.desc||'',color:mapColorOf(pid,nodes,bid),items:mapItemsOf(nodes,bid).map(([iid,i])=>item(iid,i)),topics};
+    return {id:bid,title:b.title||'',completed:!!b.completed,completedAt:b.completedAt||'',desc:b.desc||'',color:mapColorOf(pid,nodes,bid),items:mapItemsOf(nodes,bid).map(([iid,i])=>item(iid,i)),topics};
   });
   const all=lanes.flatMap(l=>l.topics.flatMap(t=>[t.start,t.end]).concat(l.items.flatMap(i=>[i.start,i.due]))).filter(Boolean).sort();
   const undated=[];
   for(const l of lanes){for(const i of l.items)if(!i.due&&!i.start)undated.push({...i,lane:l.title,topic:''});
-    for(const t of l.topics)for(const i of t.items)if(!i.due&&!i.start)undated.push({...i,lane:l.title,topic:t.path.join(' / ')})}
+    for(const t of l.topics)for(const i of t.items)if(!i.due&&!i.start)undated.push({...i,lane:l.title,topic:t.title})}
   return {pid,name:P.name||'Project',title:(maps[pid]&&maps[pid].title)||P.name||'',lanes,min:all[0]||'',max:all[all.length-1]||'',undated,today,
     dated:lanes.reduce((a,l)=>a+l.items.filter(i=>i.due||i.start).length+l.topics.reduce((b,t)=>b+t.items.filter(i=>i.due||i.start).length,0),0)};
 }
@@ -2903,7 +2903,7 @@ function rmTimeline(k,R,st){
     const top=y;
     for(const l of R.lanes){
       if(!l.topics.some(t=>t.start||t.end)&&!l.items.some(i=>i.due||i.start))continue;
-      need(20);setT(k,'bold',9.5,l.color?hexRgb(l.color):P.ink);doc.text(fit(doc,l.title,170),M,y+10);
+      need(20);setT(k,'bold',9.5,l.color?hexRgb(l.color):P.ink);doc.text(fit(doc,(l.completed?'Done '+nodeCompletionDate(l)+' · ':'')+l.title,170),M,y+10);
       doc.setDrawColor(...P.rule);doc.setLineWidth(.5);doc.line(M,y+15,RX,y+15);y+=20;
       const mark=(i,ind)=>{
         need(12);setT(k,'normal',7.5,i.status==='overdue'?late:P.muted);doc.text(fit(doc,i.title,150-ind),M+16+ind,y+8);
@@ -2916,7 +2916,7 @@ function rmTimeline(k,R,st){
       for(const t of l.topics){
         if(!t.start&&!t.end)continue;
         const ind=Math.min(t.depth,4)*10;
-        need(16);setT(k,'bold',8,P.body);doc.text(fit(doc,t.title,160-ind),M+8+ind,y+9);
+        need(16);setT(k,'bold',8,P.body);doc.text(fit(doc,(t.completed?'Done '+nodeCompletionDate(t)+' · ':'')+t.title,160-ind),M+8+ind,y+9);
         const a=X(t.start||t.end),b=Math.max(X(t.end||t.start)+px,a+3);
         doc.setFillColor(...(t.color?mix(hexRgb(t.color),.72):soft));doc.rect(a,y+2,b-a,9,'F');y+=15;
         for(const i of t.items)if(i.due||i.start)mark(i,ind);
@@ -2925,12 +2925,13 @@ function rmTimeline(k,R,st){
     const tx=X(R.today);
     if(tx>=LX&&tx<=RX){doc.setDrawColor(...late);doc.setLineWidth(.8);const ly=Math.min(y,H-M-10);doc.line(tx,top-8,tx,ly);setT(k,'bold',7,late);doc.text('Today',tx+3,ly-2)}
   }else{
-    setT(k,'normal',10,P.muted);doc.text('No dates yet. Give items a start or due date on the Map to see them on a timeline.',M,y+10);y+=24;
+    setT(k,'normal',10,P.muted);doc.text('No scheduled items.',M,y+10);y+=24;
   }
   st.y=y;
 }
 function buildRoadmap(o){
-  const R=roadmapData(o.pid),k=pdfKit(o.paper,'landscape'),{doc,P,W,H}=k,M=40;k.M=M;
+  if(projSide(o.pid)?.private&&!o.private)throw new Error('Enable Private content to export this private project.');
+  const nodes=roadmapNodes(o.pid,o),R=roadmapData(o.pid,null,nodes),k=pdfKit(o.paper,'landscape'),{doc,P,W,H}=k,M=40;k.M=M;
   const mix=(c,f)=>c.map(v=>Math.round(v+(255-v)*f));
   const acc=P.acc,soft=mix(acc,.82),late=[192,57,43];
   let y=M;
@@ -2941,21 +2942,22 @@ function buildRoadmap(o){
     if(R.min)doc.text(fmtMDY(parseYmd(R.min))+' - '+fmtMDY(parseYmd(R.max)),W-M,y+19,{align:'right'});
     y+=34;doc.setDrawColor(...P.rule);doc.setLineWidth(.6);doc.line(M,y,W-M,y);y+=12;
   }
-  header(false);
-  rmTimeline(k,R,{get y(){return y},set y(v){y=v},header:c=>header(c)});
+  const time=o.time!==false,schedule=o.schedule!==false,map=!!o.map;if(!time&&!schedule&&!map)throw new Error('Choose Timeline, Schedule or Map.');
+  if(time)header(false);
+  if(time)rmTimeline(k,R,{get y(){return y},set y(v){y=v},header:c=>header(c)});
   // Schedule
-  doc.addPage();header(true);
+  if(schedule){if(time)doc.addPage();header(time);
   const cx=[M,M+250,M+430,M+510,M+590,M+670];
   const th=()=>{setT(k,'bold',8,P.muted);['Item','Topic','Start','Due','Status','In list'].forEach((h,i)=>doc.text(h,cx[i],y));y+=6;doc.setDrawColor(...P.rule);doc.line(M,y,W-M,y);y+=11};
   const need2=h=>{if(y+h>H-M-14){doc.addPage();header(true);th()}};
   setT(k,'bold',12,P.ink);doc.text('Schedule',M,y+4);y+=20;th();
   for(const l of R.lanes){
-    const rows=l.items.filter(i=>i.due||i.start).map(i=>({...i,topic:l.title})).concat(l.topics.flatMap(t=>t.items.filter(i=>i.due||i.start).map(i=>({...i,topic:t.path.join(' / ')}))))
+    const rows=l.items.filter(i=>i.due||i.start).map(i=>({...i,topic:l.title})).concat(l.topics.flatMap(t=>t.items.filter(i=>i.due||i.start).map(i=>({...i,topic:t.title}))))
       .sort((a,b)=>(a.due||a.start)<(b.due||b.start)?-1:1);
     if(!rows.length)continue;
     need2(30);setT(k,'bold',9.5,l.color?hexRgb(l.color):acc);doc.text(fit(doc,l.title,W-2*M),M,y+2);y+=14;
     for(const r of rows){
-      const dl=r.desc?wrap(doc,r.desc,W-2*M-24,2):[];
+      const dl=o.desc&&r.desc?wrap(doc,r.desc,W-2*M-24,2):[];
       need2(13+dl.length*10);setT(k,'normal',8.5,r.status==='overdue'?late:P.body);
       doc.text(fit(doc,r.title,240),cx[0],y);doc.text(fit(doc,r.topic,170),cx[1],y);
       doc.text(r.start?fmtMD(parseYmd(r.start)):'-',cx[2],y);doc.text(r.due?fmtMD(parseYmd(r.due)):'-',cx[3],y);
@@ -2966,9 +2968,12 @@ function buildRoadmap(o){
   }
   if(R.undated.length){
     need2(34);setT(k,'bold',9.5,P.ink);doc.text('Not scheduled',M,y+2);y+=14;
-    for(const r of R.undated){const dl=r.desc?wrap(doc,r.desc,W-2*M-24,1):[];need2(13+dl.length*10);setT(k,'normal',8.5,P.muted);doc.text(fit(doc,r.title,240),cx[0],y);doc.text(fit(doc,r.topic?r.lane+' / '+r.topic:r.lane,300),cx[1],y);y+=13;
+    for(const r of R.undated){const dl=o.desc&&r.desc?wrap(doc,r.desc,W-2*M-24,1):[];need2(13+dl.length*10);setT(k,'normal',8.5,P.muted);doc.text(fit(doc,r.title,240),cx[0],y);doc.text(fit(doc,r.topic||r.lane,300),cx[1],y);y+=13;
       if(dl.length){setT(k,'normal',7.5,P.muted);doc.text(dl[0],cx[0]+10,y-2);y+=12}}
   }
+  for(const [id,n] of Object.entries(nodes))if(mapKindOf(nodes,id)!=='item'&&(n.completed||Object.keys(n.completionEvents||{}).length)){need2(28);setT(k,'normal',8.5,P.body);doc.text(fit(doc,n.title+' — '+nodeCompletionLabel(n),W-2*M),M,y);y+=16}
+  }
+  if(map){if(time||schedule)doc.addPage();briefMapPage(k,nodes,o.pid,'Map - '+R.name)}
   pageNumbers(k,'Roadmap - '+R.name);
   return doc;
 }
@@ -2998,6 +3003,17 @@ function mapFilterNodes(nodes,excluded){
   for(const [id,n] of Object.entries(keep))if(n.parent!=='root'&&!keep[n.parent])delete keep[id];
   return keep;
 }
+function roadmapExcluded(pid){try{return new Set(JSON.parse(LS.get('oym_rexc_'+(activeUser?.uid||'signed-out')+'_'+pid,'[]'))||[])}catch(e){return new Set()}}
+function roadmapSaveExcluded(pid,set){LS.set('oym_rexc_'+(activeUser?.uid||'signed-out')+'_'+pid,JSON.stringify([...set]))}
+function roadmapToggle(pid,id){const nodes=mapNodes(pid),ex=roadmapExcluded(pid),all=[id,...mapDescendants(nodes,id)],on=all.every(k=>!ex.has(k));for(const k of all)on?ex.add(k):ex.delete(k);roadmapSaveExcluded(pid,ex)}
+function roadmapNodes(pid,o={}){
+  const all=mapNodes(pid),safe={};
+  for(const [id,n] of Object.entries(all)){const chain=[id];let at=n.parent;while(at&&at!=='root'&&all[at]&&!chain.includes(at)){chain.push(at);at=all[at].parent}if(!o.private&&(projSide(pid)?.private||chain.some(k=>all[k].private||(all[k].taskId&&tasks[all[k].taskId]&&taskPrivate(tasks[all[k].taskId])))))continue;safe[id]=n}
+  const nodes=mapFilterNodes(safe,o.excluded?new Set(o.excluded):roadmapExcluded(pid));
+  for(const n of Object.values(nodes))if(n._ctx){delete n.start;delete n.due;delete n.completed;delete n.completedAt;delete n.completionEvents}
+  return nodes;
+}
+const roadmapOpts=()=>({pid:EX.rpid,paper:EX.paper,time:EX.rtime,schedule:EX.rschedule,map:EX.rmap,desc:EX.rdesc,private:EX.rprivate});
 function briefTreeRows(nodes){
   const rows=[],walk=(p,depth)=>{
     for(const [id,n] of mapKids(nodes,p)){
@@ -3012,15 +3028,15 @@ function briefTreeRows(nodes){
   };
   walk('root',0);return rows;
 }
-function briefTreeHTML(pid){
-  const nodes=mapNodes(pid),ex=briefExcluded(pid),rows=briefTreeRows(nodes);
+function briefTreeHTML(pid,roadmap=false){
+  const nodes=mapNodes(pid),ex=roadmap?roadmapExcluded(pid):briefExcluded(pid),rows=briefTreeRows(nodes),visible=roadmap?roadmapNodes(pid,{private:EX.rprivate,excluded:[]}):nodes;
   if(!rows.length)return '<div class="pick-empty">This map has nothing in it yet.</div>';
   return rows.map(r=>{
     const sub=r.kind==='item'?[]:mapDescendants(nodes,r.id),all=[r.id,...sub],inc=all.filter(k=>!ex.has(k)).length;
-    const st=inc===all.length?'on':inc?'part':'off',t=r.n.taskId?tasks[r.n.taskId]:null,due=(t&&t.dueDate)||r.n.due||'';
+    const hidden=roadmap&&!visible[r.id],st=hidden?'off':inc===all.length?'on':inc?'part':'off',t=r.n.taskId?tasks[r.n.taskId]:null,due=(t&&t.dueDate)||r.n.due||'';
     return `<label class="btree-row k-${r.kind}" style="padding-left:${10+r.depth*16}px">
-      <input type="checkbox" data-bnode="${r.id}"${st==='on'?' checked':''}${st==='part'?' data-part="1"':''}>
-      <span class="bt-t">${esc(r.n.title||'(untitled)')}</span>${due?`<span class="pk-date">${esc(fmtMD(parseYmd(due)))}</span>`:''}
+      <input type="checkbox" ${roadmap?'data-rnode':'data-bnode'}="${r.id}"${st==='on'?' checked':''}${hidden?' disabled':''}${st==='part'?' data-part="1"':''}>
+      <span class="bt-t">${esc(r.n.title||'(untitled)')}${hidden?' · private, excluded':''}</span>${due?`<span class="pk-date">${esc(fmtMD(parseYmd(due)))}</span>`:''}
       <span class="pk-tag">${{branch:'Sub-topic',topic:'Topic',item:'Item'}[r.kind]}</span></label>`;
   }).join('');
 }
@@ -3059,11 +3075,11 @@ function briefMapPage(k,nodes,pid,title){
     }
     const head=mapHeadH(r.kind);
     if(r.kind==='branch'){doc.setFillColor(...col);doc.rect(X(r.x),Y(r.y),3*s,r.h*s,'F');
-      setT(k,'bold',fs(7),P.muted);doc.text('SUB-TOPIC',X(r.x+14),Y(r.y+24));setT(k,'bold',fs(14),P.ink);doc.text(fit(doc,n.title||'',(r.w-24)*s),X(r.x+14),Y(r.y+44))}
+      setT(k,'bold',fs(7),P.muted);doc.text(n.completed?'DONE '+nodeCompletionDate(n):'SUB-TOPIC',X(r.x+14),Y(r.y+24));setT(k,'bold',fs(14),P.ink);doc.text(fit(doc,n.title||'',(r.w-24)*s),X(r.x+14),Y(r.y+44))}
     else{doc.setFillColor(...mix(col,.86));doc.rect(X(r.x)+.4,Y(r.y)+.4,r.w*s-.8,head*s,'F');
-      setT(k,'bold',fs(12),P.ink);doc.text(fit(doc,n.title||'',(r.w-24)*s),X(r.x+12),Y(r.y+26))}
+      setT(k,'bold',fs(12),P.ink);doc.text(fit(doc,(n.completed?'Done '+nodeCompletionDate(n)+' · ':'')+(n.title||''),(r.w-24)*s),X(r.x+12),Y(r.y+26))}
     setT(k,'normal',fs(10),P.body);
-    mapItemsOf(nodes,id).forEach(([iid,it],i)=>{doc.text(fit(doc,(i+1)+'. '+(it.title||''),(r.w-24)*s),X(r.x+12),Y(r.y+head+3+i*M_ROW+16))});
+    mapItemsOf(nodes,id).forEach(([iid,it],i)=>{doc.text(fit(doc,(i+1)+'. '+(tasks[it.taskId]?.title||it.title||''),(r.w-24)*s),X(r.x+12),Y(r.y+head+3+i*M_ROW+16))});
   }
 }
 
@@ -3074,7 +3090,7 @@ function buildBrief(o){
   let W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight(),y=M;
   const late=[192,57,43],title=o.title||('Brief - '+R.name);
   const items=R.lanes.flatMap(l=>l.items.concat(l.topics.flatMap(t=>t.items)));
-  const need=h=>{if(y+h>H-M){doc.addPage(o.paper==='a4'?'a4':'letter','portrait');W=doc.internal.pageSize.getWidth();H=doc.internal.pageSize.getHeight();y=M}};
+  const need=h=>{if(y+h>H-M){doc.addPage(pdfPaper(o.paper),'portrait');W=doc.internal.pageSize.getWidth();H=doc.internal.pageSize.getHeight();y=M}};
   // Cover block
   setT(k,'bold',20,P.ink);wrap(doc,title,W-2*M,2).forEach((l,i)=>doc.text(l,M,y+14+i*24));y+=14+wrap(doc,title,W-2*M,2).length*24;
   setT(k,'normal',10,P.muted);
@@ -3118,7 +3134,7 @@ function buildBrief(o){
     y+=14;
   }
   // The map page and the timeline, on landscape pages of their own.
-  const fmt=o.paper==='a4'?'a4':'letter';
+  const fmt=pdfPaper(o.paper);
   if(o.map){doc.addPage(fmt,'landscape');briefMapPage(k,nodes,o.pid,'Map - '+title)}
   if(o.time&&R.min){
     doc.addPage(fmt,'landscape');
@@ -3148,8 +3164,9 @@ function loadPDF(){
 const pc=s=>String(s||'').replace(/[‘’ʼ]/g,"'").replace(/[“”]/g,'"').replace(/[–—−]/g,'-').replace(/…/g,'...')
   .replace(/[   ]/g,' ').replace(/•/g,'-').replace(/[\r\t]/g,' ').replace(/[^\n\x20-\x7E¡-ÿ]/g,'').replace(/ {2,}/g,' ').trim();
 const hexRgb=h=>{h=String(h).replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16);return isNaN(n)?[80,80,80]:[n>>16&255,n>>8&255,n&255]};
+const pdfPaper=paper=>paper==='tabloid'?[792,1224]:paper==='a4'?'a4':'letter';
 function pdfKit(paper,orient){
-  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'pt',format:paper==='a4'?'a4':'letter',orientation:orient==='landscape'?'landscape':'portrait',compress:true});
+  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'pt',format:pdfPaper(paper),orientation:orient==='landscape'?'landscape':'portrait',compress:true});
   const th=curTheme();
   const P={ink:[28,31,36],body:[64,70,80],muted:[118,124,134],rule:[208,213,219],line:[208,215,224],dot:[168,175,184],
     acc:hexRgb(th.print),career:hexRgb(th.pc),openyap:hexRgb(th.po),font:th.mono?'courier':'helvetica'};
@@ -3435,7 +3452,7 @@ const EX={
   tab:LS.get('oym_extab','report'),range:LS.get('oym_exrange','week'),side:LS.get('oym_exside','both'),
   notes:LS.get('oym_exnotes','0')==='1',routine:LS.get('oym_exroutine','1')==='1',name:'',
   tpl:LS.get('oym_extpl','cornell'),dside:LS.get('oym_exdside','both'),wins:LS.get('oym_exwins','1')==='1',
-  blanks:Math.max(0,Math.min(3,+LS.get('oym_exblanks','1')||0)),paper:LS.get('oym_expaper','letter'),rpid:LS.get('oym_exrpid',''),btitle:'',bdesc:LS.get('oym_exbdesc','1')==='1',bmap:LS.get('oym_exbmap','1')==='1',
+  blanks:Math.max(0,Math.min(3,+LS.get('oym_exblanks','1')||0)),paper:LS.get('oym_expaper','letter'),rpid:LS.get('oym_exrpid',''),rtime:true,rschedule:true,rmap:false,rdesc:false,rprivate:false,btitle:'',bdesc:LS.get('oym_exbdesc','1')==='1',bmap:LS.get('oym_exbmap','1')==='1',
   btime:LS.get('oym_exbtime','1')==='1',bnotes:LS.get('oym_exbnotes','0')==='1',over:{}
 };
 const saveEX=()=>{LS.set('oym_extab',EX.tab);LS.set('oym_exrange',EX.range);LS.set('oym_exside',EX.side);LS.set('oym_exnotes',EX.notes?'1':'0');
@@ -3488,7 +3505,9 @@ function renderExport(){
     if(!maps[EX.rpid]&&withMaps.length)EX.rpid=withMaps[0][0];
     body.innerHTML=`<div style="display:grid;gap:16px">
       <div class="fld"><span class="lbl">Project</span><div class="seg wrapseg" role="group" aria-label="Project">${segHTML(withMaps.map(([id,p])=>[id,esc(p.name||'Untitled')]),EX.rpid,'data-exrpid')||'<span class="hint">Make a map first.</span>'}</div></div>
-      <div class="fld"><span class="lbl">Paper</span><div class="seg" role="group" aria-label="Paper size">${segHTML([['letter','Letter'],['a4','A4']],EX.paper,'data-expaper')}</div></div>
+      <div class="fld"><span class="lbl">Paper</span><div class="seg" role="group" aria-label="Paper size">${segHTML([['letter','Letter'],['a4','A4'],['tabloid','11 × 17']],EX.paper,'data-expaper')}</div></div>
+      <div class="fld"><span class="lbl">Include</span><div class="checks">${[['rtime','Timeline'],['rschedule','Schedule'],['rmap','Mind map'],['rdesc','Descriptions'],['rprivate','Private content']].map(([f,label])=>`<label class="check"><input type="checkbox" data-exc="${f}"${EX[f]?' checked':''}> ${label}</label>`).join('')}</div></div>
+      <div class="pick-head"><span>Map portions</span><button class="link" data-ex="rall">Select all</button><button class="link" data-ex="rnone">Clear</button></div><div class="pick btree" id="rTree"></div>
       <p class="hint" id="rmCount"></p>
     </div>`;
   }else if(EX.tab==='report'){
@@ -3534,8 +3553,9 @@ function renderExportLive(){
     $('#bCount').textContent=nb?`${nb} section${nb===1?'':'s'}, ${ni} item${ni===1?'':'s'} in the brief`:'Nothing picked yet';
   }else if(EX.tab==='roadmap'){
     const el=$('#rmCount');if(!el||!EX.rpid)return;
-    const R=roadmapData(EX.rpid),n=R.lanes.reduce((a,l)=>a+l.topics.reduce((b,t)=>b+t.items.length,0),0);
-    el.textContent=`Landscape. A timeline of ${R.dated} dated item${R.dated===1?'':'s'}, then the schedule by branch. ${n-R.dated} without dates are listed as not scheduled.`;
+    const tr=$('#rTree'),scroll=tr.scrollTop;tr.innerHTML=briefTreeHTML(EX.rpid,true);tr.scrollTop=scroll;for(const cb of $$('input[data-part]',tr))cb.indeterminate=true;
+    const R=roadmapData(EX.rpid,null,roadmapNodes(EX.rpid,roadmapOpts())),n=R.dated+R.undated.length;
+    el.textContent=`${n} item${n===1?'':'s'} included · ${R.dated} scheduled. Private content ${EX.rprivate?'included':'excluded'}.`;
   }else{
     const el=$('#dumpCount');if(!el)return;
     const d=dumpData(dumpOpts()),n=d.groups.reduce((a,g)=>a+g.tasks.length,0);
@@ -3552,12 +3572,13 @@ function exFileName(){
 async function makePDF(){
   const epoch=authEpoch;await loadPDF();if(epoch!==authEpoch||!activeUser)throw new Error('Account changed. Open the export again.');
   if((EX.tab==='roadmap'||EX.tab==='brief')&&!maps[EX.rpid])throw new Error('Pick a project with a map.');
-  const doc=EX.tab==='brief'?buildBrief(briefOpts()):EX.tab==='roadmap'?buildRoadmap({pid:EX.rpid,paper:EX.paper}):EX.tab==='report'?buildReport(reportOpts()):buildDump(dumpOpts());
+  const doc=EX.tab==='brief'?buildBrief(briefOpts()):EX.tab==='roadmap'?buildRoadmap(roadmapOpts()):EX.tab==='report'?buildReport(reportOpts()):buildDump(dumpOpts());
   return {blob:doc.output('blob'),name:exFileName()};
 }
 async function exportAct(act){
   if(act==='close')return closeExport();
   if(act==='all'||act==='none'){for(const e of reportPool())if(!e.routine)EX.over[e.key]=act==='all';renderExportLive();return}
+  if(act==='rall'||act==='rnone'){roadmapSaveExcluded(EX.rpid,act==='rall'?new Set():new Set(Object.keys(mapNodes(EX.rpid))));renderExportLive();return}
   if(act==='ball'||act==='bnone'){briefSaveExcluded(EX.rpid,act==='ball'?new Set():new Set(Object.keys(mapNodes(EX.rpid))));renderExportLive();return}
   let w=null;
   if(act==='preview')w=window.open('','_blank');
@@ -3743,6 +3764,7 @@ document.addEventListener('change',e=>{
   if(t.dataset.f){const ed=t.closest('.editor');if(ed){if(t.dataset.f==='notes'){notesPending=null;clearTimeout(notesTimer)}saveField(ed.dataset.id,t.dataset.f,t.value)}return}
   if(t.dataset.mf&&t.closest('.mp-panel')){mapSave(mapSel,t.dataset.mf,t.value);return}
   if(t.dataset.mactChk==='private'){mapProjPrivate();return}
+  if(t.dataset.rnode){roadmapToggle(EX.rpid,t.dataset.rnode);renderExportLive();return}
   if(t.dataset.bnode){briefToggle(EX.rpid,t.dataset.bnode);renderExportLive();return}
   if(t.dataset.exc){EX[t.dataset.exc]=t.checked;saveEX();renderExportLive();return}
   if(t.dataset.key&&t.closest('#exPick')){EX.over[t.dataset.key]=t.checked;renderExportLive();return}
@@ -3832,6 +3854,27 @@ function mapCompletionISO(value){
   if(+d>Date.now())throw new Error('Completion must be now or in the past.');
   return d.toISOString();
 }
+function nodeCompletionDate(n){return n.completedAt?mapLocalTime(n.completedAt).slice(0,10):'date unknown'}
+function nodeCompletionLabel(n){return n.completed?'Completed'+(n.completedAt?' '+mapLocalTime(n.completedAt).replace('T',' '):' (date unknown)'):'Open'}
+function nodeCompletionControls(pid,id){
+  const nodes=mapNodes(pid),n=nodes[id],items=mapDescendants(nodes,id).filter(k=>mapKindOf(nodes,k)==='item'),done=items.filter(k=>tasks[nodes[k].taskId]?.completed).length;
+  const events=Object.entries(n.completionEvents||{}).sort((a,b)=>(b[1].recordedAt||'').localeCompare(a[1].recordedAt||'')||b[0].localeCompare(a[0]));
+  return `<div class="map-task-controls" data-node-completion="${esc(id)}"><b>${esc(nodeCompletionLabel(n))}</b><p class="hint">Child tasks: ${done} of ${items.length} complete. This status does not change child tasks.</p><label class="fld"><span class="lbl">Completion date · local time</span><input class="txt" type="datetime-local" data-node-time value="${n.completed?(n.completedAt?mapLocalTime(n.completedAt):''):mapLocalTime()}" max="${mapLocalTime()}"></label><button class="btn primary" data-node-action="save">${n.completed?'Save completion date':'Mark complete'}</button>${n.completed?'<button class="btn" data-node-action="reopen">Reopen subtopic</button>':''}<p class="hint" data-node-error role="status"></p><details><summary>Completion history (${events.length})</summary><ol>${events.map(([,e])=>`<li>${esc(e.action)} · ${esc(mapLocalTime(e.recordedAt).replace('T',' '))}${e.completedAt?`<br>Completed: ${esc(mapLocalTime(e.completedAt).replace('T',' '))}`:''}${e.previousCompletedAt?`<br>Previous completion: ${esc(mapLocalTime(e.previousCompletedAt).replace('T',' '))}`:''}</li>`).join('')||'<li>No completion changes recorded.</li>'}</ol></details></div>`;
+}
+async function mapSetNodeCompletion(pid,id,action,value){
+  const nodes=mapNodes(pid),n=nodes[id];if(!activeUser||!projects[pid]||!n||mapKindOf(nodes,id)==='item')throw new Error('Open a subtopic or topic first.');
+  const at=action==='reopen'?null:mapCompletionISO(value),base='todo/maps/'+pid+'/nodes/'+id;
+  if(action==='reopen'&&!n.completed)return;
+  if(n.completed&&n.completedAt===at)return;
+  const event={action:action==='reopen'?'reopened':n.completed?'date edited':'completed',recordedAt:new Date().toISOString(),completedAt:at,previousCompletedAt:n.completedAt||null};
+  await upd({[base+'/completed']:action!=='reopen',[base+'/completedAt']:at,[base+'/completionEvents/'+newKey(base+'/completionEvents')]:event});
+}
+async function nodeCompletionAction(button){
+  const box=button.closest('[data-node-completion]'),pid=mapPid,id=box.dataset.nodeCompletion,epoch=authEpoch;if(box.dataset.saving)return;box.dataset.saving='true';button.disabled=true;
+  try{await mapSetNodeCompletion(pid,id,button.dataset.nodeAction,$('[data-node-time]',box).value);if(epoch===authEpoch&&mapPid===pid&&mapSel===id&&!editingText()){if(rTimer){clearTimeout(rTimer);rTimer=0}renderMap()}}
+  catch(e){if(epoch===authEpoch&&box.isConnected)$('[data-node-error]',box).textContent=e.message}
+  finally{delete box.dataset.saving;button.disabled=false}
+}
 function mapTaskControls(tid,nid){
   const t=tasks[tid],done=!!t?.completed,repeat=t&&(t.repeat||'none')!=='none';
   // An old completed record with no timestamp stays unknown until its owner supplies one.
@@ -3905,6 +3948,7 @@ function mapMarkdown(pid){
   const walk=(id,depth)=>{if(visited.has(id))return;visited.add(id);const n=nodes[id];if(!n)return;
     if(mapKindOf(nodes,id)==='item'){taskLine(n,id,depth);return}
     const pad='  '.repeat(depth);lines.push(`${pad}- **${text(n.title||'(untitled)')}**`,`${pad}  - Node ID: ${text(id)}`);
+    lines.push(`${pad}  - Status: ${n.completed?'completed':'open'}`);if(n.completed)lines.push(`${pad}  - Completed at: ${text(n.completedAt||'unknown (not recorded)')}`);for(const e of Object.values(n.completionEvents||{}))lines.push(`${pad}  - Completion event: ${text(e.action)}; recorded ${text(e.recordedAt)}; completed ${text(e.completedAt||'none')}; previous ${text(e.previousCompletedAt||'unknown')}`);
     if(n.start)lines.push(`${pad}  - Start: ${text(n.start)}`);if(n.due)lines.push(`${pad}  - Finish: ${text(n.due)}`);
     if(n.desc)lines.push(...String(n.desc).split('\n').map(l=>`${pad}  > ${text(l)}`));
     for(const [kid] of mapKids(nodes,id))walk(kid,depth+1);
@@ -4006,6 +4050,7 @@ document.addEventListener('click',e=>{
 
 
   if(t.hasAttribute('data-map-item')){orbitTask='';mapSel=t.dataset.mapItem;renderMap()}
+  if(t.hasAttribute('data-node-action'))nodeCompletionAction(t);
   if(t.hasAttribute('data-map-complete'))mapCompleteAction(t);
   if(t.hasAttribute('data-project-complete')){projectSetComplete(t.dataset.projectComplete,t.dataset.projectDone!=='true').catch(()=>{})}
   if(t.hasAttribute('data-markdown-toggle')){markdownOpen=!markdownOpen;t.setAttribute('aria-expanded',String(markdownOpen));const menu=$('.markdown-menu',t.parentElement);menu.hidden=!markdownOpen;if(markdownOpen){const r=t.getBoundingClientRect();menu.style.position='fixed';menu.style.left=Math.max(8,Math.min(r.left,window.innerWidth-menu.offsetWidth-8))+'px';menu.style.right='auto';menu.style.top=Math.max(8,Math.min(r.bottom+6,window.innerHeight-menu.offsetHeight-8))+'px';$('[role="menuitem"]',t.parentElement).focus()}}
@@ -4120,7 +4165,7 @@ function listen(){
   const ref=db.ref('.info/connected'),cb=s=>{if(epoch===authEpoch)$('#offline').hidden=!!s.val()};ref.on('value',cb);subscriptions.push([ref,cb]);
 }
 function unlisten(){
-  authEpoch++;completedProjectId='';projectCategoryClose(false);mapChronoLeave();closeSettings(false);closeMarkdown(false);projectExpanded.clear();listening=false;for(const [ref,cb] of subscriptions)ref.off('value',cb);subscriptions=[];
+  authEpoch++;EX.rprivate=false;completedProjectId='';projectCategoryClose(false);mapChronoLeave();closeSettings(false);closeMarkdown(false);projectExpanded.clear();listening=false;for(const [ref,cb] of subscriptions)ref.off('value',cb);subscriptions=[];
   chronoPause();chronoProgress=0;chronoModel=null;googleCalendarClear();
   tasks={};hist={};projects={};sideMap={};maps={};trackingCategories={};categoryEditor=false;applyCategories();_entries=null;ready.tasks=ready.hist=ready.maps=false;
   openId=null;mapSel='';orbitTask='';orbitPage=0;mapDescriptions=false;mapPid='';mapPickOpen=false;mapTray=false;gtSeenPid='';
@@ -4158,7 +4203,7 @@ if(auth){
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-window.__oym={projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>

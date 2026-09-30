@@ -114,3 +114,9 @@ Tasks starts each category with an always-visible **No project** section, includ
 Visibility checks: `node tests/task-visibility.test.cjs` and `node tests/task-visibility-browser.cjs` (synthetic Chrome).
 
 Quick-add supports consecutive Enter submissions without losing focus or the next draft when task snapshots arrive. Failed additions restore their text, or show a Retry action alongside an existing next draft. Keyboard regression: `node tests/quick-add-browser.cjs`; behavior regression: `node tests/quick-add.test.cjs`.
+
+Roadmap PDF has independent Timeline, Schedule and Mind map options, so it can export the map alone or combine pages. Select all or pick portions; ancestors appear only as headings when their descendants are selected. Roadmap selections are separate from Brief and scoped to the signed-in account. Descriptions default off, schedule topic labels are concise, and private content requires an explicit option. Paper choices include Letter, A4 and true 11 × 17 landscape pages.
+
+Subtopics and nested topics have their own completion date controls. Mark complete, correct the local date/time, or reopen in the map detail panel. Completion history retains each change and its previous date; child-task progress is shown separately and no task is automatically completed. Badges, Markdown and PDF show actual node completion, independently of scheduled dates. Old unknown completion dates remain unknown.
+
+Roadmap checks: `node tests/roadmap-completion.test.cjs` (jsPDF and Poppler `pdftotext`) and `node tests/roadmap-completion-browser.cjs` (Playwright/local Chrome). Synthetic PDF examples are generated under `/private/tmp/oy-todo-*.pdf`.

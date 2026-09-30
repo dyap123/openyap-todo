@@ -393,7 +393,7 @@ async function boot(seed) {
   d.querySelector('#exportBtn').click();
   d.querySelector('[data-extab="roadmap"]').click();
   ok('the Roadmap tab lists mapped projects', d.querySelectorAll('[data-exrpid]').length === 6);
-  ok('and counts what will print', /dated item/.test(d.querySelector('#rmCount').textContent));
+  ok('and counts what will print', /items? included/.test(d.querySelector('#rmCount').textContent));
 
   console.log('brief: selected branches for a meeting');
   const AIn = M.maps[AI].nodes, [eb, ed] = M.mapKids(AIn, 'root').map(([k]) => k);   // Enterprise Policies, Existing Data

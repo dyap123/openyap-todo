@@ -1,3 +1,11 @@
+## 2026-09-29 — selective Roadmap maps and dated subtopic completion
+
+Roadmap reuses the vector map drawing and hierarchical filtering previously used by Brief. Its account-scoped exclusion preferences are separate from Brief. Timeline, Schedule and Mind map pages are independently selectable; descriptions default off and schedule topics use concise labels. Unselected ancestors retain only context, not descriptions/dates/completion state. Private nodes, linked private tasks and private ancestors are excluded by default; a private project requires explicit inclusion. The shared paper helper supports real 792×1224pt Tabloid pages, including Brief continuation/orientation changes when the shared paper option persists.
+
+Branch/topic completed and completedAt fields live on the canonical map node. Each mark, date edit and reopen atomically appends a node-local completionEvents entry with the recorded time, effective completion and prior completion date. Reopening clears current completion but retains the trail; task records, task history and dashboard task counts are untouched. Controls validate local date/time, reject future completion and show child task progress separately. Map badges, Markdown and PDF use current status; local dates match the editor even across UTC midnight. Legacy unknown dates stay explicit. History is visible in each node's detail panel; there is no migration.
+
+Validation: actual jsPDF files checked with pdftotext for selected content, private exclusions, compact defaults and every11x17page size; Brief mixed orientations checked. Selected and full/map-only PDFs rasterized and inspected. Synthetic Chrome covers mark/edit/reopen/history and mobile export options with external traffic blocked. Existing map153, universal31, orbit28 and navigation17 passed. No live writes, commit or deploy by developer.
+
 ## 2026-09-29 — Enter quick-add renders immediately
 
 The focused quick-add input matched editingText, so Firebase snapshots deferred the Tasks render; its focusout also did not flush that deferral. Quick-add now permits snapshot rendering while preserving original form DOM nodes across list/category rebuilds. Focus, next draft, caret and selection survive, while intentional editor focus takes precedence.
