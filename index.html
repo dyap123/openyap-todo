@@ -2112,7 +2112,7 @@ function mapLayout(nodes,printRouting=false){
     // Bottom-row siblings use one parent trunk and one explicit bus, not repeated overlapping
     // elbows from the same branch point.
     if(r&&r.kind==='branch'&&r.slot==='bottom'&&children.length>1){
-      if(p==='root')L.push({to:id,role:'parent',d:mapLink(C[p],r,o)});
+      if(printRouting&&p==='root')L.push({to:id,role:'parent',d:mapLink(C[p],r,o)});
       // Wide print maps may push the row well below side columns. Route the parent to an exterior
       // lane through the first collision-free horizontal gap, then return to the sibling bus.
       // The on-screen map keeps its original, shorter shared bus.
