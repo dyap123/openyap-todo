@@ -1,3 +1,9 @@
+## 2026-09-30 — optional Bluebeam movable map connectors
+
+When the persisted Bluebeam movable-tiles option is enabled, each routed map connector is exported as its own selectable PDF `/PolyLine` annotation with an ordered vertex list and vector Form appearance. Moving a connector keeps its orthogonal bends together; annotation color and 0.9pt stroke follow the rendered map. Connectors are emitted only on map pages, while tile Stamps remain independent and ordinary PDF exports retain page-content lines.
+
+Actual-PDF coverage checks one PolyLine and appearance per routed connector, PDF vertex order and segment directions, palette color and line weight, and that combined Roadmaps attach markups only to the map page. Poppler raster comparisons verify the optional map and combined output remain visually equivalent to the ordinary PDF; default exports contain no annotations. Focused print-map and completion PDF tests pass. No commit or deploy by developer.
+
 ## 2026-09-30 — optional Bluebeam movable Roadmap map tiles
 
 Roadmap export adds a persisted, off-by-default “Bluebeam movable tiles” choice. In Revu, each selected map tile is a standard `/Stamp` annotation with a vector Form appearance, including its fill, border and all current tile text; it can be selected and moved as one object. Connectors, page heading and timeline/schedule pages remain regular page content. The annotation metadata carries the tile title, descriptions, task labels and due/completion dates. Palette, explicit node colors, Dark/Light theme, description choice, selection, page size and orientation flow through the same map renderer. The ordinary PDF output remains unchanged unless the option is enabled.
