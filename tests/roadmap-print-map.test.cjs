@@ -25,7 +25,7 @@ const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'h
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'oy-print-map-'));
 const run=(bin,args)=>{const r=cp.spawnSync(bin,args,{encoding:'utf8'});if(r.status!==0)throw new Error(`${bin} ${args.join(' ')} failed: ${r.stderr}`);return r.stdout};
 function pngPixels(file){const b=fs.readFileSync(file);assert.equal(b.toString('hex',0,8),'89504e470d0a1a0a');let at=8,w=0,h=0,depth=0,type=0,parts=[];while(at<b.length){const size=b.readUInt32BE(at),name=b.toString('ascii',at+4,at+8),data=b.subarray(at+8,at+8+size);if(name==='IHDR'){w=data.readUInt32BE(0);h=data.readUInt32BE(4);depth=data[8];type=data[9]}if(name==='IDAT')parts.push(data);at+=size+12;if(name==='IEND')break}assert.equal(depth,8);assert([2,6].includes(type));const bpp=type===6?4:3,stride=w*bpp,raw=zlib.inflateSync(Buffer.concat(parts)),pixels=Buffer.alloc(h*stride);for(let y=0;y<h;y++){const src=y*(stride+1)+1,dst=y*stride,f=raw[y*(stride+1)],paeth=(a,c,d)=>{const p=a+c-d,pa=Math.abs(p-a),pc=Math.abs(p-c),pd=Math.abs(p-d);return pa<=pc&&pa<=pd?a:pc<=pd?c:d};for(let x=0;x<stride;x++){const val=raw[src+x],left=x>=bpp?pixels[dst+x-bpp]:0,up=y?pixels[dst-stride+x]:0,ul=y&&x>=bpp?pixels[dst-stride+x-bpp]:0;pixels[dst+x]=(val+(f===1?left:f===2?up:f===3?Math.floor((left+up)/2):f===4?paeth(left,up,ul):0))&255}}return {w,h,bpp,pixels}}
-function exportPdf(paper,excluded=[],desc=true){const pdf=dom.window.__oym.buildRoadmap({pid:'p',paper,time:false,schedule:false,map:true,desc,excluded});const file=path.join(dir,paper+(desc?'':'-no-desc')+'.pdf');fs.writeFileSync(file,Buffer.from(pdf.output('arraybuffer')));return {pdf,file}}
+function exportPdf(paper,excluded=[],desc=true,theme='light'){const pdf=dom.window.__oym.buildRoadmap({pid:'p',paper,time:false,schedule:false,map:true,desc,theme,excluded});const file=path.join(dir,paper+(desc?'':'-no-desc')+'-'+theme+'.pdf');fs.writeFileSync(file,Buffer.from(pdf.output('arraybuffer')));return {pdf,file}}
 (async()=>{await new Promise(r=>setTimeout(r,100));try{
   const M=dom.window.__oym;assert(M,'map app initialized');
   assert.deepEqual(Object.keys(M.maps.p.nodes).length,9,'the synthetic project map loaded before exporting');
@@ -36,12 +36,29 @@ function exportPdf(paper,excluded=[],desc=true){const pdf=dom.window.__oym.build
       for(let i=0;i<5;i++){const iid=`${tid}I${i}`;nodes[iid]={kind:'item',parent:tid,title:`Dense item ${String(b+1).padStart(2,'0')}-${String(t+1).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`,order:i,...(b===0&&t===0&&i===0?{completed:true,completedAt:'2026-09-18T12:00:00Z'}:{})}}}}
   const excluded=['b3','t3','i3'],chosen=M.roadmapNodes('p',{excluded});
   assert.equal(Object.keys(chosen).length,192,'all visible dense and fixture nodes remain selected');
-  const tabloid=exportPdf('tabloid',excluded),letter=exportPdf('letter',excluded),tabloidNoDesc=exportPdf('tabloid',excluded,false);
+  const tabloid=exportPdf('tabloid',excluded),letter=exportPdf('letter',excluded),tabloidNoDesc=exportPdf('tabloid',excluded,false),dark=exportPdf('tabloid',excluded,true,'dark');
+  const layout=M.mapLayout(chosen);
+  for(const [id,c] of Object.entries(layout.C).filter(([,c])=>c.kind==='branch'&&c.slot==='bottom')){
+    const kids=Object.entries(layout.C).filter(([kid,c])=>chosen[kid]?.kind==='topic'&&chosen[kid].parent===id).sort((a,b)=>(a[1].x+a[1].w/2)-(b[1].x+b[1].w/2));
+    if(kids.length<2)continue;
+    const busY=c.y+c.h+26,centers=kids.map(([,k])=>k.x+k.w/2),parentPaths=layout.L.filter(l=>l.to===id),path=parentPaths[0]?.d;
+    assert.equal(parentPaths.length,1,`${id} has one parent trunk`);assert.equal((path.match(/H/g)||[]).length,2,`${id} bus spans siblings once`);
+    assert(path.includes(`V${busY}H${centers[0]}H${centers.at(-1)}`),`${id} bus reaches first and last child centers`);
+    for(const [kid,k] of kids){const drops=layout.L.filter(l=>l.to===kid);assert.equal(drops.length,1,`${kid} has one connected drop from the bus`);assert.equal(drops[0].d,`M${k.x+k.w/2} ${busY}V${k.y}`,`${kid} drop lands at its card center`)}
+  }
+  assert(layout.L.some(l=>l.to==='denseB3'),'dense bottom branch fixture exercises sibling bus routing');
+  // The export theme is its own accessible preference and must not alter app appearance.
+  const appTheme=dom.window.document.documentElement.dataset.theme||'';dom.window.document.querySelector('#exportBtn').click();
+  dom.window.document.querySelector('[data-extab="roadmap"]').click();
+  const themeControl=dom.window.document.querySelector('#roadmapMapTheme');assert(themeControl);assert.equal(themeControl.getAttribute('aria-label'),'Mind map PDF theme');assert.equal(themeControl.value,'light');
+  themeControl.value='dark';themeControl.dispatchEvent(new dom.window.Event('change',{bubbles:true}));
+  assert.equal(M.EX.rtheme,'dark');assert.equal(dom.window.localStorage.getItem('oym_exrtheme'),'dark');assert.equal(dom.window.document.documentElement.dataset.theme||'',appTheme,'PDF theme is independent from app theme');
   const info=run('pdfinfo',[tabloid.file]);assert.match(info,/Pages:\s+1\s/);
   const tabloidPortrait=/Page size:\s+792 x 1224 pts/.test(info);assert(tabloidPortrait||/Page size:\s+1224 x 792 pts/.test(info),'11×17 page uses whichever orientation gives the map more scale');
   assert.equal(tabloid.pdf.getNumberOfPages(),1,'all selected dense-map nodes fit on one 11×17 page');
   assert.equal(letter.pdf.getNumberOfPages(),1,'all selected nodes fit on one Letter page too');
   assert.equal(tabloidNoDesc.pdf.getNumberOfPages(),1,'the no-description map also stays on one 11×17 sheet');
+  assert.equal(dark.pdf.getNumberOfPages(),1,'dark map uses the same one-page sheet');
   const letterInfo=run('pdfinfo',[letter.file]);assert.match(letterInfo,/Pages:\s+1\s/);assert(/Page size:\s+(792 x 612|612 x 792) pts/.test(letterInfo));
   const pdfSource=fs.readFileSync(tabloid.file,'latin1');assert(pdfSource.includes('/OpenAction')&&/\/Fit\b/.test(pdfSource),'the PDF opens at fit-page zoom, ready for vector zooming');
   const text=run('pdftotext',[tabloid.file,'-']).replace(/\s+/g,' ');
@@ -49,6 +66,7 @@ function exportPdf(paper,excluded=[],desc=true){const pdf=dom.window.__oym.build
   for(const label of ['Readable career branch','Selected topic with a useful longer label','Selected deliverable with a longer label','Second continuation branch','Second selected topic','Second topic deliverable','Dense branch 06','Dense topic 06-05','Dense item 06-05-05','Done 2026-09-18','DONE 2026-09-20','Due Oct 2','selected description','Task detail remains legible'])assert(text.includes(label),`PDF text includes ${label}: ${text.slice(0,2500)}`);
   for(let b=0;b<6;b++){assert(text.includes(`Dense branch ${String(b+1).padStart(2,'0')}`));for(let t=0;t<5;t++){assert(text.includes(`Dense topic ${String(b+1).padStart(2,'0')}-${String(t+1).padStart(2,'0')}`));for(let i=0;i<5;i++)assert(text.includes(`Dense item ${String(b+1).padStart(2,'0')}-${String(t+1).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`))}}
   assert(!text.includes('Do Not Export'),'excluded branches do not leak into print pages');
+  const darkText=run('pdftotext',[dark.file,'-']).replace(/\s+/g,' ');assert(darkText.includes('Dense branch 06')&&darkText.includes('Selected topic with a useful longer label'),'dark map retains vector content');
   const compactText=run('pdftotext',[tabloidNoDesc.file,'-']).replace(/\s+/g,' ');assert(!/Generated\s+\w/.test(compactText),'no-description map also omits the generated stamp');assert(compactText.includes('Readable career branch')&&compactText.includes('Due Oct 2'),'title and due date remain in the no-description row layout');
   const fonts=run('pdffonts',[tabloid.file]);assert.match(fonts,/Helvetica/i,'map labels remain real vector fonts');
   assert.doesNotMatch(run('pdfimages',['-list',tabloid.file]),/\n\s*1\s+\d+\s+image\s/,'the map is not flattened into page images');
@@ -63,5 +81,9 @@ function exportPdf(paper,excluded=[],desc=true){const pdf=dom.window.__oym.build
   const raster=pngPixels(png+'.png');assert.deepEqual([raster.w,raster.h],[pageW,pageH],'rasterized 11×17 page renders at print dimensions');
   let palettePixels=0;for(let i=0;i<raster.pixels.length;i+=raster.bpp)if(raster.pixels[i]===252&&raster.pixels[i+1]===222&&raster.pixels[i+2]===204)palettePixels++;
   assert(palettePixels>0,'selected Sunset palette is painted into the zoomable map sheet');
+  const darkPng=path.join(dir,'dark');run('pdftoppm',['-f','1','-l','1','-r','72','-singlefile','-png',dark.file,darkPng]);
+  const darkRaster=pngPixels(darkPng+'.png');let bgPixels=0,lightTextPixels=0,darkPalettePixels=0;
+  for(let i=0;i<darkRaster.pixels.length;i+=darkRaster.bpp){const r=darkRaster.pixels[i],g=darkRaster.pixels[i+1],b=darkRaster.pixels[i+2];if(r<45&&g<50&&b<65)bgPixels++;if(r>205&&g>205&&b>205)lightTextPixels++;if(r>90&&r<255&&g<170&&b<180)darkPalettePixels++}
+  assert(bgPixels>1000,'dark map paints the page with its dark theme background');assert(lightTextPixels>100,'dark map retains high-contrast light vector text');assert(darkPalettePixels>100,'dark map keeps recognizable contrast-safe palette fills');
   console.log(`roadmap print map: 192 nodes on one ${pageW}×${pageH}pt vector page; glyph median ${medianGlyphHeight.toFixed(2)}pt (min ${minGlyphHeight.toFixed(2)}pt), palette/date/completion/description/filter checks passed`);
 }finally{dom.window.close();fs.rmSync(dir,{recursive:true,force:true})}})().catch(e=>{console.error(e);process.exit(1)});

@@ -2,6 +2,10 @@
 
 Roadmap's one-sheet mind map uses print-sized type independent from the geometry transform, so the existing card interiors do more of the work at 11 × 17. Tile labels start near twice the old scale, long headings still step down to fit their two-line card area, and task dates reserve actual measured width beside the title. Description text remains in its description slots. This keeps all 192 dense-fixture nodes on a single vector sheet; its text-box median is 2.95pt and the upper-decile glyph height exceeds 3.1pt, while long labels can use a smaller fit size to remain complete. The Roadmap header no longer prints a Generated date, for map-only and combined exports. Other report exports keep their own date stamps. No database writes, commit or deploy by developer.
 
+## 2026-09-30 — Roadmap map theme and sibling connector routing
+
+Roadmap export now offers an accessible Light/Dark mind-map PDF theme, persisted independently from the app appearance. Dark applies to the map page only; combined Timeline and Schedule pages retain their light background and their own footer contrast. Bottom-row sibling topics now share a single connected bus from the parent branch, with one drop per direct topic and recursive routing reserved for nested descendants. This removes duplicate elbows and ensures every sibling remains connected. PDF regression coverage checks vector palette/background/text in both themes, selection persistence and app-theme independence, dense bottom-bus geometry and combined-export per-page footer/background handling. No commit or deploy by developer.
+
 Actual-PDF tests use Poppler on both description-on and description-off map exports, check title/date extraction and page bounds, and assert no Generated stamp on map-only or combined Roadmaps. The existing 192-node sheet also checks glyph distribution, palette pixels, selected/excluded content and vector fonts without page images. Timeline/Schedule pagination and combined first-page view remain unchanged.
 
 ## 2026-09-29 — Roadmap mind map stays on one zoomable vector sheet

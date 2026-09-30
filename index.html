@@ -2104,7 +2104,21 @@ function mapLayout(nodes){
   const shift=(id,ox,oy)=>{const n=nodes[id],x=ox+(+(n&&n.dx)||0),y=oy+(+(n&&n.dy)||0);
     if(C[id]){C[id].x+=x;C[id].y+=y}for(const [k] of mapTopicsOf(nodes,id))if(C[k])shift(k,x,y)};
   for(const [bid] of mapKids(nodes,'root'))shift(bid,0,0);
-  const link=(p,id,o)=>{L.push({to:id,d:mapLink(C[p],C[id],o)});for(const [k] of mapTopicsOf(nodes,id))if(C[k])link(id,k,o)};
+  const link=(p,id,o)=>{
+    const r=C[id],children=mapTopicsOf(nodes,id).map(([k])=>[k,C[k]]).filter(([,v])=>v).sort((a,b)=>(a[1].x+a[1].w/2)-(b[1].x+b[1].w/2));
+    // Bottom-row siblings use one parent trunk and one explicit bus, not repeated overlapping
+    // elbows from the same branch point.
+    if(r&&r.kind==='branch'&&r.slot==='bottom'&&children.length>1){
+      const busY=r.y+r.h+M_GAP,last=children[children.length-1][1];
+      L.push({to:id,d:`M${r.x+r.w/2} ${r.y+r.h}V${busY}H${children[0][1].x+children[0][1].w/2}H${last.x+last.w/2}`});
+      for(const [kid,c] of children){
+        L.push({to:kid,d:`M${c.x+c.w/2} ${busY}V${c.y}`});
+        for(const [nested] of mapTopicsOf(nodes,kid))if(C[nested])link(kid,nested,o);
+      }
+      return;
+    }
+    L.push({to:id,d:mapLink(C[p],r,o)});for(const [k] of mapTopicsOf(nodes,id))if(C[k])link(id,k,o)
+  };
   for(const [bid] of mapKids(nodes,'root')){
     if(!C[bid])continue;
     const o=C[bid].slot==='top'||C[bid].slot==='bottom'?'v':'h';
@@ -3004,8 +3018,10 @@ function buildRoadmap(o){
   }
   for(const [id,n] of Object.entries(nodes))if(mapKindOf(nodes,id)!=='item'&&(n.completed||Object.keys(n.completionEvents||{}).length)){need2(28);setT(k,'normal',8.5,P.body);doc.text(fit(doc,n.title+' — '+nodeCompletionLabel(n),W-2*M),M,y);y+=16}
   }
-  if(map)briefMapPages(k,nodes,o.pid,'Map - '+R.name,{paper:o.paper,desc:o.desc,newPage:time||schedule,singlePage:true})
-  pageNumbers(k,'Roadmap - '+R.name);
+  const mapPage=map?(mapOnly?1:k.doc.getNumberOfPages()+1):0;
+  if(map)briefMapPages(k,nodes,o.pid,'Map - '+R.name,{paper:o.paper,desc:o.desc,newPage:time||schedule,singlePage:true,theme:o.theme})
+  const footerColors=o.theme==='dark'?Array.from({length:doc.getNumberOfPages()},(_,i)=>i+1===mapPage?[164,176,193]:null):null;
+  pageNumbers(k,'Roadmap - '+R.name,footerColors);
   return doc;
 }
 
@@ -3044,7 +3060,7 @@ function roadmapNodes(pid,o={}){
   for(const n of Object.values(nodes))if(n._ctx){delete n.start;delete n.due;delete n.completed;delete n.completedAt;delete n.completionEvents}
   return nodes;
 }
-const roadmapOpts=()=>({pid:EX.rpid,paper:EX.paper,time:EX.rtime,schedule:EX.rschedule,map:EX.rmap,desc:EX.rdesc,private:EX.rprivate});
+const roadmapOpts=()=>({pid:EX.rpid,paper:EX.paper,time:EX.rtime,schedule:EX.rschedule,map:EX.rmap,desc:EX.rdesc,private:EX.rprivate,theme:EX.rtheme});
 function briefTreeRows(nodes){
   const rows=[],walk=(p,depth)=>{
     for(const [id,n] of mapKids(nodes,p)){
@@ -3113,49 +3129,52 @@ function briefMapPages(k,nodes,pid,title,opts={}){
     const s=Math.min((W-2*M)/Math.max(1,b.w),(H-top-bottom)/Math.max(1,b.h),maxScale);
     const ox=M+((W-2*M)-b.w*s)/2-b.x*s,oy=top+((H-top-bottom)-b.h*s)/2-b.y*s;
     const X=x=>ox+x*s,Y=y=>oy+y*s,mix=(c,f)=>c.map(v=>Math.round(v+(255-v)*f));
-    const palette=MAP_PALETTES[maps[pid]?.palette];
-    setT(k,'bold',15,P.ink);doc.text(fit(doc,title+(index?' (continued)':''),W-2*M),M,35);
+    const palette=MAP_PALETTES[maps[pid]?.palette],dark=opts.singlePage&&opts.theme==='dark',bg=dark?[16,20,29]:[255,255,255];
+    const ink=dark?[242,245,250]:P.ink,body=dark?[218,225,235]:P.body,muted=dark?[164,176,193]:P.muted;
+    if(opts.singlePage){doc.setFillColor(...bg);doc.rect(0,0,W,H,'F')}
+    setT(k,'bold',15,ink);doc.text(fit(doc,title+(index?' (continued)':''),W-2*M),M,35);
     const context=[fragment.branch&&nodes[fragment.branch]?.title,fragment.topic&&nodes[fragment.topic]?.title].filter(Boolean).join('  ›  ');
-    if(context){setT(k,'normal',9,P.muted);doc.text(fit(doc,context,W-2*M),M,49)}
+    if(context){setT(k,'normal',9,muted);doc.text(fit(doc,context,W-2*M),M,49)}
     doc.setLineWidth(.9);
     for(const l of lay.L){
-      const c=mapColorOf(pid,allNodes,l.to);doc.setDrawColor(...(c?mix(hexRgb(c),.20):P.line));
+      const c=mapColorOf(pid,allNodes,l.to),line=c?(dark?hexRgb(c).map((v,i)=>Math.round(v*.88+bg[i]*.12)):mix(hexRgb(c),.20)):(dark?[91,105,124]:P.line);doc.setDrawColor(...line);
       const tk=l.d.match(/[MHV]-?[\d.]+(?: -?[\d.]+)?/g)||[];let cx=0,cy=0;
       for(const t of tk){const v=t.slice(1).split(' ').map(Number);
         if(t[0]==='M'){cx=v[0];cy=v[1]}else if(t[0]==='H'){doc.line(X(cx),Y(cy),X(v[0]),Y(cy));cx=v[0]}else{doc.line(X(cx),Y(cy),X(cx),Y(v[0]));cy=v[0]}}
     }
     const fs=f=>opts.singlePage?f*s:Math.max(5.5,f*s),minFont=opts.singlePage?Math.min(3.25,Math.max(1.65,M_ROW*s*.48)):5.5;
     const textFs=f=>opts.singlePage?Math.max(minFont,f*s*2):fs(f),labelMin=opts.singlePage?1.65:minFont;
-    const label=(text,x,y,width,size,align,maxLines=2)=>{setT(k,'bold',textFs(size),P.ink);let font=textFs(size),lines=doc.splitTextToSize(String(text||''),Math.max(1,width));while(lines.length>maxLines&&font>labelMin){font=Math.max(labelMin,font-.25);doc.setFontSize(font);lines=doc.splitTextToSize(String(text||''),Math.max(1,width))}doc.text(lines,x,y,{lineHeightFactor:1.15,...(align?{align}:{})})};
+    const label=(text,x,y,width,size,align,maxLines=2)=>{setT(k,'bold',textFs(size),ink);let font=textFs(size),lines=doc.splitTextToSize(String(text||''),Math.max(1,width));while(lines.length>maxLines&&font>labelMin){font=Math.max(labelMin,font-.25);doc.setFontSize(font);lines=doc.splitTextToSize(String(text||''),Math.max(1,width))}doc.text(lines,x,y,{lineHeightFactor:1.15,...(align?{align}:{})})};
     for(const [id,r] of Object.entries(lay.C)){
       const n=pageNodes[id],c=id==='root'?mapColorOf(pid,allNodes,'root'):mapColorOf(pid,allNodes,id),col=c?hexRgb(c):P.acc;
-      const hasPalette=!!palette,fill=hasPalette?mix(col,id==='root'?.78:.84):[255,255,255],border=hasPalette?mix(col,.12):(id==='root'?P.ink:P.rule);
+      const hasPalette=!!palette,tone=(rgb,amount)=>dark?rgb.map((v,i)=>Math.round(v*(1-amount)+bg[i]*amount)):mix(rgb,amount);
+      const fill=hasPalette?tone(col,id==='root'?.68:.78):(dark?[31,37,48]:[255,255,255]),border=hasPalette?tone(col,.12):(id==='root'?ink:(dark?[91,105,124]:P.rule));
       doc.setDrawColor(...border);doc.setLineWidth(id==='root'?1.4:.9);doc.setFillColor(...fill);
       doc.roundedRect(X(r.x),Y(r.y),r.w*s,r.h*s,5*s,5*s,'FD');
       if(id==='root'){
-        label((maps[pid]&&maps[pid].title)||(projects[pid]||{}).name||'',X(r.x+r.w/2),Y(r.y+r.h/2)-fs(16)/3,(r.w-28)*s,16,'center');continue;
+        setT(k,'bold',textFs(16),ink);label((maps[pid]&&maps[pid].title)||(projects[pid]||{}).name||'',X(r.x+r.w/2),Y(r.y+r.h/2)-fs(16)/3,(r.w-28)*s,16,'center');continue;
       }
       const head=mapHeadH(r.kind),ownItems=mapItemsOf(pageNodes,id);
-      if(hasPalette){doc.setFillColor(...mix(col,.68));doc.roundedRect(X(r.x)+.5,Y(r.y)+.5,Math.max(1,(r.w*s)-1),head*s,4*s,4*s,'F')}
+      if(hasPalette){doc.setFillColor(...tone(col,dark?.52:.68));doc.roundedRect(X(r.x)+.5,Y(r.y)+.5,Math.max(1,(r.w*s)-1),head*s,4*s,4*s,'F')}
       if(r.kind==='branch'){
         doc.setFillColor(...col);doc.rect(X(r.x),Y(r.y),4*s,r.h*s,'F');
-        setT(k,'bold',textFs(8),P.body);doc.text(n.completed?'DONE '+nodeCompletionDate(n):'SUB-TOPIC',X(r.x+14),Y(r.y+23));
+        setT(k,'bold',textFs(8),body);doc.text(n.completed?'DONE '+nodeCompletionDate(n):'SUB-TOPIC',X(r.x+14),Y(r.y+23));
         label(n.title,X(r.x+14),Y(r.y+46),(r.w-28)*s,14);
       }else{
-        if(n.completed){setT(k,'bold',textFs(8),P.body);doc.text('Done '+nodeCompletionDate(n),X(r.x+12),Y(r.y+14))}
+        if(n.completed){setT(k,'bold',textFs(8),body);doc.text('Done '+nodeCompletionDate(n),X(r.x+12),Y(r.y+14))}
         label(n.title,X(r.x+12),Y(r.y+34),(r.w-28)*s,12);
       }
       const descY=Y(r.y+head-8);
-      if(opts.desc&&n.desc){setT(k,'normal',opts.singlePage?Math.max(1.65,Math.min(2.25,7.5*s*1.5)):textFs(7.5),P.body);const dl=wrap(doc,n.desc,(r.w-26)*s,2);dl.forEach((line,j)=>doc.text(line,X(r.x+13),descY+j*fs(9)))}
+      if(opts.desc&&n.desc){setT(k,'normal',opts.singlePage?Math.max(1.65,Math.min(2.25,7.5*s*1.5)):textFs(7.5),body);const dl=wrap(doc,n.desc,(r.w-26)*s,2);dl.forEach((line,j)=>doc.text(line,X(r.x+13),descY+j*fs(9)))}
       ownItems.forEach(([iid,it],i)=>{
         const row=Y(r.y+head+(opts.desc&&n.desc?36:0)+3+i*(mapDescriptions?70:M_ROW)),task=tasks[it.taskId],done=!!(task?.completed||it.completed),date=done?nodeCompletionDate(it)||nodeCompletionDate(task||{}):(task?.dueDate||it.due||'');
         const status=done?'Done '+(date||''):(date?'Due '+fmtMD(parseYmd(date)):'');
         let statusWidth=0;const rowStep=(mapDescriptions?70:M_ROW)*s,titleY=row+Math.max(fs(16),Math.min(minFont*1.1,rowStep*.72));
-        if(status){setT(k,'normal',opts.singlePage?Math.max(1.65,Math.min(2.4,7*s*1.6)):textFs(7),P.muted);statusWidth=doc.getTextWidth(status)+4;doc.text(status,X(r.x+r.w-12)-doc.getTextWidth(status),titleY)}
+        if(status){setT(k,'normal',opts.singlePage?Math.max(1.65,Math.min(2.4,7*s*1.6)):textFs(7),muted);statusWidth=doc.getTextWidth(status)+4;doc.text(status,X(r.x+r.w-12)-doc.getTextWidth(status),titleY)}
         const itemNo=mapItemsOf(allNodes,id).findIndex(([key])=>key===iid)+1;
         const taskLabelWidth=Math.max(12,(r.w-32)*s-(statusWidth||0));
         label((itemNo||i+1)+'. '+(task?.title||it.title||''),X(r.x+12),titleY,taskLabelWidth,10);
-        if(opts.desc&&it.desc){setT(k,'normal',opts.singlePage?Math.max(1.65,Math.min(2.25,7*s*1.5)):textFs(7),P.body);const dy=row+rowStep*.69;wrap(doc,it.desc,(r.w-28)*s,2).forEach((line,j)=>doc.text(line,X(r.x+16),dy+j*fs(12)))}
+        if(opts.desc&&it.desc){setT(k,'normal',opts.singlePage?Math.max(1.65,Math.min(2.25,7*s*1.5)):textFs(7),body);const dy=row+rowStep*.69;wrap(doc,it.desc,(r.w-28)*s,2).forEach((line,j)=>doc.text(line,X(r.x+16),dy+j*fs(12)))}
       });
     }
   })}finally{mapDescriptions=oldDescriptions}
@@ -3263,9 +3282,9 @@ function wrap(doc,s,w,max){
   return lines;
 }
 function setT(k,style,size,color){k.doc.setFont(k.F,style);k.doc.setFontSize(size);k.doc.setTextColor(...color)}
-function pageNumbers(k,label){
+function pageNumbers(k,label,color){
   const n=k.doc.getNumberOfPages();if(n<2&&!label)return;
-  for(let i=1;i<=n;i++){k.doc.setPage(i);setT(k,'normal',7.5,k.P.muted);
+  for(let i=1;i<=n;i++){k.doc.setPage(i);setT(k,'normal',7.5,(Array.isArray(color)?color[i-1]:color)||k.P.muted);
     const m=k.M||40,W=k.doc.internal.pageSize.getWidth(),H=k.doc.internal.pageSize.getHeight();
     if(label)k.doc.text(fit(k.doc,label,W-2*m-80),m,H-24);
     if(n>1)k.doc.text('Page '+i+' of '+n,W-m,H-24,{align:'right'})}
@@ -3535,12 +3554,12 @@ const EX={
   tab:LS.get('oym_extab','report'),range:LS.get('oym_exrange','week'),side:LS.get('oym_exside','both'),
   notes:LS.get('oym_exnotes','0')==='1',routine:LS.get('oym_exroutine','1')==='1',name:'',
   tpl:LS.get('oym_extpl','cornell'),dside:LS.get('oym_exdside','both'),wins:LS.get('oym_exwins','1')==='1',
-  blanks:Math.max(0,Math.min(3,+LS.get('oym_exblanks','1')||0)),paper:LS.get('oym_expaper','letter'),rpid:LS.get('oym_exrpid',''),rtime:true,rschedule:true,rmap:false,rdesc:false,rprivate:false,btitle:'',bdesc:LS.get('oym_exbdesc','1')==='1',bmap:LS.get('oym_exbmap','1')==='1',
+  blanks:Math.max(0,Math.min(3,+LS.get('oym_exblanks','1')||0)),paper:LS.get('oym_expaper','letter'),rpid:LS.get('oym_exrpid',''),rtheme:LS.get('oym_exrtheme','light')==='dark'?'dark':'light',rtime:true,rschedule:true,rmap:false,rdesc:false,rprivate:false,btitle:'',bdesc:LS.get('oym_exbdesc','1')==='1',bmap:LS.get('oym_exbmap','1')==='1',
   btime:LS.get('oym_exbtime','1')==='1',bnotes:LS.get('oym_exbnotes','0')==='1',over:{}
 };
 const saveEX=()=>{LS.set('oym_extab',EX.tab);LS.set('oym_exrange',EX.range);LS.set('oym_exside',EX.side);LS.set('oym_exnotes',EX.notes?'1':'0');
   LS.set('oym_exroutine',EX.routine?'1':'0');LS.set('oym_extpl',EX.tpl);LS.set('oym_exdside',EX.dside);
-  LS.set('oym_exwins',EX.wins?'1':'0');LS.set('oym_exblanks',String(EX.blanks));LS.set('oym_expaper',EX.paper);LS.set('oym_exrpid',EX.rpid||'');
+  LS.set('oym_exwins',EX.wins?'1':'0');LS.set('oym_exblanks',String(EX.blanks));LS.set('oym_expaper',EX.paper);LS.set('oym_exrpid',EX.rpid||'');LS.set('oym_exrtheme',EX.rtheme);
   for(const f of ['bdesc','bmap','btime','bnotes'])LS.set('oym_ex'+f,EX[f]?'1':'0')};
 function reportPool(){return entries().filter(e=>inRange(e,EX.range)&&(EX.side==='both'||e.side===EX.side))}
 const included=e=>EX.over[e.key]!==undefined?EX.over[e.key]:!e.private;
@@ -3589,6 +3608,7 @@ function renderExport(){
     body.innerHTML=`<div style="display:grid;gap:16px">
       <div class="fld"><span class="lbl">Project</span><div class="seg wrapseg" role="group" aria-label="Project">${segHTML(withMaps.map(([id,p])=>[id,esc(p.name||'Untitled')]),EX.rpid,'data-exrpid')||'<span class="hint">Make a map first.</span>'}</div></div>
       <div class="fld"><span class="lbl">Paper</span><div class="seg" role="group" aria-label="Paper size">${segHTML([['letter','Letter'],['a4','A4'],['tabloid','11 × 17']],EX.paper,'data-expaper')}</div></div>
+      <div class="fld"><label class="lbl" for="roadmapMapTheme">Mind map PDF theme</label><select class="txt" id="roadmapMapTheme" data-exrtheme aria-label="Mind map PDF theme"><option value="light"${EX.rtheme==='light'?' selected':''}>Light</option><option value="dark"${EX.rtheme==='dark'?' selected':''}>Dark</option></select></div>
       <div class="fld"><span class="lbl">Include</span><div class="checks">${[['rtime','Timeline'],['rschedule','Schedule'],['rmap','Mind map'],['rdesc','Descriptions'],['rprivate','Private content']].map(([f,label])=>`<label class="check"><input type="checkbox" data-exc="${f}"${EX[f]?' checked':''}> ${label}</label>`).join('')}</div></div>
       <div class="pick-head"><span>Map portions</span><button class="link" data-ex="rall">Select all</button><button class="link" data-ex="rnone">Clear</button></div><div class="pick btree" id="rTree"></div>
       <p class="hint" id="rmCount"></p>
@@ -3844,6 +3864,7 @@ document.addEventListener('submit',e=>{
 document.addEventListener('focusin',e=>{if(markdownOpen&&!e.target.closest?.('.markdown-control'))closeMarkdown(false);const f=e.target.closest&&e.target.closest('[data-add]');if(f)lastAddSide=f.dataset.add});
 document.addEventListener('change',e=>{
   const t=e.target;
+  if(t.hasAttribute('data-exrtheme')){EX.rtheme=t.value==='dark'?'dark':'light';saveEX();return}
   if(t.hasAttribute('data-map-palette')){mapSetPalette(t.dataset.mapPalette,t.value).catch(()=>{});return}
   if(t.dataset.f){const ed=t.closest('.editor');if(ed){if(t.dataset.f==='notes'){notesPending=null;clearTimeout(notesTimer)}saveField(ed.dataset.id,t.dataset.f,t.value)}return}
   if(t.dataset.mf&&t.closest('.mp-panel')){mapSave(mapSel,t.dataset.mf,t.value);return}
