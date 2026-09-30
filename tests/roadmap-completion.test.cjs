@@ -7,10 +7,11 @@ const excluded=['unknown','b','t','x','xi','long'];const selected=save('selected
 const map=save('map-only',{time:false,schedule:false,map:true});assert.equal(map.pdf.getNumberOfPages(),1,'map-only export keeps every selected node on one zoomable sheet');assert(!map.text.includes('Schedule'));assert.match(map.text,/2026-09-19/);assert(!map.text.includes('PRIVATE'));assert.match(map.text,/date unknown/);
 const both=save('full-roadmap',{map:true,desc:true});assert.match(both.text,/LONG EXPLANATORY NOTES/);assert.match(both.text,/Completed/);assert(!both.text.includes('PRIVATE'));assert(!both.text.includes('Generated'),'combined Roadmap output omits the generated-date stamp');assert.match(fs.readFileSync('/private/tmp/oy-todo-full-roadmap.pdf','latin1'),/\/OpenAction \[[^\]]+\/FitH null\]/,'combined Roadmap keeps its default first-page view');
 const bothDark=save('full-roadmap-dark',{map:true,desc:true,theme:'dark'});assert.equal(bothDark.pdf.getNumberOfPages(),both.pdf.getNumberOfPages());assert(!bothDark.text.includes('Generated'));const darkPages=bothDark.pdf.internal.pages.slice(1).map(p=>p.join('\n'));
-assert(darkPages.some(p=>/0\.06 0\.08 0\.11 rg/.test(p)),'combined dark export contains its dark map page background');
-assert(darkPages.slice(0,-1).every(p=>!/0\.06 0\.08 0\.11 rg/.test(p)),'timeline and schedule pages keep their light backgrounds');
-const mutedFooterPages=darkPages.filter(p=>p.includes('Roadmap - Synthetic plan')&&p.includes('0.643 0.69 0.757 rg'));
-assert.equal(mutedFooterPages.length,1,'only the dark map page receives the light footer color; white timeline/schedule pages keep their default muted footer');
+assert(darkPages.length>=3,'combined export includes timeline, schedule and map pages');
+assert(darkPages.every(p=>/0\.06 0\.08 0\.11 rg/.test(p)),'every combined dark Roadmap page paints a dark background');
+assert(darkPages.every(p=>/0\.949 0\.961 0\.98 rg/.test(p)),'every combined dark Roadmap page uses high-contrast light text');
+assert(darkPages.every(p=>p.includes('0.643 0.69 0.757 rg')),'every dark page footer uses a light muted color');
+const lightPages=both.pdf.internal.pages.slice(1).map(p=>p.join('\n'));assert(lightPages.every(p=>!/0\.06 0\.08 0\.11 rg/.test(p)),'Light remains the all-pages default');
 const explicit=save('private-roadmap',{map:true,private:true});assert.match(explicit.text,/PRIVATE TASK TITLE/);
 for(const paper of ['letter','a4']){const pdf=M.buildRoadmap({pid:'p',paper,time:false,schedule:false,map:true});assert.deepEqual([pdf.internal.pageSize.getWidth(),pdf.internal.pageSize.getHeight()].sort((a,b)=>a-b),paper==='letter'?[612,792]:[595.28,841.89])}
 const brief=M.buildBrief({pid:'p',paper:'tabloid',map:true,time:true,desc:false,notes:false});for(let i=1;i<=brief.getNumberOfPages();i++){brief.setPage(i);assert.deepEqual([brief.internal.pageSize.getWidth(),brief.internal.pageSize.getHeight()].sort((a,b)=>a-b),[792,1224])}
