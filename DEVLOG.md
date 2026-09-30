@@ -1,3 +1,11 @@
+## 2026-09-29 — coordinated map/Gantt palettes and wrapped labels
+
+Map palette is canonical maps/{pid}/palette metadata, selected from four validated options or Original. Branch hue inheritance falls back to the palette only after explicit node/ancestor/root color overrides. Coordinated fill/border/text tones use the app background brightness, preserving high text contrast in light/dark themes. App-theme switching recolors current cards/rows without modifying saved data. Toolbar and root/branch selectors share the same field; Gantt uses the same palette.
+
+Main-topic, branch, topic and item labels render complete text over two measured lines, proportionally fitting longer text without ellipses. Their full title/accessible label remains available. Canonical widths/header/row heights increased; column offsets derive from card dimensions, and chronology/hit-testing/PDF map drawing share the new geometry. Metadata occupies separate slots; descriptions remain independent. Browser font differences receive a final DOM width fit. PDF map labels use two-line font fitting and palette fills on white paper.
+
+Gantt names wrap with separate date metadata, taller rows and wider mobile labels; bars/summary bands inherit palette colors. Its explicit Gantt/Chronology control opens the existing same-canvas chronology preview. Synthetic Chrome checks long Unicode labels and bounds in both app themes, descriptions, chronology and mobile; contrast checks cover actual card fills/text. A Gantt label initially measured166px in163px space; wider label column and actual-DOM fitting corrected it. No live writes, commit or deploy by developer.
+
 ## 2026-09-29 — selective Roadmap maps and dated subtopic completion
 
 Roadmap reuses the vector map drawing and hierarchical filtering previously used by Brief. Its account-scoped exclusion preferences are separate from Brief. Timeline, Schedule and Mind map pages are independently selectable; descriptions default off and schedule topics use concise labels. Unselected ancestors retain only context, not descriptions/dates/completion state. Private nodes, linked private tasks and private ancestors are excluded by default; a private project requires explicit inclusion. The shared paper helper supports real 792×1224pt Tabloid pages, including Brief continuation/orientation changes when the shared paper option persists.

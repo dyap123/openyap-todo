@@ -786,6 +786,17 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 .settings-button svg{width:21px;height:21px}.settings-back{z-index:110}.settings-sheet{width:min(620px,calc(100vw - 24px));max-height:calc(100dvh - 32px);overflow:auto;padding:24px}.settings-head{display:flex;justify-content:space-between;align-items:center;gap:16px}.settings-head h2{font-size:20px}.task-project{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;overflow:hidden}.project-toggle{display:grid;grid-template-columns:1fr auto;gap:5px 12px;width:100%;padding:15px;text-align:left;background:var(--surface);color:var(--text);border:0;cursor:pointer}.project-kind{font:10px var(--mono);color:var(--side-c);letter-spacing:.12em;grid-column:1}.project-toggle strong{grid-column:1;font-size:16px;overflow-wrap:anywhere}.project-count{grid-column:1;font-size:11px;color:var(--muted)}button.project-toggle>span:last-child{grid-column:2;grid-row:1/4;align-self:center}.project-tasks{padding:4px 10px 12px}.project-add{margin:10px 0}.add:has(.quick-add-error){flex-wrap:wrap}.quick-add-error{flex-basis:100%;font-size:12px;overflow-wrap:anywhere;color:var(--muted)}.project-completed{margin:12px 0 0}.task-running{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:0;padding:12px 0}.task-running .now-label{margin:0}.dashboard-done{padding-top:20px;scroll-margin-top:90px}.dashboard-done h2{font-size:22px;margin-bottom:20px}.markdown-control{position:relative}.markdown-menu{position:absolute;top:calc(100% + 6px);right:0;z-index:75;width:190px;padding:8px;border:1px solid var(--line-2);border-radius:10px;background:var(--bg);box-shadow:0 10px 30px #0004;display:grid;gap:6px}.markdown-menu[hidden]{display:none}.markdown-menu .btn{text-align:left}.no-project-heading{cursor:default}.project-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}@media(max-width:820px){.settings-sheet{padding:16px}.markdown-menu{left:0;right:auto}.acts{gap:7px}.task-project{margin-bottom:10px}}
 .map-preview-legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:11px;margin:0 0 12px}.map-preview-legend>span[data-time-state]{border-left:5px solid var(--preview-color);padding-left:7px}[data-time-state=past]{--preview-color:#8893a3}[data-time-state=active]{--preview-color:#e2a336}[data-time-state=upcoming]{--preview-color:#0090ff}[data-time-state=unscheduled]{--preview-color:#666976}.chrono-preview .mp-card[data-time-state]{--mc:var(--preview-color)!important;border-color:var(--preview-color);box-shadow:inset 0 3px 0 var(--preview-color)}.chrono-preview .mp-item[data-time-state]{box-shadow:inset 4px 0 0 var(--preview-color);background:color-mix(in srgb,var(--preview-color) 13%,var(--surface));color:var(--text)}.chrono-preview .mp-item.done .t{text-decoration:line-through}.chrono-preview .mp-card,.chrono-preview .mp-item{cursor:pointer}.chrono-preview .mp-add,.chrono-preview .mp-plus{opacity:.7}.map-preview-legend .hint{flex:1;min-width:200px}
 .project-category-back{z-index:110}.project-category-sheet{width:min(540px,calc(100vw - 24px));max-height:calc(100dvh - 32px);overflow:auto;padding:24px}.project-category-name{font-size:17px;font-weight:600;margin:20px 0 10px;overflow-wrap:anywhere}.project-category-sheet form{margin-top:20px}.project-category-sheet select{width:100%;min-width:0}.project-category-actions{display:flex;gap:10px;flex-wrap:wrap}.project-category-row{padding:0 12px 12px;background:var(--surface)}.project-category-button{max-width:100%;white-space:normal;text-align:left}.project-category-sheet [role=status]{font-size:13px;color:var(--danger);margin:12px 0}.project-status{flex-wrap:wrap}@media(max-width:820px){.project-category-sheet{padding:16px}.project-category-actions .btn{min-height:40px}}
+
+/* Geometry mirrors mapCardH/mapHeadH, including reserved metadata and description rows. */
+.map-palette{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}.map-palette select{width:auto;max-width:180px}.mp-panel .map-palette{flex-wrap:wrap;margin:12px 0}
+.map-label{display:block;line-height:1.2;font-weight:inherit;max-width:100%;white-space:normal;overflow:visible}.map-label-line{display:block;white-space:pre;overflow:visible}
+.mp-root .mp-t,.mp-branch .mp-t,.mp-th .mp-t,.mp-item .t,.mp-item.with-description .t{display:block;white-space:normal;overflow:visible;text-overflow:clip;-webkit-line-clamp:unset;line-height:1.2}
+.mp-root .mp-t{width:100%}.mp-bh{height:92px;padding:16px 14px 8px}.mp-th{height:82px;position:relative;display:block;padding:22px 12px 18px}.mp-th .mp-td{position:absolute;bottom:3px;right:12px}.mp-th>.mp-note{position:absolute;bottom:3px;left:12px}.mp-topic .mp-plus{top:42px}
+.mp-item{height:46px}.mp-item.with-description{height:70px}.mp-item .d{flex-shrink:0}.mp-item .t{flex:1}.mp-item .map-item-description{margin-top:4px}.with-descriptions .mp-bh:has(.map-description){height:128px}.with-descriptions .mp-th:has(.map-description){height:118px;display:block;padding:22px 12px 18px}.with-descriptions .mp-bh .mp-k{display:block}.with-descriptions .mp-bh .map-description{position:absolute;bottom:8px;left:14px;right:14px}.mp-bh{position:relative}.with-descriptions .mp-bh:has(.map-description){padding-bottom:44px}
+.mp-card{background:var(--map-fill,var(--surface));border-color:var(--map-border,var(--line-2));color:var(--text)}.mp-root{background:var(--map-fill,var(--raise))}.mp-th{background:var(--map-fill,var(--raise))}.mp-item{background:var(--map-fill,transparent)}.mp-item.late .d{color:var(--text);font-weight:600;text-decoration:underline}.mp-add{color:var(--muted)}
+
+.gt-row{min-height:58px}.gt-name{min-height:58px;background:var(--map-fill,var(--surface));color:var(--text);align-items:center}.gt-t{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.2}.gt-row .gt-meta{font-size:10px;white-space:nowrap}.gt-row.gt-lane .gt-name{border-left:4px solid var(--mc,var(--accent));font-weight:700}.gt-row .gt-b{background:var(--mc,var(--accent));border-radius:5px}.gt-row .gt-sum{background:var(--mc,var(--accent));opacity:.45}.gt-track{min-height:58px}
+.gt-name{display:grid;grid-template-columns:18px minmax(0,1fr);grid-template-rows:1fr auto;gap:0 4px;padding-top:5px;padding-bottom:5px}.gt-fold{grid-column:1;grid-row:1}.gt-t{grid-column:2;grid-row:1;width:100%}.gt-meta{grid-column:2;grid-row:2}.gt-row{height:64px;min-height:64px}.gt-name,.gt-track{min-height:64px}
 </style>
 </head>
 <body>
@@ -957,7 +968,7 @@ function applyTheme(id){
   document.documentElement.dataset.theme=id;
   LS.set('oym_theme',id);
   const m=$('meta[name="theme-color"]');if(m)m.content=curTheme().bg;
-  themeMotion();
+  themeMotion();mapRefreshColors();
 }
 
 // ═══ Firebase — isolated Todo project ════════════════════════════════
@@ -1945,7 +1956,7 @@ let mapPrev=null;         // id -> {x,y} of the last paint, for FLIP moves
 let mapBloomPid='';       // the project whose entrance already played
 let mapGrow=null;         // {id,parent}: a bubble that was just added
 const MAP_SLOTS=['top','left','right','bottom'];
-const MW={root:270,branch:200,topic:224},MH={root:96,branch:64},M_HEAD=40,M_ROW=24,M_FOOT=30,M_GAP=26;
+const MW={root:340,branch:300,topic:340},MH={root:126,branch:92},M_HEAD=82,M_ROW=46,M_FOOT=30,M_GAP=26;
 
 const mapNodes=pid=>(maps[pid]&&maps[pid].nodes)||{};
 // Colours read on white paper and on the dark themes alike. A bubble without its own colour
@@ -1954,10 +1965,30 @@ const mapNodes=pid=>(maps[pid]&&maps[pid].nodes)||{};
 const MAP_COLORS=[['#e5484d','Red'],['#f76b15','Orange'],['#e2a336','Amber'],['#46a758','Green'],['#12a594','Teal'],
   ['#0090ff','Blue'],['#6e56cf','Violet'],['#d6409f','Pink'],['#8b8d98','Gray']];
 const mapColorOk=c=>MAP_COLORS.some(([h])=>h===c);
+const MAP_PALETTES={ocean:{name:'Ocean',colors:['#0090ff','#12a594','#6e56cf','#46a758']},forest:{name:'Forest',colors:['#46a758','#12a594','#e2a336','#8b8d98']},sunset:{name:'Sunset',colors:['#f76b15','#d6409f','#e5484d','#e2a336']},violet:{name:'Violet',colors:['#6e56cf','#d6409f','#0090ff','#8b8d98']}};
+function mapPaletteHTML(pid){return `<label class="map-palette">Map palette <select class="txt" data-map-palette="${esc(pid)}" aria-label="Map palette"><option value="">Original</option>${Object.entries(MAP_PALETTES).map(([id,p])=>`<option value="${id}"${maps[pid]?.palette===id?' selected':''}>${p.name}</option>`).join('')}</select></label>`}
+function mapSetPalette(pid,value){if(!activeUser||!projects[pid]||value&&!MAP_PALETTES[value])return Promise.reject(new Error('Choose an available map palette.'));return upd({['todo/maps/'+pid+'/palette']:value||null})}
+function mapTones(color,dark){const c=hexRgb(color),mix=(a,b,t)=>a.map((v,i)=>Math.round(v*(1-t)+b[i]*t)),rgb=a=>'rgb('+a.join(',')+')';return {fill:rgb(mix(dark?[18,22,30]:[255,255,255],c,dark?.18:.12)),border:rgb(mix(c,dark?[255,255,255]:[0,0,0],dark?.2:.3)),ink:dark?'#f6f7fb':'#17202b',muted:dark?'#c2cbd8':'#3e5065'}}
+function mapSurfaceStyle(pid,nodes,id){
+  const c=mapColorOf(pid,nodes,id),palette=MAP_PALETTES[maps[pid]?.palette];if(!palette)return mcStyle(c);
+  const bg=hexRgb(curTheme().bg),dark=(bg[0]*.2126+bg[1]*.7152+bg[2]*.0722)<140,tones=mapTones(c||palette.colors[0],dark);
+  return mcStyle(c)+`--map-fill:${tones.fill};--map-border:${tones.border};--text:${tones.ink};--body:${tones.ink};--muted:${tones.muted};--faint:${tones.muted};--surface:${tones.fill};--raise:${tones.fill};--line:${tones.border};`;
+}
+function mapRefreshColors(){const nodes=mapNodes(mapPid);$$('#mapWorld [data-nid],.gt-row[data-grow]').forEach(el=>{const style=mapSurfaceStyle(mapPid,nodes,el.dataset.nid||el.dataset.grow);for(const [name,value]of style.split(';').filter(Boolean).map(s=>s.split(':')))el.style.setProperty(name,value)})}
+let mapMeasureContext;
+function mapLabel(text,width,size=13,weight=600){
+  text=String(text||'(untitled)');let measure;
+  if(typeof window.CanvasRenderingContext2D==='function'){mapMeasureContext=mapMeasureContext||document.createElement('canvas').getContext('2d');mapMeasureContext.font=`${weight} ${size}px ${getComputedStyle(document.body).fontFamily}`;measure=t=>mapMeasureContext.measureText(t).width}
+  else measure=t=>Array.from(t).reduce((sum,c)=>sum+(c.codePointAt(0)>255?size:size*.55),0);
+  const chars=Array.from(text);let lines=[text];if(measure(text)>width){let best=Infinity,split=1;for(let i=1;i<chars.length;i++){const a=chars.slice(0,i).join(''),b=chars.slice(i).join(''),score=Math.max(measure(a),measure(b))+( /\s/.test(chars[i-1])?0:size*2);if(score<best){best=score;split=i}}lines=[chars.slice(0,split).join(''),chars.slice(split).join('')]}
+  const fit=Math.min(size,size*width/Math.max(1,...lines.map(measure))*.98);
+  return `<span class="map-label" title="${esc(text)}" aria-label="${esc(text)}" style="font-size:${fit.toFixed(2)}px">${lines.map(l=>`<span class="map-label-line">${esc(l)}</span>`).join('')}</span>`;
+}
+function mapFitLabels(root=document){for(const label of $$('.map-label',root)){const width=Math.max(...[...label.children].map(line=>line.scrollWidth)),available=label.clientWidth;if(available&&width>available){const size=parseFloat(getComputedStyle(label).fontSize);label.style.fontSize=(size*available/width*.96).toFixed(2)+'px'}}}
 function mapColorOf(pid,nodes,id){
-  const seen=new Set();
-  while(id&&id!=='root'&&!seen.has(id)){seen.add(id);const n=nodes[id];if(!n)break;if(mapColorOk(n.color))return n.color;id=n.parent}
-  const r=maps[pid]&&maps[pid].color;return mapColorOk(r)?r:'';
+  const seen=new Set(),original=id;let branch='';
+  while(id&&id!=='root'&&!seen.has(id)){seen.add(id);const n=nodes[id];if(!n)break;if(n.parent==='root')branch=id;if(mapColorOk(n.color))return n.color;id=n.parent}
+  const r=maps[pid]&&maps[pid].color;if(mapColorOk(r))return r;const palette=MAP_PALETTES[maps[pid]?.palette];return palette?palette.colors[original==='root'?0:Math.max(0,mapKids(nodes,'root').findIndex(([k])=>k===branch))%palette.colors.length]:'';
 }
 const mcStyle=c=>c?`--mc:${c};`:'';
 function mapKids(nodes,parent){
@@ -1976,13 +2007,13 @@ function mapDescendants(nodes,id){const out=[];const walk=p=>{for(const [k] of m
 const mapSlot=i=>i<4?MAP_SLOTS[i]:(i%2?'right':'left');
 // A sub-topic (branch) and a topic are both cards that hold item rows; a topic may also hold
 // topics of its own, to any depth. Items are always rows inside the card they belong to.
-const M_BHEAD=64,M_THEAD=40,M_LGAP=56,M_RGAP=46;
+const M_BHEAD=92,M_THEAD=82,M_LGAP=56,M_RGAP=46;
 const mapItemsOf=(nodes,id)=>{const items=mapKids(nodes,id).filter(([k])=>mapKindOf(nodes,k)==='item');return mapPresentation==='clock'?items.sort((a,b)=>(mapChronoDates.get(a[0])?.start??Infinity)-(mapChronoDates.get(b[0])?.start??Infinity)||(a[1].order||0)-(b[1].order||0)):items};
 const mapTopicsOf=(nodes,id)=>mapKids(nodes,id).filter(([k])=>mapKindOf(nodes,k)==='topic');
 function mapCardH(nodes,id,kind){
   const n=mapItemsOf(nodes,id).length;
-  if(kind==='branch')return M_BHEAD+(mapDescriptions&&nodes[id]?.desc?36:0)+(n?n*(mapDescriptions?48:M_ROW)+6:0)+M_FOOT;
-  return M_THEAD+Math.max(1,n)*(mapDescriptions?48:M_ROW)+M_FOOT+(mapDescriptions&&nodes[id]?.desc?36:0);
+  if(kind==='branch')return M_BHEAD+(mapDescriptions&&nodes[id]?.desc?36:0)+(n?n*(mapDescriptions?70:M_ROW)+6:0)+M_FOOT;
+  return M_THEAD+Math.max(1,n)*(mapDescriptions?70:M_ROW)+M_FOOT+(mapDescriptions&&nodes[id]?.desc?36:0);
 }
 const mapHeadH=kind=>kind==='branch'?M_BHEAD:M_THEAD;
 
@@ -2031,7 +2062,7 @@ function mapLayout(nodes){
       return {b,ts,bh,th,h:Math.max(bh,th)}});
     const total=groups.reduce((a,g)=>a+g.h,0)+Math.max(0,groups.length-1)*M_GAP*2;
     let y=-total/2+(s==='left'?-36:36);          // the sheet sets the left branch high, the right low
-    const colX=sg<0?-rx-340-TW:rx+340,brX=sg<0?-rx-70-BW:rx+70;
+    const colX=sg<0?-rx-(BW+140)-TW:rx+BW+140,brX=sg<0?-rx-70-BW:rx+70;
     for(const g of groups){
       const by=y+g.h/2-g.bh/2;
       C[g.b]={x:brX,y:by,w:BW,h:g.bh,kind:'branch',slot:s};
@@ -2296,8 +2327,8 @@ const mapNote=(d,compact=false)=>d&&mapDescriptions&&!compact?`<span class="map-
 function mapItemRow(pid,id,n,i){
   const t=n.taskId?tasks[n.taskId]:null,due=t?t.dueDate||'':n.due||'',done=!!t?.completed,desc=t?t.notes||'':n.desc||'';
   const late=!done&&due&&due<ymd(new Date()),c=n.color&&mapColorOk(n.color)?n.color:'';
-  return `<li class="mp-item${mapDescriptions?' with-description':''}${done?' done':''}${late?' late':''}${mapSel===id?' sel':''}${c?' own':''}" data-nid="${id}" data-mkind="item" role="button" tabindex="0" style="${mcStyle(c)}"${n.desc?` title="${esc(n.desc)}"`:''}>
-    <span class="n">${i+1}</span><span class="t">${esc((t&&t.title)||n.title||'(untitled)')}${mapDescriptions&&desc?`<small class="map-item-description">${esc(desc)}</small>`:''}</span>${!mapDescriptions&&desc?`<span class="mp-note">${ICON.note}</span>`:''}
+  return `<li class="mp-item${mapDescriptions?' with-description':''}${done?' done':''}${late?' late':''}${mapSel===id?' sel':''}${c?' own':''}" data-nid="${id}" data-mkind="item" role="button" tabindex="0" style="${mapSurfaceStyle(pid,mapNodes(pid),id)}"${n.desc?` title="${esc(n.desc)}"`:''}>
+    <span class="n">${i+1}</span><span class="t">${mapLabel((t&&t.title)||n.title||'(untitled)',(mapKindOf(mapNodes(pid),n.parent)==='branch'?MW.branch:MW.topic)-110,12.5,400)}${mapDescriptions&&desc?`<small class="map-item-description">${esc(desc)}</small>`:''}</span>${!mapDescriptions&&desc?`<span class="mp-note">${ICON.note}</span>`:''}
     ${due?`<span class="d">${esc(fmtMD(parseYmd(due)))}</span>`:''}${t?`<span class="dot" title="${done?'Done':'In your list'}"></span>`:''}</li>`;
 }
 function renderMap(anim){
@@ -2306,7 +2337,7 @@ function renderMap(anim){
   const plist=mapProjects();
   if(!projects[mapPid]&&plist.length){mapPid=plist[0][0];LS.set('oym_mappid',mapPid)}
   const pid=mapPid,P=projects[pid];
-  const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}${projectStatusHTML(pid,P)}
+  const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}${projectStatusHTML(pid,P)}${P?mapPaletteHTML(pid):''}
     <div class="map-tools"><button class="btn" data-chrono-mode="${mapPresentation==='clock'?'map':'clock'}" aria-pressed="${mapPresentation==='clock'}" ${P?'':'disabled'}>${mapPresentation==='clock'?'Back to map':'Chronology'}</button>${mapDescriptionToggle()}${markdownControlHTML()}
       ${P?`<button class="btn" type="button" data-mact="tray">Unplaced <span class="mp-count">${mapUnplaced(pid).length}</span></button>
       <button class="btn" type="button" data-mact="zout" aria-label="Zoom out">−</button><button class="btn" type="button" data-mact="zin" aria-label="Zoom in">+</button>
@@ -2316,13 +2347,13 @@ function renderMap(anim){
   const nodes=mapNodes(pid),lay=mapPresentation==='clock'?mapChronoLayout(nodes):mapLayout(nodes),side=projSideOf(pid),mt=(maps[pid]&&maps[pid].title)||P.name;
   const cards=[];
   const rc=mapColorOf(pid,nodes,'root');
-  cards.push(`<div class="mp-card mp-root${mapSel==='root'?' sel':''}" data-nid="root" role="button" tabindex="0" style="${mcStyle(rc)}left:${lay.C.root.x}px;top:${lay.C.root.y}px;width:${MW.root}px;height:${lay.C.root.h}px"${P.description?` title="${esc(P.description)}"`:''}>
-    <span class="mp-k">Main topic</span><span class="mp-t">${esc(mt)}</span>${mapNote(P.description)}<button class="mp-plus" type="button" data-madd="root" title="Add a branch" aria-label="Add a branch">+</button></div>`);
+  cards.push(`<div class="mp-card mp-root${mapSel==='root'?' sel':''}" data-nid="root" role="button" tabindex="0" style="${mapSurfaceStyle(pid,nodes,'root')}left:${lay.C.root.x}px;top:${lay.C.root.y}px;width:${MW.root}px;height:${lay.C.root.h}px"${P.description?` title="${esc(P.description)}"`:''}>
+    <span class="mp-k">Main topic</span><span class="mp-t">${mapLabel(mt,MW.root-42,19)}</span>${mapNote(P.description)}<button class="mp-plus" type="button" data-madd="root" title="Add a branch" aria-label="Add a branch">+</button></div>`);
   const topicCard=(tid,tn)=>{
     const tr=lay.C[tid];if(!tr)return;
     const items=mapItemsOf(nodes,tid);
-    cards.push(`<div class="mp-card mp-topic${mapSel===tid?' sel':''}" data-nid="${tid}" data-mkind="topic" role="button" tabindex="0" style="${mcStyle(mapColorOf(pid,nodes,tid))}left:${tr.x}px;top:${tr.y}px;width:${tr.w}px;height:${tr.h}px">
-      <div class="mp-th"><span class="mp-t">${esc(tn.title)}</span>${tn.completed?`<span class="node-completed" title="${esc(nodeCompletionLabel(tn))}">✓ ${esc(nodeCompletionDate(tn))}</span>`:''}${mapNote(tn.desc)}${tn.due?`<span class="mp-td">${esc(fmtMD(parseYmd(tn.due)))}</span>`:''}</div>
+    cards.push(`<div class="mp-card mp-topic${mapSel===tid?' sel':''}" data-nid="${tid}" data-mkind="topic" role="button" tabindex="0" style="${mapSurfaceStyle(pid,nodes,tid)}left:${tr.x}px;top:${tr.y}px;width:${tr.w}px;height:${tr.h}px">
+      <div class="mp-th"><span class="mp-t">${mapLabel(tn.title,MW.topic-36,13.5)}</span>${tn.completed?`<span class="node-completed" title="${esc(nodeCompletionLabel(tn))}">✓ ${esc(nodeCompletionDate(tn))}</span>`:''}${mapNote(tn.desc)}${tn.due?`<span class="mp-td">${esc(fmtMD(parseYmd(tn.due)))}</span>`:''}</div>
       <ol class="mp-items">${items.length?items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join(''):'<li class="mp-empty">Nothing here yet</li>'}</ol>
       <button class="mp-add" type="button" data-madd="${tid}" data-mwant="item">+ Add item</button>
       <button class="mp-plus" type="button" data-madd="${tid}" data-mwant="topic" title="Add a topic inside" aria-label="Add a topic inside">+</button></div>`);
@@ -2330,8 +2361,8 @@ function renderMap(anim){
   };
   for(const [bid,b] of mapKids(nodes,'root')){
     const r=lay.C[bid],items=mapItemsOf(nodes,bid);
-    cards.push(`<div class="mp-card mp-branch${mapSel===bid?' sel':''}" data-nid="${bid}" data-mkind="branch" role="button" tabindex="0" style="${mcStyle(mapColorOf(pid,nodes,bid))}left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px">
-      <div class="mp-bh"><span class="mp-k">Sub-topic${b.completed?`<span class="node-completed" title="${esc(nodeCompletionLabel(b))}">✓ ${esc(nodeCompletionDate(b))}</span>`:''}${mapNote(b.desc)}</span><span class="mp-t">${esc(b.title)}</span></div>
+    cards.push(`<div class="mp-card mp-branch${mapSel===bid?' sel':''}" data-nid="${bid}" data-mkind="branch" role="button" tabindex="0" style="${mapSurfaceStyle(pid,nodes,bid)}left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px">
+      <div class="mp-bh"><span class="mp-k">Sub-topic${b.completed?`<span class="node-completed" title="${esc(nodeCompletionLabel(b))}">✓ ${esc(nodeCompletionDate(b))}</span>`:''}${mapNote(b.desc)}</span><span class="mp-t">${mapLabel(b.title,MW.branch-36,15)}</span></div>
       ${items.length?`<ol class="mp-items">${items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join('')}</ol>`:''}
       <button class="mp-add" type="button" data-madd="${bid}" data-mwant="item">+ Add item</button>
       <button class="mp-plus" type="button" data-madd="${bid}" data-mwant="topic" title="Add a topic" aria-label="Add a topic">+</button></div>`);
@@ -2345,7 +2376,7 @@ function renderMap(anim){
       :'<p class="hint">Every open task in this project is on the map.</p>'}<p class="hint">Drag a task onto a topic to place it.</p></aside>`:'';
   host.innerHTML=bar+`<div id="mapPreview">${mapChronoControls()}</div><div class="map-stage" id="mapStage" style="--side-c:var(--${side})"><div class="map-world${mapDescriptions?' with-descriptions':''}${mapPresentation==='clock'?' chrono-preview':''}" id="mapWorld">${svg}${cards.join('')}</div>${tray}${mapPanelHTML(pid,nodes)}</div>`;
   const first=!mapCam[pid];if(first)mapCam[pid]=mapFitCam(lay);
-  mapApplyCam();
+  mapFitLabels(host);mapApplyCam();
   const bloom=(anim||mapBloomPid!==pid)&&canAnim();
   if(bloom){mapBloomPid=pid;mapBloom(lay)}
   else mapFlip(lay);
@@ -2438,7 +2469,7 @@ function mapPickOpenAt(open){
 function mapPositions(lay,nodes){
   const P={};for(const [id,r] of Object.entries(lay.C))P[id]={x:r.x,y:r.y};
   for(const [cid,r] of Object.entries(lay.C).filter(([,r])=>r.kind==='topic'||r.kind==='branch'))
-    mapItemsOf(nodes,cid).forEach(([iid],i)=>{P[iid]={x:r.x,y:r.y+mapHeadH(r.kind)+(mapDescriptions&&nodes[cid]?.desc?36:0)+3+i*(mapDescriptions?48:M_ROW),parent:cid}});
+    mapItemsOf(nodes,cid).forEach(([iid],i)=>{P[iid]={x:r.x,y:r.y+mapHeadH(r.kind)+(mapDescriptions&&nodes[cid]?.desc?36:0)+3+i*(mapDescriptions?70:M_ROW),parent:cid}});
   return P;
 }
 function mapSwatches(pid,nodes,id){
@@ -2460,7 +2491,7 @@ function mapPanelHTML(pid,nodes){
       <label class="fld"><span class="lbl">Name</span><input class="txt" id="mpTitle" data-mf="name" value="${esc(P.name||'')}"></label>
       <label class="fld"><span class="lbl">Main topic</span><input class="txt" data-mf="mtitle" value="${esc((maps[pid]&&maps[pid].title)||'')}" placeholder="${esc(P.name||'')}"></label>
       ${mapDescHTML(P.description,'What this project is for')}
-      ${mapSwatches(pid,nodes,'root')}${mapChecklist(pid,nodes,'root')}
+      ${mapPaletteHTML(pid)}${mapSwatches(pid,nodes,'root')}${mapChecklist(pid,nodes,'root')}
       <div class="fld"><span class="lbl">Side</span><div class="seg" role="group" aria-label="Side">${segHTML(sideOptions(),side,'data-mside-set')}</div></div>
       <label class="check"><input type="checkbox" data-mact-chk="private"${m.private?' checked':''}> Private (kept out of reports)</label>
       </div>
@@ -2476,7 +2507,7 @@ function mapPanelHTML(pid,nodes){
     <div class="mp-pb">
     <label class="fld"><span class="lbl">Title</span><input class="txt" id="mpTitle" data-mf="title" value="${esc(t?t.title||'':n.title||'')}"></label>
     ${mapDescHTML(t?t.notes||'':n.desc,kind==='item'?(t?'Also saved as the task\'s notes':'Details, links, what done looks like'):'What this covers')}
-    ${mapSwatches(pid,nodes,mapSel)}
+    ${kind==='branch'?mapPaletteHTML(pid):''}${mapSwatches(pid,nodes,mapSel)}
     <div class="mp-dates"><label class="fld"><span class="lbl">Start</span><input class="txt" type="date" data-mf="start" value="${esc(t?t.startDate??n.start??'':n.start||'')}"></label>
       <label class="fld"><span class="lbl">${kind==='item'?'Due':'Finish'}</span><input class="txt" type="date" data-mf="due" value="${esc(kind==='item'?due:(n.due||''))}"></label></div>
     ${kind==='item'?mapTaskControls(n.taskId||'',mapSel):nodeCompletionControls(pid,mapSel)+mapChecklist(pid,nodes,mapSel)}
@@ -2688,7 +2719,7 @@ let gtScale=LS.get('oym_gtscale','week');if(!['week','month'].includes(gtScale))
 let gtUndated=LS.get('oym_gtund','0')==='1';
 let gtFold=new Set((()=>{try{return JSON.parse(LS.get('oym_gtfold','[]'))||[]}catch(e){return []}})());
 let gtDrag=null,gtClickBlock=0,gtSeenPid='';
-const GT_PX={week:18,month:5},gtLeft=()=>window.innerWidth<=820?170:300;
+const GT_PX={week:18,month:5},gtLeft=()=>window.innerWidth<=820?250:380;
 const gtDay=864e5;
 function gtRange(R,today){
   const t=parseYmd(today),lo=[R.min,ymd(addDays(t,-14))].filter(Boolean).sort()[0],hi=[R.max,ymd(addDays(t,56))].filter(Boolean).sort().pop();
@@ -2737,8 +2768,8 @@ function gtRowHTML(r,X,px,today){
     bar=`<div class="gt-sum" style="left:${x}px;width:${w}px"></div>`;
     meta=r.start&&r.end&&r.start!==r.end?fmtMD(parseYmd(r.start))+' – '+fmtMD(parseYmd(r.end)):fmtMD(parseYmd(r.start||r.end));
   }
-  return `<div class="gt-row gt-${r.type}" data-grow="${r.id}" style="${mcStyle(r.color)}">
-    <div class="gt-name" style="padding-left:${10+r.depth*14}px">${chev}<button class="gt-t" type="button" data-gopen="${r.id}" title="Open in the map">${esc(r.title||'(untitled)')}${r.desc?mapNote(r.desc,true):''}</button><span class="gt-meta">${esc(meta)}</span></div>
+  return `<div class="gt-row gt-${r.type}" data-grow="${r.id}" style="${mapSurfaceStyle(mapPid,mapNodes(mapPid),r.id)}">
+    <div class="gt-name" style="padding-left:${10+Math.min(r.depth,4)*12}px">${chev}<button class="gt-t" type="button" data-gopen="${r.id}" title="${esc(r.title||'(untitled)')}">${mapLabel(r.title,gtLeft()-50-Math.min(r.depth,4)*12,12.5)}${r.desc?mapNote(r.desc,true):''}</button><span class="gt-meta">${esc(meta)}</span></div>
     <div class="gt-track">${bar}</div></div>`;
 }
 function renderGantt(anim){
@@ -2749,9 +2780,9 @@ function renderGantt(anim){
   const pid=mapPid,P=projects[pid],today=ymd(new Date());
   const old=$('#gtScroll'),keep=old&&gtSeenPid===pid?{l:old.scrollLeft,t:old.scrollTop}:null;
   const R=P?roadmapData(pid,today):null;
-  const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}${projectStatusHTML(pid,P)}
+  const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}${projectStatusHTML(pid,P)}${P?mapPaletteHTML(pid):''}
     <div class="map-tools">${P?`
-      <div class="seg" role="group" aria-label="Scale">${segHTML([['week','Weeks'],['month','Months']],gtScale,'data-gscale')}</div>
+      <div class="seg" role="group" aria-label="Timeline presentation"><button aria-pressed="true" type="button">Gantt</button><button type="button" data-gchronology aria-pressed="false">Chronology</button></div><div class="seg" role="group" aria-label="Scale">${segHTML([['week','Weeks'],['month','Months']],gtScale,'data-gscale')}</div>
       <button class="btn" type="button" data-gact="today">Today</button>
       <button class="btn" type="button" data-gact="und" aria-pressed="${gtUndated}" title="Show items without dates">Undated <span class="mp-count">${R.undated.length}</span></button>
       <button class="btn primary" type="button" data-gact="pdf">Roadmap PDF</button>`:''}</div></div>`;
@@ -2778,7 +2809,7 @@ function renderGantt(anim){
         <div class="gt-playhead" data-chrono-origin="${ymd(d0)}" data-chrono-px="${px}"><span>Preview</span></div><div class="gt-today" style="left:${gtLeft()+tx+px/2}px"><span>Today</span></div>
       </div></div></div>`;
   chronoPaint();
-  const sc=$('#gtScroll');
+  mapFitLabels(host);const sc=$('#gtScroll');
   if(keep){sc.scrollLeft=keep.l;sc.scrollTop=keep.t}
   else sc.scrollLeft=Math.max(0,tx-(sc.clientWidth-gtLeft())*.2);
   const first=gtSeenPid!==pid;gtSeenPid=pid;
@@ -3066,20 +3097,21 @@ function briefMapPage(k,nodes,pid,title){
       if(t[0]==='M'){cx=v[0];cy=v[1]}else if(t[0]==='H'){doc.line(X(cx),Y(cy),X(v[0]),Y(cy));cx=v[0]}else{doc.line(X(cx),Y(cy),X(cx),Y(v[0]));cy=v[0]}}
   }
   const fs=f=>Math.max(3.5,f*s);
+  const label=(text,x,y,width,size,align)=>{setT(k,'bold',fs(size),P.ink);let font=fs(size),lines=doc.splitTextToSize(String(text||''),width);while(lines.length>2&&font>3){font-=.25;doc.setFontSize(font);lines=doc.splitTextToSize(String(text||''),width)}doc.text(lines,x,y,{lineHeightFactor:1.15,...(align?{align}:{})})};
   for(const [id,r] of Object.entries(lay.C)){
     const n=nodes[id],c=id==='root'?mapColorOf(pid,nodes,'root'):mapColorOf(pid,nodes,id),col=c?hexRgb(c):P.acc;
-    doc.setDrawColor(...(id==='root'?P.ink:P.rule));doc.setLineWidth(id==='root'?1.2:.6);doc.setFillColor(255,255,255);
+    doc.setDrawColor(...(id==='root'?P.ink:P.rule));doc.setLineWidth(id==='root'?1.2:.6);doc.setFillColor(...(MAP_PALETTES[maps[pid]?.palette]?mix(col,.90):[255,255,255]));
     doc.roundedRect(X(r.x),Y(r.y),r.w*s,r.h*s,4*s,4*s,'FD');
     if(id==='root'){
-      setT(k,'bold',fs(16),P.ink);doc.text(fit(doc,(maps[pid]&&maps[pid].title)||(projects[pid]||{}).name||'',r.w*s-8),X(r.x+r.w/2),Y(r.y+r.h/2)+fs(16)/3,{align:'center'});continue;
+      label((maps[pid]&&maps[pid].title)||(projects[pid]||{}).name||'',X(r.x+r.w/2),Y(r.y+r.h/2)-fs(16)/3,(r.w-28)*s,16,'center');continue;
     }
     const head=mapHeadH(r.kind);
     if(r.kind==='branch'){doc.setFillColor(...col);doc.rect(X(r.x),Y(r.y),3*s,r.h*s,'F');
-      setT(k,'bold',fs(7),P.muted);doc.text(n.completed?'DONE '+nodeCompletionDate(n):'SUB-TOPIC',X(r.x+14),Y(r.y+24));setT(k,'bold',fs(14),P.ink);doc.text(fit(doc,n.title||'',(r.w-24)*s),X(r.x+14),Y(r.y+44))}
+      setT(k,'bold',fs(7),P.muted);doc.text(n.completed?'DONE '+nodeCompletionDate(n):'SUB-TOPIC',X(r.x+14),Y(r.y+24));label(n.title,X(r.x+14),Y(r.y+46),(r.w-28)*s,14)}
     else{doc.setFillColor(...mix(col,.86));doc.rect(X(r.x)+.4,Y(r.y)+.4,r.w*s-.8,head*s,'F');
-      setT(k,'bold',fs(12),P.ink);doc.text(fit(doc,(n.completed?'Done '+nodeCompletionDate(n)+' · ':'')+(n.title||''),(r.w-24)*s),X(r.x+12),Y(r.y+26))}
+      if(n.completed){setT(k,'normal',fs(8),P.muted);doc.text('Done '+nodeCompletionDate(n),X(r.x+12),Y(r.y+14))}label(n.title,X(r.x+12),Y(r.y+34),(r.w-28)*s,12)}
     setT(k,'normal',fs(10),P.body);
-    mapItemsOf(nodes,id).forEach(([iid,it],i)=>{doc.text(fit(doc,(i+1)+'. '+(tasks[it.taskId]?.title||it.title||''),(r.w-24)*s),X(r.x+12),Y(r.y+head+3+i*M_ROW+16))});
+    mapItemsOf(nodes,id).forEach(([iid,it],i)=>{label((i+1)+'. '+(tasks[it.taskId]?.title||it.title||''),X(r.x+12),Y(r.y+head+3+i*(mapDescriptions?70:M_ROW)+16),(r.w-28)*s,10)});
   }
 }
 
@@ -3761,6 +3793,7 @@ document.addEventListener('submit',e=>{
 document.addEventListener('focusin',e=>{if(markdownOpen&&!e.target.closest?.('.markdown-control'))closeMarkdown(false);const f=e.target.closest&&e.target.closest('[data-add]');if(f)lastAddSide=f.dataset.add});
 document.addEventListener('change',e=>{
   const t=e.target;
+  if(t.hasAttribute('data-map-palette')){mapSetPalette(t.dataset.mapPalette,t.value).catch(()=>{});return}
   if(t.dataset.f){const ed=t.closest('.editor');if(ed){if(t.dataset.f==='notes'){notesPending=null;clearTimeout(notesTimer)}saveField(ed.dataset.id,t.dataset.f,t.value)}return}
   if(t.dataset.mf&&t.closest('.mp-panel')){mapSave(mapSel,t.dataset.mf,t.value);return}
   if(t.dataset.mactChk==='private'){mapProjPrivate();return}
@@ -4042,6 +4075,7 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t)return;
   if(t.hasAttribute('data-chrono-mode'))mapChronoToggle(t.dataset.chronoMode==='clock');
   if(t.hasAttribute('data-chrono-gantt'))setView('timeline');
+  if(t.hasAttribute('data-gchronology')){setView('map');if(mapPresentation!=='clock')mapChronoToggle(true)}
   if(t.hasAttribute('data-chrono-play')){if(chronoFrame)chronoPause();else if(chronoData().dated.length){if(chronoProgress>=1)chronoProgress=0;chronoFrame=requestAnimationFrame(chronoTick);chronoPaint()}}
   if(t.hasAttribute('data-chrono-reset')){chronoPause();chronoProgress=0;chronoPaint()}
   if(t.hasAttribute('data-chrono-open')){chronoPause();orbitTask=t.dataset.chronoNode==='true'?'':t.dataset.chronoOpen;mapSel=t.dataset.chronoNode==='true'?t.dataset.chronoOpen:'';renderMap()}
@@ -4203,7 +4237,7 @@ if(auth){
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-window.__oym={roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>
