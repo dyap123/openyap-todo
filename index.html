@@ -3001,7 +3001,7 @@ function buildRoadmap(o){
   if(projSide(o.pid)?.private&&!o.private)throw new Error('Enable Private content to export this private project.');
   const nodes=roadmapNodes(o.pid,o),R=roadmapData(o.pid,null,nodes),mapOnly=!!o.map&&o.time===false&&o.schedule===false;
   const requestedOrient=['landscape','portrait'].includes(o.orientation)?o.orientation:'auto';
-  const mapOrient=requestedOrient==='auto'?(mapOnly?mapPrintOrientation(nodes,o.paper,true):'landscape'):requestedOrient,k=pdfKit(o.paper,mapOrient),{doc,P,W,H}=k,M=40;k.M=M;k.roadmapDark=o.theme==='dark';
+  const mapOrient=requestedOrient==='auto'?(mapOnly?mapPrintOrientation(nodes,o.paper,true):'landscape'):requestedOrient,k=pdfKit(o.paper,mapOrient,{bluebeam:!!o.bluebeam}),{doc,P,W,H}=k,M=40;k.M=M;k.roadmapDark=o.theme==='dark';
   if(k.roadmapDark)Object.assign(P,{ink:[242,245,250],body:[218,225,235],muted:[164,176,193],rule:[64,75,91],line:[49,60,76],dot:[104,116,136]});
   const acc=P.acc,late=pdfAccent(k,[192,57,43]);
   let y=M;
@@ -3042,7 +3042,7 @@ function buildRoadmap(o){
   }
   for(const [id,n] of Object.entries(nodes))if(mapKindOf(nodes,id)!=='item'&&(n.completed||Object.keys(n.completionEvents||{}).length)){need2(28);setT(k,'normal',8.5,P.body);doc.text(fit(doc,n.title+' — '+nodeCompletionLabel(n),W-2*M),M,y);y+=16}
   }
-  if(map)briefMapPages(k,nodes,o.pid,'Map - '+R.name,{paper:o.paper,desc:o.desc,newPage:time||schedule,singlePage:true,theme:o.theme,orientation:requestedOrient})
+  if(map)briefMapPages(k,nodes,o.pid,'Map - '+R.name,{paper:o.paper,desc:o.desc,newPage:time||schedule,singlePage:true,theme:o.theme,orientation:requestedOrient,bluebeam:!!o.bluebeam})
   pageNumbers(k,'Roadmap - '+R.name);
   return doc;
 }
@@ -3082,7 +3082,7 @@ function roadmapNodes(pid,o={}){
   for(const n of Object.values(nodes))if(n._ctx){delete n.start;delete n.due;delete n.completed;delete n.completedAt;delete n.completionEvents}
   return nodes;
 }
-const roadmapOpts=()=>({pid:EX.rpid,paper:EX.paper,time:EX.rtime,schedule:EX.rschedule,map:EX.rmap,desc:EX.rdesc,private:EX.rprivate,theme:EX.rtheme,orientation:EX.rorientation});
+const roadmapOpts=()=>({pid:EX.rpid,paper:EX.paper,time:EX.rtime,schedule:EX.rschedule,map:EX.rmap,desc:EX.rdesc,private:EX.rprivate,theme:EX.rtheme,orientation:EX.rorientation,bluebeam:EX.rbluebeam});
 function briefTreeRows(nodes){
   const rows=[],walk=(p,depth)=>{
     for(const [id,n] of mapKids(nodes,p)){
@@ -3168,13 +3168,15 @@ function briefMapPages(k,nodes,pid,title,opts={}){
     const textFs=f=>opts.singlePage?Math.max(minFont,f*s*2):fs(f),labelMin=opts.singlePage?1.65:minFont;
     const label=(text,x,y,width,size,align,maxLines=2)=>{setT(k,'bold',textFs(size),ink);let font=textFs(size),lines=doc.splitTextToSize(String(text||''),Math.max(1,width));while(lines.length>maxLines&&font>labelMin){font=Math.max(labelMin,font-.25);doc.setFontSize(font);lines=doc.splitTextToSize(String(text||''),Math.max(1,width))}doc.text(lines,x,y,{lineHeightFactor:1.15,...(align?{align}:{})})};
     for(const [id,r] of Object.entries(lay.C)){
+      const pageNo=doc.internal.getCurrentPageInfo().pageNumber,pageOps=opts.bluebeam&&doc.internal.pages[pageNo],tileStart=pageOps?.length;
+      const saveTile=()=>{if(!opts.bluebeam||!pageOps)return;const appearance=pageOps.slice(tileStart).join('\n');pageOps.splice(tileStart);if(!doc.__oyBluebeamPages)doc.__oyBluebeamPages={};const title=String(n?.title||(maps[pid]&&maps[pid].title)||(projects[pid]||{}).name||id),itemText=mapItemsOf(pageNodes,id).map(([iid,it])=>{const task=tasks[it.taskId],done=!!(task?.completed||it.completed),date=done?nodeCompletionDate(it)||nodeCompletionDate(task||{}):(task?.dueDate||it.due||'');return[task?.title||it.title||'',date?`${done?'Done':'Due'} ${date}`:'',it.desc||''].filter(Boolean).join(' — ')});const contents=[title,n?.completed?'Done '+nodeCompletionDate(n):'',n?.desc||'',...itemText].filter(Boolean).join(' | ');(doc.__oyBluebeamPages[pageNo]||=[]).push({id,title,contents,x:X(r.x),y:H-Y(r.y+r.h),w:r.w*s,h:r.h*s,appearance})};
       const n=pageNodes[id],c=id==='root'?mapColorOf(pid,allNodes,'root'):mapColorOf(pid,allNodes,id),col=c?hexRgb(c):P.acc;
       const hasColor=!!c,tone=(rgb,amount)=>dark?rgb.map((v,i)=>Math.round(v*(1-amount)+bg[i]*amount)):mix(rgb,amount);
       const fill=hasColor?tone(col,id==='root'?.68:.78):(dark?[31,37,48]:[255,255,255]),border=hasColor?tone(col,.12):(id==='root'?ink:(dark?[91,105,124]:P.rule));
       doc.setDrawColor(...border);doc.setLineWidth(id==='root'?1.4:.9);doc.setFillColor(...fill);
       doc.roundedRect(X(r.x),Y(r.y),r.w*s,r.h*s,5*s,5*s,'FD');
       if(id==='root'){
-        setT(k,'bold',textFs(16),ink);label((maps[pid]&&maps[pid].title)||(projects[pid]||{}).name||'',X(r.x+r.w/2),Y(r.y+r.h/2)-fs(16)/3,(r.w-28)*s,16,'center');continue;
+        setT(k,'bold',textFs(16),ink);label((maps[pid]&&maps[pid].title)||(projects[pid]||{}).name||'',X(r.x+r.w/2),Y(r.y+r.h/2)-fs(16)/3,(r.w-28)*s,16,'center');saveTile();continue;
       }
       const head=mapHeadH(r.kind),ownItems=mapItemsOf(pageNodes,id);
       if(hasColor){doc.setFillColor(...tone(col,dark?.52:.68));doc.roundedRect(X(r.x)+.5,Y(r.y)+.5,Math.max(1,(r.w*s)-1),head*s,4*s,4*s,'F')}
@@ -3198,6 +3200,7 @@ function briefMapPages(k,nodes,pid,title,opts={}){
         label((itemNo||i+1)+'. '+(task?.title||it.title||''),X(r.x+12),titleY,taskLabelWidth,10);
         if(opts.desc&&it.desc){setT(k,'normal',opts.singlePage?Math.max(1.65,Math.min(2.25,7*s*1.5)):textFs(7),body);const dy=row+rowStep*.69;wrap(doc,it.desc,(r.w-28)*s,2).forEach((line,j)=>doc.text(line,X(r.x+16),dy+j*fs(12)))}
       });
+      saveTile();
     }
   })}finally{mapDescriptions=oldDescriptions}
 }
@@ -3289,11 +3292,25 @@ const pc=s=>String(s||'').replace(/[‘’ʼ]/g,"'").replace(/[“”]/g,'"').re
   .replace(/[   ]/g,' ').replace(/•/g,'-').replace(/[\r\t]/g,' ').replace(/[^\n\x20-\x7E¡-ÿ]/g,'').replace(/ {2,}/g,' ').trim();
 const hexRgb=h=>{h=String(h).replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16);return isNaN(n)?[80,80,80]:[n>>16&255,n>>8&255,n&255]};
 const pdfPaper=paper=>paper==='tabloid'?[792,1224]:paper==='a4'?'a4':'letter';
-function pdfKit(paper,orient){
-  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'pt',format:pdfPaper(paper),orientation:orient==='landscape'?'landscape':'portrait',compress:true});
+function pdfKit(paper,orient,options={}){
+  const {jsPDF}=window.jspdf;let doc;
+  if(options.bluebeam){
+    const onPage=function(info){
+      const tiles=doc.__oyBluebeamPages?.[info.pageNumber]||[];if(!tiles.length)return;
+      const fontDefs=doc.__oyBluebeamFonts||{};
+      for(const tile of tiles){
+        const used=[...new Set((tile.appearance.match(/\/F\d+/g)||[]).map(id=>id.slice(1)))],stream=`q\n1 0 0 1 ${(-tile.x).toFixed(3)} ${(-tile.y).toFixed(3)} cm\n${tile.appearance}\nQ`,ap=doc.internal.newAdditionalObject(),annot=doc.internal.newAdditionalObject();
+        ap.content=`<< /Type /XObject /Subtype /Form /FormType 1 /BBox [0 0 ${tile.w.toFixed(3)} ${tile.h.toFixed(3)}] /Resources << /ProcSet [/PDF /Text] /Font << ${used.map(id=>`/${id} ${fontDefs[id]}`).join(' ')} >> >> /Length ${stream.length} >>\nstream\n${stream}\nendstream`;
+        annot.content=`<< /Type /Annot /Subtype /Stamp /Rect [${tile.x.toFixed(3)} ${tile.y.toFixed(3)} ${(tile.x+tile.w).toFixed(3)} ${(tile.y+tile.h).toFixed(3)}] /F 4 /Name /Draft /Contents (${doc.internal.pdfEscape(tile.contents)}) /AP << /N ${ap.objId} 0 R >> >>`;
+        info.pageContext.annotations.push({type:'reference',object:annot,page:info.pageNumber});
+      }
+    };
+    const events=jsPDF.API.events;events.push(['putPage',onPage]);try{doc=new jsPDF({unit:'pt',format:pdfPaper(paper),orientation:orient==='landscape'?'landscape':'portrait',compress:true})}finally{events.pop()}
+  }else doc=new jsPDF({unit:'pt',format:pdfPaper(paper),orientation:orient==='landscape'?'landscape':'portrait',compress:true});
   const th=curTheme();
   const P={ink:[28,31,36],body:[64,70,80],muted:[118,124,134],rule:[208,213,219],line:[208,215,224],dot:[168,175,184],
     acc:hexRgb(th.print),career:hexRgb(th.pc),openyap:hexRgb(th.po),font:th.mono?'courier':'helvetica'};
+  if(options.bluebeam){const defs={},ops=doc.internal.pages[1],start=ops.length;for(const style of ['normal','bold','italic','bolditalic']){doc.setFont(P.font,style);const font=doc.internal.getFont(),widths=font.metadata.Unicode.widths;defs[font.id]=`<< /Type /Font /Subtype /Type1 /BaseFont /${font.postScriptName} /Encoding /WinAnsiEncoding /FirstChar 32 /LastChar 255 /Widths [${Array.from({length:224},(_,i)=>(widths[i+32]||0)*10).join(' ')}] >>`}ops.splice(start);doc.setFont(P.font,'normal');ops.splice(start);doc.__oyBluebeamFonts=defs}
   for(const side of SIDES)if(categoryColorOk(trackingCategories[side]?.color))P[side]=hexRgb(trackingCategories[side].color);else if(!P[side])P[side]=P.acc;
   return {doc,P,F:P.font,W:doc.internal.pageSize.getWidth(),H:doc.internal.pageSize.getHeight()};
 }
@@ -3578,12 +3595,12 @@ const EX={
   tab:LS.get('oym_extab','report'),range:LS.get('oym_exrange','week'),side:LS.get('oym_exside','both'),
   notes:LS.get('oym_exnotes','0')==='1',routine:LS.get('oym_exroutine','1')==='1',name:'',
   tpl:LS.get('oym_extpl','cornell'),dside:LS.get('oym_exdside','both'),wins:LS.get('oym_exwins','1')==='1',
-  blanks:Math.max(0,Math.min(3,+LS.get('oym_exblanks','1')||0)),paper:LS.get('oym_expaper','letter'),rpid:LS.get('oym_exrpid',''),rtheme:LS.get('oym_exrtheme','light')==='dark'?'dark':'light',rorientation:['landscape','portrait'].includes(LS.get('oym_exrorientation','auto'))?LS.get('oym_exrorientation','auto'):'auto',rtime:true,rschedule:true,rmap:false,rdesc:false,rprivate:false,btitle:'',bdesc:LS.get('oym_exbdesc','1')==='1',bmap:LS.get('oym_exbmap','1')==='1',
+  blanks:Math.max(0,Math.min(3,+LS.get('oym_exblanks','1')||0)),paper:LS.get('oym_expaper','letter'),rpid:LS.get('oym_exrpid',''),rtheme:LS.get('oym_exrtheme','light')==='dark'?'dark':'light',rorientation:['landscape','portrait'].includes(LS.get('oym_exrorientation','auto'))?LS.get('oym_exrorientation','auto'):'auto',rbluebeam:LS.get('oym_exrbluebeam','0')==='1',rtime:true,rschedule:true,rmap:false,rdesc:false,rprivate:false,btitle:'',bdesc:LS.get('oym_exbdesc','1')==='1',bmap:LS.get('oym_exbmap','1')==='1',
   btime:LS.get('oym_exbtime','1')==='1',bnotes:LS.get('oym_exbnotes','0')==='1',over:{}
 };
 const saveEX=()=>{LS.set('oym_extab',EX.tab);LS.set('oym_exrange',EX.range);LS.set('oym_exside',EX.side);LS.set('oym_exnotes',EX.notes?'1':'0');
   LS.set('oym_exroutine',EX.routine?'1':'0');LS.set('oym_extpl',EX.tpl);LS.set('oym_exdside',EX.dside);
-  LS.set('oym_exwins',EX.wins?'1':'0');LS.set('oym_exblanks',String(EX.blanks));LS.set('oym_expaper',EX.paper);LS.set('oym_exrpid',EX.rpid||'');LS.set('oym_exrtheme',EX.rtheme);LS.set('oym_exrorientation',EX.rorientation);
+  LS.set('oym_exwins',EX.wins?'1':'0');LS.set('oym_exblanks',String(EX.blanks));LS.set('oym_expaper',EX.paper);LS.set('oym_exrpid',EX.rpid||'');LS.set('oym_exrtheme',EX.rtheme);LS.set('oym_exrorientation',EX.rorientation);LS.set('oym_exrbluebeam',EX.rbluebeam?'1':'0');
   for(const f of ['bdesc','bmap','btime','bnotes'])LS.set('oym_ex'+f,EX[f]?'1':'0')};
 function reportPool(){return entries().filter(e=>inRange(e,EX.range)&&(EX.side==='both'||e.side===EX.side))}
 const included=e=>EX.over[e.key]!==undefined?EX.over[e.key]:!e.private;
@@ -3634,6 +3651,7 @@ function renderExport(){
       <div class="fld"><span class="lbl">Paper</span><div class="seg" role="group" aria-label="Paper size">${segHTML([['letter','Letter'],['a4','A4'],['tabloid','11 × 17']],EX.paper,'data-expaper')}</div></div>
       <div class="fld"><label class="lbl" for="roadmapPdfOrientation">Roadmap PDF orientation</label><select class="txt" id="roadmapPdfOrientation" data-exrorientation aria-label="Roadmap PDF orientation"><option value="auto"${EX.rorientation==='auto'?' selected':''}>Automatic (best fit)</option><option value="landscape"${EX.rorientation==='landscape'?' selected':''}>Horizontal</option><option value="portrait"${EX.rorientation==='portrait'?' selected':''}>Vertical</option></select><small class="muted">Applies to every selected Roadmap page.</small></div>
       <div class="fld"><label class="lbl" for="roadmapMapTheme">Roadmap PDF theme</label><select class="txt" id="roadmapMapTheme" data-exrtheme aria-label="Roadmap PDF theme"><option value="light"${EX.rtheme==='light'?' selected':''}>Light</option><option value="dark"${EX.rtheme==='dark'?' selected':''}>Dark</option></select><small class="muted">Applies to every selected Roadmap page.</small></div>
+      <div class="fld"><label class="check"><input type="checkbox" data-exc="rbluebeam"${EX.rbluebeam?' checked':''}> Bluebeam movable tiles</label><small class="muted">Each selected map tile is a separate selectable and movable markup in Revu. Applies to map pages only.</small></div>
       <div class="fld"><span class="lbl">Include</span><div class="checks">${[['rtime','Timeline'],['rschedule','Schedule'],['rmap','Mind map'],['rdesc','Descriptions'],['rprivate','Private content']].map(([f,label])=>`<label class="check"><input type="checkbox" data-exc="${f}"${EX[f]?' checked':''}> ${label}</label>`).join('')}</div></div>
       <div class="pick-head"><span>Map portions</span><button class="link" data-ex="rall">Select all</button><button class="link" data-ex="rnone">Clear</button></div><div class="pick btree" id="rTree"></div>
       <p class="hint" id="rmCount"></p>
