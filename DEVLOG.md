@@ -1,3 +1,7 @@
+## 2026-09-30 — Roadmap PDF orientation control
+
+The Roadmap export settings now offer a persisted Automatic (best fit), Horizontal, or Vertical page orientation. Forced choices set the orientation of every selected Roadmap page, including the one-sheet map page in combined exports; Automatic keeps the previous behavior of landscape timeline/schedule pages and best-fit map-only exports. PDF regression coverage checks the actual 11 × 17 map-only and combined page dimensions, along with the default and saved preference. No commit or deploy by developer.
+
 ## 2026-09-30 — Roadmap print routing and full-page PDF theme
 
 The earlier bottom sibling bus was placed just below its parent branch. Wide maps can push topic rows outward to clear tall side columns, turning each child drop into a long parallel stem. Print-only routing now uses one centered trunk down through the measured whitespace to a shared bus immediately above the common topic row, with short fixed drops into each sibling. Candidate paths are checked against card interiors and existing connector paths before rendering; screen-map geometry remains unchanged. The dense 192-node 11 × 17 test raster checks the actual bus/drop pixels and verifies no interior intersections or collinear overlaps with unrelated branch routes.

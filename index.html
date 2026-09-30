@@ -3002,7 +3002,8 @@ function rmTimeline(k,R,st){
 function buildRoadmap(o){
   if(projSide(o.pid)?.private&&!o.private)throw new Error('Enable Private content to export this private project.');
   const nodes=roadmapNodes(o.pid,o),R=roadmapData(o.pid,null,nodes),mapOnly=!!o.map&&o.time===false&&o.schedule===false;
-  const mapOrient=mapOnly?mapPrintOrientation(nodes,o.paper,true):'landscape',k=pdfKit(o.paper,mapOrient),{doc,P,W,H}=k,M=40;k.M=M;k.roadmapDark=o.theme==='dark';
+  const requestedOrient=['landscape','portrait'].includes(o.orientation)?o.orientation:'auto';
+  const mapOrient=requestedOrient==='auto'?(mapOnly?mapPrintOrientation(nodes,o.paper,true):'landscape'):requestedOrient,k=pdfKit(o.paper,mapOrient),{doc,P,W,H}=k,M=40;k.M=M;k.roadmapDark=o.theme==='dark';
   if(k.roadmapDark)Object.assign(P,{ink:[242,245,250],body:[218,225,235],muted:[164,176,193],rule:[64,75,91],line:[49,60,76],dot:[104,116,136]});
   const acc=P.acc,late=pdfAccent(k,[192,57,43]);
   let y=M;
@@ -3043,7 +3044,7 @@ function buildRoadmap(o){
   }
   for(const [id,n] of Object.entries(nodes))if(mapKindOf(nodes,id)!=='item'&&(n.completed||Object.keys(n.completionEvents||{}).length)){need2(28);setT(k,'normal',8.5,P.body);doc.text(fit(doc,n.title+' — '+nodeCompletionLabel(n),W-2*M),M,y);y+=16}
   }
-  if(map)briefMapPages(k,nodes,o.pid,'Map - '+R.name,{paper:o.paper,desc:o.desc,newPage:time||schedule,singlePage:true,theme:o.theme})
+  if(map)briefMapPages(k,nodes,o.pid,'Map - '+R.name,{paper:o.paper,desc:o.desc,newPage:time||schedule,singlePage:true,theme:o.theme,orientation:requestedOrient})
   pageNumbers(k,'Roadmap - '+R.name);
   return doc;
 }
@@ -3083,7 +3084,7 @@ function roadmapNodes(pid,o={}){
   for(const n of Object.values(nodes))if(n._ctx){delete n.start;delete n.due;delete n.completed;delete n.completedAt;delete n.completionEvents}
   return nodes;
 }
-const roadmapOpts=()=>({pid:EX.rpid,paper:EX.paper,time:EX.rtime,schedule:EX.rschedule,map:EX.rmap,desc:EX.rdesc,private:EX.rprivate,theme:EX.rtheme});
+const roadmapOpts=()=>({pid:EX.rpid,paper:EX.paper,time:EX.rtime,schedule:EX.rschedule,map:EX.rmap,desc:EX.rdesc,private:EX.rprivate,theme:EX.rtheme,orientation:EX.rorientation});
 function briefTreeRows(nodes){
   const rows=[],walk=(p,depth)=>{
     for(const [id,n] of mapKids(nodes,p)){
@@ -3145,7 +3146,7 @@ function briefMapPages(k,nodes,pid,title,opts={}){
   const {doc,P}=k,allNodes=maps[pid]?.nodes||nodes,oldDescriptions=mapDescriptions;mapDescriptions=!!opts.desc;
   try{const fragments=opts.singlePage?[{ids:Object.keys(nodes),branch:'',topic:''}]:mapPrintFragments(nodes,!!opts.desc);if(opts.singlePage&&!opts.newPage&&doc.setDisplayMode)doc.setDisplayMode('fullpage');fragments.forEach((fragment,index)=>{
     const pageNodes={};for(const id of fragment.ids)if(nodes[id])pageNodes[id]=nodes[id];
-    const lay=mapLayout(pageNodes,!!opts.singlePage),b=lay.box,orient=opts.singlePage?mapPrintOrientation(pageNodes,opts.paper,true):'landscape';
+    const lay=mapLayout(pageNodes,!!opts.singlePage),b=lay.box,orient=opts.orientation==='portrait'||opts.orientation==='landscape'?opts.orientation:(opts.singlePage?mapPrintOrientation(pageNodes,opts.paper,true):'landscape');
     if(index||opts.newPage)doc.addPage(pdfPaper(opts.paper),orient);
     const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight(),M=34,top=56,bottom=34;
     const maxScale=opts.singlePage?Infinity:(opts.paper==='tabloid'?1.8:1.35);
@@ -3579,12 +3580,12 @@ const EX={
   tab:LS.get('oym_extab','report'),range:LS.get('oym_exrange','week'),side:LS.get('oym_exside','both'),
   notes:LS.get('oym_exnotes','0')==='1',routine:LS.get('oym_exroutine','1')==='1',name:'',
   tpl:LS.get('oym_extpl','cornell'),dside:LS.get('oym_exdside','both'),wins:LS.get('oym_exwins','1')==='1',
-  blanks:Math.max(0,Math.min(3,+LS.get('oym_exblanks','1')||0)),paper:LS.get('oym_expaper','letter'),rpid:LS.get('oym_exrpid',''),rtheme:LS.get('oym_exrtheme','light')==='dark'?'dark':'light',rtime:true,rschedule:true,rmap:false,rdesc:false,rprivate:false,btitle:'',bdesc:LS.get('oym_exbdesc','1')==='1',bmap:LS.get('oym_exbmap','1')==='1',
+  blanks:Math.max(0,Math.min(3,+LS.get('oym_exblanks','1')||0)),paper:LS.get('oym_expaper','letter'),rpid:LS.get('oym_exrpid',''),rtheme:LS.get('oym_exrtheme','light')==='dark'?'dark':'light',rorientation:['landscape','portrait'].includes(LS.get('oym_exrorientation','auto'))?LS.get('oym_exrorientation','auto'):'auto',rtime:true,rschedule:true,rmap:false,rdesc:false,rprivate:false,btitle:'',bdesc:LS.get('oym_exbdesc','1')==='1',bmap:LS.get('oym_exbmap','1')==='1',
   btime:LS.get('oym_exbtime','1')==='1',bnotes:LS.get('oym_exbnotes','0')==='1',over:{}
 };
 const saveEX=()=>{LS.set('oym_extab',EX.tab);LS.set('oym_exrange',EX.range);LS.set('oym_exside',EX.side);LS.set('oym_exnotes',EX.notes?'1':'0');
   LS.set('oym_exroutine',EX.routine?'1':'0');LS.set('oym_extpl',EX.tpl);LS.set('oym_exdside',EX.dside);
-  LS.set('oym_exwins',EX.wins?'1':'0');LS.set('oym_exblanks',String(EX.blanks));LS.set('oym_expaper',EX.paper);LS.set('oym_exrpid',EX.rpid||'');LS.set('oym_exrtheme',EX.rtheme);
+  LS.set('oym_exwins',EX.wins?'1':'0');LS.set('oym_exblanks',String(EX.blanks));LS.set('oym_expaper',EX.paper);LS.set('oym_exrpid',EX.rpid||'');LS.set('oym_exrtheme',EX.rtheme);LS.set('oym_exrorientation',EX.rorientation);
   for(const f of ['bdesc','bmap','btime','bnotes'])LS.set('oym_ex'+f,EX[f]?'1':'0')};
 function reportPool(){return entries().filter(e=>inRange(e,EX.range)&&(EX.side==='both'||e.side===EX.side))}
 const included=e=>EX.over[e.key]!==undefined?EX.over[e.key]:!e.private;
@@ -3633,6 +3634,7 @@ function renderExport(){
     body.innerHTML=`<div style="display:grid;gap:16px">
       <div class="fld"><span class="lbl">Project</span><div class="seg wrapseg" role="group" aria-label="Project">${segHTML(withMaps.map(([id,p])=>[id,esc(p.name||'Untitled')]),EX.rpid,'data-exrpid')||'<span class="hint">Make a map first.</span>'}</div></div>
       <div class="fld"><span class="lbl">Paper</span><div class="seg" role="group" aria-label="Paper size">${segHTML([['letter','Letter'],['a4','A4'],['tabloid','11 × 17']],EX.paper,'data-expaper')}</div></div>
+      <div class="fld"><label class="lbl" for="roadmapPdfOrientation">Roadmap PDF orientation</label><select class="txt" id="roadmapPdfOrientation" data-exrorientation aria-label="Roadmap PDF orientation"><option value="auto"${EX.rorientation==='auto'?' selected':''}>Automatic (best fit)</option><option value="landscape"${EX.rorientation==='landscape'?' selected':''}>Horizontal</option><option value="portrait"${EX.rorientation==='portrait'?' selected':''}>Vertical</option></select><small class="muted">Applies to every selected Roadmap page.</small></div>
       <div class="fld"><label class="lbl" for="roadmapMapTheme">Roadmap PDF theme</label><select class="txt" id="roadmapMapTheme" data-exrtheme aria-label="Roadmap PDF theme"><option value="light"${EX.rtheme==='light'?' selected':''}>Light</option><option value="dark"${EX.rtheme==='dark'?' selected':''}>Dark</option></select><small class="muted">Applies to every selected Roadmap page.</small></div>
       <div class="fld"><span class="lbl">Include</span><div class="checks">${[['rtime','Timeline'],['rschedule','Schedule'],['rmap','Mind map'],['rdesc','Descriptions'],['rprivate','Private content']].map(([f,label])=>`<label class="check"><input type="checkbox" data-exc="${f}"${EX[f]?' checked':''}> ${label}</label>`).join('')}</div></div>
       <div class="pick-head"><span>Map portions</span><button class="link" data-ex="rall">Select all</button><button class="link" data-ex="rnone">Clear</button></div><div class="pick btree" id="rTree"></div>
@@ -3890,6 +3892,7 @@ document.addEventListener('focusin',e=>{if(markdownOpen&&!e.target.closest?.('.m
 document.addEventListener('change',e=>{
   const t=e.target;
   if(t.hasAttribute('data-exrtheme')){EX.rtheme=t.value==='dark'?'dark':'light';saveEX();return}
+  if(t.hasAttribute('data-exrorientation')){EX.rorientation=['landscape','portrait'].includes(t.value)?t.value:'auto';saveEX();renderExportLive();return}
   if(t.hasAttribute('data-map-palette')){mapSetPalette(t.dataset.mapPalette,t.value).catch(()=>{});return}
   if(t.dataset.f){const ed=t.closest('.editor');if(ed){if(t.dataset.f==='notes'){notesPending=null;clearTimeout(notesTimer)}saveField(ed.dataset.id,t.dataset.f,t.value)}return}
   if(t.dataset.mf&&t.closest('.mp-panel')){mapSave(mapSel,t.dataset.mf,t.value);return}
