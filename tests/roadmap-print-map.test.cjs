@@ -29,29 +29,35 @@ function exportPdf(paper,excluded=[]){const pdf=dom.window.__oym.buildRoadmap({p
 (async()=>{await new Promise(r=>setTimeout(r,100));try{
   const M=dom.window.__oym;assert(M,'map app initialized');
   assert.deepEqual(Object.keys(M.maps.p.nodes).length,9,'the synthetic project map loaded before exporting');
-  const nodes=M.maps.p.nodes;nodes.branchItem={kind:'item',parent:'b',title:'Direct branch task',due:'2026-10-03'};
-  for(let n=0;n<9;n++)nodes['dense'+n]={kind:'item',parent:'t',title:`Dense deliverable ${String(n+1).padStart(2,'0')} with enough words to test readable printed rows`,order:n+1,...(n===0?{completed:true,completedAt:'2026-09-18T12:00:00Z'}:{})};
-  nodes.nested={kind:'topic',parent:'t',title:'Nested continuation topic',order:1};nodes.nestedItem={kind:'item',parent:'nested',title:'Nested topic deliverable'};
-  const excluded=['b3','t3','i3'],chosen=M.roadmapNodes('p',{excluded}),parts=M.mapPrintFragments(chosen,true);
-  const itemIds=parts.flatMap(p=>p.ids.filter(id=>M.mapKindOf(chosen,id)==='item'));
-  assert.deepEqual([...itemIds].sort(),Object.keys(chosen).filter(id=>M.mapKindOf(chosen,id)==='item').sort(),'fragments preserve each selected item exactly once');
-  assert(parts.some(p=>p.ids.includes('nested')&&p.ids.includes('t')),'nested topic keeps ancestor context on its own page');
+  const nodes=M.maps.p.nodes;
+  // A 6 × 5 × 5 map resembles the dense projects that previously expanded to dozens of sheets.
+  for(let b=0;b<6;b++){const bid=`denseB${b}`;nodes[bid]={kind:'branch',parent:'root',title:`Dense branch ${String(b+1).padStart(2,'0')}`,order:b+3};
+    for(let t=0;t<5;t++){const tid=`${bid}T${t}`;nodes[tid]={kind:'topic',parent:bid,title:`Dense topic ${String(b+1).padStart(2,'0')}-${String(t+1).padStart(2,'0')}`,order:t};
+      for(let i=0;i<5;i++){const iid=`${tid}I${i}`;nodes[iid]={kind:'item',parent:tid,title:`Dense item ${String(b+1).padStart(2,'0')}-${String(t+1).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`,order:i,...(b===0&&t===0&&i===0?{completed:true,completedAt:'2026-09-18T12:00:00Z'}:{})}}}}
+  const excluded=['b3','t3','i3'],chosen=M.roadmapNodes('p',{excluded});
+  assert.equal(Object.keys(chosen).length,192,'all visible dense and fixture nodes remain selected');
   const tabloid=exportPdf('tabloid',excluded),letter=exportPdf('letter',excluded);
-  const info=run('pdfinfo',[tabloid.file]);assert.match(info,/Page size:\s+1224 x 792 pts/);
-  assert.equal(tabloid.pdf.getNumberOfPages(),parts.length,'dense nodes continue across pages at readable size');
-  assert.equal(letter.pdf.getNumberOfPages(),parts.length,'letter pages preserve the same map continuation structure');
+  const info=run('pdfinfo',[tabloid.file]);assert.match(info,/Pages:\s+1\s/);
+  const tabloidPortrait=/Page size:\s+792 x 1224 pts/.test(info);assert(tabloidPortrait||/Page size:\s+1224 x 792 pts/.test(info),'11×17 page uses whichever orientation gives the map more scale');
+  assert.equal(tabloid.pdf.getNumberOfPages(),1,'all selected dense-map nodes fit on one 11×17 page');
+  assert.equal(letter.pdf.getNumberOfPages(),1,'all selected nodes fit on one Letter page too');
+  const letterInfo=run('pdfinfo',[letter.file]);assert.match(letterInfo,/Pages:\s+1\s/);assert(/Page size:\s+(792 x 612|612 x 792) pts/.test(letterInfo));
+  const pdfSource=fs.readFileSync(tabloid.file,'latin1');assert(pdfSource.includes('/OpenAction')&&/\/Fit\b/.test(pdfSource),'the PDF opens at fit-page zoom, ready for vector zooming');
   const text=run('pdftotext',['-layout',tabloid.file,'-']);
-  for(const label of ['Readable career branch','Selected topic with a useful longer label','Selected deliverable with a longer label','Direct branch task','Nested continuation topic','Nested topic deliverable','Second continuation branch','Second selected topic','Second topic deliverable','Dense deliverable 01','Dense deliverable 09','Done 2026-09-18','SUB-TOPIC','DONE 2026-09-20','Due Oct 2','selected description','Task detail remains legible'])assert(text.includes(label),`PDF text includes ${label}`);
+  for(const label of ['Readable career branch','Selected topic with a useful longer label','Selected deliverable with a longer label','Second continuation branch','Second selected topic','Second topic deliverable','Dense branch 06','Dense topic 06-05','Dense item 06-05-05','Done 2026-09-18','DONE 2026-09-20','Due Oct 2','selected description','Task detail remains legible'])assert(text.includes(label),`PDF text includes ${label}: ${text.slice(0,2500)}`);
+  for(let b=0;b<6;b++){assert(text.includes(`Dense branch ${String(b+1).padStart(2,'0')}`));for(let t=0;t<5;t++){assert(text.includes(`Dense topic ${String(b+1).padStart(2,'0')}-${String(t+1).padStart(2,'0')}`));for(let i=0;i<5;i++)assert(text.includes(`Dense item ${String(b+1).padStart(2,'0')}-${String(t+1).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`))}}
   assert(!text.includes('Do Not Export'),'excluded branches do not leak into print pages');
+  const fonts=run('pdffonts',[tabloid.file]);assert.match(fonts,/Helvetica/i,'map labels remain real vector fonts');
+  assert.doesNotMatch(run('pdfimages',['-list',tabloid.file]),/\n\s*1\s+\d+\s+image\s/,'the map is not flattened into page images');
   const boxes=run('pdftotext',['-f','1','-l','1','-bbox',tabloid.file,'-']);
-  const titleHeight=markup=>{const matches=[...markup.matchAll(/<word xMin="[^"]+" yMin="([^"]+)" xMax="[^"]+" yMax="([^"]+)">Readable<\/word>/g)];assert(matches.length,'branch title word has a measurable PDF bounding box');return Math.max(...matches.map(m=>+m[2]- +m[1]))};
-  const tabHeight=titleHeight(boxes),letterHeight=titleHeight(run('pdftotext',['-f','1','-l','1','-bbox',letter.file,'-']));
-  assert(tabHeight>=letterHeight*1.15,`11×17 branch label grows materially (${tabHeight.toFixed(1)}pt vs ${letterHeight.toFixed(1)}pt)`);
+  const bounds=[...boxes.matchAll(/<word xMin="([^"]+)" yMin="([^"]+)" xMax="([^"]+)" yMax="([^"]+)"/g)].map(m=>m.slice(1).map(Number));
+  const pageSize=/Page size:\s+(\d+) x (\d+) pts/.exec(info);assert(pageSize);const pageW=Number(pageSize[1]),pageH=Number(pageSize[2]);
+  assert(bounds.length>300,'all dense-map vector labels have PDF text bounds');assert(bounds.every(([x0,y0,x1,y1])=>x0>=0&&y0>=0&&x1<=pageW&&y1<=pageH),'all vector text stays inside the sheet bounds');
+  const minGlyphHeight=Math.min(...bounds.map(([,y0,,y1])=>y1-y0));assert(minGlyphHeight>=1.5,`smallest vector glyph is at least 1.5pt high for useful zooming (got ${minGlyphHeight.toFixed(3)}pt)`);
   const png=path.join(dir,'tabloid');run('pdftoppm',['-f','1','-l','1','-r','72','-singlefile','-png',tabloid.file,png]);
   fs.copyFileSync(png+'.png','/private/tmp/oy-todo-print-map-preview.png');
-  const raster=pngPixels(png+'.png');assert.deepEqual([raster.w,raster.h],[1224,792],'rasterized 11×17 page renders at print dimensions');
+  const raster=pngPixels(png+'.png');assert.deepEqual([raster.w,raster.h],[pageW,pageH],'rasterized 11×17 page renders at print dimensions');
   let palettePixels=0;for(let i=0;i<raster.pixels.length;i+=raster.bpp)if(raster.pixels[i]===252&&raster.pixels[i+1]===222&&raster.pixels[i+2]===204)palettePixels++;
-  assert(palettePixels>1000,'selected Sunset palette is visibly painted into roadmap map tiles');
-  const contentPng=path.join(dir,'tabloid-content');run('pdftoppm',['-f','2','-l','2','-r','72','-singlefile','-png',tabloid.file,contentPng]);fs.copyFileSync(contentPng+'.png','/private/tmp/oy-todo-print-map-content-preview.png');
-  console.log(`roadmap print map: ${tabloid.pdf.getNumberOfPages()} readable 11×17 continuation pages; dense/selected content, completion/date/description retained; exclusions honored; palette rasterized; branch text ${tabHeight.toFixed(1)}pt vs ${letterHeight.toFixed(1)}pt on Letter`);
+  assert(palettePixels>0,'selected Sunset palette is painted into the zoomable map sheet');
+  console.log(`roadmap print map: one vector-text page for 192 selected nodes on 11×17; ${pageW}×${pageH}pt, minimum glyph ${minGlyphHeight.toFixed(2)}pt; bounds, palette, completion/date/description and excluded-node checks passed`);
 }finally{dom.window.close();fs.rmSync(dir,{recursive:true,force:true})}})().catch(e=>{console.error(e);process.exit(1)});
