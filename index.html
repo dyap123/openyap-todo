@@ -2380,7 +2380,7 @@ function renderMap(anim){
     <div class="map-tools"><button class="btn" data-chrono-mode="${mapPresentation==='clock'?'map':'clock'}" aria-pressed="${mapPresentation==='clock'}" ${P?'':'disabled'}>${mapPresentation==='clock'?'Back to map':'Chronology'}</button>${mapDescriptionToggle()}${markdownControlHTML()}
       ${P?`<button class="btn" type="button" data-mact="tray">Unplaced <span class="mp-count">${mapUnplaced(pid).length}</span></button>
       <button class="btn" type="button" data-mact="zout" aria-label="Zoom out">−</button><button class="btn" type="button" data-mact="zin" aria-label="Zoom in">+</button>
-      <button class="btn" type="button" data-mact="fit" title="${mapPresentation==='clock'?'Fit the preview without changing your saved layout':'Tidy everything back into the sheet layout and show it all'}">Fit</button><button class="btn primary" type="button" data-mact="roadmap">Roadmap PDF</button>`:''}
+      <button class="btn" type="button" data-mact="fit" title="${mapPresentation==='clock'?'Fit the preview without changing your saved layout':'Tidy everything back into the sheet layout and show it all'}">Fit</button>`:''}
     </div></div>`;
   if(!P){host.innerHTML=bar+'<div class="map-stage map-empty" id="mapStage"><p>Create a project to start a map.</p></div>';return}
   const nodes=mapNodes(pid),lay=mapPresentation==='clock'?mapChronoLayout(nodes):mapLayout(nodes),side=projSideOf(pid),mt=(maps[pid]&&maps[pid].title)||P.name;
@@ -2734,7 +2734,6 @@ function mapClick(t){
     else if(k==='fit')mapTidy();
     else if(k==='zin')mapZoom(1.2);
     else if(k==='zout')mapZoom(1/1.2);
-    else if(k==='roadmap'){EX.tab='roadmap';EX.rpid=mapPid;saveEX();openExport()}
     else if(k==='close'){mapSel='';renderMap()}
     else if(k==='list')mapToList(mapSel);
     else if(k==='del')mapDelete(mapSel);
@@ -2824,7 +2823,7 @@ function renderGantt(anim){
       <div class="seg" role="group" aria-label="Timeline presentation"><button aria-pressed="true" type="button">Gantt</button><button type="button" data-gchronology aria-pressed="false">Chronology</button></div><div class="seg" role="group" aria-label="Scale">${segHTML([['week','Weeks'],['month','Months']],gtScale,'data-gscale')}</div>
       <button class="btn" type="button" data-gact="today">Today</button>
       <button class="btn" type="button" data-gact="und" aria-pressed="${gtUndated}" title="Show items without dates">Undated <span class="mp-count">${R.undated.length}</span></button>
-      <button class="btn primary" type="button" data-gact="pdf">Roadmap PDF</button>`:''}</div></div>`;
+      `:''}</div></div>`;
   if(!P){host.innerHTML=bar+'<div class="gt-empty">Create a project on the Map to see its timeline.</div>';return}
   const rows=gtRows(R,{undated:gtUndated,fold:gtFold});
   const {d0,days}=gtRange(R,today),px=GT_PX[gtScale],W=days*px;
@@ -2870,7 +2869,6 @@ function gtClick(t,e){
   if(ga){const k=ga.dataset.gact;
     if(k==='today'){const s=$('#gtScroll'),td=$('.gt-today');if(s&&td)s.scrollTo({left:Math.max(0,parseFloat(td.style.left)-gtLeft()-(s.clientWidth-gtLeft())*.2),behavior:'smooth'});fx(td,{scaleX:[3,1],duration:600,ease:'out(3)'})}
     else if(k==='und'){gtUndated=!gtUndated;LS.set('oym_gtund',gtUndated?'1':'0');renderGantt(true)}
-    else if(k==='pdf'){EX.tab='roadmap';EX.rpid=mapPid;saveEX();openExport()}
     return true;
   }
   const fo=t.closest('[data-gfold]');if(fo){const id=fo.dataset.gfold;gtFold.has(id)?gtFold.delete(id):gtFold.add(id);LS.set('oym_gtfold',JSON.stringify([...gtFold]));renderGantt();return true}
@@ -3171,15 +3169,15 @@ function briefMapPages(k,nodes,pid,title,opts={}){
     const label=(text,x,y,width,size,align,maxLines=2)=>{setT(k,'bold',textFs(size),ink);let font=textFs(size),lines=doc.splitTextToSize(String(text||''),Math.max(1,width));while(lines.length>maxLines&&font>labelMin){font=Math.max(labelMin,font-.25);doc.setFontSize(font);lines=doc.splitTextToSize(String(text||''),Math.max(1,width))}doc.text(lines,x,y,{lineHeightFactor:1.15,...(align?{align}:{})})};
     for(const [id,r] of Object.entries(lay.C)){
       const n=pageNodes[id],c=id==='root'?mapColorOf(pid,allNodes,'root'):mapColorOf(pid,allNodes,id),col=c?hexRgb(c):P.acc;
-      const hasPalette=!!palette,tone=(rgb,amount)=>dark?rgb.map((v,i)=>Math.round(v*(1-amount)+bg[i]*amount)):mix(rgb,amount);
-      const fill=hasPalette?tone(col,id==='root'?.68:.78):(dark?[31,37,48]:[255,255,255]),border=hasPalette?tone(col,.12):(id==='root'?ink:(dark?[91,105,124]:P.rule));
+      const hasColor=!!c,tone=(rgb,amount)=>dark?rgb.map((v,i)=>Math.round(v*(1-amount)+bg[i]*amount)):mix(rgb,amount);
+      const fill=hasColor?tone(col,id==='root'?.68:.78):(dark?[31,37,48]:[255,255,255]),border=hasColor?tone(col,.12):(id==='root'?ink:(dark?[91,105,124]:P.rule));
       doc.setDrawColor(...border);doc.setLineWidth(id==='root'?1.4:.9);doc.setFillColor(...fill);
       doc.roundedRect(X(r.x),Y(r.y),r.w*s,r.h*s,5*s,5*s,'FD');
       if(id==='root'){
         setT(k,'bold',textFs(16),ink);label((maps[pid]&&maps[pid].title)||(projects[pid]||{}).name||'',X(r.x+r.w/2),Y(r.y+r.h/2)-fs(16)/3,(r.w-28)*s,16,'center');continue;
       }
       const head=mapHeadH(r.kind),ownItems=mapItemsOf(pageNodes,id);
-      if(hasPalette){doc.setFillColor(...tone(col,dark?.52:.68));doc.roundedRect(X(r.x)+.5,Y(r.y)+.5,Math.max(1,(r.w*s)-1),head*s,4*s,4*s,'F')}
+      if(hasColor){doc.setFillColor(...tone(col,dark?.52:.68));doc.roundedRect(X(r.x)+.5,Y(r.y)+.5,Math.max(1,(r.w*s)-1),head*s,4*s,4*s,'F')}
       if(r.kind==='branch'){
         doc.setFillColor(...col);doc.rect(X(r.x),Y(r.y),4*s,r.h*s,'F');
         setT(k,'bold',textFs(8),body);doc.text(n.completed?'DONE '+nodeCompletionDate(n):'SUB-TOPIC',X(r.x+14),Y(r.y+23));

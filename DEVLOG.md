@@ -1,3 +1,7 @@
+## 2026-09-30 — Custom mind-map colors in Roadmap PDF and one export entry
+
+Roadmap map tiles now use any resolved explicit node/root color for the print fill as well as its coordinated border and connector, even with the map palette set to Original. Palette-derived fills remain in place when no override exists. Removed the extra Roadmap PDF buttons from Map and Timeline/Gantt; the existing Export dialog remains the single entry point. PDF raster tests check custom fill, border and connector pixels with no named palette, and UI tests pin both removed actions and the remaining Export control. No commit or deploy by developer.
+
 ## 2026-09-30 — Roadmap PDF orientation control
 
 The Roadmap export settings now offer a persisted Automatic (best fit), Horizontal, or Vertical page orientation. Forced choices set the orientation of every selected Roadmap page, including the one-sheet map page in combined exports; Automatic keeps the previous behavior of landscape timeline/schedule pages and best-fit map-only exports. PDF regression coverage checks the actual 11 × 17 map-only and combined page dimensions, along with the default and saved preference. No commit or deploy by developer.
