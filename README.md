@@ -128,3 +128,17 @@ Roadmap export includes a separate Light/Dark PDF theme control; it does not cha
 Map and Gantt share an Ocean, Forest, Sunset or Violet palette selector, available in their toolbar and project/branch map details. Branches inherit coordinated colors; explicit node/ancestor colors remain overrides. Fill, border and text colors adapt to the app’s light/dark theme. Labels wrap into two measured lines with full text available to assistive technology and hover; shared card/row geometry keeps dates and completion badges separate. PDF map labels also wrap. Gantt has wider labels, separate date metadata, colored bars and an explicit Chronology presentation option opening the existing map preview.
 
 Theme/text checks: `node tests/map-theme.test.cjs` and `node tests/map-theme-browser.cjs` (synthetic Chrome Unicode/full-text bounds, contrast, descriptions, Chronology and mobile Gantt).
+
+### Budget
+
+Every task, item, topic, sub-topic and project can carry a budget amount. Type `1500`, `$1,500.50`, `1.5k` or `2m`; an empty amount (or zero) clears it. Amounts are plain dollar figures stored at `tasks/{id}/budget`, `maps/{pid}/nodes/{id}/budget` and `maps/{pid}/budget`. A map item linked to a task reads and writes the task's amount, the same way it shares its title and dates.
+
+**Budget** in the Map and Timeline toolbars turns the amounts on (remembered per device) and shows the project total. On the Map each item row, topic, sub-topic and the main topic gets an amount chip; in the Timeline every Gantt row does. Click a chip to type in place: Enter or Tab saves and moves to the next amount, Shift goes back, Escape cancels, clicking away saves. The detail panel always has a Budget field, and the task editor in Tasks has one too.
+
+A topic or sub-topic without its own amount shows the sum of what is inside it. Give it an amount and that is its allowance: the chip shows what is left to allocate, or how far over it is. Its parent counts whichever is larger, the allowance or what is inside. Project tasks that are not on the map count toward the project total. The summary bar shows Allocated, Left to allocate (or Over by), Scheduled and No dates yet.
+
+The Timeline adds a **Cash flow** row pinned under the chart: the budget per week or per month, following the Weeks/Months scale. An item's amount is spread evenly from its start to its due date, or lands on its one date; what a topic or sub-topic has left to allocate is spread over the dates inside it; anything without dates is listed as without dates. Hover a period for its exact amount and the running total.
+
+Markdown exports include the amounts. Roadmap and Brief PDFs do not print budgets yet, and there is no actual-cost tracking: the feature covers planned amounts only.
+
+Budget checks: `node tests/budget.test.cjs` (roll-up, schedule spread, in-place entry on Map and Gantt, task/bubble sync, Markdown) and `node tests/budget-browser.cjs` (synthetic Chrome: chip containment on Map, Chronology, Gantt and phone; click-to-click entry; sticky cash-flow row).

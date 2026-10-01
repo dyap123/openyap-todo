@@ -797,6 +797,36 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 
 .gt-row{min-height:58px}.gt-name{min-height:58px;background:var(--map-fill,var(--surface));color:var(--text);align-items:center}.gt-t{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.2}.gt-row .gt-meta{font-size:10px;white-space:nowrap}.gt-row.gt-lane .gt-name{border-left:4px solid var(--mc,var(--accent));font-weight:700}.gt-row .gt-b{background:var(--mc,var(--accent));border-radius:5px}.gt-row .gt-sum{background:var(--mc,var(--accent));opacity:.45}.gt-track{min-height:58px}
 .gt-name{display:grid;grid-template-columns:18px minmax(0,1fr);grid-template-rows:1fr auto;gap:0 4px;padding-top:5px;padding-bottom:5px}.gt-fold{grid-column:1;grid-row:1}.gt-t{grid-column:2;grid-row:1;width:100%}.gt-meta{grid-column:2;grid-row:2}.gt-row{height:64px;min-height:64px}.gt-name,.gt-track{min-height:64px}
+
+/* ── Budget: amounts on map cards, Gantt rows and tasks. Chips sit in space the card geometry
+   already reserves, so mapCardH and the printed map are unchanged. ── */
+.bud{display:inline-flex;align-items:center;gap:4px;height:14px;padding:0 5px;border-radius:4px;font:600 10.5px var(--mono);font-variant-numeric:tabular-nums;color:var(--text);background:color-mix(in srgb,var(--text) 9%,transparent);white-space:nowrap;cursor:text;flex-shrink:0}
+.bud:hover{background:color-mix(in srgb,var(--text) 18%,transparent)}
+.bud.none{font-weight:400;color:var(--muted);background:none;border:1px dashed color-mix(in srgb,var(--muted) 60%,transparent)}
+.bud.sum{background:none;border:1px solid color-mix(in srgb,var(--text) 22%,transparent)}
+.bud small{font:400 9.5px var(--mono);color:var(--muted)}
+.bud.over,.bud.over small{color:var(--danger)}.bud.over{background:color-mix(in srgb,var(--danger) 13%,transparent);border-color:transparent}
+.bud-inl{width:78px;height:18px;font:600 10.5px var(--mono);color:var(--text);background:var(--bg);border:1px solid var(--text);border-radius:4px;padding:0 4px;outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--text) 10%,transparent);user-select:text;-webkit-user-select:text}
+.mp-ix{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:3px;flex-shrink:0}
+.mp-th>.bud,.mp-th>.bud-inl,.mp-bh>.bud,.mp-bh>.bud-inl{position:absolute;top:3px;left:12px}
+.mp-root>.bud,.mp-root>.bud-inl{position:absolute;top:8px;left:50%;transform:translateX(-50%)}
+.budget-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;margin:0 0 12px;padding:9px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:12px;color:var(--muted)}
+.budget-bar .bb{display:inline-flex;align-items:baseline;gap:6px}.budget-bar .bb b{font:600 13px var(--mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.budget-bar .bb.over b{color:var(--danger)}.budget-bar .bud{height:20px;font-size:13px;padding:0 7px;align-self:center}.budget-bar .bud-inl{height:22px;width:110px;font-size:13px}
+.budget-bar .hint{flex:1;min-width:180px;text-align:right;font-size:11.5px}
+.mp-budget{display:grid;gap:5px}.mp-budget .hint{margin:0}.mp-budget .over{color:var(--danger)}
+.mp-budget ul{list-style:none;margin:2px 0 0;padding:0;display:grid;gap:3px;font-size:12px;color:var(--body)}
+.mp-budget li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:baseline}.mp-budget li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mp-budget li b{font:500 11.5px var(--mono);font-variant-numeric:tabular-nums}.mp-budget li.none b{color:var(--faint);font-weight:400}
+.gt-name>.bud,.gt-name>.bud-inl{grid-column:2;grid-row:2;justify-self:end;align-self:center}.gt-name>.gt-meta{justify-self:start}
+.gt-cash{position:sticky;bottom:0;z-index:4;height:54px;min-height:54px;border-top:1px solid var(--line-2);background:var(--surface)}
+.gt-cash .gt-name,.gt-cash .gt-track{min-height:54px;background:var(--surface)}.gt-cash .gt-name{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:0 14px}
+.gt-cash:hover .gt-name,.gt-cash:hover .gt-track{background:var(--surface)}
+.gt-cf{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:0 1px}
+.gt-cf span{font:500 10px var(--mono);font-variant-numeric:tabular-nums;color:var(--body);line-height:14px;white-space:nowrap}
+.gt-cf i{display:block;width:100%;height:calc(var(--h)*30px);min-height:2px;border-radius:4px 4px 0 0;background:var(--accent);opacity:.8}
+.gt-cf:hover i{opacity:1}
+.task .t-meta .budget,.project-count .budget{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.e-field input[data-f="budget"]{width:96px}
 </style>
 </head>
 <body>
@@ -1228,6 +1258,7 @@ function setTaskSide(id,side){
 }
 function saveField(id,f,v){
   const t=tasks[id];if(!t)return;
+  if(f==='budget'){taskSetBudget(id,v);return}
   if(f==='title'){v=String(v).trim();if(!v)return}
   if((t[f]||'')===v)return;
   upd({[TP(id)+'/'+f]:v});
@@ -1247,7 +1278,7 @@ function logDone(raw,side){
 
 // ═══ Rendering ═══════════════════════════════════════════════════════════
 let rTimer=0,deferred=false,pointerDown=false;
-function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new,.mp-pick,#mapWorld,.category-forms')&&/^(INPUT|TEXTAREA)$/.test(a.tagName))}
+function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new,.mp-pick,#mapWorld,.category-forms,.gt-name,.budget-bar')&&/^(INPUT|TEXTAREA)$/.test(a.tagName))}
 function schedule(){_entries=null;if(rTimer)return;rTimer=setTimeout(()=>{rTimer=0;render()},16)}
 function render(force){
   if(!force&&(editingText()||pointerDown)){deferred=true;return}
@@ -1363,8 +1394,8 @@ async function projectCategorySubmit(){
 
 function taskGroupsHTML(side){return taskProjectGroups(side).map(g=>{
   const key=taskProjectKey(side,g.pid),expanded=g.pid?projectExpanded.has(key):true,open=g.items.filter(([,t])=>!t.completed).sort((a,b)=>Number(!!b[1].doing)-Number(!!a[1].doing)||cmpTask(a,b)),done=g.items.length-open.length;
-  const dom='project-'+side+'-'+(g.pid||'unassigned');
-  return `<section class="task-project" data-project-group="${esc(g.pid)}">${g.pid?`<button class="project-toggle" data-project-toggle="${esc(g.pid)}" data-project-side="${side}" aria-expanded="${expanded}" aria-controls="${esc(dom)}">`:'<div class="project-toggle no-project-heading" role="heading" aria-level="2">'}<span class="project-kind">${g.pid?'PROJECT':'TASKS'}</span><strong>${esc(g.project?.name||'No project')}</strong><span class="project-count">${open.length} open${done?' · '+done+' completed':''}${g.project?.status&&g.project.status!=='active'?' · '+esc(g.project.status):''}</span>${g.pid?`<span aria-hidden="true">${expanded?'−':'+'}</span></button>`:'</div>'}${g.pid?`<div class="project-category-row">${projectCategoryButton(g.pid)}</div>`:''}<div id="${esc(dom)}" class="project-tasks"${expanded?'':' hidden'}>${expanded?`<ul class="list">${open.length?open.map(([id,t])=>taskRow(id,t)).join(''):'<li class="list-empty">No open tasks.</li>'}</ul>${g.pid?`<form class="add project-add" data-add="${side}" data-add-project="${esc(g.pid)}"><input aria-label="Add a task to ${esc(g.project.name)}" placeholder="Add a task to this project"><button class="btn" type="submit">Add</button></form>`:''}${done?`<button class="link project-completed" data-project-completed="${esc(g.pid)}" data-project-side="${side}">View completed tasks</button>`:''}`:''}</div></section>`;
+  const dom='project-'+side+'-'+(g.pid||'unassigned'),budget=g.pid?budgetData(g.pid).root.total:cents(g.items.reduce((a,[,t])=>a+(t.completed?0:moneyOf(t.budget)),0));
+  return `<section class="task-project" data-project-group="${esc(g.pid)}">${g.pid?`<button class="project-toggle" data-project-toggle="${esc(g.pid)}" data-project-side="${side}" aria-expanded="${expanded}" aria-controls="${esc(dom)}">`:'<div class="project-toggle no-project-heading" role="heading" aria-level="2">'}<span class="project-kind">${g.pid?'PROJECT':'TASKS'}</span><strong>${esc(g.project?.name||'No project')}</strong><span class="project-count">${open.length} open${done?' · '+done+' completed':''}${g.project?.status&&g.project.status!=='active'?' · '+esc(g.project.status):''}${budget?` · <span class="budget" title="${g.pid?'Project budget':'Budget of the open tasks'}">${fmtMoney(budget)}</span> budget`:''}</span>${g.pid?`<span aria-hidden="true">${expanded?'−':'+'}</span></button>`:'</div>'}${g.pid?`<div class="project-category-row">${projectCategoryButton(g.pid)}</div>`:''}<div id="${esc(dom)}" class="project-tasks"${expanded?'':' hidden'}>${expanded?`<ul class="list">${open.length?open.map(([id,t])=>taskRow(id,t)).join(''):'<li class="list-empty">No open tasks.</li>'}</ul>${g.pid?`<form class="add project-add" data-add="${side}" data-add-project="${esc(g.pid)}"><input aria-label="Add a task to ${esc(g.project.name)}" placeholder="Add a task to this project"><button class="btn" type="submit">Add</button></form>`:''}${done?`<button class="link project-completed" data-project-completed="${esc(g.pid)}" data-project-side="${side}">View completed tasks</button>`:''}`:''}</div></section>`;
 }).join('')}
 function buildSides(){
   sidesDirty=false;
@@ -1453,6 +1484,7 @@ function taskRow(id,t){
   if(t.priority==='high')meta.push('<span class="urgent">Urgent</span>');
   const pn=shownProject(projName(t.projectId),side);if(pn)meta.push(`<span>${esc(pn)}</span>`);
   if(t.timeSpent)meta.push(`<span>${fmtDur(t.timeSpent)} logged</span>`);
+  if(moneyOf(t.budget))meta.push(`<span class="budget" title="Budget ${fmtMoney(t.budget)}">${fmtMoneyShort(t.budget)}</span>`);
   if(t.notes)meta.push(`<span title="Has notes">${ICON.note}</span>`);
   if(taskPrivate(t))meta.push(`<span title="Private: left out of reports">${ICON.lock}</span>`);
   return `<li class="task" data-id="${id}" data-drag-id="${id}" draggable="true">
@@ -1468,6 +1500,7 @@ function editorHTML(id,t){
     <textarea class="e-notes" data-f="notes" rows="3" placeholder="Notes" aria-label="Notes">${esc(t.notes||'')}</textarea>
     <div class="e-row">
       <label class="e-field">Due <input type="date" data-f="dueDate" value="${esc(t.dueDate||'')}"></label>
+      <label class="e-field">Budget <input type="text" inputmode="decimal" autocomplete="off" data-f="budget" placeholder="1500, 1.5k" value="${moneyOf(t.budget)?esc(fmtMoney(t.budget)):''}"></label>
       <button class="chip urgent" data-act="urgent" aria-pressed="${t.priority==='high'}">Urgent</button>
       <div class="seg sm" role="group" aria-label="Side">${SIDES.map(s=>`<button data-act="side" data-v="${s}" aria-pressed="${s===side}">${esc(SIDE_NAME[s])}</button>`).join('')}</div>
       <button class="chip" data-act="private" aria-pressed="${priv}" title="Private tasks are left out of reports">Private</button>
@@ -2188,7 +2221,7 @@ const MP=(pid,id)=>'todo/maps/'+pid+'/nodes/'+id;
 const projSideOf=pid=>{const m=projSide(pid);return m&&SIDES.includes(m.side)?m.side:'career'};
 function mapTaskFor(pid,node,extra){
   const side=projSideOf(pid);
-  return buildTask({title:node.title||'(untitled)',projectId:pid,side,category:side==='openyap'?'project':'work',notes:node.desc||'',startDate:node.start||'',dueDate:node.due||'',...extra});
+  return buildTask({title:node.title||'(untitled)',projectId:pid,side,category:side==='openyap'?'project':'work',notes:node.desc||'',startDate:node.start||'',dueDate:node.due||'',...(moneyOf(node.budget)?{budget:node.budget}:{}),...extra});
 }
 function mapLinkedIds(pid){const s=new Set();for(const n of Object.values(mapNodes(pid)))if(n&&n.taskId)s.add(n.taskId);return s}
 function mapUnplaced(pid){
@@ -2214,6 +2247,7 @@ function mapAdd(parent,want){
 }
 function mapSave(id,f,v){
   const pid=mapPid,nodes=mapNodes(pid),n=nodes[id];
+  if(f==='budget'){budgetSet(id,v);return}
   if(id==='root'){
     if(f==='name'&&v.trim())upd({['todo/projects/'+pid+'/name']:v.trim()});
     else if(f==='mtitle')upd({['todo/maps/'+pid+'/title']:v.trim()||null});
@@ -2276,7 +2310,7 @@ function mapApplyDrop(drag,rule){
   if(drag.kind==='task'){
     const t=tasks[drag.id];if(!t)return;
     const id=newKey('todo/maps/'+pid+'/nodes');
-    upd({[MP(pid,id)]:{parent:rule.parent,kind:'item',title:t.title||'(untitled)',order,taskId:drag.id,...(t.dueDate?{due:t.dueDate}:{}),...(t.notes?{desc:t.notes}:{})}});
+    upd({[MP(pid,id)]:{parent:rule.parent,kind:'item',title:t.title||'(untitled)',order,taskId:drag.id,...(t.dueDate?{due:t.dueDate}:{}),...(t.notes?{desc:t.notes}:{}),...(moneyOf(t.budget)?{budget:t.budget}:{})}});
     return;
   }
   upd({[MP(pid,drag.id)+'/parent']:rule.parent,[MP(pid,drag.id)+'/order']:order,[MP(pid,drag.id)+'/kind']:drag.kind});
@@ -2361,23 +2395,174 @@ function mapZoom(f,cx,cy){
   c.x=px-(px-c.x)*(k/c.k);c.y=py-(py-c.y)*(k/c.k);c.k=k;mapApplyCam();
 }
 
+// ── Budget
+// An amount lives on a task (todo/tasks/{id}/budget), on a map bubble (nodes/{id}/budget) or on
+// the project (todo/maps/{pid}/budget). A linked item reads its task's amount, as it does its
+// title and dates. A sub-topic or topic adds up what is inside it; give it an amount of its own
+// and that is its allowance, with the difference shown as left to allocate or over.
+let budgetOn=LS.get('oym_budget','0')==='1';
+const BUDGET_HELP='Enter an amount like 1500, 1.5k or 2m';
+const moneyOf=v=>typeof v==='number'&&Number.isFinite(v)&&v>0?v:0;
+const cents=v=>Math.round(v*100)/100;
+// '' (or zero) clears: null. Anything that is not an amount: undefined.
+function parseMoney(raw){
+  const s=String(raw??'').trim().toLowerCase().replace(/[$,\s]/g,'');
+  if(!s)return null;
+  const m=/^(\d+(?:\.\d+)?|\.\d+)([kmb])?$/.exec(s);if(!m)return undefined;
+  const v=cents(parseFloat(m[1])*({k:1e3,m:1e6,b:1e9}[m[2]]||1));
+  return v>1e12?undefined:v||null;
+}
+const fmtMoney=v=>'$'+(Math.round(v*100)%100?v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):Math.round(v).toLocaleString('en-US'));
+function fmtMoneyShort(v){
+  if(v<1000)return '$'+(Math.round(v*100)%100?v.toFixed(2):Math.round(v));
+  for(const [d,u] of [[1e3,'k'],[1e6,'M'],[1e9,'B']]){const n=v/d,r=n>=100?Math.round(n):Math.round(n*10)/10;if(r<1000||u==='B')return '$'+r+u}
+}
+const BUDGET_NONE={own:0,alloc:0,total:0,free:0,over:0};
+// Pure: id -> {own, alloc (what is inside), total (the larger of the two, which is what the parent
+// counts), free, over}. Project tasks that are not on the map count toward the project.
+function budgetData(pid){
+  const nodes=mapNodes(pid),B={},seen=new Set();
+  const walk=id=>{
+    if(seen.has(id))return 0;seen.add(id);
+    const n=nodes[id]||{},t=n.taskId?tasks[n.taskId]:null,own=id==='root'?moneyOf(maps[pid]?.budget):moneyOf(t?t.budget:n.budget);
+    let alloc=0,unplaced=0;for(const [k] of mapKids(nodes,id))alloc+=walk(k);
+    if(id==='root'){const linked=mapLinkedIds(pid);for(const [tid,x] of Object.entries(tasks))if(x&&x.projectId===pid&&!linked.has(tid))unplaced+=moneyOf(x.budget);alloc+=unplaced}
+    alloc=cents(alloc);
+    B[id]={own,alloc,total:Math.max(own,alloc),free:own>alloc?cents(own-alloc):0,over:own&&alloc>own?cents(alloc-own):0};
+    if(id==='root')B[id].unplaced=cents(unplaced);
+    return B[id].total;
+  };
+  walk('root');
+  return B;
+}
+// Pure: the budget laid over the schedule. An item's amount is spread evenly from its start to its
+// due date (all of it on the one day when it has one date); what a sub-topic or topic has left to
+// allocate is spread over the dates inside it. Anything without dates is unscheduled.
+function budgetFlow(pid,B){
+  B=B||budgetData(pid);
+  const nodes=mapNodes(pid),days=new Map(),seen=new Set(),ok=s=>/^\d{4}-\d{2}-\d{2}$/.test(s||'')?s:'';let unscheduled=B.root.unplaced||0,scheduled=0;
+  const put=(amount,a,b)=>{
+    if(!amount)return;
+    if(!a&&!b){unscheduled+=amount;return}
+    a=a||b;b=b||a;if(b<a)[a,b]=[b,a];
+    const d0=parseYmd(a),n=Math.min(36600,Math.round((parseYmd(b)-d0)/864e5)+1);
+    for(let i=0;i<n;i++){const k=ymd(addDays(d0,i));days.set(k,(days.get(k)||0)+amount/n)}
+    scheduled+=amount;
+  };
+  const walk=id=>{
+    if(seen.has(id))return [];seen.add(id);
+    const n=nodes[id]||{},t=n.taskId?tasks[n.taskId]:null,b=B[id]||BUDGET_NONE;
+    if(id!=='root'&&mapKindOf(nodes,id)==='item'){const start=ok(t?t.startDate??n.start:n.start),due=ok(t?t.dueDate:n.due);put(b.own,start,due);return [start,due].filter(Boolean)}
+    // A sub-topic's own dates are not part of the timeline's range, so only a topic's count.
+    let ds=id==='root'||n.parent==='root'?[]:[ok(n.start),ok(n.due)].filter(Boolean);
+    for(const [k] of mapKids(nodes,id))ds=ds.concat(walk(k));
+    ds.sort();put(b.free,ds[0],ds[ds.length-1]);
+    return ds.length?[ds[0],ds[ds.length-1]]:[];
+  };
+  walk('root');
+  return {days,scheduled:cents(scheduled),unscheduled:cents(unscheduled)};
+}
+// Writes. Both return false when the text is not an amount.
+function budgetSet(id,raw){
+  const v=parseMoney(raw);if(v===undefined){toast(BUDGET_HELP);return false}
+  const pid=mapPid;
+  if(id==='root'){if(projects[pid]&&moneyOf(maps[pid]?.budget)!==(v||0))upd({['todo/maps/'+pid+'/budget']:v});return true}
+  const n=mapNodes(pid)[id];if(!n)return false;
+  const t=n.taskId?tasks[n.taskId]:null;
+  if(moneyOf(t?t.budget:n.budget)===(v||0))return true;
+  const up={[MP(pid,id)+'/budget']:v};if(t)up[TP(n.taskId)+'/budget']=v;
+  upd(up);return true;
+}
+function taskSetBudget(id,raw){
+  const t=tasks[id];if(!t)return false;
+  const v=parseMoney(raw);if(v===undefined){toast(BUDGET_HELP);return false}
+  if(moneyOf(t.budget)===(v||0))return true;
+  const up={[TP(id)+'/budget']:v};
+  for(const [nid,n] of Object.entries(mapNodes(t.projectId)))if(n&&n.taskId===id)up[MP(t.projectId,nid)+'/budget']=v;
+  upd(up);return true;
+}
+function budgetToggle(){budgetOn=!budgetOn;LS.set('oym_budget',budgetOn?'1':'0');mapRe()}
+const budgetToggleHTML=B=>`<button class="btn" type="button" data-budget-toggle aria-pressed="${budgetOn}" title="${budgetOn?'Hide':'Show'} budget amounts">Budget${B&&B.root.total?` <span class="mp-count">${fmtMoneyShort(B.root.total)}</span>`:''}</button>`;
+// The amount on a bubble or a row; click it to type. An item shows its own amount. A sub-topic or
+// topic shows its allowance and how what is inside sits against it, or the sum when it has none.
+function budgetChip(B,id,item){
+  const b=B[id]||BUDGET_NONE,what=id==='root'?'the project':item?'this item':'this group';
+  if(item||!b.total)return `<button type="button" class="bud${b.own?'':' none'}" data-budget="${esc(id)}" title="${b.own?'Budget '+fmtMoney(b.own):'Set a budget for '+what}">${b.own?fmtMoneyShort(b.own):'+ $'}</button>`;
+  if(!b.own)return `<button type="button" class="bud sum" data-budget="${esc(id)}" title="${fmtMoney(b.alloc)} from what is inside. Click to set a budget for ${what}.">${fmtMoneyShort(b.alloc)}</button>`;
+  return `<button type="button" class="bud${b.over?' over':''}" data-budget="${esc(id)}" title="Budget ${fmtMoney(b.own)}; ${fmtMoney(b.alloc)} allocated inside${b.over?', over by '+fmtMoney(b.over):b.free?', '+fmtMoney(b.free)+' left to allocate':''}">${fmtMoneyShort(b.own)}${b.over?`<small>over ${fmtMoneyShort(b.over)}</small>`:b.free&&b.alloc?`<small>${fmtMoneyShort(b.free)} left</small>`:''}</button>`;
+}
+function budgetBarHTML(pid,B,F){
+  const r=B.root;
+  return `<div class="budget-bar" role="group" aria-label="Project budget"><span class="bb">Project budget ${budgetChip(B,'root',false)}</span>
+    <span class="bb">Allocated <b>${fmtMoney(r.alloc)}</b></span>${r.over?`<span class="bb over">Over by <b>${fmtMoney(r.over)}</b></span>`:r.own?`<span class="bb">Left to allocate <b>${fmtMoney(r.free)}</b></span>`:''}
+    ${r.total?`<span class="bb">Scheduled <b>${fmtMoney(F.scheduled)}</b></span>${F.unscheduled?`<span class="bb">No dates yet <b>${fmtMoney(F.unscheduled)}</b></span>`:''}`:''}
+    <span class="hint">${r.total?'Click an amount to change it. Enter moves to the next one.':'Click + $ on a sub-topic, topic or item to give it an amount.'}</span></div>`;
+}
+function budgetPanelHTML(pid,nodes,id,B){
+  const b=B[id]||BUDGET_NONE,item=id!=='root'&&mapKindOf(nodes,id)==='item';
+  const field=ph=>`<label class="fld"><span class="lbl">Budget</span><input class="txt" data-mf="budget" inputmode="decimal" autocomplete="off" placeholder="${esc(ph)}" value="${b.own?esc(fmtMoney(b.own)):''}"></label>`;
+  if(item)return field('1500, 1.5k or 2m');
+  const rows=mapKids(nodes,id).map(([k,n])=>[(n.taskId&&tasks[n.taskId]?.title)||n.title||'(untitled)',(B[k]||BUDGET_NONE).total]);
+  if(id==='root'&&b.unplaced)rows.push(['Tasks not on the map',b.unplaced]);
+  const status=b.over?`${fmtMoney(b.alloc)} allocated inside, over by ${fmtMoney(b.over)}.`:b.own&&b.free?`${fmtMoney(b.alloc)} allocated inside, ${fmtMoney(b.free)} left to allocate.`:b.own?'Fully allocated.':b.alloc?`Adds up to ${fmtMoney(b.alloc)} from what is inside. Set an amount here to cap it.`:'No amounts yet. Set one here or on what is inside.';
+  return `<div class="mp-budget">${field(b.alloc?fmtMoney(b.alloc)+' from what is inside':'1500, 1.5k or 2m')}<p class="hint${b.over?' over':''}">${status}</p>
+    ${b.alloc?`<ul>${rows.map(([title,v])=>`<li${v?'':' class="none"'}><span>${esc(title)}</span><b>${v?fmtMoney(v):'–'}</b></li>`).join('')}</ul>`:''}</div>`;
+}
+// Type an amount in place. Enter or Tab saves and moves to the next amount, Shift goes back,
+// Escape leaves it as it was, clicking away saves.
+const budgetRegion=el=>el.closest('.budget-bar')?'bar':'body';
+function budgetChips(region){const host=view==='timeline'?$('#tlHost'):$('#mapHost');return host?$$('[data-budget]',host).filter(el=>budgetRegion(el)===region):[]}
+function budgetEdit(chip){
+  const id=chip.dataset.budget,region=budgetRegion(chip);
+  // A finished edit may still be waiting on its paint; take it first so the totals are current.
+  if(deferred||$('.bud-inl')){mapRe();chip=budgetChips(region).find(el=>el.dataset.budget===id);if(!chip)return}
+  const b=budgetData(mapPid)[id]||BUDGET_NONE,inp=document.createElement('input');
+  inp.className='bud-inl';inp.inputMode='decimal';inp.autocomplete='off';inp.value=b.own?String(b.own):'';inp.placeholder=b.alloc?fmtMoneyShort(b.alloc)+' inside':'1.5k';
+  inp.setAttribute('aria-label','Budget');inp.dataset.budget=id;
+  chip.replaceWith(inp);inp.focus({preventScroll:view==='map'});inp.select();
+  let done=false;
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();done=true;mapRe();budgetChips(region).find(el=>el.dataset.budget===id)?.focus({preventScroll:true});return}
+    if(e.key!=='Enter'&&e.key!=='Tab')return;
+    e.preventDefault();e.stopPropagation();
+    if(!budgetSet(id,inp.value)){inp.select();return}
+    const order=budgetChips(region).map(el=>el.dataset.budget),next=order[order.indexOf(id)+(e.shiftKey?-1:1)];
+    done=true;mapRe();
+    const to=budgetChips(region).find(el=>el.dataset.budget===(next??id));if(!to)return;
+    if(next===undefined){to.focus({preventScroll:true});return}
+    budgetEdit(to);mapReveal($('.bud-inl'));
+  });
+  // The paint waits for the pointer to lift (render holds while it is down), so a click on the
+  // next amount is not swallowed by a re-render underneath it.
+  inp.addEventListener('blur',()=>{if(done)return;done=true;budgetSet(id,inp.value);schedule()});
+}
+// Bring an amount being typed into view when the keyboard moved to one off screen.
+function mapReveal(el){
+  if(!el)return;
+  if(view!=='map'){el.scrollIntoView({block:'nearest'});return}
+  const st=$('#mapStage'),c=mapCam[mapPid];if(!st||!c||!el.closest('#mapWorld'))return;
+  const s=st.getBoundingClientRect(),r=el.getBoundingClientRect(),m=70;
+  const dx=r.left<s.left+m?s.left+m-r.left:r.right>s.right-m?s.right-m-r.right:0,dy=r.top<s.top+m?s.top+m-r.top:r.bottom>s.bottom-m?s.bottom-m-r.bottom:0;
+  if(dx||dy){c.x+=dx;c.y+=dy;mapApplyCam()}
+}
+
 // ── Render
 const mapNote=(d,compact=false)=>d&&mapDescriptions&&!compact?`<span class="map-description" title="${esc(d)}">${esc(d)}</span>`:d?`<span class="mp-note" title="${esc(d)}">${ICON.note}</span>`:'';
-function mapItemRow(pid,id,n,i){
+function mapItemRow(pid,id,n,i,B){
   const t=n.taskId?tasks[n.taskId]:null,due=t?t.dueDate||'':n.due||'',done=!!t?.completed,desc=t?t.notes||'':n.desc||'';
   const late=!done&&due&&due<ymd(new Date()),c=n.color&&mapColorOk(n.color)?n.color:'';
   return `<li class="mp-item${mapDescriptions?' with-description':''}${done?' done':''}${late?' late':''}${mapSel===id?' sel':''}${c?' own':''}" data-nid="${id}" data-mkind="item" role="button" tabindex="0" style="${mapSurfaceStyle(pid,mapNodes(pid),id)}"${n.desc?` title="${esc(n.desc)}"`:''}>
     <span class="n">${i+1}</span><span class="t">${mapLabel((t&&t.title)||n.title||'(untitled)',(mapKindOf(mapNodes(pid),n.parent)==='branch'?MW.branch:MW.topic)-110,12.5,400)}${mapDescriptions&&desc?`<small class="map-item-description">${esc(desc)}</small>`:''}</span>${!mapDescriptions&&desc?`<span class="mp-note">${ICON.note}</span>`:''}
-    ${due?`<span class="d">${esc(fmtMD(parseYmd(due)))}</span>`:''}${t?`<span class="dot" title="${done?'Done':'In your list'}"></span>`:''}</li>`;
+    ${B?'<span class="mp-ix">':''}${due?`<span class="d">${esc(fmtMD(parseYmd(due)))}</span>`:''}${B?budgetChip(B,id,true)+'</span>':''}${t?`<span class="dot" title="${done?'Done':'In your list'}"></span>`:''}</li>`;
 }
 function renderMap(anim){
   const host=$('#mapHost');if(!host)return;
   if(!(ready.tasks&&ready.maps)){host.innerHTML='<p class="empty">Loading…</p>';return}
   const plist=mapProjects();
   if(!projects[mapPid]&&plist.length){mapPid=plist[0][0];LS.set('oym_mappid',mapPid)}
-  const pid=mapPid,P=projects[pid];
+  const pid=mapPid,P=projects[pid],BD=P?budgetData(pid):null,B=budgetOn?BD:null;
   const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}${projectStatusHTML(pid,P)}${P?mapPaletteHTML(pid):''}
-    <div class="map-tools"><button class="btn" data-chrono-mode="${mapPresentation==='clock'?'map':'clock'}" aria-pressed="${mapPresentation==='clock'}" ${P?'':'disabled'}>${mapPresentation==='clock'?'Back to map':'Chronology'}</button>${mapDescriptionToggle()}${markdownControlHTML()}
+    <div class="map-tools">${P?budgetToggleHTML(BD):''}<button class="btn" data-chrono-mode="${mapPresentation==='clock'?'map':'clock'}" aria-pressed="${mapPresentation==='clock'}" ${P?'':'disabled'}>${mapPresentation==='clock'?'Back to map':'Chronology'}</button>${mapDescriptionToggle()}${markdownControlHTML()}
       ${P?`<button class="btn" type="button" data-mact="tray">Unplaced <span class="mp-count">${mapUnplaced(pid).length}</span></button>
       <button class="btn" type="button" data-mact="zout" aria-label="Zoom out">−</button><button class="btn" type="button" data-mact="zin" aria-label="Zoom in">+</button>
       <button class="btn" type="button" data-mact="fit" title="${mapPresentation==='clock'?'Fit the preview without changing your saved layout':'Tidy everything back into the sheet layout and show it all'}">Fit</button>`:''}
@@ -2387,13 +2572,13 @@ function renderMap(anim){
   const cards=[];
   const rc=mapColorOf(pid,nodes,'root');
   cards.push(`<div class="mp-card mp-root${mapSel==='root'?' sel':''}" data-nid="root" role="button" tabindex="0" style="${mapSurfaceStyle(pid,nodes,'root')}left:${lay.C.root.x}px;top:${lay.C.root.y}px;width:${MW.root}px;height:${lay.C.root.h}px"${P.description?` title="${esc(P.description)}"`:''}>
-    <span class="mp-k">Main topic</span><span class="mp-t">${mapLabel(mt,MW.root-42,19)}</span>${mapNote(P.description)}<button class="mp-plus" type="button" data-madd="root" title="Add a branch" aria-label="Add a branch">+</button></div>`);
+    <span class="mp-k">Main topic</span><span class="mp-t">${mapLabel(mt,MW.root-42,19)}</span>${mapNote(P.description)}${B?budgetChip(B,'root',false):''}<button class="mp-plus" type="button" data-madd="root" title="Add a branch" aria-label="Add a branch">+</button></div>`);
   const topicCard=(tid,tn)=>{
     const tr=lay.C[tid];if(!tr)return;
     const items=mapItemsOf(nodes,tid);
     cards.push(`<div class="mp-card mp-topic${mapSel===tid?' sel':''}" data-nid="${tid}" data-mkind="topic" role="button" tabindex="0" style="${mapSurfaceStyle(pid,nodes,tid)}left:${tr.x}px;top:${tr.y}px;width:${tr.w}px;height:${tr.h}px">
-      <div class="mp-th"><span class="mp-t">${mapLabel(tn.title,MW.topic-36,13.5)}</span>${tn.completed?`<span class="node-completed" title="${esc(nodeCompletionLabel(tn))}">✓ ${esc(nodeCompletionDate(tn))}</span>`:''}${mapNote(tn.desc)}${tn.due?`<span class="mp-td">${esc(fmtMD(parseYmd(tn.due)))}</span>`:''}</div>
-      <ol class="mp-items">${items.length?items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join(''):'<li class="mp-empty">Nothing here yet</li>'}</ol>
+      <div class="mp-th"><span class="mp-t">${mapLabel(tn.title,MW.topic-36,13.5)}</span>${tn.completed?`<span class="node-completed" title="${esc(nodeCompletionLabel(tn))}">✓ ${esc(nodeCompletionDate(tn))}</span>`:''}${mapNote(tn.desc)}${tn.due?`<span class="mp-td">${esc(fmtMD(parseYmd(tn.due)))}</span>`:''}${B?budgetChip(B,tid,false):''}</div>
+      <ol class="mp-items">${items.length?items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i,B)).join(''):'<li class="mp-empty">Nothing here yet</li>'}</ol>
       <button class="mp-add" type="button" data-madd="${tid}" data-mwant="item">+ Add item</button>
       <button class="mp-plus" type="button" data-madd="${tid}" data-mwant="topic" title="Add a topic inside" aria-label="Add a topic inside">+</button></div>`);
     for(const [k,kn] of mapTopicsOf(nodes,tid))topicCard(k,kn);
@@ -2401,8 +2586,8 @@ function renderMap(anim){
   for(const [bid,b] of mapKids(nodes,'root')){
     const r=lay.C[bid],items=mapItemsOf(nodes,bid);
     cards.push(`<div class="mp-card mp-branch${mapSel===bid?' sel':''}" data-nid="${bid}" data-mkind="branch" role="button" tabindex="0" style="${mapSurfaceStyle(pid,nodes,bid)}left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px">
-      <div class="mp-bh"><span class="mp-k">Sub-topic${b.completed?`<span class="node-completed" title="${esc(nodeCompletionLabel(b))}">✓ ${esc(nodeCompletionDate(b))}</span>`:''}${mapNote(b.desc)}</span><span class="mp-t">${mapLabel(b.title,MW.branch-36,15)}</span></div>
-      ${items.length?`<ol class="mp-items">${items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i)).join('')}</ol>`:''}
+      <div class="mp-bh"><span class="mp-k">Sub-topic${b.completed?`<span class="node-completed" title="${esc(nodeCompletionLabel(b))}">✓ ${esc(nodeCompletionDate(b))}</span>`:''}${mapNote(b.desc)}</span><span class="mp-t">${mapLabel(b.title,MW.branch-36,15)}</span>${B?budgetChip(B,bid,false):''}</div>
+      ${items.length?`<ol class="mp-items">${items.map(([iid,it],i)=>mapItemRow(pid,iid,it,i,B)).join('')}</ol>`:''}
       <button class="mp-add" type="button" data-madd="${bid}" data-mwant="item">+ Add item</button>
       <button class="mp-plus" type="button" data-madd="${bid}" data-mwant="topic" title="Add a topic" aria-label="Add a topic">+</button></div>`);
     for(const [tid,tn] of mapTopicsOf(nodes,bid))topicCard(tid,tn);
@@ -2413,7 +2598,7 @@ function renderMap(anim){
   const tray=mapTray?`<aside class="mp-tray"><div class="mp-tray-h"><b>Unplaced</b><span>${un.length} open task${un.length===1?'':'s'} in ${esc(P.name)}</span><button class="icon-btn" type="button" data-mact="tray" aria-label="Close">${ICON.x}</button></div>
     ${un.length?un.map(([id,t])=>`<div class="mp-tray-row" data-tid="${id}"><span class="t">${esc(t.title||'(untitled)')}</span>${t.dueDate?`<span class="d">${esc(fmtMD(parseYmd(t.dueDate)))}</span>`:''}</div>`).join('')
       :'<p class="hint">Every open task in this project is on the map.</p>'}<p class="hint">Drag a task onto a topic to place it.</p></aside>`:'';
-  host.innerHTML=bar+`<div id="mapPreview">${mapChronoControls()}</div><div class="map-stage" id="mapStage" style="--side-c:var(--${side})"><div class="map-world${mapDescriptions?' with-descriptions':''}${mapPresentation==='clock'?' chrono-preview':''}" id="mapWorld">${svg}${cards.join('')}</div>${tray}${mapPanelHTML(pid,nodes)}</div>`;
+  host.innerHTML=bar+`<div id="mapPreview">${mapChronoControls()}</div>${B?budgetBarHTML(pid,B,budgetFlow(pid,B)):''}<div class="map-stage" id="mapStage" style="--side-c:var(--${side})"><div class="map-world${mapDescriptions?' with-descriptions':''}${mapPresentation==='clock'?' chrono-preview':''}" id="mapWorld">${svg}${cards.join('')}</div>${tray}${mapPanelHTML(pid,nodes)}</div>`;
   const first=!mapCam[pid];if(first)mapCam[pid]=mapFitCam(lay);
   mapFitLabels(host);mapApplyCam();
   const bloom=(anim||mapBloomPid!==pid)&&canAnim();
@@ -2521,7 +2706,7 @@ function mapSwatches(pid,nodes,id){
 const mapDescHTML=(v,ph)=>`<label class="fld"><span class="lbl">Description</span><textarea class="txt mp-desc" data-mf="desc" rows="2" maxlength="2000" placeholder="${ph}">${esc(v||'')}</textarea></label>`;
 function mapPanelHTML(pid,nodes){
   if(!mapSel)return '';
-  const P=projects[pid];
+  const P=projects[pid],B=budgetData(pid);
   if(mapSel==='root'){
     const m=projSide(pid)||{},side=projSideOf(pid);
     return `<div class="mp-panel" data-mpanel="root">
@@ -2530,6 +2715,7 @@ function mapPanelHTML(pid,nodes){
       <label class="fld"><span class="lbl">Name</span><input class="txt" id="mpTitle" data-mf="name" value="${esc(P.name||'')}"></label>
       <label class="fld"><span class="lbl">Main topic</span><input class="txt" data-mf="mtitle" value="${esc((maps[pid]&&maps[pid].title)||'')}" placeholder="${esc(P.name||'')}"></label>
       ${mapDescHTML(P.description,'What this project is for')}
+      ${budgetPanelHTML(pid,nodes,'root',B)}
       ${mapPaletteHTML(pid)}${mapSwatches(pid,nodes,'root')}${mapChecklist(pid,nodes,'root')}
       <div class="fld"><span class="lbl">Side</span><div class="seg" role="group" aria-label="Side">${segHTML(sideOptions(),side,'data-mside-set')}</div></div>
       <label class="check"><input type="checkbox" data-mact-chk="private"${m.private?' checked':''}> Private (kept out of reports)</label>
@@ -2549,6 +2735,7 @@ function mapPanelHTML(pid,nodes){
     ${kind==='branch'?mapPaletteHTML(pid):''}${mapSwatches(pid,nodes,mapSel)}
     <div class="mp-dates"><label class="fld"><span class="lbl">Start</span><input class="txt" type="date" data-mf="start" value="${esc(t?t.startDate??n.start??'':n.start||'')}"></label>
       <label class="fld"><span class="lbl">${kind==='item'?'Due':'Finish'}</span><input class="txt" type="date" data-mf="due" value="${esc(kind==='item'?due:(n.due||''))}"></label></div>
+    ${budgetPanelHTML(pid,nodes,mapSel,B)}
     ${kind==='item'?mapTaskControls(n.taskId||'',mapSel):nodeCompletionControls(pid,mapSel)+mapChecklist(pid,nodes,mapSel)}
     </div>
     <div class="mp-pf">
@@ -2787,7 +2974,7 @@ function gtRows(R,opts){
   }
   return rows;
 }
-function gtRowHTML(r,X,px,today){
+function gtRowHTML(r,X,px,today,B){
   const chev=(r.type==='lane'||r.type==='topic')?`<button class="gt-fold" type="button" data-gfold="${r.id}" aria-label="${r.folded?'Expand':'Collapse'}" aria-expanded="${!r.folded}">${ICON.chev}</button>`:'<span class="gt-fold sp"></span>';
   let bar='',meta='';
   if(r.type==='item'){
@@ -2807,8 +2994,25 @@ function gtRowHTML(r,X,px,today){
     meta=r.start&&r.end&&r.start!==r.end?fmtMD(parseYmd(r.start))+' – '+fmtMD(parseYmd(r.end)):fmtMD(parseYmd(r.start||r.end));
   }
   return `<div class="gt-row gt-${r.type}" data-grow="${r.id}" style="${mapSurfaceStyle(mapPid,mapNodes(mapPid),r.id)}">
-    <div class="gt-name" style="padding-left:${10+Math.min(r.depth,4)*12}px">${chev}<button class="gt-t" type="button" data-gopen="${r.id}" title="${esc(r.title||'(untitled)')}">${mapLabel(r.title,gtLeft()-50-Math.min(r.depth,4)*12,12.5)}${r.desc?mapNote(r.desc,true):''}</button><span class="gt-meta">${esc(meta)}</span></div>
+    <div class="gt-name" style="padding-left:${10+Math.min(r.depth,4)*12}px">${chev}<button class="gt-t" type="button" data-gopen="${r.id}" title="${esc(r.title||'(untitled)')}">${mapLabel(r.title,gtLeft()-50-Math.min(r.depth,4)*12,12.5)}${r.desc?mapNote(r.desc,true):''}</button><span class="gt-meta">${esc(meta)}</span>${B?budgetChip(B,r.id,r.type==='item'):''}</div>
     <div class="gt-track">${bar}</div></div>`;
+}
+// The budget per week (or month), under the bars it comes from. One series, so one hue; each
+// period carries its amount, and the tip adds the running total.
+function gtCashHTML(F,d0,days,px){
+  const end=addDays(d0,days),periods=[];
+  if(gtScale==='week')for(let i=0;i*7<days;i++)periods.push({a:addDays(d0,i*7),n:Math.min(7,days-i*7)});
+  else for(let d=new Date(d0);d<end;){const nx=new Date(d.getFullYear(),d.getMonth()+1,1),e=nx<end?nx:end;periods.push({a:d,n:Math.round((e-d)/gtDay)});d=e}
+  let inside=0,x=0;
+  for(const p of periods){p.x=x;x+=p.n*px;p.v=0;for(let i=0;i<p.n;i++)p.v+=F.days.get(ymd(addDays(p.a,i)))||0;p.v=cents(p.v);inside+=p.v}
+  const max=Math.max(...periods.map(p=>p.v),0),outside=cents(F.scheduled-inside);let run=0;
+  const cells=periods.map(p=>{
+    if(!p.v)return '';run=cents(run+p.v);
+    const label=gtScale==='week'?'week of '+fmtMD(p.a):MONL[p.a.getMonth()]+' '+p.a.getFullYear();
+    return `<div class="gt-cf" style="left:${p.x}px;width:${p.n*px}px;--h:${(p.v/max).toFixed(3)}" data-tip="${fmtMoney(p.v)}|${label} · ${fmtMoney(run)} to date"><span>${fmtMoneyShort(p.v)}</span><i></i></div>`;
+  }).join('');
+  return `<div class="gt-row gt-cash"><div class="gt-name"><span class="mp-k">Cash flow</span><span class="gt-sub">${fmtMoney(F.scheduled)} scheduled, by ${gtScale}${F.unscheduled?' · '+fmtMoney(F.unscheduled)+' without dates':''}${outside>.005?' · '+fmtMoney(outside)+' outside this range':''}</span></div>
+    <div class="gt-track">${cells}</div></div>`;
 }
 function renderGantt(anim){
   const host=$('#tlHost');if(!host)return;
@@ -2817,9 +3021,9 @@ function renderGantt(anim){
   if(!projects[mapPid]&&plist.length){mapPid=plist[0][0];LS.set('oym_mappid',mapPid)}
   const pid=mapPid,P=projects[pid],today=ymd(new Date());
   const old=$('#gtScroll'),keep=old&&gtSeenPid===pid?{l:old.scrollLeft,t:old.scrollTop}:null;
-  const R=P?roadmapData(pid,today):null;
+  const R=P?roadmapData(pid,today):null,BD=P?budgetData(pid):null,B=budgetOn?BD:null,F=B?budgetFlow(pid,B):null;
   const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}${projectStatusHTML(pid,P)}${P?mapPaletteHTML(pid):''}
-    <div class="map-tools">${P?`
+    <div class="map-tools">${P?`${budgetToggleHTML(BD)}
       <div class="seg" role="group" aria-label="Timeline presentation"><button aria-pressed="true" type="button">Gantt</button><button type="button" data-gchronology aria-pressed="false">Chronology</button></div><div class="seg" role="group" aria-label="Scale">${segHTML([['week','Weeks'],['month','Months']],gtScale,'data-gscale')}</div>
       <button class="btn" type="button" data-gact="today">Today</button>
       <button class="btn" type="button" data-gact="und" aria-pressed="${gtUndated}" title="Show items without dates">Undated <span class="mp-count">${R.undated.length}</span></button>
@@ -2837,13 +3041,13 @@ function renderGantt(anim){
   if(gtScale==='week')for(let i=0;i*7<days;i++){const d=addDays(d0,i*7),x=i*7*px;ticks.push(`<span class="gt-tk" style="left:${x}px">${d.getDate()}</span>`);lines.push(x)}
   const tx=X(today);
   const empty=!rows.length?`<div class="gt-none">${R.dated?'':'No dates yet. '}Turn on <b>Undated</b> to see every item, then click a day on its row to give it a due date.</div>`:'';
-  host.innerHTML=bar+chronoControls()+`<div class="gt" id="gtScroll" style="--gl:${gtLeft()}px;--px:${px}px">
+  host.innerHTML=bar+chronoControls()+(B?budgetBarHTML(pid,B,F):'')+`<div class="gt" id="gtScroll" style="--gl:${gtLeft()}px;--px:${px}px">
     <div class="gt-in" style="width:${gtLeft()+W}px">
       <div class="gt-head"><div class="gt-corner"><span class="mp-k">${esc(P.name)}</span><span class="gt-sub">${rows.filter(r=>r.type==='item').length} shown${R.undated.length&&!gtUndated?` · ${R.undated.length} undated hidden`:''}</span></div>
         <div class="gt-scale" style="width:${W}px"><div class="gt-mos">${months.join('')}</div><div class="gt-tks">${ticks.join('')}</div></div></div>
       <div class="gt-body">
         <div class="gt-grid" style="left:${gtLeft()}px;width:${W}px">${lines.map(x=>`<i style="left:${x}px"></i>`).join('')}</div>
-        ${rows.map(r=>gtRowHTML(r,X,px,today)).join('')}${empty}
+        ${rows.map(r=>gtRowHTML(r,X,px,today,B)).join('')}${empty}${B?gtCashHTML(F,d0,days,px):''}
         <div class="gt-playhead" data-chrono-origin="${ymd(d0)}" data-chrono-px="${px}"><span>Preview</span></div><div class="gt-today" style="left:${gtLeft()+tx+px/2}px"><span>Today</span></div>
       </div></div></div>`;
   chronoPaint();
@@ -3859,6 +4063,9 @@ document.addEventListener('click',e=>{
   const reopenProject=t.closest('[data-project-reopen]');if(reopenProject){const pid=reopenProject.dataset.projectReopen,epoch=authEpoch;projectSetComplete(pid,false).then(()=>{if(epoch!==authEpoch)return;mSide=projSideOf(pid);projectExpanded.add(taskProjectKey(mSide,pid));if(rTimer){clearTimeout(rTimer);rTimer=0}setView('tasks');render(true);$(`[data-project-toggle="${pid}"][data-project-side="${mSide}"]`)?.focus()}).catch(()=>{});return}
   const projectToggle=t.closest('[data-project-toggle]');if(projectToggle){if(!projectToggle.dataset.projectToggle)return;const key=taskProjectKey(projectToggle.dataset.projectSide,projectToggle.dataset.projectToggle);if(openId)closeEditor();projectExpanded.has(key)?projectExpanded.delete(key):projectExpanded.add(key);renderTasks();$(`[data-project-side="${projectToggle.dataset.projectSide}"][data-project-toggle="${projectToggle.dataset.projectToggle}"]`)?.focus();return}
   const projectDone=t.closest('[data-project-completed]');if(projectDone){doneF.side=projectDone.dataset.projectSide;doneF.range='all';doneF.projectId=projectDone.dataset.projectCompleted;doneF.q='';$('#doneSearch').value='';setView('done');return}
+  if(t.closest('[data-budget-toggle]')){budgetToggle();return}
+  if(t.closest('.bud-inl'))return;
+  const bud=t.closest('[data-budget]');if(bud){if(mapPickOpen)mapPickOpenAt(false);budgetEdit(bud);return}
   if(mapClick(t))return;
   if(gtClick(t,e))return;
   const act=t.closest('[data-act]');
@@ -3966,6 +4173,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&t.id==='mapPickQ'){e.preventDefault();
     const q=t.value.trim().toLowerCase(),m=mapProjects().filter(([,p])=>(p.name||'').toLowerCase().includes(q));
     if(q&&!m.length){mapPickOpen=false;mapNewProject(t.value)}else if(m.length){mapPickOpen=false;mapPick(m[0][0])}return}
+  if(e.key==='Enter'&&t.dataset&&t.dataset.f==='budget'&&t.closest('.editor')){e.preventDefault();t.blur();return}
   if(e.key==='Enter'&&t.classList&&t.classList.contains('e-title')){e.preventDefault();saveField(t.closest('.editor').dataset.id,'title',t.value);closeEditor();return}
   if((e.key==='Enter'||e.key===' ')&&t.matches&&t.matches('[role="button"][data-act],[role="button"][data-open],[role="button"][data-nid]')){e.preventDefault();t.click();return}
   if(t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;
@@ -4088,6 +4296,8 @@ function mapMarkdown(pid){
   const nodes=mapNodes(pid),side=projSideOf(pid),lines=[`# ${text(maps[pid]?.title||P.name)}`,'',`- Project: ${text(P.name)}`,`- Project ID: ${text(pid)}`,`- Status: ${text(P.status||'active')}`,`- Tracking category: ${text(SIDE_NAME[side])} (ID: ${text(side)})`];
   lines.push(`- Private: ${projSide(pid)?.private?'yes':'no'}`);if(categoryColorOk(trackingCategories[side]?.color))lines.push(`- Category color: ${trackingCategories[side].color}`);
   if(P.completedAt)lines.push(`- Project completed at: ${text(P.completedAt)}`);
+  const B=budgetData(pid),money=(pad,b,label)=>{if(b&&b.own)lines.push(`${pad}- ${label}: ${fmtMoney(b.own)}`);if(b&&b.alloc)lines.push(`${pad}- Allocated inside: ${fmtMoney(b.alloc)}${b.over?' (over by '+fmtMoney(b.over)+')':b.free?' ('+fmtMoney(b.free)+' left to allocate)':''}`)};
+  money('',B.root,'Project budget');
   if(P.description)lines.push('',...String(P.description).split('\n').map(l=>'> '+text(l)));
   lines.push('','Dates use YYYY-MM-DD; completion timestamps include their UTC offset. Missing dates are unknown. Checkboxes reflect actual completion, not timeline playback.','');
   const visited=new Set(),linked=new Set();
@@ -4097,6 +4307,7 @@ function mapMarkdown(pid){
     lines.push(`${pad}- [${t?.completed?'x':' '}] ${text(title)}`,`${pad}  - ${id?'Node ID: '+text(id)+'; ':''}${n.taskId?'Task ID: '+text(n.taskId):'Task record not yet created'}`);
     const start=t?t.startDate??n.start:n.start,due=t?t.dueDate:n.due;
     if(start)lines.push(`${pad}  - Start: ${text(start)}`);if(due)lines.push(`${pad}  - Due: ${text(due)}`);
+    if(moneyOf(t?t.budget:n.budget))lines.push(`${pad}  - Budget: ${fmtMoney(t?t.budget:n.budget)}`);
     if(t&&taskPrivate(t))lines.push(`${pad}  - Private: yes`);
     if(t?.completed)lines.push(`${pad}  - Completed at: ${t.completedAt?text(t.completedAt):'unknown (not recorded)'}`);
     if(t?.repeat&&t.repeat!=='none')lines.push(`${pad}  - Repeats: ${text(t.repeat)} (checkbox describes the current occurrence)`);
@@ -4107,6 +4318,7 @@ function mapMarkdown(pid){
     const pad='  '.repeat(depth);lines.push(`${pad}- **${text(n.title||'(untitled)')}**`,`${pad}  - Node ID: ${text(id)}`);
     lines.push(`${pad}  - Status: ${n.completed?'completed':'open'}`);if(n.completed)lines.push(`${pad}  - Completed at: ${text(n.completedAt||'unknown (not recorded)')}`);for(const e of Object.values(n.completionEvents||{}))lines.push(`${pad}  - Completion event: ${text(e.action)}; recorded ${text(e.recordedAt)}; completed ${text(e.completedAt||'none')}; previous ${text(e.previousCompletedAt||'unknown')}`);
     if(n.start)lines.push(`${pad}  - Start: ${text(n.start)}`);if(n.due)lines.push(`${pad}  - Finish: ${text(n.due)}`);
+    money(pad+'  ',B[id],'Budget');
     if(n.desc)lines.push(...String(n.desc).split('\n').map(l=>`${pad}  > ${text(l)}`));
     for(const [kid] of mapKids(nodes,id))walk(kid,depth+1);
   };
@@ -4361,7 +4573,7 @@ if(auth){
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-window.__oym={mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapPrintFragments,mapPrintOrientation,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={parseMoney,fmtMoney,fmtMoneyShort,budgetData,budgetFlow,budgetSet,taskSetBudget,budgetToggle,get budgetOn(){return budgetOn},saveField,mapPanelHTML,setMapSel:id=>{mapSel=id},gtCashHTML,mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapPrintFragments,mapPrintOrientation,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>
