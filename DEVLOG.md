@@ -10,7 +10,9 @@ In-place entry (`budgetEdit`): the chip is swapped for an input. Enter/Tab save 
 
 Gotcha found in Chrome: `.gt-meta` stretched across its whole grid cell and sat under the chip; it is now `justify-self:start`.
 
-Not done: budgets in Roadmap/Brief PDFs, actual-cost tracking, a currency setting. Validation: `tests/budget.test.cjs` (68 checks, mutation-checked on five behaviours) is in the release gate list; `tests/budget-browser.cjs` runs synthetic Chrome with external traffic blocked, screenshots in /private/tmp/oy-todo-budget-{map,gantt,mobile}.png. All existing suites pass. No live writes, commit or deploy by developer.
+Not done: budgets in Roadmap/Brief PDFs, actual-cost tracking, a currency setting. Validation: `tests/budget.test.cjs` (68 checks, mutation-checked on five behaviours) is in the release gate list; `tests/budget-browser.cjs` runs synthetic Chrome with external traffic blocked, screenshots in /private/tmp/oy-todo-budget-{map,gantt,mobile}.png. All existing suites pass.
+
+Released the same day at the user's request: commit 2592a8c, `oy deploy todo`, live page hash-verified against the committed index.html. The first attempt was refused by the gate because the shared `~/openyap-infra` tree held another session's uncommitted Command Center work that fails two `cc-export-sheet` assertions (slurry rows 3 vs 4, CY total 3.85 vs 11.26); committed `dev` passes them. The release was re-run through the same `oy deploy todo` from a clean detached worktree of `dev` (HARNESS §4b), where `oy check` passed 96/96. Rules were redeployed unchanged.
 
 ## 2026-09-30 — optional Bluebeam movable map connectors
 
