@@ -1,0 +1,33 @@
+// Synthetic workspace only. These assertions pin canonical pricing, atomic edits and failure isolation.
+const assert=require('node:assert/strict'),{boot}=require('./app-harness.cjs');
+const tick=()=>new Promise(r=>setTimeout(r,45));
+const model={mode:'calculated',quantity:230,unit:'LF',unitRate:8,crew:2,hours:16,laborRate:35,burden:30,other:250,markup:10};
+const seed=()=>({users:{
+ a:{todo:{projects:{p:{name:'Pool',status:'active'},q:{name:'Other map'}},sides:{p:{side:'career'}},
+ tasks:{t:{title:'Tile',projectId:'p',side:'career',budget:999,startDate:'2026-10-05',dueDate:'2026-10-06'},u:{title:'Off-map',projectId:'p',cost:{...model,quantity:0,crew:0,other:100,markup:0}}},history:{},
+ maps:{p:{nodes:{b:{parent:'root',kind:'branch',title:'Finish'},i:{parent:'b',kind:'item',title:'Old title',taskId:'t',budget:1},legacy:{parent:'b',kind:'item',title:'Unlinked',due:'2026-10-07',budget:120}}},q:{nodes:{also:{parent:'root',kind:'item',taskId:'t',title:'Same task'}}}}}},
+ b:{todo:{projects:{p:{name:'New account'}},tasks:{t:{title:'New task',budget:7}},maps:{},history:{}}}
+}});
+(async()=>{const {w,d,db}=await boot(seed(),{user:{uid:'a',email:'a@test.com'}}),M=w.__oym,$=s=>d.querySelector(s);M.setMapPid('p');
+const parts=M.costParts(model);assert.deepEqual(JSON.parse(JSON.stringify([parts.material,parts.hours,parts.laborBase,parts.burden,parts.markup,parts.total])),[1840,32,1120,336,354.6,3900.6]);
+for(const raw of [{...model,crew:1.2},{...model,quantity:-1},{...model,hours:Infinity},{...model,laborRate:NaN},{...model,unit:'<script>'},{...model,quantity:1e12,unitRate:1e12},{...model,markup:1001}])assert.equal(M.costParts(raw),null);
+await M.costSave({task:'t'},'calculated',model);assert.equal(db.get('users/a/todo/tasks/t/budget'),undefined);assert.equal(M.costAmount(M.tasks.t),3900.6);assert.equal(db.get('users/a/todo/tasks/t/title'),'Tile');assert.equal(db.get('users/a/todo/maps/q/nodes/also/cost/unit'),'LF');assert.equal(db.updates.at(-1)['users/a/todo/tasks/t/cost'].crew,2);assert.equal(db.updates.at(-1)['users/a/todo/tasks/t/budget'],null);
+assert.equal(M.budgetData('p').i.own,3900.6);assert.equal(M.budgetData('p').root.total,4120.6);assert.equal(M.budgetData('p').root.unplaced,100);const F=M.budgetFlow('p');assert.equal(F.scheduled,4020.6);assert.equal(F.unscheduled,100);assert.equal(Math.round(F.days.get('2026-10-05')*100)/100,1950.3);
+assert.match(M.mapMarkdown('p'),/230 LF.*2 workers.*16 hours each.*\$35\/hour/);
+// Opening a calculated chip must edit its rates, never silently flatten it.
+$('[data-view="map"]').click();await tick();$('[data-budget-toggle]').click();await tick();$('#mapWorld [data-budget="i"]').click();await tick();assert($('.cost-editor'));assert.equal($('[data-cost-field="quantity"]').value,'230');assert.equal($('[data-cost-mode]').value,'calculated');assert.equal($('.bud-inl'),null);
+let quantity=$('[data-cost-field="quantity"]');quantity.value='250';quantity.dispatchEvent(new w.Event('input',{bubbles:true}));assert.equal(db.get('users/a/todo/tasks/t/cost/quantity'),230);assert.match($('[data-cost-summary]').textContent,/\$4,076.60/);
+// A rejected save leaves the complete draft and the old canonical cost intact.
+db.interceptNextUpdate(()=>Promise.reject(new Error('Denied for test')));$('[data-cost-save]').click();await tick();assert.equal($('[data-cost-field="quantity"]').value,'250');assert.match($('[data-cost-error]').textContent,/Denied/);assert.equal(db.get('users/a/todo/tasks/t/cost/quantity'),230);assert.equal($('[data-cost-save]').disabled,false);$('[data-cost-save]').click();await tick();assert.equal(db.get('users/a/todo/tasks/t/cost/quantity'),250);
+// Gantt uses derived amount, and its chip takes you to the same pricing editor.
+$('[data-view="timeline"]').click();await tick();assert.match($('.gt-row[data-grow="i"] [data-budget]').textContent,/\$4.1k/);$('.gt-row[data-grow="i"] [data-budget]').click();await tick();assert.equal($('#v-map').hidden,false);assert.equal($('[data-cost-field="quantity"]').value,'250');
+// Explicit flat switch clears cost everywhere in the same update, including same-value flat edits.
+M.taskSetBudget('t','4076.6');await tick();assert.equal(db.get('users/a/todo/tasks/t/cost'),undefined);assert.equal(db.get('users/a/todo/maps/q/nodes/also/cost'),undefined);assert.equal(db.get('users/a/todo/tasks/t/budget'),4076.6);await M.costSave({task:'t'},'flat','');assert.equal(M.costAmount(M.tasks.t),0);
+await M.costSave({pid:'p',node:'legacy'},'calculated',model);assert.equal(M.costAmount(M.maps.p.nodes.legacy),3900.6);assert.equal(db.get('users/a/todo/maps/p/nodes/legacy/taskId'),undefined);
+M.mapToList('legacy');await tick();const materialized=db.get('users/a/todo/maps/p/nodes/legacy/taskId');assert(materialized);assert.equal(M.costAmount(M.tasks[materialized]),3900.6);assert.equal(M.tasks[materialized].cost.unit,'LF');
+await assert.rejects(M.costSave({task:'t'},'calculated',{...model,crew:-2}));await assert.rejects(M.costSave({task:'missing'},'flat','1'));await assert.rejects(M.costSave({pid:'p',node:'root'},'calculated',model));
+// Task editor exposes the same units and crew fields.
+M.openEditor('t');await tick();assert($('.editor [data-cost-mode]'));const mode=$('.editor [data-cost-mode]');mode.value='calculated';mode.dispatchEvent(new w.Event('change',{bubbles:true}));assert.equal($('.editor [data-cost-fields]').hidden,false);for(const [k,v]of Object.entries(model))if(k!=='mode'){$('.editor [data-cost-field="'+k+'"]').value=v}$('.editor [data-cost-save]').click();await tick();assert.equal(db.get('users/a/todo/tasks/t/cost/unit'),'LF');
+// In-flight callbacks and detached editors must not write/render into a new account.
+const box=$('.cost-editor'),epoch=Number(box.dataset.costEpoch);let finish;db.interceptNextUpdate((patch,apply)=>new Promise(resolve=>{finish=()=>apply().then(resolve)}));$('[data-cost-save]').click();w.__setUser({uid:'b',email:'b@test.com'});await tick();finish();await tick();assert.equal(db.get('users/b/todo/tasks/t/budget'),7);assert.equal($('.cost-editor'),null);await assert.rejects(M.costSave({task:'t',epoch},'calculated',model),/Account changed/);assert.equal(db.get('users/b/todo/tasks/t/cost'),undefined);w.close();
+console.log('budget rates: calculation, validation, linked and unplaced rollups, schedule spread, Markdown, Map/Tasks/Gantt edit, atomic clearing, rejected draft/retry and account isolation passed');})().catch(e=>{console.error(e);process.exit(1)});

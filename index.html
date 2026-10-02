@@ -827,6 +827,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 .gt-cf:hover i{opacity:1}
 .task .t-meta .budget,.project-count .budget{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .e-field input[data-f="budget"]{width:96px}
+.cost-editor{margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:10px;min-width:0}.cost-editor .cost-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.cost-editor label{display:grid;gap:4px;font-size:12px;color:var(--muted)}.cost-editor input,.cost-editor select{width:100%;min-width:0}.cost-editor [hidden]{display:none}.cost-editor .cost-summary{margin:10px 0;font-size:12px;line-height:1.7}.cost-editor .cost-error{color:var(--danger);font-size:12px}.palette-controls{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}.palette-keep{font-size:11px;color:var(--muted)}.palette-keep input{width:auto}
 </style>
 </head>
 <body>
@@ -1278,7 +1279,7 @@ function logDone(raw,side){
 
 // ═══ Rendering ═══════════════════════════════════════════════════════════
 let rTimer=0,deferred=false,pointerDown=false;
-function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new,.mp-pick,#mapWorld,.category-forms,.gt-name,.budget-bar')&&/^(INPUT|TEXTAREA)$/.test(a.tagName))}
+function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new,.mp-pick,#mapWorld,.category-forms,.gt-name,.budget-bar,.palette-controls')&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))}
 function schedule(){_entries=null;if(rTimer)return;rTimer=setTimeout(()=>{rTimer=0;render()},16)}
 function render(force){
   if(!force&&(editingText()||pointerDown)){deferred=true;return}
@@ -1394,7 +1395,7 @@ async function projectCategorySubmit(){
 
 function taskGroupsHTML(side){return taskProjectGroups(side).map(g=>{
   const key=taskProjectKey(side,g.pid),expanded=g.pid?projectExpanded.has(key):true,open=g.items.filter(([,t])=>!t.completed).sort((a,b)=>Number(!!b[1].doing)-Number(!!a[1].doing)||cmpTask(a,b)),done=g.items.length-open.length;
-  const dom='project-'+side+'-'+(g.pid||'unassigned'),budget=g.pid?budgetData(g.pid).root.total:cents(g.items.reduce((a,[,t])=>a+(t.completed?0:moneyOf(t.budget)),0));
+  const dom='project-'+side+'-'+(g.pid||'unassigned'),budget=g.pid?budgetData(g.pid).root.total:cents(g.items.reduce((a,[,t])=>a+(t.completed?0:costAmount(t)),0));
   return `<section class="task-project" data-project-group="${esc(g.pid)}">${g.pid?`<button class="project-toggle" data-project-toggle="${esc(g.pid)}" data-project-side="${side}" aria-expanded="${expanded}" aria-controls="${esc(dom)}">`:'<div class="project-toggle no-project-heading" role="heading" aria-level="2">'}<span class="project-kind">${g.pid?'PROJECT':'TASKS'}</span><strong>${esc(g.project?.name||'No project')}</strong><span class="project-count">${open.length} open${done?' · '+done+' completed':''}${g.project?.status&&g.project.status!=='active'?' · '+esc(g.project.status):''}${budget?` · <span class="budget" title="${g.pid?'Project budget':'Budget of the open tasks'}">${fmtMoney(budget)}</span> budget`:''}</span>${g.pid?`<span aria-hidden="true">${expanded?'−':'+'}</span></button>`:'</div>'}${g.pid?`<div class="project-category-row">${projectCategoryButton(g.pid)}</div>`:''}<div id="${esc(dom)}" class="project-tasks"${expanded?'':' hidden'}>${expanded?`<ul class="list">${open.length?open.map(([id,t])=>taskRow(id,t)).join(''):'<li class="list-empty">No open tasks.</li>'}</ul>${g.pid?`<form class="add project-add" data-add="${side}" data-add-project="${esc(g.pid)}"><input aria-label="Add a task to ${esc(g.project.name)}" placeholder="Add a task to this project"><button class="btn" type="submit">Add</button></form>`:''}${done?`<button class="link project-completed" data-project-completed="${esc(g.pid)}" data-project-side="${side}">View completed tasks</button>`:''}`:''}</div></section>`;
 }).join('')}
 function buildSides(){
@@ -1484,7 +1485,7 @@ function taskRow(id,t){
   if(t.priority==='high')meta.push('<span class="urgent">Urgent</span>');
   const pn=shownProject(projName(t.projectId),side);if(pn)meta.push(`<span>${esc(pn)}</span>`);
   if(t.timeSpent)meta.push(`<span>${fmtDur(t.timeSpent)} logged</span>`);
-  if(moneyOf(t.budget))meta.push(`<span class="budget" title="Budget ${fmtMoney(t.budget)}">${fmtMoneyShort(t.budget)}</span>`);
+  if(costAmount(t))meta.push(`<span class="budget" title="Budget ${fmtMoney(costAmount(t))}">${fmtMoneyShort(costAmount(t))}</span>`);
   if(t.notes)meta.push(`<span title="Has notes">${ICON.note}</span>`);
   if(taskPrivate(t))meta.push(`<span title="Private: left out of reports">${ICON.lock}</span>`);
   return `<li class="task" data-id="${id}" data-drag-id="${id}" draggable="true">
@@ -1500,11 +1501,11 @@ function editorHTML(id,t){
     <textarea class="e-notes" data-f="notes" rows="3" placeholder="Notes" aria-label="Notes">${esc(t.notes||'')}</textarea>
     <div class="e-row">
       <label class="e-field">Due <input type="date" data-f="dueDate" value="${esc(t.dueDate||'')}"></label>
-      <label class="e-field">Budget <input type="text" inputmode="decimal" autocomplete="off" data-f="budget" placeholder="1500, 1.5k" value="${moneyOf(t.budget)?esc(fmtMoney(t.budget)):''}"></label>
       <button class="chip urgent" data-act="urgent" aria-pressed="${t.priority==='high'}">Urgent</button>
       <div class="seg sm" role="group" aria-label="Side">${SIDES.map(s=>`<button data-act="side" data-v="${s}" aria-pressed="${s===side}">${esc(SIDE_NAME[s])}</button>`).join('')}</div>
       <button class="chip" data-act="private" aria-pressed="${priv}" title="Private tasks are left out of reports">Private</button>
     </div>
+    ${costEditorHTML(t,{task:id})}
     <div class="e-row e-foot">
       <button class="btn" data-act="${t.doing?'pause':'start'}">${t.doing?'Pause':'Start'}</button>
       <button class="btn" data-act="complete">Complete</button>
@@ -1999,15 +2000,15 @@ const MAP_COLORS=[['#e5484d','Red'],['#f76b15','Orange'],['#e2a336','Amber'],['#
   ['#0090ff','Blue'],['#6e56cf','Violet'],['#d6409f','Pink'],['#8b8d98','Gray']];
 const mapColorOk=c=>MAP_COLORS.some(([h])=>h===c);
 const MAP_PALETTES={ocean:{name:'Ocean',colors:['#0090ff','#12a594','#6e56cf','#46a758']},forest:{name:'Forest',colors:['#46a758','#12a594','#e2a336','#8b8d98']},sunset:{name:'Sunset',colors:['#f76b15','#d6409f','#e5484d','#e2a336']},violet:{name:'Violet',colors:['#6e56cf','#d6409f','#0090ff','#8b8d98']}};
-function mapPaletteHTML(pid){return `<label class="map-palette">Map palette <select class="txt" data-map-palette="${esc(pid)}" aria-label="Map palette"><option value="">Original</option>${Object.entries(MAP_PALETTES).map(([id,p])=>`<option value="${id}"${maps[pid]?.palette===id?' selected':''}>${p.name}</option>`).join('')}</select></label>`}
-function mapSetPalette(pid,value){if(!activeUser||!projects[pid]||value&&!MAP_PALETTES[value])return Promise.reject(new Error('Choose an available map palette.'));return upd({['todo/maps/'+pid+'/palette']:value||null})}
+function mapPaletteHTML(pid){return `<span class="palette-controls"><label class="map-palette">Map palette <select class="txt" data-map-palette="${esc(pid)}" aria-label="Map palette"><option value="">Original</option>${Object.entries(MAP_PALETTES).map(([id,p])=>`<option value="${id}"${maps[pid]?.palette===id?' selected':''}>${p.name}</option>`).join('')}</select></label><label class="palette-keep"><input type="checkbox" data-palette-keep="${esc(pid)}"${maps[pid]?.paletteOverrides==='preserve'?' checked':''}> Keep custom colors</label></span>`}
+function mapSetPalette(pid,value,preserve=true){if(!activeUser||!projects[pid]||value&&!MAP_PALETTES[value])return Promise.reject(new Error('Choose an available map palette.'));const epoch=authEpoch;return upd({['todo/maps/'+pid+'/palette']:value||null,['todo/maps/'+pid+'/paletteOverrides']:preserve?'preserve':'palette'}).then(()=>{if(epoch===authEpoch&&mapPid===pid){mapRefreshColors();if(!editingText())mapRe()}})}
 function mapTones(color,dark){const c=hexRgb(color),mix=(a,b,t)=>a.map((v,i)=>Math.round(v*(1-t)+b[i]*t)),rgb=a=>'rgb('+a.join(',')+')';return {fill:rgb(mix(dark?[18,22,30]:[255,255,255],c,dark?.18:.12)),border:rgb(mix(c,dark?[255,255,255]:[0,0,0],dark?.2:.3)),ink:dark?'#f6f7fb':'#17202b',muted:dark?'#c2cbd8':'#3e5065'}}
 function mapSurfaceStyle(pid,nodes,id){
   const c=mapColorOf(pid,nodes,id),palette=MAP_PALETTES[maps[pid]?.palette];if(!palette)return mcStyle(c);
   const bg=hexRgb(curTheme().bg),dark=(bg[0]*.2126+bg[1]*.7152+bg[2]*.0722)<140,tones=mapTones(c||palette.colors[0],dark);
   return mcStyle(c)+`--map-fill:${tones.fill};--map-border:${tones.border};--text:${tones.ink};--body:${tones.ink};--muted:${tones.muted};--faint:${tones.muted};--surface:${tones.fill};--raise:${tones.fill};--line:${tones.border};`;
 }
-function mapRefreshColors(){const nodes=mapNodes(mapPid);$$('#mapWorld [data-nid],.gt-row[data-grow]').forEach(el=>{const style=mapSurfaceStyle(mapPid,nodes,el.dataset.nid||el.dataset.grow);for(const [name,value]of style.split(';').filter(Boolean).map(s=>s.split(':')))el.style.setProperty(name,value)})}
+function mapRefreshColors(){const nodes=mapNodes(mapPid);$$('[data-map-palette]').filter(el=>el.dataset.mapPalette===mapPid).forEach(el=>el.value=maps[mapPid]?.palette||'');$$('[data-palette-keep]').filter(el=>el.dataset.paletteKeep===mapPid).forEach(el=>el.checked=maps[mapPid]?.paletteOverrides==='preserve');$$('#mapWorld [data-nid],.gt-row[data-grow]').forEach(el=>{for(const name of ['--mc','--map-fill','--map-border','--text','--body','--muted','--faint','--surface','--raise','--line'])el.style.removeProperty(name);const style=mapSurfaceStyle(mapPid,nodes,el.dataset.nid||el.dataset.grow);for(const [name,value]of style.split(';').filter(Boolean).map(s=>s.split(':')))el.style.setProperty(name,value)});$$('#mapWorld path[data-to]').forEach(el=>{const c=mapColorOf(mapPid,nodes,el.dataset.to);el.style.stroke=c||'';el.classList.toggle('c',!!c)});if(mapPresentation==='clock')mapChronoPaint()}
 let mapMeasureContext;
 function mapLabel(text,width,size=13,weight=600){
   text=String(text||'(untitled)');let measure;
@@ -2019,9 +2020,9 @@ function mapLabel(text,width,size=13,weight=600){
 }
 function mapFitLabels(root=document){for(const label of $$('.map-label',root)){const width=Math.max(...[...label.children].map(line=>line.scrollWidth)),available=label.clientWidth;if(available&&width>available){const size=parseFloat(getComputedStyle(label).fontSize);label.style.fontSize=(size*available/width*.96).toFixed(2)+'px'}}}
 function mapColorOf(pid,nodes,id){
-  const seen=new Set(),original=id;let branch='';
-  while(id&&id!=='root'&&!seen.has(id)){seen.add(id);const n=nodes[id];if(!n)break;if(n.parent==='root')branch=id;if(mapColorOk(n.color))return n.color;id=n.parent}
-  const r=maps[pid]&&maps[pid].color;if(mapColorOk(r))return r;const palette=MAP_PALETTES[maps[pid]?.palette];return palette?palette.colors[original==='root'?0:Math.max(0,mapKids(nodes,'root').findIndex(([k])=>k===branch))%palette.colors.length]:'';
+  const seen=new Set(),original=id,palette=MAP_PALETTES[maps[pid]?.palette],overrides=!palette||maps[pid]?.paletteOverrides!=='palette';let branch='';
+  while(id&&id!=='root'&&!seen.has(id)){seen.add(id);const n=nodes[id];if(!n)break;if(n.parent==='root')branch=id;if(overrides&&mapColorOk(n.color))return n.color;id=n.parent}
+  const r=maps[pid]&&maps[pid].color;if(overrides&&mapColorOk(r))return r;return palette?palette.colors[original==='root'?0:Math.max(0,mapKids(nodes,'root').findIndex(([k])=>k===branch))%palette.colors.length]:'';
 }
 const mcStyle=c=>c?`--mc:${c};`:'';
 function mapKids(nodes,parent){
@@ -2221,7 +2222,7 @@ const MP=(pid,id)=>'todo/maps/'+pid+'/nodes/'+id;
 const projSideOf=pid=>{const m=projSide(pid);return m&&SIDES.includes(m.side)?m.side:'career'};
 function mapTaskFor(pid,node,extra){
   const side=projSideOf(pid);
-  return buildTask({title:node.title||'(untitled)',projectId:pid,side,category:side==='openyap'?'project':'work',notes:node.desc||'',startDate:node.start||'',dueDate:node.due||'',...(moneyOf(node.budget)?{budget:node.budget}:{}),...extra});
+  return buildTask({title:node.title||'(untitled)',projectId:pid,side,category:side==='openyap'?'project':'work',notes:node.desc||'',startDate:node.start||'',dueDate:node.due||'',...(node.cost?{cost:node.cost}:costAmount(node)?{budget:node.budget}:{}),...extra});
 }
 function mapLinkedIds(pid){const s=new Set();for(const n of Object.values(mapNodes(pid)))if(n&&n.taskId)s.add(n.taskId);return s}
 function mapUnplaced(pid){
@@ -2270,9 +2271,12 @@ function mapSave(id,f,v){
 }
 function mapSetColor(id,c){
   if(c&&!mapColorOk(c))return;
-  const pid=mapPid;
-  if(id==='root')upd({['todo/maps/'+pid+'/color']:c||null});
-  else if(mapNodes(pid)[id])upd({[MP(pid,id)+'/color']:c||null});
+  const pid=mapPid,epoch=authEpoch,up={};
+  if(id==='root')up['todo/maps/'+pid+'/color']=c||null;
+  else if(mapNodes(pid)[id])up[MP(pid,id)+'/color']=c||null;else return;
+  // Choosing a custom color is an explicit request to show overrides, without erasing the palette.
+  if(c&&MAP_PALETTES[maps[pid]?.palette])up['todo/maps/'+pid+'/paletteOverrides']='preserve';
+  return upd(up).then(()=>{if(epoch===authEpoch&&mapPid===pid){mapRefreshColors();if(!editingText())mapRe()}}).catch(()=>{});
 }
 function mapNudge(id,dir){
   if(mapPresentation==='clock'){toast('Back to map to rearrange your saved layout');return}
@@ -2310,7 +2314,7 @@ function mapApplyDrop(drag,rule){
   if(drag.kind==='task'){
     const t=tasks[drag.id];if(!t)return;
     const id=newKey('todo/maps/'+pid+'/nodes');
-    upd({[MP(pid,id)]:{parent:rule.parent,kind:'item',title:t.title||'(untitled)',order,taskId:drag.id,...(t.dueDate?{due:t.dueDate}:{}),...(t.notes?{desc:t.notes}:{}),...(moneyOf(t.budget)?{budget:t.budget}:{})}});
+    upd({[MP(pid,id)]:{parent:rule.parent,kind:'item',title:t.title||'(untitled)',order,taskId:drag.id,...(t.dueDate?{due:t.dueDate}:{}),...(t.notes?{desc:t.notes}:{}),...(t.cost?{cost:t.cost}:costAmount(t)?{budget:t.budget}:{})}});
     return;
   }
   upd({[MP(pid,drag.id)+'/parent']:rule.parent,[MP(pid,drag.id)+'/order']:order,[MP(pid,drag.id)+'/kind']:drag.kind});
@@ -2417,6 +2421,57 @@ function fmtMoneyShort(v){
   if(v<1000)return '$'+(Math.round(v*100)%100?v.toFixed(2):Math.round(v));
   for(const [d,u] of [[1e3,'k'],[1e6,'M'],[1e9,'B']]){const n=v/d,r=n>=100?Math.round(n):Math.round(n*10)/10;if(r<1000||u==='B')return '$'+r+u}
 }
+// Cost inputs are canonical; a calculated total is derived everywhere, never stored alongside them.
+const COST_UNITS=['LF','SF','CY','each','hour','load','gallon','bag'];
+function costParts(raw){
+  if(!raw||typeof raw!=='object'||raw.mode!=='calculated'||!COST_UNITS.includes(raw.unit))return null;
+  const model={mode:'calculated',unit:raw.unit};
+  for(const key of ['quantity','unitRate','crew','hours','laborRate','burden','other','markup']){
+    const v=raw[key];if(typeof v!=='number'||!Number.isFinite(v)||v<0||v>1e12)return null;model[key]=v;
+  }
+  if(!Number.isInteger(model.crew)||model.crew>10000||model.burden>1000||model.markup>1000)return null;
+  const material=cents(model.quantity*model.unitRate),hours=model.crew*model.hours,laborBase=cents(hours*model.laborRate),burden=cents(laborBase*model.burden/100),labor=cents(laborBase+burden),subtotal=cents(material+labor+model.other),markup=cents(subtotal*model.markup/100),total=cents(subtotal+markup);
+  if(!Number.isFinite(total)||total>1e12)return null;
+  return {model,material,hours,laborBase,burden,labor,subtotal,markup,total};
+}
+function costAmount(record){return record?.cost?costParts(record.cost)?.total||0:moneyOf(record?.budget)}
+function costDraft(box){
+  const model={mode:'calculated',unit:$('[data-cost-field="unit"]',box).value};
+  for(const key of ['quantity','unitRate','crew','hours','laborRate','burden','other','markup']){
+    const text=$('[data-cost-field="'+key+'"]',box).value.trim();model[key]=text===''?0:/^(?:\d+(?:\.\d+)?|\.\d+)$/.test(text)?Number(text):NaN;
+  }
+  return model;
+}
+function costSummary(parts){return parts?`Materials ${fmtMoney(parts.material)} · Labor ${fmtMoney(parts.laborBase)} (${parts.hours} person-hours) + burden ${fmtMoney(parts.burden)} · Other ${fmtMoney(parts.model.other)} · Markup ${fmtMoney(parts.markup)}<br><strong>Total ${fmtMoney(parts.total)}</strong>`:'Enter nonnegative numbers. Workers must be a whole number; percentages must be 0–1000. Maximum total: $1 trillion.'}
+function costEditorHTML(record,target){
+  const c=record.cost&&costParts(record.cost),model=c?.model||{unit:'LF'},calculated=!!record.cost;
+  const input=(key,label)=>`<label>${label}<input class="txt" type="text" inputmode="decimal" autocomplete="off" data-cost-field="${key}" value="${esc(model[key]??'')}" aria-label="${label}"></label>`;
+  return `<section class="cost-editor" data-cost-task="${esc(target.task||'')}" data-cost-node="${esc(target.node||'')}" data-cost-pid="${esc(target.pid||'')}" data-cost-epoch="${authEpoch}" data-cost-initial="${calculated?'calculated':'flat'}" aria-label="Scope budget"><label>Budget method<select class="txt" data-cost-mode><option value="flat"${!calculated?' selected':''}>Flat amount</option><option value="calculated"${calculated?' selected':''}>Quantity + labor rates</option></select></label><div data-cost-flat${calculated?' hidden':''}><label>Budget<input class="txt" type="text" inputmode="decimal" autocomplete="off" ${target.task?'data-f="budget"':'data-mf="budget"'} value="${costAmount(record)?esc(fmtMoney(costAmount(record))):''}" placeholder="1500, 1.5k"${calculated?' disabled':''}></label></div><div class="cost-grid" data-cost-fields${calculated?'':' hidden'}>${input('quantity','Material quantity')}<label>Unit<select class="txt" data-cost-field="unit">${COST_UNITS.map(u=>`<option${model.unit===u?' selected':''}>${u}</option>`).join('')}</select></label>${input('unitRate','Material cost per unit ($)')}${input('crew','Workers')}${input('hours','Hours per worker')}${input('laborRate','Labor rate per hour ($)')}${input('burden','Labor burden (%)')}${input('other','Other materials / equipment ($)')}${input('markup','Markup (%)')}</div><div class="cost-summary" data-cost-summary${calculated?'':' hidden'}>${costSummary(c)}</div><p class="hint">Rates are per worker. Hours are for the entire scope, per worker. Save applies the selected method; flat amounts replace the rate calculation.</p><button class="btn" type="button" data-cost-save>Save budget</button><p class="cost-error" role="status" data-cost-error></p></section>`;
+}
+function costModeChange(box){const calc=$('[data-cost-mode]',box).value==='calculated';$('[data-cost-flat]',box).hidden=calc;$('[data-cost-flat] input',box).disabled=calc;$('[data-cost-fields]',box).hidden=!calc;$('[data-cost-summary]',box).hidden=!calc;costPreview(box)}
+function costPreview(box){if($('[data-cost-mode]',box).value==='calculated')$('[data-cost-summary]',box).innerHTML=costSummary(costParts(costDraft(box)))}
+async function costSave(target,mode,raw){
+  if(!activeUser||target.epoch!=null&&target.epoch!==authEpoch)throw new Error('Account changed. Reopen the budget editor.');
+  const n=target.node&&mapNodes(target.pid)[target.node],tid=target.task||(n?.taskId&&tasks[n.taskId]?n.taskId:''),record=tid?tasks[tid]:n;
+  if(!record||!tid&&(target.node==='root'||mapKindOf(mapNodes(target.pid),target.node)!=='item'))throw new Error('Open a task or scope item to price it.');
+  let cost=null,budget=null;
+  if(mode==='calculated'){const parts=costParts(raw);if(!parts)throw new Error('Check quantity, workers, hours and rates. Use nonnegative numbers and whole workers.');cost=parts.model}
+  else if(mode==='flat'){budget=parseMoney(raw);if(budget===undefined)throw new Error(BUDGET_HELP)}
+  else throw new Error('Choose a budget method.');
+  const up={};if(tid){up[TP(tid)+'/cost']=cost;up[TP(tid)+'/budget']=budget;
+    // Keep linked bubble inputs aligned, including a task deliberately placed in another map.
+    for(const [pid,m]of Object.entries(maps))for(const [id,node]of Object.entries(m.nodes||{}))if(node?.taskId===tid){up[MP(pid,id)+'/cost']=cost;up[MP(pid,id)+'/budget']=budget}
+  }else{up[MP(target.pid,target.node)+'/cost']=cost;up[MP(target.pid,target.node)+'/budget']=budget}
+  await upd(up);
+}
+async function costSaveEditor(box){
+  if(box.dataset.saving)return;const epoch=Number(box.dataset.costEpoch);if(epoch!==authEpoch||!box.isConnected)return;
+  const button=$('[data-cost-save]',box),error=$('[data-cost-error]',box);box.dataset.saving='1';button.disabled=true;error.textContent='';
+  try{const mode=$('[data-cost-mode]',box).value;await costSave({task:box.dataset.costTask,pid:box.dataset.costPid,node:box.dataset.costNode,epoch},mode,mode==='calculated'?costDraft(box):$('[data-cost-flat] input',box).value);if(epoch===authEpoch){toast('Budget saved');if(view==='map'||view==='timeline')mapRe();else render(true)}}
+  catch(e){if(epoch===authEpoch&&box.isConnected)error.textContent=e.message}
+  finally{if(epoch===authEpoch&&box.isConnected){delete box.dataset.saving;button.disabled=false}}
+}
+
 const BUDGET_NONE={own:0,alloc:0,total:0,free:0,over:0};
 // Pure: id -> {own, alloc (what is inside), total (the larger of the two, which is what the parent
 // counts), free, over}. Project tasks that are not on the map count toward the project.
@@ -2424,9 +2479,9 @@ function budgetData(pid){
   const nodes=mapNodes(pid),B={},seen=new Set();
   const walk=id=>{
     if(seen.has(id))return 0;seen.add(id);
-    const n=nodes[id]||{},t=n.taskId?tasks[n.taskId]:null,own=id==='root'?moneyOf(maps[pid]?.budget):moneyOf(t?t.budget:n.budget);
+    const n=nodes[id]||{},t=n.taskId?tasks[n.taskId]:null,own=id==='root'?moneyOf(maps[pid]?.budget):costAmount(t||n);
     let alloc=0,unplaced=0;for(const [k] of mapKids(nodes,id))alloc+=walk(k);
-    if(id==='root'){const linked=mapLinkedIds(pid);for(const [tid,x] of Object.entries(tasks))if(x&&x.projectId===pid&&!linked.has(tid))unplaced+=moneyOf(x.budget);alloc+=unplaced}
+    if(id==='root'){const linked=mapLinkedIds(pid);for(const [tid,x] of Object.entries(tasks))if(x&&x.projectId===pid&&!linked.has(tid))unplaced+=costAmount(x);alloc+=unplaced}
     alloc=cents(alloc);
     B[id]={own,alloc,total:Math.max(own,alloc),free:own>alloc?cents(own-alloc):0,over:own&&alloc>own?cents(alloc-own):0};
     if(id==='root')B[id].unplaced=cents(unplaced);
@@ -2469,17 +2524,17 @@ function budgetSet(id,raw){
   if(id==='root'){if(projects[pid]&&moneyOf(maps[pid]?.budget)!==(v||0))upd({['todo/maps/'+pid+'/budget']:v});return true}
   const n=mapNodes(pid)[id];if(!n)return false;
   const t=n.taskId?tasks[n.taskId]:null;
-  if(moneyOf(t?t.budget:n.budget)===(v||0))return true;
-  const up={[MP(pid,id)+'/budget']:v};if(t)up[TP(n.taskId)+'/budget']=v;
-  upd(up);return true;
+  if(!(t||n).cost&&costAmount(t||n)===(v||0))return true;
+  const up={[MP(pid,id)+'/budget']:v,[MP(pid,id)+'/cost']:null};if(t){up[TP(n.taskId)+'/budget']=v;up[TP(n.taskId)+'/cost']=null;for(const [otherPid,m] of Object.entries(maps))for(const [nid,x] of Object.entries(m.nodes||{}))if(x.taskId===n.taskId){up[MP(otherPid,nid)+'/budget']=v;up[MP(otherPid,nid)+'/cost']=null}}
+  upd(up).catch(()=>{});return true;
 }
 function taskSetBudget(id,raw){
   const t=tasks[id];if(!t)return false;
   const v=parseMoney(raw);if(v===undefined){toast(BUDGET_HELP);return false}
-  if(moneyOf(t.budget)===(v||0))return true;
-  const up={[TP(id)+'/budget']:v};
-  for(const [nid,n] of Object.entries(mapNodes(t.projectId)))if(n&&n.taskId===id)up[MP(t.projectId,nid)+'/budget']=v;
-  upd(up);return true;
+  if(!t.cost&&costAmount(t)===(v||0))return true;
+  const up={[TP(id)+'/budget']:v,[TP(id)+'/cost']:null};
+  for(const [pid,m] of Object.entries(maps))for(const [nid,n] of Object.entries(m.nodes||{}))if(n&&n.taskId===id){up[MP(pid,nid)+'/budget']=v;up[MP(pid,nid)+'/cost']=null}
+  upd(up).catch(()=>{});return true;
 }
 function budgetToggle(){budgetOn=!budgetOn;LS.set('oym_budget',budgetOn?'1':'0');mapRe()}
 const budgetToggleHTML=B=>`<button class="btn" type="button" data-budget-toggle aria-pressed="${budgetOn}" title="${budgetOn?'Hide':'Show'} budget amounts">Budget${B&&B.root.total?` <span class="mp-count">${fmtMoneyShort(B.root.total)}</span>`:''}</button>`;
@@ -2501,7 +2556,7 @@ function budgetBarHTML(pid,B,F){
 function budgetPanelHTML(pid,nodes,id,B){
   const b=B[id]||BUDGET_NONE,item=id!=='root'&&mapKindOf(nodes,id)==='item';
   const field=ph=>`<label class="fld"><span class="lbl">Budget</span><input class="txt" data-mf="budget" inputmode="decimal" autocomplete="off" placeholder="${esc(ph)}" value="${b.own?esc(fmtMoney(b.own)):''}"></label>`;
-  if(item)return field('1500, 1.5k or 2m');
+  if(item){const n=nodes[id],record=(n.taskId&&tasks[n.taskId])||n;return costEditorHTML(record,{pid,node:id})}
   const rows=mapKids(nodes,id).map(([k,n])=>[(n.taskId&&tasks[n.taskId]?.title)||n.title||'(untitled)',(B[k]||BUDGET_NONE).total]);
   if(id==='root'&&b.unplaced)rows.push(['Tasks not on the map',b.unplaced]);
   const status=b.over?`${fmtMoney(b.alloc)} allocated inside, over by ${fmtMoney(b.over)}.`:b.own&&b.free?`${fmtMoney(b.alloc)} allocated inside, ${fmtMoney(b.free)} left to allocate.`:b.own?'Fully allocated.':b.alloc?`Adds up to ${fmtMoney(b.alloc)} from what is inside. Set an amount here to cap it.`:'No amounts yet. Set one here or on what is inside.';
@@ -2513,7 +2568,8 @@ function budgetPanelHTML(pid,nodes,id,B){
 const budgetRegion=el=>el.closest('.budget-bar')?'bar':'body';
 function budgetChips(region){const host=view==='timeline'?$('#tlHost'):$('#mapHost');return host?$$('[data-budget]',host).filter(el=>budgetRegion(el)===region):[]}
 function budgetEdit(chip){
-  const id=chip.dataset.budget,region=budgetRegion(chip);
+  const id=chip.dataset.budget,region=budgetRegion(chip),n=mapNodes(mapPid)[id],record=n&&((n.taskId&&tasks[n.taskId])||n);
+  if(record?.cost){mapSel=id;if(view==='timeline')setView('map');else mapRe();$('.cost-editor [data-cost-field]')?.focus();return}
   // A finished edit may still be waiting on its paint; take it first so the totals are current.
   if(deferred||$('.bud-inl')){mapRe();chip=budgetChips(region).find(el=>el.dataset.budget===id);if(!chip)return}
   const b=budgetData(mapPid)[id]||BUDGET_NONE,inp=document.createElement('input');
@@ -4065,6 +4121,7 @@ document.addEventListener('click',e=>{
   const projectDone=t.closest('[data-project-completed]');if(projectDone){doneF.side=projectDone.dataset.projectSide;doneF.range='all';doneF.projectId=projectDone.dataset.projectCompleted;doneF.q='';$('#doneSearch').value='';setView('done');return}
   if(t.closest('[data-budget-toggle]')){budgetToggle();return}
   if(t.closest('.bud-inl'))return;
+  const cs=t.closest('[data-cost-save]');if(cs){costSaveEditor(cs.closest('.cost-editor'));return}
   const bud=t.closest('[data-budget]');if(bud){if(mapPickOpen)mapPickOpenAt(false);budgetEdit(bud);return}
   if(mapClick(t))return;
   if(gtClick(t,e))return;
@@ -4124,7 +4181,11 @@ document.addEventListener('change',e=>{
   const t=e.target;
   if(t.hasAttribute('data-exrtheme')){EX.rtheme=t.value==='dark'?'dark':'light';saveEX();return}
   if(t.hasAttribute('data-exrorientation')){EX.rorientation=['landscape','portrait'].includes(t.value)?t.value:'auto';saveEX();renderExportLive();return}
-  if(t.hasAttribute('data-map-palette')){mapSetPalette(t.dataset.mapPalette,t.value).catch(()=>{});return}
+  if(t.hasAttribute('data-map-palette')){mapSetPalette(t.dataset.mapPalette,t.value,t.closest('.palette-controls').querySelector('[data-palette-keep]').checked).catch(()=>{});return}
+  if(t.hasAttribute('data-palette-keep')){mapSetPalette(t.dataset.paletteKeep,maps[t.dataset.paletteKeep]?.palette||'',t.checked).catch(()=>{});return}
+  if(t.hasAttribute('data-cost-mode')){costModeChange(t.closest('.cost-editor'));return}
+  if(t.hasAttribute('data-cost-field')){costPreview(t.closest('.cost-editor'));return}
+  if((t.dataset.f==='budget'||t.dataset.mf==='budget')&&t.closest('.cost-editor')){const box=t.closest('.cost-editor');if($('[data-cost-mode]',box).value!=='flat'||box.dataset.costInitial==='calculated')return}
   if(t.dataset.f){const ed=t.closest('.editor');if(ed){if(t.dataset.f==='notes'){notesPending=null;clearTimeout(notesTimer)}saveField(ed.dataset.id,t.dataset.f,t.value)}return}
   if(t.dataset.mf&&t.closest('.mp-panel')){mapSave(mapSel,t.dataset.mf,t.value);return}
   if(t.dataset.mactChk==='private'){mapProjPrivate();return}
@@ -4135,13 +4196,14 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('input',e=>{
   const t=e.target;
+  if(t.hasAttribute('data-cost-field')){costPreview(t.closest('.cost-editor'));return}
   if(t.dataset.f==='notes'){const id=t.closest('.editor').dataset.id;notesPending=[id,t.value];clearTimeout(notesTimer);notesTimer=setTimeout(flushNotes,700)}
   else if(t.id==='doneSearch'){doneF.q=t.value;renderDone()}
   else if(t.id==='exName'){EX.name=t.value;LS.set('oym_name',EX.name)}
   else if(t.id==='exBTitle'){EX.btitle=t.value;}
   else if(t.id==='mapPickQ'){mapPickQ=t.value;mapDelAsk='';$('#mpPickList').innerHTML=mapPickListHTML()}
 });
-document.addEventListener('focusout',e=>{if(deferred&&e.target.closest&&e.target.closest('.editor,.mp-panel,.category-forms'))setTimeout(()=>{if(deferred)render()},0)});
+document.addEventListener('focusout',e=>{if(deferred&&e.target.closest&&e.target.closest('.editor,.mp-panel,.category-forms,.palette-controls'))setTimeout(()=>{if(deferred)render()},0)});
 // A re-render between mousedown and mouseup would swallow the click, so hold renders until the pointer lifts.
 document.addEventListener('pointerdown',()=>{pointerDown=true},true);
 const liftPointer=()=>{pointerDown=false;if(deferred)setTimeout(()=>{if(deferred)render()},0)};
@@ -4307,7 +4369,7 @@ function mapMarkdown(pid){
     lines.push(`${pad}- [${t?.completed?'x':' '}] ${text(title)}`,`${pad}  - ${id?'Node ID: '+text(id)+'; ':''}${n.taskId?'Task ID: '+text(n.taskId):'Task record not yet created'}`);
     const start=t?t.startDate??n.start:n.start,due=t?t.dueDate:n.due;
     if(start)lines.push(`${pad}  - Start: ${text(start)}`);if(due)lines.push(`${pad}  - Due: ${text(due)}`);
-    if(moneyOf(t?t.budget:n.budget))lines.push(`${pad}  - Budget: ${fmtMoney(t?t.budget:n.budget)}`);
+    if(costAmount(t||n))lines.push(`${pad}  - Budget: ${fmtMoney(costAmount(t||n))}`);if((t||n).cost){const c=costParts((t||n).cost);if(c)lines.push(`${pad}  - Pricing: ${c.model.quantity} ${c.model.unit} × ${fmtMoney(c.model.unitRate)}; ${c.model.crew} workers × ${c.model.hours} hours each × ${fmtMoney(c.model.laborRate)}/hour; labor burden ${c.model.burden}%; other costs ${fmtMoney(c.model.other)}; markup ${c.model.markup}%`)}
     if(t&&taskPrivate(t))lines.push(`${pad}  - Private: yes`);
     if(t?.completed)lines.push(`${pad}  - Completed at: ${t.completedAt?text(t.completedAt):'unknown (not recorded)'}`);
     if(t?.repeat&&t.repeat!=='none')lines.push(`${pad}  - Repeats: ${text(t.repeat)} (checkbox describes the current occurrence)`);
@@ -4573,7 +4635,7 @@ if(auth){
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-window.__oym={parseMoney,fmtMoney,fmtMoneyShort,budgetData,budgetFlow,budgetSet,taskSetBudget,budgetToggle,get budgetOn(){return budgetOn},saveField,mapPanelHTML,setMapSel:id=>{mapSel=id},gtCashHTML,mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapPrintFragments,mapPrintOrientation,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={costParts,costAmount,costSave,costEditorHTML,parseMoney,fmtMoney,fmtMoneyShort,budgetData,budgetFlow,budgetSet,taskSetBudget,budgetToggle,get budgetOn(){return budgetOn},saveField,mapPanelHTML,setMapSel:id=>{mapSel=id},gtCashHTML,mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapPrintFragments,mapPrintOrientation,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>
