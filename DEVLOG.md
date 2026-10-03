@@ -1,3 +1,9 @@
+## 2026-10-02 — optional hired labor for DIY scopes
+
+Calculated budget editors now include an **Include hired labor** checkbox. `cost.includeLabor` is optional; missing means true, preserving every existing calculation. False excludes base wages and wage burden from the derived subtotal, while keeping material quantity/rate, other fixed costs and the selected markup. Crew, hours, rate and burden inputs are retained unchanged for re-enabling. The UI labels excluded labor as owner labor $0; Markdown makes that choice explicit. Checkbox changes are preview-only until the same atomic, canonical, auth-epoch-guarded Save budget operation succeeds.
+
+Extended existing gated budget-rates tests pin missing-field compatibility, boolean validation, owner-labor totals, retained inputs, linked-task/node saves, roll-up and cash-flow off/on, and Markdown. Extended synthetic Chrome test checks preview/no autosave, rejected off-toggle retention/retry, preserved crew/rate, saved map amount and re-enabling. No new live data writes, commits or deployments by developer. Shell cache v3.
+
 ## 2026-10-02 — quantity/labor pricing and visible palette selection
 
 The requested application is https://dyap123.github.io/openyap-todo/, exclusively. No Command Center code/data or live workspace records are changed by this implementation.
