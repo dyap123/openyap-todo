@@ -828,6 +828,8 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 .task .t-meta .budget,.project-count .budget{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .e-field input[data-f="budget"]{width:96px}
 .cost-editor{margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:10px;min-width:0}.cost-editor .cost-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.cost-editor label{display:grid;gap:4px;font-size:12px;color:var(--muted)}.cost-editor input,.cost-editor select{width:100%;min-width:0}.cost-editor [hidden]{display:none}.cost-editor .cost-labor-toggle{display:flex;grid-column:1 / -1;align-items:center;gap:8px}.cost-editor .cost-labor-toggle input{width:auto}.cost-editor .cost-summary{margin:10px 0;font-size:12px;line-height:1.7}.cost-editor .cost-error{color:var(--danger);font-size:12px}.palette-controls{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}.palette-keep{font-size:11px;color:var(--muted)}.palette-keep input{width:auto}
+
+.budget-button{display:inline-flex;align-items:center;gap:7px;font-size:15px;font-weight:700;min-height:40px}.budget-button svg{flex:none}.gt-row:not(.gt-cash){height:auto;min-height:80px}.gt-row:not(.gt-cash)>.gt-name{min-height:80px;grid-template-columns:22px minmax(0,1fr) auto;grid-template-rows:auto auto auto;gap:4px}.gt-row:not(.gt-cash)>.gt-track{min-height:80px}.gt-t{grid-column:2 / 4}.gt-meta{grid-column:2;grid-row:2;align-self:center}.gt-name>.bud,.gt-name>.bud-inl{grid-column:3;grid-row:2;min-height:32px;font-size:14px;max-width:150px}.gt-name>.bud{height:auto;padding:5px 7px}.gt-name>.bud small{font-size:10px}.gt-name>.bud-inl{width:100px}.gt-unit{white-space:normal;overflow-wrap:anywhere}.gt-unit span{font-size:11px}.gt-meta{white-space:normal;overflow-wrap:anywhere}.gt-notes-button{grid-column:1;grid-row:2;width:26px;height:32px;font-size:22px;color:var(--muted);border-radius:5px}.gt-notes-button:hover{background:var(--raise);color:var(--text)}.gt-description{grid-column:2 / 4;grid-row:3;font-size:12px;line-height:18px;white-space:pre-wrap;overflow-wrap:anywhere;padding:4px 0 6px;color:var(--body);min-width:0}.gt-editor{grid-column:2 / 4;grid-row:4;display:grid;gap:6px;min-width:0;padding:10px 0}.gt-editor label{display:grid;gap:5px;font-size:12px;color:var(--body)}.gt-editor input,.gt-editor textarea{width:100%;min-width:0}.gt-editor textarea{resize:vertical;min-height:100px}.gt-editor .hint{white-space:normal;overflow-wrap:anywhere;margin:0;font-size:11px}.gt-edit-actions{display:flex;gap:6px}.gt-edit-error{color:var(--danger);font-size:12px;white-space:normal;overflow-wrap:anywhere;margin:0}.gt-row .gt-b,.gt-row .gt-m{top:50%;transform:translateY(-50%)}
 </style>
 </head>
 <body>
@@ -2538,7 +2540,7 @@ function taskSetBudget(id,raw){
   upd(up).catch(()=>{});return true;
 }
 function budgetToggle(){budgetOn=!budgetOn;LS.set('oym_budget',budgetOn?'1':'0');mapRe()}
-const budgetToggleHTML=B=>`<button class="btn" type="button" data-budget-toggle aria-pressed="${budgetOn}" title="${budgetOn?'Hide':'Show'} budget amounts">Budget${B&&B.root.total?` <span class="mp-count">${fmtMoneyShort(B.root.total)}</span>`:''}</button>`;
+const budgetToggleHTML=B=>`<button class="btn budget-button" type="button" data-budget-toggle aria-pressed="${budgetOn}" title="${budgetOn?'Hide':'Show'} budget amounts"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M15.5 7.5h-5a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 1 0 5h-5M12 5v14"/></svg><span>Budget${B&&B.root.total?` <span class="mp-count">${fmtMoneyShort(B.root.total)}</span>`:''}</span></button>`;
 // The amount on a bubble or a row; click it to type. An item shows its own amount. A sub-topic or
 // topic shows its allowance and how what is inside sits against it, or the sum when it has none.
 function budgetChip(B,id,item){
@@ -2997,6 +2999,52 @@ function mapClick(t){
 // Same project, same data as the Map (roadmapData). Lanes are sub-topics; topics nest by depth;
 // items are bars (start and due) or diamonds (due only). Drag a bar to move it, an end to change
 // that date; click an undated item's track to give it a due date on that day.
+// Timeline editors hold only a draft; saved task fields remain the canonical source.
+let gtUnits=LS.get('oym_gtunits','0')==='1',gtDescriptions=LS.get('oym_gtdesc','0')==='1',gtInline=null;
+function gtRecord(pid,id){const n=mapNodes(pid)[id],taskId=n?.taskId&&tasks[n.taskId]?n.taskId:'';return {n,taskId,record:taskId?tasks[taskId]:n}}
+function gtPriceHTML(r,B){
+  if(!B)return '';const {record}=gtRecord(mapPid,r.id),parts=record?.cost&&costParts(record.cost);
+  if(!gtUnits||r.type!=='item'||!parts)return budgetChip(B,r.id,r.type==='item');
+  return `<button class="bud gt-unit" type="button" data-gt-rate="${esc(r.id)}" aria-label="Edit material rate for ${esc(r.title)}" title="Material rate only (does not include labor). Scope total ${fmtMoney(parts.total)}.">${fmtMoney(parts.model.unitRate)}<span> / ${esc(parts.model.unit)}</span></button>`;
+}
+function gtEditHTML(id){
+  const state=gtInline;if(!state||state.pid!==mapPid||state.id!==id)return '';
+  const {record}=gtRecord(state.pid,id),parts=record?.cost&&costParts(record.cost),rate=state.kind==='rate';
+  const label=rate?`Material rate ($ / ${parts?.model.unit||'unit'})`:'Scope notes';
+  return `<section class="gt-editor" data-gt-editor="${esc(id)}" aria-label="${rate?'Edit material rate':'Edit notes'}"><label>${esc(label)}${rate?`<input class="txt" type="text" inputmode="decimal" autocomplete="off" data-gt-value value="${esc(state.value)}">`:`<textarea class="txt" rows="5" data-gt-value>${esc(state.value)}</textarea>`}</label>${rate?'<p class="hint" data-gt-preview>Material unit price excludes labor. Scope total and cash flow update after Save.</p>':'<p class="hint">Saved with this scope. Ctrl/⌘ + Enter saves; Escape cancels.</p>'}<div class="gt-edit-actions"><button class="btn" type="button" data-gt-edit-save${state.saving?' disabled':''}>${state.saving?'Saving…':'Save'}</button><button class="btn ghost" type="button" data-gt-edit-cancel>Cancel</button></div><p class="gt-edit-error" data-gt-error role="status">${esc(state.error||'')}</p></section>`;
+}
+function gtOpenEditor(id,kind){
+  const {record,taskId}=gtRecord(mapPid,id);if(!record||kind==='rate'&&!costParts(record.cost))return;
+  gtInline={pid:mapPid,id,kind,epoch:authEpoch,value:kind==='rate'?String(record.cost.unitRate):String(taskId?record.notes||'':record.desc||''),saving:false,error:''};
+  renderGantt();const field=$('.gt-editor [data-gt-value]');field?.focus({preventScroll:true});if(kind==='rate')field?.select();field?.closest('.gt-editor')?.scrollIntoView({block:'nearest'});
+}
+async function gtSaveRate(pid,id,raw,epoch=authEpoch){
+  if(!activeUser||epoch!==authEpoch)throw new Error('Account changed. Reopen the rate editor.');
+  const {record,taskId}=gtRecord(pid,id),parts=record?.cost&&costParts(record.cost);if(!parts)throw new Error('This scope needs a calculated budget before it has a material unit price.');
+  const rate=parseMoney(raw);if(rate===undefined)throw new Error('Enter a nonnegative material unit rate, such as 10 or 10.50.');
+  await costSave({pid,node:id,task:taskId,epoch},'calculated',{...parts.model,unitRate:rate||0});
+}
+async function gtSaveNotes(pid,id,value,epoch=authEpoch){
+  if(!activeUser||epoch!==authEpoch)throw new Error('Account changed. Reopen the notes editor.');
+  const {n,taskId}=gtRecord(pid,id);if(!n)throw new Error('This scope is no longer available.');const text=String(value??'');
+  if(text.length>100000)throw new Error('Notes must be under 100,000 characters.');
+  const up={};if(taskId){up[TP(taskId)+'/notes']=text;for(const [p,m]of Object.entries(maps))for(const [nid,node]of Object.entries(m.nodes||{}))if(node?.taskId===taskId)up[MP(p,nid)+'/desc']=text||null}
+  else up[MP(pid,id)+'/desc']=text||null;
+  await upd(up);
+}
+function gtCancelEdit(){gtInline=null;renderGantt()}
+async function gtSaveEdit(){
+  const state=gtInline;if(!state||state.saving||state.epoch!==authEpoch)return;state.saving=true;state.error='';
+  const button=$('[data-gt-edit-save]');if(button){button.disabled=true;button.textContent='Saving…'}
+  try{if(state.kind==='rate')await gtSaveRate(state.pid,state.id,state.value,state.epoch);else await gtSaveNotes(state.pid,state.id,state.value,state.epoch);
+    if(state.epoch===authEpoch&&gtInline===state){gtInline=null;if(view==='timeline')renderGantt();toast(state.kind==='rate'?'Material rate saved':'Notes saved')}}
+  catch(e){if(state.epoch===authEpoch&&gtInline===state){state.saving=false;state.error=e.message;const error=$('[data-gt-error]');if(error)error.textContent=e.message;const retry=$('[data-gt-edit-save]');if(retry){retry.disabled=false;retry.textContent='Save'}}}
+}
+function gtDraftInput(field){
+  const state=gtInline;if(!state||state.epoch!==authEpoch)return;state.value=field.value;
+  if(state.kind==='rate'){const {record}=gtRecord(state.pid,state.id),value=parseMoney(state.value),parts=value===undefined?null:costParts({...record?.cost,unitRate:value||0}),hint=$('[data-gt-preview]');if(hint)hint.textContent=parts?`Scope total ${fmtMoney(parts.total)}. Material rate excludes labor; total and cash flow update after Save.`:'Enter a nonnegative material unit rate.'}
+}
+
 let gtScale=LS.get('oym_gtscale','week');if(!['week','month'].includes(gtScale))gtScale='week';
 let gtUndated=LS.get('oym_gtund','0')==='1';
 let gtFold=new Set((()=>{try{return JSON.parse(LS.get('oym_gtfold','[]'))||[]}catch(e){return []}})());
@@ -3026,7 +3074,7 @@ function gtRows(R,opts){
       for(const i of t.items)if(und||dated(i))kids.push({type:'item',...i,depth:t.depth+2,lane:l.id});
     }
     if(!kids.length&&!und&&!span.length)continue;
-    rows.push({type:'lane',id:l.id,title:l.title,color:l.color,start:span[0]||'',end:span[span.length-1]||'',depth:0,folded:fold.has(l.id),n:kids.length});
+    rows.push({type:'lane',id:l.id,title:l.title,desc:l.desc||'',color:l.color,start:span[0]||'',end:span[span.length-1]||'',depth:0,folded:fold.has(l.id),n:kids.length});
     if(!fold.has(l.id))rows.push(...kids);
   }
   return rows;
@@ -3051,7 +3099,7 @@ function gtRowHTML(r,X,px,today,B){
     meta=r.start&&r.end&&r.start!==r.end?fmtMD(parseYmd(r.start))+' – '+fmtMD(parseYmd(r.end)):fmtMD(parseYmd(r.start||r.end));
   }
   return `<div class="gt-row gt-${r.type}" data-grow="${r.id}" style="${mapSurfaceStyle(mapPid,mapNodes(mapPid),r.id)}">
-    <div class="gt-name" style="padding-left:${10+Math.min(r.depth,4)*12}px">${chev}<button class="gt-t" type="button" data-gopen="${r.id}" title="${esc(r.title||'(untitled)')}">${mapLabel(r.title,gtLeft()-50-Math.min(r.depth,4)*12,12.5)}${r.desc?mapNote(r.desc,true):''}</button><span class="gt-meta">${esc(meta)}</span>${B?budgetChip(B,r.id,r.type==='item'):''}</div>
+    <div class="gt-name" style="padding-left:${10+Math.min(r.depth,4)*12}px">${chev}<button class="gt-t" type="button" data-gopen="${r.id}" title="${esc(r.title||'(untitled)')}">${mapLabel(r.title,gtLeft()-50-Math.min(r.depth,4)*12,12.5)}${r.desc?mapNote(r.desc,true):''}</button><span class="gt-meta">${esc(meta)}</span>${gtPriceHTML(r,B)}<button class="gt-notes-button" type="button" data-gt-notes="${esc(r.id)}" aria-label="Edit notes for ${esc(r.title)}" title="Edit scope notes">✎</button>${gtDescriptions&&r.desc?`<div class="gt-description">${esc(r.desc)}</div>`:''}${gtEditHTML(r.id)}</div>
     <div class="gt-track">${bar}</div></div>`;
 }
 // The budget per week (or month), under the bars it comes from. One series, so one hue; each
@@ -3076,11 +3124,11 @@ function renderGantt(anim){
   if(!(ready.tasks&&ready.maps)){host.innerHTML='<p class="empty">Loading…</p>';return}
   const plist=mapProjects();
   if(!projects[mapPid]&&plist.length){mapPid=plist[0][0];LS.set('oym_mappid',mapPid)}
-  const pid=mapPid,P=projects[pid],today=ymd(new Date());
+  const pid=mapPid,P=projects[pid],today=ymd(new Date());if(gtInline&&gtInline.pid!==pid)gtInline=null;
   const old=$('#gtScroll'),keep=old&&gtSeenPid===pid?{l:old.scrollLeft,t:old.scrollTop}:null;
   const R=P?roadmapData(pid,today):null,BD=P?budgetData(pid):null,B=budgetOn?BD:null,F=B?budgetFlow(pid,B):null;
   const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}${projectStatusHTML(pid,P)}${P?mapPaletteHTML(pid):''}
-    <div class="map-tools">${P?`${budgetToggleHTML(BD)}
+    <div class="map-tools">${P?`${budgetToggleHTML(BD)}<button class="btn" type="button" data-gt-units aria-pressed="${gtUnits}" title="Show material unit prices; project totals and cash flow remain total dollars">Unit prices</button><button class="btn" type="button" data-gt-descriptions aria-pressed="${gtDescriptions}">${gtDescriptions?'Hide':'Show'} descriptions</button>
       <div class="seg" role="group" aria-label="Timeline presentation"><button aria-pressed="true" type="button">Gantt</button><button type="button" data-gchronology aria-pressed="false">Chronology</button></div><div class="seg" role="group" aria-label="Scale">${segHTML([['week','Weeks'],['month','Months']],gtScale,'data-gscale')}</div>
       <button class="btn" type="button" data-gact="today">Today</button>
       <button class="btn" type="button" data-gact="und" aria-pressed="${gtUndated}" title="Show items without dates">Undated <span class="mp-count">${R.undated.length}</span></button>
@@ -3121,10 +3169,29 @@ function renderGantt(anim){
     fx($$('.gt-mo,.gt-tk',sc),{opacity:[0,1],duration:420,delay:stg(8),ease:'out(2)'});
   }
 }
+// Crossing the label breakpoint needs new bar/header offsets as well as narrower CSS.
+// Rebuild only on that crossing, preserving explicit drafts and caret instead of saving on resize.
+let gtResizeTimer=0;
+window.addEventListener('resize',()=>{clearTimeout(gtResizeTimer);gtResizeTimer=setTimeout(()=>{
+  const sc=$('#gtScroll');if(view!=='timeline'||!sc||gtDrag||parseFloat(sc.style.getPropertyValue('--gl'))===gtLeft())return;
+  const active=document.activeElement,field=active?.matches('[data-gt-value]')?active:null,flat=active?.matches('.bud-inl')?{id:active.dataset.budget,value:active.value,region:budgetRegion(active)}:null;
+  const selection=field?{a:field.selectionStart,b:field.selectionEnd,d:field.selectionDirection}:null;
+  if(field)gtDraftInput(field);renderGantt();
+  if(field&&gtInline){const next=$('.gt-editor [data-gt-value]');if(next){next.focus({preventScroll:true});next.setSelectionRange(selection.a,selection.b,selection.d)}}
+  else if(flat){const chip=budgetChips(flat.region).find(el=>el.dataset.budget===flat.id);if(chip){budgetEdit(chip);const next=$('.bud-inl');if(next){next.value=flat.value;next.focus({preventScroll:true})}}}
+},60)});
+
 // Clicks on the timeline. Returns true when handled.
 function gtClick(t,e){
   if(!t.closest('#tlHost'))return false;
   if(Date.now()<gtClickBlock)return true;
+  if(t.closest('[data-gt-units]')){gtUnits=!gtUnits;LS.set('oym_gtunits',gtUnits?'1':'0');if(gtUnits&&!budgetOn){budgetOn=true;LS.set('oym_budget','1')}renderGantt();return true}
+  if(t.closest('[data-gt-descriptions]')){gtDescriptions=!gtDescriptions;LS.set('oym_gtdesc',gtDescriptions?'1':'0');renderGantt();return true}
+  const rate=t.closest('[data-gt-rate]');if(rate){gtOpenEditor(rate.dataset.gtRate,'rate');return true}
+  const notes=t.closest('[data-gt-notes]');if(notes){gtOpenEditor(notes.dataset.gtNotes,'notes');return true}
+  if(t.closest('[data-gt-edit-save]')){gtSaveEdit();return true}
+  if(t.closest('[data-gt-edit-cancel]')){gtCancelEdit();return true}
+  if(t.closest('.gt-editor'))return true;
   const sc=t.closest('[data-gscale]');if(sc){gtScale=sc.dataset.gscale;LS.set('oym_gtscale',gtScale);const s=$('#gtScroll'),mid=s?(s.scrollLeft+(s.clientWidth-gtLeft())/2)/GT_PX[gtScale==='week'?'month':'week']:0;gtSeenPid='';renderGantt(true);if(s&&mid){const n=$('#gtScroll');n.scrollLeft=Math.max(0,mid*GT_PX[gtScale]-(n.clientWidth-gtLeft())/2)}return true}
   const ga=t.closest('[data-gact]');
   if(ga){const k=ga.dataset.gact;
@@ -4197,6 +4264,7 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('input',e=>{
   const t=e.target;
+  if(t.hasAttribute('data-gt-value')){gtDraftInput(t);return}
   if(t.hasAttribute('data-cost-field')){costPreview(t.closest('.cost-editor'));return}
   if(t.dataset.f==='notes'){const id=t.closest('.editor').dataset.id;notesPending=[id,t.value];clearTimeout(notesTimer);notesTimer=setTimeout(flushNotes,700)}
   else if(t.id==='doneSearch'){doneF.q=t.value;renderDone()}
@@ -4211,6 +4279,7 @@ const liftPointer=()=>{pointerDown=false;if(deferred)setTimeout(()=>{if(deferred
 document.addEventListener('pointerup',liftPointer,true);
 document.addEventListener('pointercancel',liftPointer,true);
 document.addEventListener('keydown',e=>{
+  if(e.target.closest?.('.gt-editor')){if(e.key==='Escape'){e.preventDefault();gtCancelEdit();return}if(e.target.hasAttribute?.('data-gt-value')&&e.key==='Enter'&&(gtInline?.kind==='rate'||e.ctrlKey||e.metaKey)){e.preventDefault();gtSaveEdit();return}}
   const t=e.target;
   if(markdownOpen&&t.closest?.('.markdown-menu')&&['ArrowDown','ArrowUp','Home','End'].includes(e.key)){e.preventDefault();const options=$$('.markdown-menu [role="menuitem"]'),i=options.indexOf(t);options[e.key==='Home'?0:e.key==='End'?options.length-1:(i+(e.key==='ArrowDown'?1:options.length-1))%options.length].focus();return}
   if(projectCategoryState){
@@ -4605,7 +4674,7 @@ function unlisten(){
   // Remove retained edit and undo callbacks before a different account can use them.
   for(const el of $$('[data-g="logside"],[data-g="dside"]'))el.innerHTML='';EX.side='both';EX.dside='both';
   clearTimeout(notesTimer);notesPending=null;hideToast();$('#toast').innerHTML='';
-  $('#exBack').hidden=true;for(const id of ['categoryHost','mswitch','dashHost','tlHost','calHost','mapHost','doneList','doneSummary','exBody']){const el=document.getElementById(id);if(el)el.innerHTML=''};EX.name='';EX.btitle='';EX.rpid='';EX.over={};doneF.q='';doneF.projectId='';$('#doneSearch').value='';$('#logInput').value='';gtFold.clear();gtDrag?.tip?.remove();gtDrag=null;mpDrag?.ghost?.remove();mpDrag=null;document.body.classList.remove('mp-dragging');endDrag();$$('.mp-ghost,.drag-ghost').forEach(el=>el.remove());hideTip();if(tipEl)tipEl.textContent='';mpPan=null;if(mpPress)clearTimeout(mpPress.timer);mpPress=null;mpPts.clear();if(touchPress)clearTimeout(touchPress.timer);touchPress=null;dragState=null;pointerDown=false;deferred=false;buildSides();render(true);
+  $('#exBack').hidden=true;for(const id of ['categoryHost','mswitch','dashHost','tlHost','calHost','mapHost','doneList','doneSummary','exBody']){const el=document.getElementById(id);if(el)el.innerHTML=''};EX.name='';EX.btitle='';EX.rpid='';EX.over={};doneF.q='';doneF.projectId='';$('#doneSearch').value='';$('#logInput').value='';gtFold.clear();gtInline=null;gtDrag?.tip?.remove();gtDrag=null;mpDrag?.ghost?.remove();mpDrag=null;document.body.classList.remove('mp-dragging');endDrag();$$('.mp-ghost,.drag-ghost').forEach(el=>el.remove());hideTip();if(tipEl)tipEl.textContent='';mpPan=null;if(mpPress)clearTimeout(mpPress.timer);mpPress=null;mpPts.clear();if(touchPress)clearTimeout(touchPress.timer);touchPress=null;dragState=null;pointerDown=false;deferred=false;buildSides();render(true);
 }
 async function signIn(){
   gateMsg('');const prov=new firebase.auth.GoogleAuthProvider();prov.setCustomParameters({prompt:'select_account'});
@@ -4636,7 +4705,7 @@ if(auth){
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-window.__oym={costParts,costAmount,costSave,costEditorHTML,parseMoney,fmtMoney,fmtMoneyShort,budgetData,budgetFlow,budgetSet,taskSetBudget,budgetToggle,get budgetOn(){return budgetOn},saveField,mapPanelHTML,setMapSel:id=>{mapSel=id},gtCashHTML,mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapPrintFragments,mapPrintOrientation,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={gtSaveRate,gtSaveNotes,gtOpenEditor,get gtUnits(){return gtUnits},get gtDescriptions(){return gtDescriptions},costParts,costAmount,costSave,costEditorHTML,parseMoney,fmtMoney,fmtMoneyShort,budgetData,budgetFlow,budgetSet,taskSetBudget,budgetToggle,get budgetOn(){return budgetOn},saveField,mapPanelHTML,setMapSel:id=>{mapSel=id},gtCashHTML,mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapPrintFragments,mapPrintOrientation,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>

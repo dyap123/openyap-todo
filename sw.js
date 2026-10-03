@@ -1,5 +1,5 @@
 // Cache only the public shell. Firebase data, OAuth and Calendar requests never enter caches.
-const CACHE = 'openyap-shell-v3';
+const CACHE = 'openyap-shell-v4';
 const SHELL = ['./', './index.html', './app-config.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL))));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('openyap-shell-') && key !== CACHE).map(key => caches.delete(key))))));

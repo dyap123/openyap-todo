@@ -148,3 +148,13 @@ Markdown exports include the amounts and calculated input breakdown. Roadmap and
 Budget checks: `node tests/budget.test.cjs` (roll-up, schedule spread, in-place entry on Map and Gantt, task/bubble sync, Markdown) and `node tests/budget-browser.cjs` (synthetic Chrome: chip containment on Map, Chronology, Gantt and phone; click-to-click entry; sticky cash-flow row).
 
 Pricing and palette regressions: `node tests/budget-rates.test.cjs`, `node tests/palette-selection.test.cjs`, and `node tests/budget-rates-palette-browser.cjs` (synthetic Chrome, all external traffic blocked). Screenshots are saved in `/private/tmp/oy-todo-budget-rates-{desktop,mobile,gantt}.png`.
+
+### Timeline unit prices and notes
+
+**Unit prices** in Timeline switches calculated scope chips between total dollars and their saved **material rate**, such as `$10 / LF` or `$4 / SF`. The material rate excludes labor; project totals and Cash flow continue showing complete dollar budgets. A rate remains visible when quantity is zero, so an unknown measured area does not hide the quoted rate. Flat budgets keep their ordinary total/editor and do not gain invented units. The preference is device-local. Budget has a larger dollar icon and Timeline chips have larger targets.
+
+Click a material-rate chip to edit it on its Timeline row. Enter or Save writes just that rate through the canonical scope calculation, preserving quantity, crew, hours, wage rate, DIY labor choice, burden, other costs, markup and notes. Preview shows the resulting scope total; Escape or Cancel discards the draft. Rejected saves retain it for correction/retry.
+
+Each row's pencil opens a notes editor in place; **Show descriptions** displays the saved notes below every relevant scope, topic and branch. Notes wrap fully, including long URLs, and bars remain aligned with their variable-height rows. Ctrl/⌘ + Enter saves notes; Enter alone adds a line. Notes share the linked task's canonical notes or the unlinked node's description. Visibility defaults off and is remembered on this device independently of Map descriptions.
+
+Checks: `node tests/timeline-editing.test.cjs` (included in the release gate), and `node tests/timeline-editing-browser.cjs` (synthetic Chrome, all external requests blocked). Screenshots: `/private/tmp/oy-todo-timeline-unit-notes-{desktop,mobile}.png`.
