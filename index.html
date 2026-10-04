@@ -829,6 +829,23 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 
 .budget-button{display:inline-flex;align-items:center;gap:7px;font-size:15px;font-weight:700;min-height:40px}.budget-button svg{flex:none}.gt-row:not(.gt-cash){height:auto;min-height:80px}.gt-row:not(.gt-cash)>.gt-name{min-height:80px;grid-template-columns:22px minmax(0,1fr) auto;grid-template-rows:auto auto auto;gap:4px}.gt-row:not(.gt-cash)>.gt-track{min-height:80px}.gt-t{grid-column:2 / 4}.gt-meta{grid-column:2;grid-row:2;align-self:center}.gt-name>.bud,.gt-name>.bud-inl{grid-column:3;grid-row:2;min-height:32px;font-size:14px;max-width:150px}.gt-name>.bud{height:auto;padding:5px 7px}.gt-name>.bud small{font-size:10px}.gt-name>.bud-inl{width:100px}.gt-unit{white-space:normal;overflow-wrap:anywhere}.gt-unit span{font-size:11px}.gt-meta{white-space:normal;overflow-wrap:anywhere}.gt-notes-button{grid-column:1;grid-row:2;width:26px;height:32px;font-size:22px;color:var(--muted);border-radius:5px}.gt-notes-button:hover{background:var(--raise);color:var(--text)}.gt-description{grid-column:2 / 4;grid-row:3;font-size:12px;line-height:18px;white-space:pre-wrap;overflow-wrap:anywhere;padding:4px 0 6px;color:var(--body);min-width:0}.gt-editor{grid-column:2 / 4;grid-row:4;display:grid;gap:6px;min-width:0;padding:10px 0}.gt-editor label{display:grid;gap:5px;font-size:12px;color:var(--body)}.gt-editor input,.gt-editor textarea{width:100%;min-width:0}.gt-editor textarea{resize:vertical;min-height:100px}.gt-editor .hint{white-space:normal;overflow-wrap:anywhere;margin:0;font-size:11px}.gt-edit-actions{display:flex;gap:6px}.gt-edit-error{color:var(--danger);font-size:12px;white-space:normal;overflow-wrap:anywhere;margin:0}.gt-row .gt-b,.gt-row .gt-m{top:50%;transform:translateY(-50%)}
 @media(max-width:1024px){.top .wrap{flex-wrap:wrap;height:auto;row-gap:8px;padding-top:10px;padding-bottom:8px}.top .today{flex:1}.top .acts{order:1;margin-left:auto}.top .tabs{order:2;flex-basis:100%;margin-left:0;max-width:100%;min-width:0;overflow-x:auto}}
+
+/* Budget spreadsheet contains its own horizontal scroll, on every screen. */
+.fin-add{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}.fin-add label{display:flex;align-items:center;gap:8px}.fin-add input{max-width:min(300px,55vw)}.fin-add [role=status]{font-size:12px;color:var(--urgent,#fb7185)}
+.fin-toolbar,.fin-controls,.fin-summary{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:16px 0}
+.fin-toolbar label,.fin-controls label{display:flex;gap:8px;align-items:center;min-width:0}.fin-toolbar select{max-width:min(320px,55vw)}
+.fin-summary{align-items:stretch;gap:10px}.fin-summary>span{padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;font-size:13px}.fin-summary b{display:block;margin-top:4px;font-size:16px}
+.fin-warning{color:var(--urgent,#fb7185);font-weight:650}.fin-table-wrap{max-width:100%;overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:8px;isolation:isolate;overscroll-behavior-x:contain}
+.fin-table{border-collapse:separate;border-spacing:0;width:100%;font-size:13px;font-variant-numeric:tabular-nums}.fin-table td,.fin-table th{padding:9px 10px;border-bottom:1px solid var(--line);min-width:108px;vertical-align:top;text-align:left;background:var(--bg);white-space:nowrap}
+.fin-table th{position:sticky;top:0;z-index:2;background:var(--surface);font-size:12px}.fin-table .fin-sticky{position:sticky;left:0;z-index:1;min-width:220px;max-width:260px;white-space:normal;overflow-wrap:anywhere;border-right:1px solid var(--line)}.fin-table th.fin-sticky{z-index:3}
+.fin-table small{display:block;font-size:11px;font-weight:400;margin-top:4px;color:var(--muted)}.fin-section td,.fin-group td{background:var(--surface);font-weight:650}.fin-reference{opacity:.65}
+.fin-cell{padding:7px 9px;min-height:36px;border:1px solid var(--line);border-radius:5px;background:transparent;color:inherit;cursor:pointer;text-align:left;font:inherit;white-space:normal;overflow-wrap:anywhere;max-width:320px}.fin-table [data-fin-field="start"],.fin-table [data-fin-field="due"]{white-space:nowrap}.fin-cell:hover{background:var(--surface)}.fin-cell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.fin-edit{min-width:170px;max-width:320px}.fin-edit>.txt{width:100%;box-sizing:border-box}.fin-edit>div{display:flex;gap:4px;margin-top:6px}.fin-edit p{white-space:normal;overflow-wrap:anywhere;color:var(--urgent,#fb7185);margin:4px 0;font-size:12px}.fin-edit textarea{min-width:240px}
+.fin-flow-grid{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(320px,1.2fr);gap:20px;margin:16px 0}.fin-periods td,.fin-periods th{min-width:80px}.fin-flow-meter{height:4px;background:var(--accent);width:var(--fin-spend);margin-top:6px}
+.fin-schedule{border:1px solid var(--line);border-radius:8px;padding:12px;min-width:0}.fin-schedule-head{font-size:12px;color:var(--muted);margin-bottom:12px}.fin-schedule-row{display:grid;grid-template-columns:minmax(110px,42%) 1fr;gap:12px;min-height:48px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}.fin-schedule-row>span{overflow-wrap:anywhere}.fin-schedule-row small{display:block;font-size:11px;color:var(--muted)}.fin-schedule-row>div{position:relative;background:var(--surface);height:22px;min-width:0}.fin-schedule-row i{position:absolute;top:3px;height:16px;background:var(--accent);border-radius:4px}.fin-schedule-row>div small{padding-left:6px}
+@media(max-width:1100px){.top{height:auto}.top>.wrap{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:10px}.top .tabs{order:3;width:100%;flex-basis:100%;overflow:auto}.top .acts{margin-left:auto}}
+@media(max-width:640px){.fin-table .fin-sticky{min-width:140px;max-width:160px}.fin-flow-grid{grid-template-columns:minmax(0,1fr)}.fin-controls label{flex-wrap:wrap}.fin-controls input{max-width:65vw}.fin-summary>span{flex:1 1 110px}.fin-toolbar .seg{max-width:100%}.fin-edit textarea{min-width:170px}.fin-table-wrap{max-height:65vh}}
+
 </style>
 </head>
 <body>
@@ -854,6 +871,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
     <nav class="tabs" role="tablist" aria-label="Views">
       <button class="tab" role="tab" data-view="tasks">Tasks</button>
       <button class="tab" role="tab" data-view="timeline">Timeline</button>
+      <button class="tab" role="tab" data-view="budget">Budget</button>
       <button class="tab" role="tab" data-view="calendar">Calendar</button>
       <button class="tab" role="tab" data-view="map">Map</button>
       <button class="tab" role="tab" data-view="dashboard">Dashboard</button>
@@ -899,6 +917,8 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
   <section id="v-timeline" class="view" aria-label="Timeline" hidden>
     <div class="wrap wide" id="tlHost"></div>
   </section>
+
+  <section id="v-budget" class="view" aria-label="Budget" hidden><div class="wrap wide" id="financeHost"></div></section>
 
   <section id="v-calendar" class="view" aria-label="Calendar" hidden>
     <div class="wrap" id="calHost"></div>
@@ -1035,7 +1055,7 @@ const OY_RE=/open\s?yap|\bai\b|\bllm\b|claude|minimax|deepseek/i;
 
 let tasks={},hist={},projects={},sideMap={};
 const ready={tasks:false,hist:false,maps:false};
-const VIEWS=['tasks','timeline','calendar','map','dashboard'];
+const VIEWS=['tasks','timeline','budget','calendar','map','dashboard'];
 let view=LS.get('oym_view','tasks');if(view==='done')view='dashboard';if(!VIEWS.includes(view))view='tasks';
 // The Drive notes feature was removed; forget any connector saved on this device.
 LS.del('oym_name');LS.del('oym_exbtitle');LS.del('oym_bridge');LS.del('oym_bridge_setup');LS.del('oym_upside');
@@ -1281,7 +1301,7 @@ function logDone(raw,side){
 
 // ═══ Rendering ═══════════════════════════════════════════════════════════
 let rTimer=0,deferred=false,pointerDown=false;
-function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new,.mp-pick,#mapWorld,.category-forms,.gt-name,.budget-bar,.palette-controls')&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))}
+function editingText(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('.editor,.mp-panel,.map-new,.mp-pick,#mapWorld,.category-forms,.gt-name,.budget-bar,.palette-controls,.fin-edit,.fin-controls,.fin-add')&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))}
 function schedule(){_entries=null;if(rTimer)return;rTimer=setTimeout(()=>{rTimer=0;render()},16)}
 function render(force){
   if(!force&&(editingText()||pointerDown)){deferred=true;return}
@@ -1292,6 +1312,7 @@ function render(force){
   if(view==='tasks')renderTasks(anim);
   else if(view==='dashboard'){renderDash(anim);renderDone(anim)}
   else if(view==='timeline')renderGantt(anim);
+  else if(view==='budget')renderFinance();
   else if(view==='calendar')renderCalendar(anim);
   else if(view==='map')renderMap(anim);
   if(!$('#exBack').hidden)renderExportLive();restoreAdds();
@@ -1307,7 +1328,7 @@ function setView(v){
   closeMarkdown(false);chronoPause();
   if(openId){flushNotes();openId=null}
   view=v;if(v==='calendar'&&googleToken&&googleLoadedMonth!==ymd(calCursor))googleCalendarLoad();LS.set('oym_view',v);hideTip();
-  if(v==='timeline')tlWeeks=4;
+  if(v==='timeline')tlWeeks=4;if(v!=='budget')finEdit=null;
   animNext=true;render(true);
   const tab=$(`.tab[data-view="${v}"]`);
   fx(tab,{scale:[.92,1],translateY:[2,0],duration:420,ease:'out(4)'});
@@ -2479,15 +2500,15 @@ const BUDGET_NONE={own:0,alloc:0,total:0,free:0,over:0};
 // Pure: id -> {own, alloc (what is inside), total (the larger of the two, which is what the parent
 // counts), free, over}. Project tasks that are not on the map count toward the project.
 function budgetData(pid){
-  const nodes=mapNodes(pid),B={},seen=new Set();
+  const nodes=mapNodes(pid),B={},seen=new Set(),charged=new Set();
   const walk=id=>{
     if(seen.has(id))return 0;seen.add(id);
-    const n=nodes[id]||{},t=n.taskId?tasks[n.taskId]:null,own=id==='root'?moneyOf(maps[pid]?.budget):costAmount(t||n);
-    let alloc=0,unplaced=0;for(const [k] of mapKids(nodes,id))alloc+=walk(k);
-    if(id==='root'){const linked=mapLinkedIds(pid);for(const [tid,x] of Object.entries(tasks))if(x&&x.projectId===pid&&!linked.has(tid))unplaced+=costAmount(x);alloc+=unplaced}
+    const n=nodes[id]||{},t=n.taskId?tasks[n.taskId]:null,duplicate=!!t&&charged.has(n.taskId),own=id==='root'?moneyOf(maps[pid]?.budget):duplicate?0:costAmount(t||n);if(t)charged.add(n.taskId);
+    let alloc=0,unplaced=0,unplacedTasks=[];for(const [k] of mapKids(nodes,id))alloc+=walk(k);
+    if(id==='root'){for(const [tid,x] of Object.entries(tasks))if(x&&x.projectId===pid&&!charged.has(tid)){unplacedTasks.push(tid);unplaced+=costAmount(x)}alloc+=unplaced}
     alloc=cents(alloc);
-    B[id]={own,alloc,total:Math.max(own,alloc),free:own>alloc?cents(own-alloc):0,over:own&&alloc>own?cents(alloc-own):0};
-    if(id==='root')B[id].unplaced=cents(unplaced);
+    B[id]={own,alloc,total:Math.max(own,alloc),...(duplicate?{duplicate:true}:{}),free:own>alloc?cents(own-alloc):0,over:own&&alloc>own?cents(alloc-own):0};
+    if(id==='root'){B[id].unplaced=cents(unplaced);B[id].unplacedTasks=unplacedTasks}
     return B[id].total;
   };
   walk('root');
@@ -2498,7 +2519,7 @@ function budgetData(pid){
 // allocate is spread over the dates inside it. Anything without dates is unscheduled.
 function budgetFlow(pid,B){
   B=B||budgetData(pid);
-  const nodes=mapNodes(pid),days=new Map(),seen=new Set(),ok=s=>/^\d{4}-\d{2}-\d{2}$/.test(s||'')?s:'';let unscheduled=B.root.unplaced||0,scheduled=0;
+  const nodes=mapNodes(pid),days=new Map(),seen=new Set(),ok=s=>chronoDay(s)!==null?s:'';let unscheduled=0,scheduled=0;
   const put=(amount,a,b)=>{
     if(!amount)return;
     if(!a&&!b){unscheduled+=amount;return}
@@ -2510,16 +2531,19 @@ function budgetFlow(pid,B){
   const walk=id=>{
     if(seen.has(id))return [];seen.add(id);
     const n=nodes[id]||{},t=n.taskId?tasks[n.taskId]:null,b=B[id]||BUDGET_NONE;
-    if(id!=='root'&&mapKindOf(nodes,id)==='item'){const start=ok(t?t.startDate??n.start:n.start),due=ok(t?t.dueDate:n.due);put(b.own,start,due);return [start,due].filter(Boolean)}
+    if(id!=='root'&&mapKindOf(nodes,id)==='item'){const span=budgetSpan(t||n,!!t,n);put(b.own,span.start,span.due);return [span.start,span.due].filter(Boolean)}
     // A sub-topic's own dates are not part of the timeline's range, so only a topic's count.
     let ds=id==='root'||n.parent==='root'?[]:[ok(n.start),ok(n.due)].filter(Boolean);
     for(const [k] of mapKids(nodes,id))ds=ds.concat(walk(k));
+    if(id==='root')for(const tid of B.root.unplacedTasks||[]){const span=budgetSpan(tasks[tid],true);put(costAmount(tasks[tid]),span.start,span.due);ds=ds.concat([span.start,span.due].filter(Boolean))}
     ds.sort();put(b.free,ds[0],ds[ds.length-1]);
     return ds.length?[ds[0],ds[ds.length-1]]:[];
   };
   walk('root');
   return {days,scheduled:cents(scheduled),unscheduled:cents(unscheduled)};
 }
+// One malformed endpoint invalidates the entire legacy scope; missing dates are still legitimate.
+function budgetSpan(record,task=false,node={}){const start=(task?record?.startDate??node.start:record?.start)||'',due=(task?record?.dueDate:record?.due)||'',invalid=!!(start&&chronoDay(start)===null||due&&chronoDay(due)===null);return invalid?{start:'',due:'',invalid:true}:{start,due,invalid:false}}
 // Writes. Both return false when the text is not an amount.
 function budgetSet(id,raw){
   const v=parseMoney(raw);if(v===undefined){toast(BUDGET_HELP);return false}
@@ -2959,6 +2983,120 @@ document.addEventListener('wheel',e=>{
 window.addEventListener('resize',()=>{if(view==='map')mapApplyCam()});
 
 // Clicks inside the map. Returns true when it handled the click.
+// A view of canonical map/task fields, never a separate financial ledger.
+let finMode=LS.get('oym_finmode','sheet')==='flow'?'flow':'sheet',finDetails=LS.get('oym_findetails','0')==='1',finNotes=LS.get('oym_finnotes','0')==='1',finScale=LS.get('oym_finscale','week')==='month'?'month':'week';
+let finQuery='',finFilter='all',finEdit=null,finAdd=null;
+function financeData(pid){
+  const nodes=mapNodes(pid),B=budgetData(pid),rows=[],seen=new Set();
+  const make=(key,id,n,t,depth,path)=>{const record=t||n,part=record.cost?costParts(record.cost):null,b=key.startsWith('t:')?{...BUDGET_NONE,own:costAmount(record),total:costAmount(record)}:B[id]||{...BUDGET_NONE,own:costAmount(record),total:costAmount(record)},kind=t||mapKindOf(nodes,id)==='item'?'scope':'section',duplicate=!!b.duplicate;
+    const start=t?t.startDate??n.start??'':n.start||'',due=t?t.dueDate||'':n.due||'',span=budgetSpan(record,!!t,n);
+    return {key,id,taskId:t?n.taskId||id:'',kind,record,part,depth,path,ancestors:[],title:t?.title||n.title||'(untitled)',notes:t?t.notes||'':n.desc||'',start,due,span,duplicate,own:duplicate?0:b.own,total:b.total,free:b.free||0,unknown:!duplicate&&!!part&&part.model.quantity===0&&part.model.unitRate>0,status:duplicate?'Shared task · counted above':span.invalid?'Invalid dates':part&&part.model.quantity===0&&part.model.unitRate>0?'Quantity needed':!start&&!due?'No dates':part&&!part.model.includeLabor?'Owner labor $0':''};
+  };
+  const walk=(id,depth,path,ancestors=[])=>{if(seen.has(id))return;seen.add(id);const n=nodes[id];if(!n)return;const t=n.taskId&&tasks[n.taskId],row=make('n:'+id,id,n,t,depth,path);row.ancestors=ancestors;rows.push(row);for(const [k]of mapKids(nodes,id))walk(k,depth+1,path.concat(row.title),ancestors.concat(row.key))};
+  for(const [id]of mapKids(nodes,'root'))walk(id,0,[]);
+  const unplaced=B.root.unplacedTasks||[];if(unplaced.length){rows.push({key:'unplaced',kind:'group',title:'Tasks not on the map',depth:0,path:[],own:0,total:B.root.unplaced,notes:'',status:''});for(const tid of unplaced)rows.push({...make('t:'+tid,tid,{},tasks[tid],1,['Tasks not on the map']),ancestors:['unplaced']})}
+  const root={key:'root',id:'root',kind:'project',title:projects[pid]?.name||'Project',record:maps[pid]||{},own:B.root.own,total:B.root.total,free:B.root.free,notes:projects[pid]?.description||''};
+  return {pid,rows,root,B,F:budgetFlow(pid,B),unknown:rows.filter(r=>r.unknown).length};
+}
+function financeVisible(data,q=finQuery,filter=finFilter){
+  const text=q.trim().toLowerCase(),match=r=> (!text||[r.title,r.notes,...r.path].join(' ').toLowerCase().includes(text))&&(filter==='all'||filter==='unknown'&&r.unknown||filter==='undated'&&(r.span?.invalid||!r.start&&!r.due)||filter==='calculated'&&r.part||filter==='flat'&&!r.part),direct=new Set(data.rows.filter(r=>r.kind==='scope'&&match(r)).map(r=>r.key));
+  const visible=data.rows.filter(r=>direct.has(r.key)||r.kind!=='scope'&&data.rows.some(x=>direct.has(x.key)&&x.ancestors.includes(r.key)));
+  return {rows:visible,scopeTotal:cents(visible.filter(r=>r.kind==='scope'&&!r.duplicate).reduce((sum,r)=>sum+r.own,0)),count:visible.filter(r=>r.kind==='scope'&&!r.duplicate).length};
+}
+function financePeriods(F,scale='week'){
+  const groups=new Map();for(const [day,amount]of [...F.days].sort(([a],[b])=>a.localeCompare(b))){const date=parseYmd(day),key=scale==='month'?ymd(new Date(date.getFullYear(),date.getMonth(),1)):ymd(mondayOf(date));groups.set(key,(groups.get(key)||0)+amount)}
+  let exact=0,rounded=0;return [...groups].map(([start,value])=>{exact+=value;const cumulative=cents(exact),amount=cents(cumulative-rounded);rounded=cumulative;const d=parseYmd(start),end=ymd(scale==='month'?new Date(d.getFullYear(),d.getMonth()+1,0):addDays(d,6));return {start,end,amount,cumulative}});
+}
+const FIN_BASE=[['title','Scope'],['quantity','Qty'],['unit','Unit'],['unitRate','Material $ / unit'],['material','Materials $'],['labor','Labor $'],['total','Total $'],['start','Start'],['due','Finish']];
+const FIN_EXTRA=[['method','Method'],['flat','Flat / allowance $'],['crew','Workers'],['hours','Hours each'],['laborRate','Wage $ / hour'],['burden','Burden %'],['other','Other $'],['markup','Markup %'],['includeLabor','Hired labor']];
+function financeColumns(){return FIN_BASE.concat(finDetails?FIN_EXTRA:[],finNotes?[['notes','Notes']]:[],[['status','Status']])}
+function financeRow(pid,key){const data=financeData(pid);return key==='root'?data.root:data.rows.find(r=>r.key===key)}
+function financeValue(row,field){
+  if(field==='title'||field==='notes'||field==='start'||field==='due'||field==='status')return row[field]||'';
+  if(field==='method')return row.kind==='scope'?(row.part?'calculated':'flat'):'allowance';
+  if(field==='flat')return row.part?'':row.own;
+  if(field==='total')return row.total;
+  if(field==='material'||field==='labor')return row.duplicate?0:row.part?.[field]||0;
+  return row.part?.model[field]??'';
+}
+function financeEditable(row,field){
+  if(row.duplicate||row.kind==='group')return false;
+  if(row.kind!=='scope')return field==='flat'||field==='notes'&&row.kind==='section';
+  if(['method','start','due','notes'].includes(field))return true;if(field==='total')return !row.part;
+  return row.part?['quantity','unit','unitRate','crew','hours','laborRate','burden','other','markup','includeLabor'].includes(field):field==='flat';
+}
+function financeCellHTML(row,field){
+  const v=financeValue(row,field),money=['unitRate','material','labor','total','flat','laborRate','other'].includes(field),label=v===''?'—':field==='includeLabor'?(v?'Yes':'No'):field==='method'?(v==='calculated'?'Rates':v==='flat'?'Flat':'Allowance'):money?fmtMoney(Number(v)):String(v);
+  if(field==='title')return `<strong style="padding-left:${Math.min(row.depth||0,8)*14}px">${esc(row.title)}</strong>${row.kind==='section'?'<small>Section total · whole project</small>':''}`;
+  if(financeEditable(row,field))return `<button type="button" class="fin-cell" data-fin-row="${esc(row.key)}" data-fin-field="${field}" aria-label="Edit ${field} for ${esc(row.title)}">${esc(label)}</button>`;
+  return `<span${field==='status'&&row.unknown?' class="fin-warning"':''}>${esc(row.duplicate&&money?'Counted above':label)}</span>`;
+}
+function financeSummaryHTML(data,visible){const r=data.B.root,F=data.F;return `<div class="fin-summary"><span>Project allowance <button class="fin-cell" type="button" data-fin-row="root" data-fin-field="flat">${r.own?fmtMoney(r.own):'Set allowance'}</button></span><span>Allocated estimate${data.unknown?' · INCOMPLETE':''} <b>${fmtMoney(r.alloc)}</b></span><span>${r.over?'Over by':'Left to allocate'} <b>${fmtMoney(r.over||r.free)}</b></span><span>Budget envelope <b>${fmtMoney(r.total)}</b></span><span>Scheduled <b>${fmtMoney(F.scheduled)}</b></span><span>Unscheduled <b>${fmtMoney(F.unscheduled)}</b></span>${data.unknown?`<span class="fin-warning">${data.unknown} scope${data.unknown===1?'':'s'} ${data.unknown===1?'needs':'need'} quantities · estimate incomplete</span>`:''}</div>${visible?`<p class="hint">Visible scope subtotal ${fmtMoney(visible.scopeTotal)} · ${visible.count} unique scopes. Section subtotals and project figures include the whole project, including allowance reserves.</p>`:''}`}
+function financeSheetHTML(data,visible){const cols=financeColumns();return `<p class="hint">Click a cell to edit. Enter saves and moves down; Tab moves across; Shift reverses; Escape cancels. Save applies one cell. Flat amounts edit in Total; Details → Method switches to rates. CSV exports unique scope rows only and excludes allowance reserves.</p><div class="fin-table-wrap" id="finTableScroll" role="region" tabindex="0" aria-label="Budget spreadsheet"><table class="fin-table"><thead><tr>${cols.map(([f,n])=>`<th scope="col"${f==='title'?' class="fin-sticky"':''}>${esc(n)}</th>`).join('')}</tr></thead><tbody>${visible.rows.map(r=>`<tr data-fin-key="${esc(r.key)}" class="fin-${r.kind}${r.duplicate?' fin-reference':''}">${cols.map(([f])=>`<td${f==='title'?' class="fin-sticky"':''}>${financeCellHTML(r,f)}</td>`).join('')}</tr>`).join('')||`<tr><td colspan="${cols.length}">No matching scopes.</td></tr>`}</tbody></table></div>`}
+function financeFlowHTML(data){
+  const periods=financePeriods(data.F,finScale),max=Math.max(1,...periods.map(p=>p.amount)),ds=[...data.F.days.keys(),...data.rows.flatMap(r=>[r.span?.start,r.span?.due].filter(Boolean))].sort(),lo=ds[0],hi=ds.at(-1),day=s=>chronoDay(s),length=lo&&hi?Math.max(1,day(hi)-day(lo)+1):1;
+  return `<p class="hint">Planned cash flow spreads budgets evenly over scope dates, plus unallocated allowance over the project span. These are planned spending amounts, not invoices or payments due. No actual spending is inferred from progress.</p><div class="seg" role="group" aria-label="Cash flow scale">${segHTML([['week','Weeks'],['month','Months']],finScale,'data-fin-scale')}</div><div class="fin-flow-grid"><div class="fin-table-wrap" role="region" tabindex="0" aria-label="Planned spending by period"><table class="fin-table fin-periods"><thead><tr><th>Period</th><th>Planned $</th><th>Cumulative $</th></tr></thead><tbody>${periods.map(p=>`<tr><td>${esc(p.start)}<div class="fin-flow-meter" style="--fin-spend:${p.amount/max*100}%"></div></td><td>${fmtMoney(p.amount)}</td><td>${fmtMoney(p.cumulative)}</td></tr>`).join('')||'<tr><td colspan="3">No scheduled amounts.</td></tr>'}</tbody></table></div><div class="fin-schedule" aria-label="Scope schedule"><div class="fin-schedule-head">${lo?esc(lo)+' → '+esc(hi):'No valid dated budget scopes'}</div>${data.rows.filter(r=>r.kind==='scope'&&!r.duplicate).map(r=>{const dates=[r.span.start,r.span.due].filter(Boolean).sort(),a=dates[0],b=dates.at(-1),x=lo&&a?(day(a)-day(lo))/length*100:0,w=lo&&a?Math.max(.7,(day(b)-day(a)+1)/length*100):0;return `<div class="fin-schedule-row"><span>${esc(r.title)}<small>${esc(r.status||[r.start,r.due].filter(Boolean).join(' → '))}</small></span><div>${w?`<i style="left:${Math.max(0,x)}%;width:${Math.min(100,w)}%" title="${esc(a+' → '+b)}"></i>`:'<small>Unscheduled</small>'}</div></div>`}).join('')}</div></div>`;
+}
+function renderFinance(){
+  const host=$('#financeHost');if(!host)return;if(!(ready.tasks&&ready.maps)){host.innerHTML='<p class="empty">Loading…</p>';return}
+  const list=mapProjects();if(!projects[mapPid]&&list.length){mapPid=list[0][0];LS.set('oym_mappid',mapPid)}const pid=mapPid;
+  if(finEdit&&(finEdit.pid!==pid||finEdit.epoch!==authEpoch))finEdit=null;if(finAdd&&(finAdd.pid!==pid||finAdd.epoch!==authEpoch))finAdd=null;
+  const active=document.activeElement,focus=active?.hasAttribute?.('data-fin-value')?{a:active.selectionStart,b:active.selectionEnd}:null;const sc=$('#finTableScroll'),scroll=sc?{x:sc.scrollLeft,y:sc.scrollTop}:null,project=projects[pid],data=project?financeData(pid):null,visible=data?financeVisible(data):null;
+  host.innerHTML=`<div class="fin-toolbar"><label>Project <select class="txt" data-fin-project>${list.map(([id,p])=>`<option value="${esc(id)}"${id===pid?' selected':''}>${esc(p.name)}</option>`).join('')}</select></label><div class="seg" role="group" aria-label="Budget presentation">${segHTML([['sheet','Spreadsheet'],['flow','Cash flow']],finMode,'data-fin-mode')}</div>${project?'<button class="btn" type="button" data-fin-csv>Export scope CSV</button>':''}</div>${data?financeSummaryHTML(data,finMode==='sheet'?visible:null):'<p class="empty">Create a project in Map to start its budget.</p>'}`;
+  if(!data)return;
+  host.insertAdjacentHTML('beforeend',`<form class="fin-add" data-fin-add><label>Add scope <input class="txt" data-fin-new maxlength="500" placeholder="Scope name" aria-label="New budget scope name" value="${esc(finAdd?.name||'')}"${finAdd?.pending?' disabled':''}></label><button class="btn" type="submit"${finAdd?.pending?' disabled':''}>${finAdd?.pending?'Adding…':'Add scope'}</button><span role="status" data-fin-add-error>${esc(finAdd?.error||'')}</span></form>`);
+  if(finMode==='sheet')host.insertAdjacentHTML('beforeend',`<div class="fin-controls"><label>Search scopes <input class="txt" type="search" data-fin-search value="${esc(finQuery)}"></label><label>Filter <select class="txt" data-fin-filter>${[['all','All scopes'],['unknown','Quantity needed'],['undated','No valid dates'],['calculated','Calculated'],['flat','Flat amounts']].map(([v,n])=>`<option value="${v}"${v===finFilter?' selected':''}>${n}</option>`).join('')}</select></label><button class="btn" type="button" data-fin-details aria-pressed="${finDetails}">${finDetails?'Hide':'Show'} details</button><button class="btn" type="button" data-fin-notes aria-pressed="${finNotes}">${finNotes?'Hide':'Show'} notes</button></div>`+financeSheetHTML(data,visible));else host.insertAdjacentHTML('beforeend',financeFlowHTML(data));
+  if(scroll&&$('#finTableScroll')){$('#finTableScroll').scrollLeft=scroll.x;$('#finTableScroll').scrollTop=scroll.y}if(finEdit)financeMountEdit();if(focus){const input=$('[data-fin-value]');input?.focus({preventScroll:true});if(input?.type==='text'||input?.tagName==='TEXTAREA')input.setSelectionRange(focus.a,focus.b)}
+}
+function financeMountEdit(){
+  const state=finEdit;if(!state)return;const button=$$('[data-fin-row][data-fin-field]').find(e=>e.dataset.finRow===state.row&&e.dataset.finField===state.field);if(!button)return;
+  const row=financeRow(state.pid,state.row),field=state.field,type=field==='includeLabor'||field==='method'||field==='unit'?'select':field==='notes'?'textarea':'input',options=field==='includeLabor'?[['true','Yes'],['false','No']]:field==='method'?[['flat','Flat'],['calculated','Rates']]:COST_UNITS.map(x=>[x,x]);
+  const element=type==='select'?`<select class="txt" data-fin-value>${options.map(([v,n])=>`<option value="${v}"${String(state.value)===v?' selected':''}>${esc(n)}</option>`).join('')}</select>`:type==='textarea'?`<textarea class="txt" data-fin-value rows="4">${esc(state.value)}</textarea>`:`<input class="txt" data-fin-value type="${['start','due'].includes(field)?'date':'text'}"${['start','due','notes'].includes(field)?'':' inputmode="decimal"'} value="${esc(state.value)}">`;
+  button.outerHTML=`<div class="fin-edit" data-fin-edit>${element}<div><button class="btn" type="button" data-fin-save${state.saving?' disabled':''}>${state.saving?'Saving…':'Save'}</button><button class="btn ghost" type="button" data-fin-cancel${state.saving?' disabled':''}>Cancel</button></div><p role="status" data-fin-error>${esc(state.error||'')}</p></div>`;
+}
+function financeOpen(row,field){if(finEdit){financeGuard();return}const r=financeRow(mapPid,row);if(!r||!financeEditable(r,field))return;finEdit={pid:mapPid,row,field,value:String(financeValue(r,field)),method:r.part?'calculated':'flat',epoch:authEpoch,saving:false,error:''};renderFinance();const input=$('[data-fin-value]');input?.focus({preventScroll:true});if(input?.type==='text')input.select();input?.closest('[data-fin-edit]')?.scrollIntoView({block:'nearest',inline:'nearest'})}
+async function financeSaveCell(pid,key,field,value,epoch=authEpoch,expectedMethod){
+  if(!activeUser||epoch!==authEpoch)throw new Error('Account changed. Reopen the budget cell.');const row=financeRow(pid,key);if(!row)throw new Error('This cell is no longer editable.');
+  if(expectedMethod&&row.kind==='scope'&&expectedMethod!==(row.part?'calculated':'flat'))throw new Error('Pricing method changed. Cancel and reopen this cell.');if(!financeEditable(row,field))throw new Error('This cell is no longer editable.');
+  const target={pid,node:row.kind==='project'?'root':row.key.startsWith('n:')?row.id:'',task:row.taskId,epoch};
+  if(field==='notes'){if(row.taskId){const text=String(value);if(text.length>100000)throw new Error('Notes are too long.');const up={[TP(row.taskId)+'/notes']:text};for(const [p,m]of Object.entries(maps))for(const [id,n]of Object.entries(m.nodes||{}))if(n.taskId===row.taskId)up[MP(p,id)+'/desc']=text||null;await upd(up)}else await gtSaveNotes(pid,row.id,value,epoch);return}
+  if(field==='start'||field==='due'){const v=String(value);if(v&&chronoDay(v)===null)throw new Error('Choose a valid date.');const a=field==='start'?v:row.start,b=field==='due'?v:row.due;if(a&&b&&chronoDay(a)!==null&&chronoDay(b)!==null&&b<a)throw new Error('Finish must be on or after start.');const up={};if(row.taskId){up[TP(row.taskId)+'/'+(field==='start'?'startDate':'dueDate')]=v;for(const [p,m]of Object.entries(maps))for(const [id,n]of Object.entries(m.nodes||{}))if(n.taskId===row.taskId)up[MP(p,id)+'/'+field]=v||null}else up[MP(pid,row.id)+'/'+field]=v||null;await upd(up);return}
+  if(field==='flat'||field==='total'){const v=parseMoney(value);if(v===undefined)throw new Error(BUDGET_HELP);if(row.kind!=='scope'){await upd({[row.kind==='project'?'todo/maps/'+pid+'/budget':MP(pid,row.id)+'/budget']:v});return}await costSave(target,'flat',value);return}
+  if(field==='method'){if(!['flat','calculated'].includes(value))throw new Error('Choose Flat or Rates.');if(value==='flat'){await costSave(target,'flat',String(row.own));return}const model=row.part?.model||{mode:'calculated',quantity:0,unit:'LF',unitRate:0,crew:0,hours:0,laborRate:0,burden:0,other:row.own,markup:0,includeLabor:true};await costSave(target,'calculated',model);return}
+  const model={...row.part.model};if(field==='unit'){if(!COST_UNITS.includes(value))throw new Error('Choose a supported unit.');model.unit=value}else if(field==='includeLabor'){if(!['true','false'].includes(String(value)))throw new Error('Choose Yes or No.');model.includeLabor=value==='true'}else{const text=String(value).trim(),number=text===''?0:/^(?:\d+(?:\.\d+)?|\.\d+)$/.test(text)?Number(text):NaN;if(!Number.isFinite(number)||number<0)throw new Error('Enter a nonnegative number.');model[field]=number}
+  if(!costParts(model))throw new Error('Check the rate, quantity, percentage or whole worker count.');await costSave(target,'calculated',model);
+}
+async function financeCommit(direction){
+  const state=finEdit;if(!state||state.saving||state.epoch!==authEpoch)return;const edit=$('[data-fin-value]');if(edit)state.value=edit.value;let next=null;
+  if(direction){const rows=financeVisible(financeData(state.pid)).rows,columns=financeColumns(),all=rows.flatMap(r=>columns.filter(([f])=>financeEditable(r,f)).map(([field])=>({row:r.key,field}))),index=all.findIndex(x=>x.row===state.row&&x.field===state.field);if(direction==='down'||direction==='up'){const list=all.filter(x=>x.field===state.field),i=list.findIndex(x=>x.row===state.row);next=list[i+(direction==='up'?-1:1)]}else next=all[index+(direction==='prev'?-1:1)]}
+  state.saving=true;state.error='';const button=$('[data-fin-save]');if(button){button.disabled=true;button.textContent='Saving…'}const cancel=$('[data-fin-cancel]');if(cancel)cancel.disabled=true;
+  try{await financeSaveCell(state.pid,state.row,state.field,state.value,state.epoch,state.method);if(state.epoch===authEpoch&&finEdit===state){finEdit=null;renderFinance();if(next)financeOpen(next.row,next.field)}}catch(e){if(state.epoch===authEpoch&&finEdit===state){state.saving=false;state.error=e.message;const message=$('[data-fin-error]');if(message)message.textContent=e.message;const retry=$('[data-fin-save]');if(retry){retry.disabled=false;retry.textContent='Save'}const cancel=$('[data-fin-cancel]');if(cancel)cancel.disabled=false}}
+}
+function financeCSV(pid){
+  const data=financeData(pid),headers=['Row type','Scope','Hierarchy','Task ID','Node ID','Method','Quantity','Unit','Material unit rate $','Materials $','Workers','Hours each','Labor rate $/hour','Labor burden %','Hired labor included','Labor $','Other $','Markup %','Scope total $','Start','Finish','Notes','Status'];
+  const line=values=>values.map(v=>{let text=String(v??'');if(typeof v==='string'&&/^[\s\u0000-\u001f]*[=+\-@]/.test(text))text="'"+text;return '"'+text.replace(/"/g,'""')+'"'}).join(',');
+  return '\ufeff'+[line(headers),...data.rows.filter(r=>r.kind==='scope'&&!r.duplicate).map(r=>{const c=!r.duplicate?r.part?.model:null;return line([r.kind,r.title,(r.path||[]).join(' / '),r.taskId||'',r.id||'',r.kind==='scope'?(c?'calculated':'flat'):'allowance',c?.quantity??'',c?.unit??'',c?.unitRate??'',r.part&&!r.duplicate?r.part.material:'',c?.crew??'',c?.hours??'',c?.laborRate??'',c?.burden??'',c?c.includeLabor?'yes':'no':'',r.part&&!r.duplicate?r.part.labor:'',c?.other??'',c?.markup??'',r.kind==='scope'&&!r.duplicate?r.own:'',r.start||'',r.due||'',r.notes||'',r.status||''])})].join('\r\n');
+}
+async function financeAddScope(){
+  if(!activeUser||!projects[mapPid])return;const name=($('[data-fin-new]')?.value||'').trim();if(!name)return;if(name.length>500)return;
+  if(finAdd?.pending)return;const state=finAdd&&finAdd.pid===mapPid&&finAdd.epoch===authEpoch&&finAdd.name.trim()===name?finAdd:{pid:mapPid,epoch:authEpoch,name};if(state.epoch!==authEpoch)return;
+  state.key=state.key||newKey('todo/tasks');state.pending=true;state.error='';finAdd=state;renderFinance();
+  try{await upd({[TP(state.key)]:buildTask({title:name,projectId:state.pid,side:projSideOf(state.pid),category:'project'})});if(state.epoch===authEpoch&&finAdd===state){finAdd=null;renderFinance();$('[data-fin-new]')?.focus()}}
+  catch(e){if(state.epoch===authEpoch&&finAdd===state){state.pending=false;state.error=e.message;renderFinance();$('[data-fin-new]')?.focus()}}
+}
+function financeGuard(){if(!finEdit)return false;finEdit.error=finEdit.saving?'Saving this cell…':'Save or Cancel this cell first.';const error=$('[data-fin-error]');if(error)error.textContent=finEdit.error;return true}
+function financeClick(target){
+  if(!target.closest('#financeHost'))return false;
+  const cell=target.closest('[data-fin-row][data-fin-field]');if(cell){financeOpen(cell.dataset.finRow,cell.dataset.finField);return true}
+  if(target.closest('[data-fin-save]')){financeCommit();return true}if(target.closest('[data-fin-cancel]')){if(finEdit?.saving)return true;finEdit=null;renderFinance();return true}
+  if(target.closest('[data-fin-mode],[data-fin-details],[data-fin-notes],[data-fin-scale]')&&financeGuard())return true;
+  const mode=target.closest('[data-fin-mode]');if(mode){finMode=mode.dataset.finMode;LS.set('oym_finmode',finMode);finEdit=null;renderFinance();return true}
+  if(target.closest('[data-fin-details]')){finDetails=!finDetails;LS.set('oym_findetails',finDetails?'1':'0');finEdit=null;renderFinance();return true}
+  if(target.closest('[data-fin-notes]')){finNotes=!finNotes;LS.set('oym_finnotes',finNotes?'1':'0');finEdit=null;renderFinance();return true}
+  const scale=target.closest('[data-fin-scale]');if(scale){finScale=scale.dataset.finScale;LS.set('oym_finscale',finScale);renderFinance();return true}
+  if(target.closest('[data-fin-csv]')){const url=URL.createObjectURL(new Blob([financeCSV(mapPid)],{type:'text/csv;charset=utf-8'}));download(url,(projects[mapPid]?.name||'Project')+' budget.csv');setTimeout(()=>URL.revokeObjectURL(url),1000);return true}return false;
+}
+
 function mapClick(t){
   if(mapPickOpen&&!t.closest('.mp-switch'))mapPickOpenAt(false);
   if(!t.closest('#mapHost')&&!(t.closest('#tlHost')&&t.closest('.mp-switch')))return false;
@@ -3051,8 +3189,8 @@ let gtFold=new Set((()=>{try{return JSON.parse(LS.get('oym_gtfold','[]'))||[]}ca
 let gtDrag=null,gtClickBlock=0,gtSeenPid='';
 const GT_PX={week:18,month:5},gtLeft=()=>window.innerWidth<=820?250:380;
 const gtDay=864e5;
-function gtRange(R,today){
-  const t=parseYmd(today),lo=[R.min,ymd(addDays(t,-14))].filter(Boolean).sort()[0],hi=[R.max,ymd(addDays(t,56))].filter(Boolean).sort().pop();
+function gtRange(R,today,F=budgetOn&&projects[mapPid]?budgetFlow(mapPid):null){
+  const extent=F?[...F.days.keys()].sort():[],t=parseYmd(today),lo=[R.min,extent[0],ymd(addDays(t,-14))].filter(Boolean).sort()[0],hi=[R.max,extent.at(-1),ymd(addDays(t,56))].filter(Boolean).sort().pop();
   const d0=mondayOf(parseYmd(lo)),d1=addDays(mondayOf(parseYmd(hi)),14);
   return {d0,d1,days:Math.round((d1-d0)/gtDay)};
 }
@@ -3135,7 +3273,7 @@ function renderGantt(anim){
       `:''}</div></div>`;
   if(!P){host.innerHTML=bar+'<div class="gt-empty">Create a project on the Map to see its timeline.</div>';return}
   const rows=gtRows(R,{undated:gtUndated,fold:gtFold});
-  const {d0,days}=gtRange(R,today),px=GT_PX[gtScale],W=days*px;
+  const {d0,days}=gtRange(R,today,F),px=GT_PX[gtScale],W=days*px;
   const X=ds=>Math.round((parseYmd(ds)-d0)/gtDay)*px;
   // Scale: month labels on top, week (or month) ticks underneath, grid lines through the body.
   const months=[],ticks=[],lines=[];
@@ -4191,6 +4329,7 @@ document.addEventListener('click',e=>{
   if(t.closest('.bud-inl'))return;
   const cs=t.closest('[data-cost-save]');if(cs){costSaveEditor(cs.closest('.cost-editor'));return}
   const bud=t.closest('[data-budget]');if(bud){if(mapPickOpen)mapPickOpenAt(false);budgetEdit(bud);return}
+  if(financeClick(t))return;
   if(mapClick(t))return;
   if(gtClick(t,e))return;
   const act=t.closest('[data-act]');
@@ -4238,7 +4377,7 @@ function handleAct(act,id,el){
   else if(act==='delete')deleteTask(id);
 }
 document.addEventListener('submit',e=>{
-  const f=e.target;e.preventDefault();
+  const f=e.target;e.preventDefault();if(f.hasAttribute('data-fin-add')){financeAddScope();return}
   if(f.id==='projectCategoryForm'){projectCategorySubmit();return}
   if(f.dataset.add){lastAddSide=f.dataset.add;addTask(f)}
   else if(f.id==='logAdd'){const inp=$('#logInput');if(logDone(inp.value,logSide))inp.value=''}
@@ -4247,6 +4386,9 @@ document.addEventListener('submit',e=>{
 document.addEventListener('focusin',e=>{if(markdownOpen&&!e.target.closest?.('.markdown-control'))closeMarkdown(false);const f=e.target.closest&&e.target.closest('[data-add]');if(f)lastAddSide=f.dataset.add});
 document.addEventListener('change',e=>{
   const t=e.target;
+  if(t.hasAttribute('data-fin-project')){if(financeGuard()||finAdd?.pending){t.value=mapPid;return}finAdd=null;mapPid=t.value;LS.set('oym_mappid',mapPid);finEdit=null;renderFinance();return}
+  if(t.hasAttribute('data-fin-filter')){if(financeGuard()){t.value=finFilter;return}finFilter=t.value;finEdit=null;renderFinance();return}
+  if(t.hasAttribute('data-fin-value')){if(finEdit)finEdit.value=t.value;return}
   if(t.hasAttribute('data-exrtheme')){EX.rtheme=t.value==='dark'?'dark':'light';saveEX();return}
   if(t.hasAttribute('data-exrorientation')){EX.rorientation=['landscape','portrait'].includes(t.value)?t.value:'auto';saveEX();renderExportLive();return}
   if(t.hasAttribute('data-map-palette')){mapSetPalette(t.dataset.mapPalette,t.value,t.closest('.palette-controls').querySelector('[data-palette-keep]').checked).catch(()=>{});return}
@@ -4264,6 +4406,9 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('input',e=>{
   const t=e.target;
+  if(t.hasAttribute('data-fin-new')){finAdd={...(finAdd||{}),pid:mapPid,epoch:authEpoch,name:t.value,key:null,error:''};return}
+  if(t.hasAttribute('data-fin-value')){if(finEdit)finEdit.value=t.value;return}
+  if(t.hasAttribute('data-fin-search')){if(financeGuard()){t.value=finQuery;return}finQuery=t.value;const caret=t.selectionStart;renderFinance();const input=$('[data-fin-search]');input.focus();input.setSelectionRange(caret,caret);return}
   if(t.hasAttribute('data-gt-value')){gtDraftInput(t);return}
   if(t.hasAttribute('data-cost-field')){costPreview(t.closest('.cost-editor'));return}
   if(t.dataset.f==='notes'){const id=t.closest('.editor').dataset.id;notesPending=[id,t.value];clearTimeout(notesTimer);notesTimer=setTimeout(flushNotes,700)}
@@ -4279,6 +4424,8 @@ const liftPointer=()=>{pointerDown=false;if(deferred)setTimeout(()=>{if(deferred
 document.addEventListener('pointerup',liftPointer,true);
 document.addEventListener('pointercancel',liftPointer,true);
 document.addEventListener('keydown',e=>{
+  if(e.target.closest?.('.fin-edit')){if(e.key==='Escape'){e.preventDefault();if(finEdit?.saving)return;finEdit=null;renderFinance();return}if(e.target.hasAttribute?.('data-fin-value')&&(e.key==='Tab'||e.key==='Enter'&&(e.target.tagName!=='TEXTAREA'||e.ctrlKey||e.metaKey))){e.preventDefault();financeCommit(e.key==='Tab'?(e.shiftKey?'prev':'next'):(e.shiftKey?'up':'down'));return}}
+  if(e.target.matches?.('.tab')&&['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const tabs=$$('.tab'),i=tabs.indexOf(e.target),next=e.key==='Home'?tabs[0]:e.key==='End'?tabs.at(-1):tabs[(i+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length];next.focus();setView(next.dataset.view);return}
   if(e.target.closest?.('.gt-editor')){if(e.key==='Escape'){e.preventDefault();gtCancelEdit();return}if(e.target.hasAttribute?.('data-gt-value')&&e.key==='Enter'&&(gtInline?.kind==='rate'||e.ctrlKey||e.metaKey)){e.preventDefault();gtSaveEdit();return}}
   const t=e.target;
   if(markdownOpen&&t.closest?.('.markdown-menu')&&['ArrowDown','ArrowUp','Home','End'].includes(e.key)){e.preventDefault();const options=$$('.markdown-menu [role="menuitem"]'),i=options.indexOf(t);options[e.key==='Home'?0:e.key==='End'?options.length-1:(i+(e.key==='ArrowDown'?1:options.length-1))%options.length].focus();return}
@@ -4674,7 +4821,7 @@ function unlisten(){
   // Remove retained edit and undo callbacks before a different account can use them.
   for(const el of $$('[data-g="logside"],[data-g="dside"]'))el.innerHTML='';EX.side='both';EX.dside='both';
   clearTimeout(notesTimer);notesPending=null;hideToast();$('#toast').innerHTML='';
-  $('#exBack').hidden=true;for(const id of ['categoryHost','mswitch','dashHost','tlHost','calHost','mapHost','doneList','doneSummary','exBody']){const el=document.getElementById(id);if(el)el.innerHTML=''};EX.name='';EX.btitle='';EX.rpid='';EX.over={};doneF.q='';doneF.projectId='';$('#doneSearch').value='';$('#logInput').value='';gtFold.clear();gtInline=null;gtDrag?.tip?.remove();gtDrag=null;mpDrag?.ghost?.remove();mpDrag=null;document.body.classList.remove('mp-dragging');endDrag();$$('.mp-ghost,.drag-ghost').forEach(el=>el.remove());hideTip();if(tipEl)tipEl.textContent='';mpPan=null;if(mpPress)clearTimeout(mpPress.timer);mpPress=null;mpPts.clear();if(touchPress)clearTimeout(touchPress.timer);touchPress=null;dragState=null;pointerDown=false;deferred=false;buildSides();render(true);
+  $('#exBack').hidden=true;for(const id of ['categoryHost','mswitch','dashHost','tlHost','financeHost','calHost','mapHost','doneList','doneSummary','exBody']){const el=document.getElementById(id);if(el)el.innerHTML=''};EX.name='';EX.btitle='';EX.rpid='';EX.over={};doneF.q='';doneF.projectId='';$('#doneSearch').value='';$('#logInput').value='';gtFold.clear();gtInline=null;finEdit=null;finAdd=null;finQuery='';finFilter='all';gtDrag?.tip?.remove();gtDrag=null;mpDrag?.ghost?.remove();mpDrag=null;document.body.classList.remove('mp-dragging');endDrag();$$('.mp-ghost,.drag-ghost').forEach(el=>el.remove());hideTip();if(tipEl)tipEl.textContent='';mpPan=null;if(mpPress)clearTimeout(mpPress.timer);mpPress=null;mpPts.clear();if(touchPress)clearTimeout(touchPress.timer);touchPress=null;dragState=null;pointerDown=false;deferred=false;buildSides();render(true);
 }
 async function signIn(){
   gateMsg('');const prov=new firebase.auth.GoogleAuthProvider();prov.setCustomParameters({prompt:'select_account'});
@@ -4705,7 +4852,7 @@ if(auth){
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-window.__oym={gtSaveRate,gtSaveNotes,gtOpenEditor,get gtUnits(){return gtUnits},get gtDescriptions(){return gtDescriptions},costParts,costAmount,costSave,costEditorHTML,parseMoney,fmtMoney,fmtMoneyShort,budgetData,budgetFlow,budgetSet,taskSetBudget,budgetToggle,get budgetOn(){return budgetOn},saveField,mapPanelHTML,setMapSel:id=>{mapSel=id},gtCashHTML,mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapPrintFragments,mapPrintOrientation,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={gtRange,financeAddScope,financeData,financePeriods,financeVisible,financeCSV,financeSaveCell,financeOpen,financeCommit,renderFinance,budgetSpan,get finEdit(){return finEdit},setView,gtSaveRate,gtSaveNotes,gtOpenEditor,get gtUnits(){return gtUnits},get gtDescriptions(){return gtDescriptions},costParts,costAmount,costSave,costEditorHTML,parseMoney,fmtMoney,fmtMoneyShort,budgetData,budgetFlow,budgetSet,taskSetBudget,budgetToggle,get budgetOn(){return budgetOn},saveField,mapPanelHTML,setMapSel:id=>{mapSel=id},gtCashHTML,mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapPrintFragments,mapPrintOrientation,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>

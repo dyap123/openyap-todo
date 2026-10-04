@@ -160,3 +160,17 @@ Click a material-rate chip to edit it on its Timeline row. Enter or Save writes 
 Each row's pencil opens a notes editor in place; **Show descriptions** displays the saved notes below every relevant scope, topic and branch. Notes wrap fully, including long URLs, and bars remain aligned with their variable-height rows. Ctrl/⌘ + Enter saves notes; Enter alone adds a line. Notes share the linked task's canonical notes or the unlinked node's description. Visibility defaults off and is remembered on this device independently of Map descriptions.
 
 Checks: `node tests/timeline-editing.test.cjs` (included in the release gate), and `node tests/timeline-editing-browser.cjs` (synthetic Chrome, all external requests blocked). Screenshots: `/private/tmp/oy-todo-timeline-unit-notes-{desktop,mobile}.png`.
+
+### Dedicated Budget view
+
+**Budget** is a separate financial workspace using the same scope data as Tasks, Map and Timeline. Choose a project and **Spreadsheet** or **Cash flow**. The spreadsheet starts with scope, quantity, unit, material unit rate, materials, labor, total and dates. **Details** exposes flat/rates method, flat allowance, workers, hours each, wage, burden, other costs, markup and hired-labor inclusion. **Notes** adds the canonical notes column. Derived amounts are read-only; a flat scope's Total remains editable. Project/section allowances stay flat. **Add scope** creates a project task, listed under Tasks not on the map, without creating a map node.
+
+Click an editable cell, then Save. Enter saves and moves down; Tab/Shift+Tab saves and moves across; Escape cancels. Notes accept ordinary newlines, with Ctrl/Cmd+Enter to save. Each save changes one current canonical field and mirrors linked nodes atomically. Unsaved cells must be saved or canceled before changing filters/project/presentation; rejected writes retain drafts, and an account switch clears them. Rates are merged with current inputs, preserving DIY choices and unrelated incoming changes.
+
+A linked task is charged once per project even when displayed in several branches. References say Counted above and are read-only. Search/filter shows a **Visible scope subtotal**; section/project numbers still include the whole project. **Allocated estimate** is marked incomplete when a nonzero material rate has zero quantity. **Budget envelope** includes project/section allowance reserves and may exceed currently priced scopes.
+
+Cash flow compares planned weekly/monthly allocations with scope dates. Valid dated tasks off the map also contribute, and invalid nonempty dates leave their whole scope unscheduled. Unallocated allowances spread over the project span. Period cents conserve the scheduled total; no actual spending or invoice timing is inferred. With Budget on, Timeline extends its range to cover all scheduled spending, including dated off-map tasks.
+
+**Export scope CSV** exports each unique scope once with full pricing, dates and notes. It excludes project/section reserves and subtotals, so its Scope total column sums priced scopes rather than the budget envelope. UTF-8 BOM, quoted fields and spreadsheet formula protection support Excel. No actual-cost schema or record migration is introduced.
+
+Checks: `node tests/finance.test.cjs` (release-gated) and `node tests/finance-browser.cjs` (isolated Chrome). Screenshots: `/private/tmp/oy-todo-finance-{desktop,mobile,flow-desktop,flow-mobile}.png`.

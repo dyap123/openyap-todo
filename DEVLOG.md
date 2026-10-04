@@ -1,3 +1,11 @@
+## 2026-10-03 — Dedicated spreadsheet Budget mode
+
+Developer: todo_builder. Task: todo-dedicated-spreadsheet-budget-mode. Added a sixth Budget tab with project selection, a compact spreadsheet, optional pricing details/notes, explicit one-cell editing with keyboard navigation, Add scope, search/filter scope subtotals, and a planned cash-flow/schedule comparison. Canonical calculations and linked mirrors remain shared with existing views; CSV exports scope rows once with Excel quoting/BOM and formula guards. Draft guards, rejected-save retry, method-change conflicts and account epoch cleanup cover editing. Incomplete quantity estimates and allowance reserves are labeled separately.
+
+Shared fixes: canonical task dedupe per project; strictly valid date endpoints; dated unplaced tasks scheduled and included in allowance date extent; legacy linked start fallback retained while explicit empty clears. Budget-enabled Gantt range includes off-map scheduled amounts. Existing flat budgets remain compatible; no live records, auth actions, migration or actual-spend tracking. Shell cache v6.
+
+Validation: finance behavior suite (registered in release.py), existing budget/rates suites, synthetic Chrome checks at widths320,390,768,821,1024,1025,1100,1440. Chrome screenshots under /private/tmp/oy-todo-finance-*.png. Root reviewer owns independent full gate and publication.
+
 ## 2026-10-03 — visible Log out in the persistent header
 
 Moved the existing single `signOutBtn` from the footer into header actions and labeled it **Log out**. It remains hidden while signed out and uses the same Firebase signOut/onAuthStateChanged cleanup, so no data is deleted. Failure stays signed in and displays a toast; an auth-epoch check suppresses stale failure feedback after an account switch. Header navigation wraps through 1024px so Log out, Export, Settings and theme stay reachable on tablets as well as phones; desktop retains its single row. Shell cache v5.
