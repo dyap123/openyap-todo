@@ -50,6 +50,7 @@ async function boot(seed, options={}) {
         database: () => ({ ref: db.ref }),
         auth: Object.assign(() => ({ onAuthStateChanged: cb => {authCallback=cb;setTimeout(()=>cb(user),0)}, getRedirectResult: () => Promise.resolve(), signOut() {if(options.signOut)return options.signOut(authCallback);authCallback(null);return Promise.resolve()}, signInWithPopup() {w.__authCalls.push(['google']);return Promise.resolve()},createUserWithEmailAndPassword(email,password){w.__authCalls.push(['create',email,password]);return Promise.resolve()},signInWithEmailAndPassword(email,password){w.__authCalls.push(['signin',email,password]);return Promise.resolve()},sendPasswordResetEmail(email){w.__authCalls.push(['reset',email]);return Promise.resolve()} }), { GoogleAuthProvider: function () { this.setCustomParameters = () => {};this.addScope = scope=>{w.__lastScope=scope}; } }),
       };
+      w.HTMLDialogElement.prototype.showModal=function(){this.open=true};w.HTMLDialogElement.prototype.close=function(){this.open=false};
       w.HTMLElement.prototype.scrollIntoView = () => {};
       w.scrollTo = () => {};
     },
