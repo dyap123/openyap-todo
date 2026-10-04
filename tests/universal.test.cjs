@@ -38,7 +38,9 @@ const fixture=(name='Alpha secret')=>({projects:{p:{name:'Private project',statu
  d.querySelector('[data-project-toggle="p"]').click();
  const dragRow=d.querySelector('[data-id="shared"] .t-main'),touch=new w.Event('pointerdown',{bubbles:true});Object.assign(touch,{pointerType:'touch',button:0,pointerId:8,clientX:40,clientY:120});dragRow.dispatchEvent(touch);await tick(300);
  assert(d.querySelector('.drag-ghost'),'touch drag fixture must create the real ghost');
- w.__setUser(null);await tick();
+ check('Log out is visible in persistent header',()=>{assert(d.querySelector('.top #signOutBtn'));assert.equal(d.querySelector('#signOutBtn').textContent,'Log out');assert.equal(d.querySelector('#signOutBtn').hidden,false)});
+ d.querySelector('#signOutBtn').click();await tick();
+ check('logout hides its control',()=>assert.equal(d.querySelector('#signOutBtn').hidden,true));
  check('logout removes touch drag ghost and private drag state',()=>{assert(!d.querySelector('.drag-ghost'));assert(!d.body.classList.contains('drag-active'));assert(!d.body.textContent.includes('Beta only'))});
  check('logout clears task memory and shows account form',()=>{assert.equal(Object.keys(M.tasks).length,0);assert.equal(db.listeners.length,0);assert(!d.querySelector('#gate').hidden)});
  d.querySelector('#authEmail').value='new@example.com';d.querySelector('#authPassword').value='not-a-real-password';d.querySelector('#createAccount').click();await tick();d.querySelector('#resetPassword').click();await tick();
@@ -77,5 +79,7 @@ const fixture=(name='Alpha secret')=>({projects:{p:{name:'Private project',statu
  gu.reauthenticateWithPopup=()=>Promise.reject({code:'auth/user-mismatch',message:'Mismatch'});linked.w.__oym.googleCalendarConnect();await tick();
  check('different Google identity is rejected',()=>{assert.match(linked.d.querySelector('.google-calendar').textContent,/same Google account/);assert.equal(reauthReads,1)});
  linked.w.close();
+ const failedLogout=await boot({users:{alice:{todo:fixture('Retained after failure')}}},{user:user('alice'),signOut:()=>Promise.reject(new Error('Synthetic sign-out failure'))});failedLogout.d.querySelector('#signOutBtn').click();await tick();
+ check('failed logout reports error and retains account data',()=>{assert.match(failedLogout.d.querySelector('#toast').textContent,/Could not log out: Synthetic sign-out failure/);assert.equal(failedLogout.d.querySelector('#signOutBtn').hidden,false);assert.equal(failedLogout.w.__oym.tasks.shared.title,'Retained after failure');assert.equal(failedLogout.db.updates.length,0)});failedLogout.w.close();
  console.log(`universal: ${checks} passed`);
 })().catch(e=>{console.error(e);process.exit(1)});

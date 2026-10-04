@@ -28,6 +28,8 @@ The export is a snapshot, not a second editable database or an automatic agent c
 
 ## Accounts and storage
 
+**Log out** is in the persistent top header, available from every signed-in view on desktop and mobile. It returns to the sign-in form and clears this tab’s account data; your saved tasks and projects stay in your workspace.
+
 - Email/password creation, sign-in and password reset use Firebase Authentication. Google sign-in uses Firebase's Google provider.
 - Regular users read/write only `users/{auth.uid}/todo/{tasks,history,projects,sides,maps,trackingCategories}`. The UID, never an email entered into a form, identifies their workspace. RTDB rules deny cross-user reads, writes, deletes and multipath updates.
 - The existing verified owner `dyap123@gmail.com` retains the original `todo/` workspace. The release migration copies only this node into the new isolated project; integrations that still use the old project must be reconfigured separately. Everyone else, including an unverified account using that address, gets only their UID workspace.

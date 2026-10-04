@@ -1,3 +1,9 @@
+## 2026-10-03 — visible Log out in the persistent header
+
+Moved the existing single `signOutBtn` from the footer into header actions and labeled it **Log out**. It remains hidden while signed out and uses the same Firebase signOut/onAuthStateChanged cleanup, so no data is deleted. Failure stays signed in and displays a toast; an auth-epoch check suppresses stale failure feedback after an account switch. Header navigation wraps through 1024px so Log out, Export, Settings and theme stay reachable on tablets as well as phones; desktop retains its single row. Shell cache v5.
+
+Extended the existing universal account regression to click the real button, verify header visibility/signed-out hiding, prove memory/drag cleanup, and simulate a rejected sign-out without data writes. Focused synthetic Chrome checks all views at 320/390/520/768/821/1024/1440px, header control containment and actual Map/Timeline logout/failure. No developer live authentication/data writes, commit or deployment.
+
 ## 2026-10-02 — Timeline material rates, direct notes and wrapped descriptions
 
 Timeline adds a persisted Unit prices presentation (`oym_gtunits`) for calculated scope material rates. Valid saved rates remain visible even when quantity is zero; flat budgets/allowances remain total-dollar chips. Project totals and cash flow never add unlike units. Direct row rate editors preview a new derived total and save only unitRate through existing canonical costSave, preserving every other cost input (including optional hired labor) and notes. Enter in the rate input saves, Escape/Cancel cancel; Enter on the Cancel button retains native cancellation.

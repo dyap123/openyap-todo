@@ -143,8 +143,6 @@ svg{flex:none}
 .gate-card p{color:var(--muted);font-size:13px;line-height:1.55;margin-bottom:18px}
 .gate-card .btn{height:38px;padding:0 18px}
 .gate-msg{margin-top:14px;font-size:12px;color:var(--danger);min-height:1em}
-.signout{background:none;border:0;color:var(--muted);font:inherit;font-size:12px;cursor:pointer;padding:0;margin-left:12px}
-.signout:hover{color:var(--text)}
 .btn.ghost{border-color:transparent;color:var(--muted)}
 .btn.ghost:hover{color:var(--text);background:none}
 .btn.danger{color:var(--danger)}
@@ -830,6 +828,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 .cost-editor{margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:10px;min-width:0}.cost-editor .cost-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.cost-editor label{display:grid;gap:4px;font-size:12px;color:var(--muted)}.cost-editor input,.cost-editor select{width:100%;min-width:0}.cost-editor [hidden]{display:none}.cost-editor .cost-labor-toggle{display:flex;grid-column:1 / -1;align-items:center;gap:8px}.cost-editor .cost-labor-toggle input{width:auto}.cost-editor .cost-summary{margin:10px 0;font-size:12px;line-height:1.7}.cost-editor .cost-error{color:var(--danger);font-size:12px}.palette-controls{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}.palette-keep{font-size:11px;color:var(--muted)}.palette-keep input{width:auto}
 
 .budget-button{display:inline-flex;align-items:center;gap:7px;font-size:15px;font-weight:700;min-height:40px}.budget-button svg{flex:none}.gt-row:not(.gt-cash){height:auto;min-height:80px}.gt-row:not(.gt-cash)>.gt-name{min-height:80px;grid-template-columns:22px minmax(0,1fr) auto;grid-template-rows:auto auto auto;gap:4px}.gt-row:not(.gt-cash)>.gt-track{min-height:80px}.gt-t{grid-column:2 / 4}.gt-meta{grid-column:2;grid-row:2;align-self:center}.gt-name>.bud,.gt-name>.bud-inl{grid-column:3;grid-row:2;min-height:32px;font-size:14px;max-width:150px}.gt-name>.bud{height:auto;padding:5px 7px}.gt-name>.bud small{font-size:10px}.gt-name>.bud-inl{width:100px}.gt-unit{white-space:normal;overflow-wrap:anywhere}.gt-unit span{font-size:11px}.gt-meta{white-space:normal;overflow-wrap:anywhere}.gt-notes-button{grid-column:1;grid-row:2;width:26px;height:32px;font-size:22px;color:var(--muted);border-radius:5px}.gt-notes-button:hover{background:var(--raise);color:var(--text)}.gt-description{grid-column:2 / 4;grid-row:3;font-size:12px;line-height:18px;white-space:pre-wrap;overflow-wrap:anywhere;padding:4px 0 6px;color:var(--body);min-width:0}.gt-editor{grid-column:2 / 4;grid-row:4;display:grid;gap:6px;min-width:0;padding:10px 0}.gt-editor label{display:grid;gap:5px;font-size:12px;color:var(--body)}.gt-editor input,.gt-editor textarea{width:100%;min-width:0}.gt-editor textarea{resize:vertical;min-height:100px}.gt-editor .hint{white-space:normal;overflow-wrap:anywhere;margin:0;font-size:11px}.gt-edit-actions{display:flex;gap:6px}.gt-edit-error{color:var(--danger);font-size:12px;white-space:normal;overflow-wrap:anywhere;margin:0}.gt-row .gt-b,.gt-row .gt-m{top:50%;transform:translateY(-50%)}
+@media(max-width:1024px){.top .wrap{flex-wrap:wrap;height:auto;row-gap:8px;padding-top:10px;padding-bottom:8px}.top .today{flex:1}.top .acts{order:1;margin-left:auto}.top .tabs{order:2;flex-basis:100%;margin-left:0;max-width:100%;min-width:0;overflow-x:auto}}
 </style>
 </head>
 <body>
@@ -860,6 +859,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
       <button class="tab" role="tab" data-view="dashboard">Dashboard</button>
     </nav>
     <div class="acts">
+      <button class="btn" type="button" id="signOutBtn" hidden>Log out</button>
       <button class="btn" id="exportBtn">Export</button>
 <button class="icon-btn settings-button" id="settingsBtn" aria-label="Settings" title="Settings" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 3-1 3-3 1 1 3-2 2 2 2-1 3 3 1 1 3h6l1-3 3-1-1-3 2-2-2-2 1-3-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></svg></button>
       <button class="theme-btn" id="themeBtn" aria-label="Change theme" title="Theme"><span></span></button>
@@ -909,7 +909,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
   </section>
 </main>
 
-<footer class="foot wrap"><span id="whoami"></span><a href="./privacy.html">Privacy</a><button class="signout" type="button" id="signOutBtn" hidden>Sign out</button></footer>
+<footer class="foot wrap"><span id="whoami"></span><a href="./privacy.html">Privacy</a></footer>
 
 <div class="back" id="exBack" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="exTitle">
@@ -4696,7 +4696,7 @@ if(auth){
   $('#emailAuth').addEventListener('submit',e=>{e.preventDefault();emailAuth('signin')});
   $('#createAccount').addEventListener('click',()=>emailAuth('create'));
   $('#resetPassword').addEventListener('click',()=>emailAuth('reset'));
-  $('#signOutBtn').addEventListener('click',()=>auth.signOut().catch(e=>toast(e.message)));
+  $('#signOutBtn').addEventListener('click',()=>{const epoch=authEpoch;auth.signOut().catch(e=>{if(epoch===authEpoch)toast('Could not log out: '+e.message)})});
   auth.getRedirectResult().catch(e=>gateMsg(e.message));
   auth.onAuthStateChanged(u=>{
     unlisten();activeUser=u;workspace=workspaceFor(u);
