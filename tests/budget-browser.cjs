@@ -28,7 +28,7 @@ await p.goto('http://todo.test/');await p.locator('#gate').waitFor({state:'hidde
 const node=id=>p.evaluate(id=>window.fixture.todo.maps.p.nodes[id],id);
 
 // ── Map
-await p.locator('[data-view="map"]').click();await p.locator('#mapHost [data-budget-toggle]').click();await p.waitForTimeout(150);
+await p.evaluate(()=>window.__oym.setView('map'));await p.locator('#mapHost [data-budget-toggle]').click();await p.waitForTimeout(150);
 const contained=async scope=>{const bad=await p.evaluate(scope=>{const out=[],inside=(a,b,pad=1)=>a.left>=b.left-pad&&a.right<=b.right+pad&&a.top>=b.top-pad&&a.bottom<=b.bottom+pad,hit=(a,b)=>a.left<b.right-1&&b.left<a.right-1&&a.top<b.bottom-1&&b.top<a.bottom-1;
   for(const chip of document.querySelectorAll(scope+' .bud')){const r=chip.getBoundingClientRect(),box=chip.closest('.mp-item,.mp-th,.mp-bh,.mp-root,.gt-name');if(!box){out.push('no box '+chip.dataset.budget);continue}
     if(!inside(r,box.getBoundingClientRect()))out.push('outside '+chip.dataset.budget);
@@ -63,7 +63,7 @@ await p.getByRole('button',{name:'Chronology',exact:true}).click();await p.waitF
 await p.getByRole('button',{name:'Back to map',exact:true}).click();await p.waitForTimeout(900);await contained('#mapWorld');
 
 // ── Gantt
-await p.locator('[data-view="timeline"]').click();await p.waitForTimeout(200);await contained('#gtScroll');
+await p.evaluate(()=>window.__oym.setView('timeline'));await p.waitForTimeout(200);await contained('#gtScroll');
 const cash=await p.evaluate(()=>{const s=document.querySelector('#gtScroll').getBoundingClientRect(),c=document.querySelector('.gt-cash').getBoundingClientRect(),cells=[...document.querySelectorAll('.gt-cf')];
   return {stuck:Math.abs(c.bottom-s.bottom)<3,cells:cells.length,clipped:cells.filter(el=>{const a=el.querySelector('span').getBoundingClientRect(),b=el.getBoundingClientRect();return a.width>b.width+1}).length,text:document.querySelector('.gt-cash .gt-sub').textContent}});
 assert.ok(cash.stuck,'cash-flow row sits at the bottom of the chart');assert.ok(cash.cells>=6);assert.equal(cash.clipped,0);assert.match(cash.text,/scheduled, by week/);
@@ -77,7 +77,7 @@ assert.equal(await p.evaluate(()=>[...document.querySelectorAll('.gt-cf')].filte
 // ── Phone
 await p.setViewportSize({width:390,height:844});await p.waitForTimeout(200);await contained('#gtScroll');
 assert.equal(await p.evaluate(()=>document.body.scrollWidth),390);
-await p.locator('[data-view="map"]').click();await p.waitForTimeout(200);assert.equal(await p.evaluate(()=>document.body.scrollWidth),390);
+await p.evaluate(()=>window.__oym.setView('map'));await p.waitForTimeout(200);assert.equal(await p.evaluate(()=>document.body.scrollWidth),390);
 await p.locator('[data-view="tasks"]').click();await p.waitForTimeout(200);
 assert.match(await p.locator('[data-project-group="p"] .project-count').textContent(),/\$\d[\d,]* budget/);
 await p.screenshot({path:'/private/tmp/oy-todo-budget-mobile.png'});

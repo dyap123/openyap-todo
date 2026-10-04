@@ -1,3 +1,13 @@
+## 2026-10-03 — Projects workspace and combined OpenYap home
+
+Developer: todo_builder. Task: todo-projects-navigation. Top navigation is now OpenYap, Projects, Tasks, Calendar, Dashboard. OpenYap is the new initial view and derives a combined project schedule, including off-map canonical tasks and unassigned/orphan tasks under No project. Completed/archived projects are an explicit inclusion toggle. Scope labels/dates, undated/invalid work and finished state remain distinct; task links open canonical editors.
+
+Projects has Active/Completed cards, name search, canonical finished X/Y task progress, explicit completion/reopen, name editing and a visible New project form for empty accounts. Completed status moves cards automatically without changing task completion. Existing custom map main-topic titles are preserved during project rename; matching/default titles update atomically. Pending creation/status/name operations and rejected drafts remain guarded against duplicate submissions, navigation and account switches.
+
+Selected projects expose nested Timeline/Budget/Map with project identity and All projects return. Existing view IDs and stored preferences still route these workspaces. Budget Save/Cancel guards apply to global/nested navigation. Selected Timeline uses a derived additional off-map lane without changing PDF roadmapData. Headers resolve before first legacy-view render and refresh after project selection. Shell cache v7.
+
+Validation: new release-gated projects-navigation behavior suite; synthetic Chrome real hierarchy/combined geometry/empty creation and widths320–1440; existing app/safety suites. Existing browser setups use compatible setView IDs and Tasks-specific tests explicitly choose Tasks because initial Home changed. Root clean baseline/final central gate reports96/96. Mandated developer oy test dispatched shared infra despite clean cwd,95/2 unrelated dirty CC export failures; no CC changes. No developer live data/auth actions, commit or deploy.
+
 ## 2026-10-03 — Dedicated spreadsheet Budget mode
 
 Developer: todo_builder. Task: todo-dedicated-spreadsheet-budget-mode. Added a sixth Budget tab with project selection, a compact spreadsheet, optional pricing details/notes, explicit one-cell editing with keyboard navigation, Add scope, search/filter scope subtotals, and a planned cash-flow/schedule comparison. Canonical calculations and linked mirrors remain shared with existing views; CSV exports scope rows once with Excel quoting/BOM and formula guards. Draft guards, rejected-save retry, method-change conflicts and account epoch cleanup cover editing. Incomplete quantity estimates and allowance reserves are labeled separately.
