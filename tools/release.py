@@ -48,7 +48,7 @@ def release(root, harness, dry_run=False):
         print('Local preflight passed. Release will run oy check, Todo tests and demo rules tests, fetch origin/main, require fast-forward ancestry, deploy only openyap-todo database rules, then push this exact commit to main. No network or live writes performed.')
         return
     run([str(harness), 'check'], root)
-    for test in ('tests/map.test.cjs', 'tests/universal.test.cjs', 'tests/orbit.test.cjs', 'tests/navigation.test.cjs', 'tests/project-category.test.cjs', 'tests/task-visibility.test.cjs', 'tests/quick-add.test.cjs', 'tests/roadmap-completion.test.cjs', 'tests/roadmap-print-map.test.cjs', 'tests/map-theme.test.cjs', 'tests/calendar-actions.test.cjs', 'tests/budget.test.cjs', 'tests/budget-rates.test.cjs', 'tests/palette-selection.test.cjs', 'tests/timeline-editing.test.cjs', 'tests/migration.test.cjs', 'tests/finance.test.cjs', 'tests/projects-navigation.test.cjs'):
+    for test in ('tests/map.test.cjs', 'tests/universal.test.cjs', 'tests/orbit.test.cjs', 'tests/navigation.test.cjs', 'tests/project-category.test.cjs', 'tests/task-visibility.test.cjs', 'tests/quick-add.test.cjs', 'tests/roadmap-completion.test.cjs', 'tests/roadmap-print-map.test.cjs', 'tests/map-theme.test.cjs', 'tests/calendar-actions.test.cjs', 'tests/budget.test.cjs', 'tests/budget-rates.test.cjs', 'tests/palette-selection.test.cjs', 'tests/timeline-editing.test.cjs', 'tests/migration.test.cjs', 'tests/finance.test.cjs', 'tests/projects-navigation.test.cjs', 'tests/export-categories.test.cjs'):
         run(['node', test], root)
     run(['python3', 'tests/release.test.py'], root)
     # Emulator logs must not modify the tracked historical database-debug.log.

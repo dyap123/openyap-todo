@@ -854,6 +854,8 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 .home-toolbar label{display:flex;gap:8px;align-items:center;font-size:13px}.home-toolbar>span{color:var(--muted);font-size:13px}.home-scroll{max-width:100%;overflow:auto;border:1px solid var(--line);border-radius:8px;max-height:75vh;isolation:isolate}.home-schedule{min-width:calc(250px + var(--home-width));width:max-content}.home-row{display:grid;grid-template-columns:250px var(--home-width);border-bottom:1px solid var(--line);min-height:54px}.home-label{position:sticky;left:0;background:var(--bg);border-right:1px solid var(--line);z-index:1;padding:12px 14px;overflow-wrap:anywhere;min-width:0;font-size:13px}.home-label small{display:block;margin-top:5px;font-size:11px;color:var(--muted)}.home-track{position:relative;min-width:0}.home-project .home-label,.home-project .home-track{background:var(--surface)}.home-project .home-label{font-size:15px}.home-bar{position:absolute;top:50%;transform:translateY(-50%);height:18px;background:var(--accent);border-radius:4px}.home-done .home-bar{opacity:.4}.home-dates{position:sticky;top:0;z-index:3;background:var(--surface);min-height:38px}.home-dates .home-label{background:var(--surface)}.home-dates .home-track>span{position:absolute;top:10px;font-size:11px;color:var(--muted);white-space:nowrap}.home-undated{display:block;font-size:12px;color:var(--muted);padding:14px}
 @media(max-width:640px){.home-row{grid-template-columns:180px var(--home-width)}.home-schedule{min-width:calc(180px + var(--home-width))}.project-heading{gap:10px}.project-heading h1{font-size:20px;width:100%}.home-label{padding:10px}.project-tabs .btn{min-height:40px}}
 
+#exBack .sheet{min-width:0;max-width:100%}#exBack .sheet-body{min-width:0}#exBack .seg{flex-wrap:wrap;max-width:100%}#exBack .seg button{max-width:100%;white-space:normal;overflow-wrap:anywhere}[data-exg="tab"]{flex-wrap:wrap;max-width:100%}#exBody [data-export-project]{max-width:100%}#exBack .sheet-foot{flex-wrap:wrap}#exBack .sheet-foot .ex-status{overflow-wrap:anywhere}
+.project-category-filters{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.project-category-filters [aria-pressed=true]{border-color:var(--side-c);background:var(--raise)}.project-category-filters .btn{white-space:normal;overflow-wrap:anywhere}.project-category-filters span{opacity:.65}.category-forms form{flex-wrap:wrap}.category-forms [data-category-form-error]{flex-basis:100%;margin:0;color:var(--urgent);font-size:12px}.category-forms input[name=name]{min-width:100px}#projectsCategoryMount{padding:12px;border:1px solid var(--line);border-radius:8px;margin:12px 0}
 </style>
 </head>
 <body>
@@ -944,7 +946,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 <div class="back" id="exBack" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="exTitle">
     <div class="sheet-head">
-      <h2 id="exTitle">Export PDF</h2>
+      <h2 id="exTitle">Export</h2>
       <button class="icon-btn" data-ex="close" aria-label="Close"></button>
     </div>
     <div class="sheet-body">
@@ -955,6 +957,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
       <span class="ex-status" id="exStatus" aria-live="polite"></span>
       <button class="btn" data-ex="preview">Preview</button>
       <button class="btn" data-ex="share" hidden title="Open in Notability or another app">Share</button>
+      <button class="btn" data-ex="copy" hidden>Copy Markdown</button>
       <button class="btn primary" data-ex="download">Download PDF</button>
     </div>
   </div>
@@ -962,7 +965,7 @@ body.mp-dragging,body.mp-dragging *{cursor:grabbing!important}
 
 <div class="back project-category-back" id="projectCategoryBack" hidden><section class="sheet project-category-sheet" role="dialog" aria-modal="true" aria-labelledby="projectCategoryTitle"><div class="settings-head"><h2 id="projectCategoryTitle">Change project category</h2><button class="btn" type="button" data-project-category-close>Close</button></div><div id="projectCategoryBody"></div></section></div>
 
-<div class="back settings-back" id="settingsBack" hidden><section class="sheet settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="settings-head"><h2 id="settingsTitle">Settings</h2><button class="btn" data-settings-close>Close</button></div><div id="categoryHost"></div></section></div>
+<div class="back settings-back" id="settingsBack" hidden><section class="sheet settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="settings-head"><h2 id="settingsTitle">Settings</h2><button class="btn" data-settings-close>Close</button></div><div id="settingsCategoryMount"><div id="categoryHost"></div></div></section></div>
 
 <div class="pop" id="themePop" role="dialog" aria-label="Theme" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1358,7 +1361,7 @@ function applyCategories(){
   for(const [id,c] of Object.entries(trackingCategories)){if(!categoryIdOk(id)||!c||typeof c.name!=='string'||!c.name.trim()||!categoryColorOk(c.color))continue;if(!SIDES.includes(id))SIDES.push(id);SIDE_NAME[id]=c.name.trim().slice(0,48);document.documentElement.style.setProperty('--'+id,c.color)}
   if(!SIDES.includes(mSide))mSide='career';if(!SIDES.includes(logSide))logSide='career';
   if(!SIDES.includes(doneF.side)&&doneF.side!=='all')doneF.side='all';
-  _entries=null;sidesDirty=true;
+  _entries=null;sidesDirty=true;if(!SIDES.includes(projectsCategory))projectsCategory='all';if($('#categoryHost')?.innerHTML)refreshCategoryForms();
 }
 async function saveTrackingCategory(id,name,color){
   name=String(name||'').trim();if(!name||name.length>48)throw new Error('Use a category name between 1 and 48 characters.');
@@ -1366,15 +1369,16 @@ async function saveTrackingCategory(id,name,color){
   if(!id)id='cat-'+newKey('todo/trackingCategories');if(!categoryIdOk(id))throw new Error('Invalid category.');
   await upd({['todo/trackingCategories/'+id]:{name,color}});return id;
 }
-function categoriesHTML(){return `<div class="category-manager"><h3>Tracking categories</h3><div class="category-forms"><p class="hint">Tracking categories organize tasks and projects. Choose a name and color.</p>${SIDES.map(id=>`<form data-category-form="${id}"><input class="txt" name="name" aria-label="Category name" maxlength="48" value="${esc(SIDE_NAME[id])}" required><input type="color" name="color" aria-label="Category color" value="${categoryColorOk(trackingCategories[id]?.color)?trackingCategories[id].color:(id==='career'?'#5ec2d6':'#7c9cff')}"><button class="btn">Save</button></form>`).join('')}<form data-category-form=""><input class="txt" name="name" aria-label="New category name" maxlength="48" placeholder="New category" required><input type="color" name="color" aria-label="New category color" value="#4aa88b"><button class="btn primary">Create category</button></form><p data-category-error role="status"></p></div></div>`}
+function categoriesHTML(){return `<div class="category-manager"><h3>Tracking categories</h3><div class="category-forms"><p class="hint">Tracking categories organize tasks and projects. Choose a name and color.</p>${SIDES.map(id=>`<form data-category-form="${id}"><input class="txt" name="name" aria-label="Category name" maxlength="48" value="${esc(SIDE_NAME[id])}" required><input type="color" name="color" aria-label="Category color" value="${categoryColorOk(trackingCategories[id]?.color)?trackingCategories[id].color:(id==='career'?'#5ec2d6':'#7c9cff')}"><button class="btn">Save</button><p data-category-form-error role="status"></p></form>`).join('')}<form data-category-form=""><input class="txt" name="name" aria-label="New category name" maxlength="48" placeholder="New category" required><input type="color" name="color" aria-label="New category color" value="#4aa88b"><button class="btn primary">Create category</button><p data-category-form-error role="status"></p></form><p data-category-error role="status"></p></div></div>`}
 function openSettings(){
+  if(!$('#exBack').hidden)closeExport();
   if(openId)flushNotes();closeMarkdown(false);settingsOpen=true;categoryEditor=true;
-  $('#categoryHost').innerHTML=categoriesHTML();$('#settingsBack').hidden=false;$('#settingsBtn').setAttribute('aria-expanded','true');
+  const manager=$('#categoryHost');if(!manager.innerHTML)manager.innerHTML=categoriesHTML();$('#settingsCategoryMount').append(manager);$('#settingsBack').hidden=false;$('#settingsBtn').setAttribute('aria-expanded','true');
   for(const el of $$('header.top,main,footer.foot'))el.inert=true;
   $('[data-settings-close]').focus();
 }
 function closeSettings(focus=true){
-  settingsOpen=false;categoryEditor=false;$('#settingsBack').hidden=true;$('#categoryHost').innerHTML='';$('#settingsBtn').setAttribute('aria-expanded','false');
+  settingsOpen=false;categoryEditor=false;$('#settingsBack').hidden=true;const manager=$('#categoryHost');if(projectsCategoriesOpen&&view==='projects'&&$('#projectsCategoryMount'))$('#projectsCategoryMount').append(manager);else manager.innerHTML='';$('#settingsBtn').setAttribute('aria-expanded','false');
   for(const el of $$('header.top,main,footer.foot'))el.inert=false;
   if(focus)$('#settingsBtn').focus();
 }
@@ -1391,7 +1395,7 @@ function taskProjectGroups(side){
 let projectCategoryState=null;
 function projectCategoryButton(pid){return `<button class="btn project-category-button" type="button" data-project-category="${esc(pid)}" aria-haspopup="dialog" aria-label="Change category for ${esc(projects[pid]?.name||'project')}">Category: ${esc(SIDE_NAME[projSideOf(pid)])}</button>`}
 function projectCategoryOpen(pid,destination){
-  if(!activeUser||!projects[pid])return;
+  if(!activeUser||!projects[pid])return;if(view==='projects'&&(projectEdit||projectCreateState?.pending)){toast('Save or finish the project edit first');return}
   if(openId)flushNotes();closeMarkdown(false);if(settingsOpen)closeSettings(false);chronoPause();
   projectCategoryState={pid,origin:view,trigger:document.activeElement};
   const p=projects[pid],selected=SIDES.includes(destination)?destination:projSideOf(pid);
@@ -1422,7 +1426,7 @@ async function projectCategorySubmit(){
   try{
     await projectMoveCategory(state.pid,side);
     if(epoch!==authEpoch||projectCategoryState!==state)return;
-    projectCategoryClose(false);mSide=side;LS.set('oym_mside',side);projectExpanded.add(taskProjectKey(side,state.pid));
+    projectCategoryClose(false);if(state.origin==='projects'&&projectsCategory!=='all')projectsCategory=side;mSide=side;LS.set('oym_mside',side);projectExpanded.add(taskProjectKey(side,state.pid));
     if(doneF.projectId===state.pid)doneF.side=side;
     if(rTimer){clearTimeout(rTimer);rTimer=0}render(true);
     const target=state.origin==='tasks'?$(`[data-project-side="${side}"][data-project-toggle="${state.pid}"]`):$(`#v-${view} [data-project-category="${state.pid}"]`);
@@ -2661,7 +2665,7 @@ function renderMap(anim){
   if(!projects[mapPid]&&plist.length){mapPid=plist[0][0];LS.set('oym_mappid',mapPid)}
   const pid=mapPid,P=projects[pid],BD=P?budgetData(pid):null,B=budgetOn?BD:null;
   const bar=`<div class="map-bar">${mapSwitchHTML(pid,P)}${projectStatusHTML(pid,P)}${P?mapPaletteHTML(pid):''}
-    <div class="map-tools">${P?budgetToggleHTML(BD):''}<button class="btn" data-chrono-mode="${mapPresentation==='clock'?'map':'clock'}" aria-pressed="${mapPresentation==='clock'}" ${P?'':'disabled'}>${mapPresentation==='clock'?'Back to map':'Chronology'}</button>${mapDescriptionToggle()}${markdownControlHTML()}
+    <div class="map-tools">${P?budgetToggleHTML(BD):''}<button class="btn" data-chrono-mode="${mapPresentation==='clock'?'map':'clock'}" aria-pressed="${mapPresentation==='clock'}" ${P?'':'disabled'}>${mapPresentation==='clock'?'Back to map':'Chronology'}</button>${mapDescriptionToggle()}
       ${P?`<button class="btn" type="button" data-mact="tray">Unplaced <span class="mp-count">${mapUnplaced(pid).length}</span></button>
       <button class="btn" type="button" data-mact="zout" aria-label="Zoom out">−</button><button class="btn" type="button" data-mact="zin" aria-label="Zoom in">+</button>
       <button class="btn" type="button" data-mact="fit" title="${mapPresentation==='clock'?'Fit the preview without changing your saved layout':'Tidy everything back into the sheet layout and show it all'}">Fit</button>`:''}
@@ -3058,7 +3062,7 @@ function renderFinance(){
   const list=mapProjects();if(!projects[mapPid]&&list.length){mapPid=list[0][0];LS.set('oym_mappid',mapPid)}const pid=mapPid;renderHeader();
   if(finEdit&&(finEdit.pid!==pid||finEdit.epoch!==authEpoch))finEdit=null;if(finAdd&&(finAdd.pid!==pid||finAdd.epoch!==authEpoch))finAdd=null;
   const active=document.activeElement,focus=active?.hasAttribute?.('data-fin-value')?{a:active.selectionStart,b:active.selectionEnd}:null;const sc=$('#finTableScroll'),scroll=sc?{x:sc.scrollLeft,y:sc.scrollTop}:null,project=projects[pid],data=project?financeData(pid):null,visible=data?financeVisible(data):null;
-  host.innerHTML=`<div class="fin-toolbar"><label>Project <select class="txt" data-fin-project>${list.map(([id,p])=>`<option value="${esc(id)}"${id===pid?' selected':''}>${esc(p.name)}</option>`).join('')}</select></label><div class="seg" role="group" aria-label="Budget presentation">${segHTML([['sheet','Spreadsheet'],['flow','Cash flow']],finMode,'data-fin-mode')}</div>${project?'<button class="btn" type="button" data-fin-csv>Export scope CSV</button>':''}</div>${data?financeSummaryHTML(data,finMode==='sheet'?visible:null):'<p class="empty">Create a project in Map to start its budget.</p>'}`;
+  host.innerHTML=`<div class="fin-toolbar"><label>Project <select class="txt" data-fin-project>${list.map(([id,p])=>`<option value="${esc(id)}"${id===pid?' selected':''}>${esc(p.name)}</option>`).join('')}</select></label><div class="seg" role="group" aria-label="Budget presentation">${segHTML([['sheet','Spreadsheet'],['flow','Cash flow']],finMode,'data-fin-mode')}</div></div>${data?financeSummaryHTML(data,finMode==='sheet'?visible:null):'<p class="empty">Create a project in Map to start its budget.</p>'}`;
   if(!data)return;
   host.insertAdjacentHTML('beforeend',`<form class="fin-add" data-fin-add><label>Add scope <input class="txt" data-fin-new maxlength="500" placeholder="Scope name" aria-label="New budget scope name" value="${esc(finAdd?.name||'')}"${finAdd?.pending?' disabled':''}></label><button class="btn" type="submit"${finAdd?.pending?' disabled':''}>${finAdd?.pending?'Adding…':'Add scope'}</button><span role="status" data-fin-add-error>${esc(finAdd?.error||'')}</span></form>`);
   if(finMode==='sheet')host.insertAdjacentHTML('beforeend',`<div class="fin-controls"><label>Search scopes <input class="txt" type="search" data-fin-search value="${esc(finQuery)}"></label><label>Filter <select class="txt" data-fin-filter>${[['all','All scopes'],['unknown','Quantity needed'],['undated','No valid dates'],['calculated','Calculated'],['flat','Flat amounts']].map(([v,n])=>`<option value="${v}"${v===finFilter?' selected':''}>${n}</option>`).join('')}</select></label><button class="btn" type="button" data-fin-details aria-pressed="${finDetails}">${finDetails?'Hide':'Show'} details</button><button class="btn" type="button" data-fin-notes aria-pressed="${finNotes}">${finNotes?'Hide':'Show'} notes</button></div>`+financeSheetHTML(data,visible));else host.insertAdjacentHTML('beforeend',financeFlowHTML(data));
@@ -3110,7 +3114,7 @@ function financeClick(target){
   if(target.closest('[data-fin-details]')){finDetails=!finDetails;LS.set('oym_findetails',finDetails?'1':'0');finEdit=null;renderFinance();return true}
   if(target.closest('[data-fin-notes]')){finNotes=!finNotes;LS.set('oym_finnotes',finNotes?'1':'0');finEdit=null;renderFinance();return true}
   const scale=target.closest('[data-fin-scale]');if(scale){finScale=scale.dataset.finScale;LS.set('oym_finscale',finScale);renderFinance();return true}
-  if(target.closest('[data-fin-csv]')){const url=URL.createObjectURL(new Blob([financeCSV(mapPid)],{type:'text/csv;charset=utf-8'}));download(url,(projects[mapPid]?.name||'Project')+' budget.csv');setTimeout(()=>URL.revokeObjectURL(url),1000);return true}return false;
+  return false;
 }
 
 function mapClick(t){
@@ -4084,7 +4088,7 @@ function tplDots(k){
 
 // ── Export sheet
 const EX={
-  tab:LS.get('oym_extab','report'),range:LS.get('oym_exrange','week'),side:LS.get('oym_exside','both'),
+  tab:['report','dump','roadmap','brief','markdown','csv'].includes(LS.get('oym_extab','report'))?LS.get('oym_extab','report'):'report',range:LS.get('oym_exrange','week'),side:LS.get('oym_exside','both'),
   notes:LS.get('oym_exnotes','0')==='1',routine:LS.get('oym_exroutine','1')==='1',name:'',
   tpl:LS.get('oym_extpl','cornell'),dside:LS.get('oym_exdside','both'),wins:LS.get('oym_exwins','1')==='1',
   blanks:Math.max(0,Math.min(3,+LS.get('oym_exblanks','1')||0)),paper:LS.get('oym_expaper','letter'),rpid:LS.get('oym_exrpid',''),rtheme:LS.get('oym_exrtheme','light')==='dark'?'dark':'light',rorientation:['landscape','portrait'].includes(LS.get('oym_exrorientation','auto'))?LS.get('oym_exrorientation','auto'):'auto',rbluebeam:LS.get('oym_exrbluebeam','0')==='1',rtime:true,rschedule:true,rmap:false,rdesc:false,rprivate:false,btitle:'',bdesc:LS.get('oym_exbdesc','1')==='1',bmap:LS.get('oym_exbmap','1')==='1',
@@ -4102,24 +4106,33 @@ function reportOpts(){
   return {items,routine,range:EX.range,side:EX.side,name:EX.name.trim(),notes:EX.notes,paper:EX.paper,rangeTitle:rangeTitle(EX.range,entries())};
 }
 const dumpOpts=()=>({tpl:EX.tpl,side:EX.dside,wins:EX.wins,blanks:EX.blanks,paper:EX.paper});
+let exportRequest=0;
 function openExport(){
+  if(['map','timeline','budget'].includes(view)&&projects[mapPid])EX.rpid=mapPid;
+  if(!projects[EX.rpid])EX.rpid=Object.keys(projects)[0]||'';
+  if(settingsOpen)closeSettings(false);if(projectCategoryState){if(projectCategoryState.saving){toast('Wait for the category move to finish');return}projectCategoryClose(false)}
+  for(const el of $$('header.top,main,footer.foot'))el.inert=true;
   $('#exBack').hidden=false;$('[data-ex="close"]').innerHTML=ICON.x;
   renderExport();loadPDF().catch(()=>{});
   fx($('#exBack'),{opacity:[0,1],duration:220,ease:'out(2)'});
   fx($('.sheet'),{opacity:[0,1],translateY:[14,0],scale:[.985,1],duration:420,ease:'out(4)'});
-  setTimeout(()=>$('[data-exg="tab"] [aria-pressed="true"]')?.focus(),0);
+  const epoch=authEpoch,request=exportRequest;setTimeout(()=>{if(epoch===authEpoch&&request===exportRequest&&!$('#exBack').hidden)$('[data-exg="tab"] [aria-pressed="true"]')?.focus()},0);
 }
 function closeExport(){
-  const back=$('#exBack'),finish=()=>{back.hidden=true;back.style.opacity='';exStatus('');$('#exportBtn').focus()};
+  const epoch=authEpoch,request=++exportRequest,back=$('#exBack'),finish=()=>{if(epoch!==authEpoch||request!==exportRequest)return;back.hidden=true;back.style.opacity='';exStatus('');if(!settingsOpen&&!projectCategoryState)for(const el of $$('header.top,main,footer.foot'))el.inert=false;$('#exportBtn').focus()};
   if(!canAnim()){finish();return}
   fx($('.sheet'),{opacity:[1,0],translateY:[0,10],scale:[1,.99],duration:180,ease:'in(2)'});
   fx(back,{opacity:[1,0],duration:220,ease:'in(2)',onComplete:finish});
 }
 function exStatus(t,err){const s=$('#exStatus');s.textContent=t;s.className='ex-status'+(err?' err':'')}
 function renderExport(){
-  $('[data-exg="tab"]').innerHTML=segHTML([['report','Completed work'],['dump','Brain dump'],['roadmap','Roadmap'],['brief','Brief']],EX.tab,'data-extab');
+  exportRequest++;
+  $('[data-exg="tab"]').innerHTML=segHTML([['report','Completed work'],['dump','Brain dump'],['roadmap','Roadmap'],['brief','Brief'],['markdown','Markdown'],['csv','Budget CSV']],EX.tab,'data-extab');
   const body=$('#exBody');
-  if(EX.tab==='brief'){
+  if(EX.tab==='markdown'||EX.tab==='csv'){
+    const list=Object.entries(projects).filter(([,p])=>p);if(!projects[EX.rpid])EX.rpid=list[0]?.[0]||'';
+    body.innerHTML=`<label class="fld"><span class="lbl">Project</span><select class="txt" data-export-project aria-label="Export project">${list.map(([id,p])=>`<option value="${esc(id)}"${id===EX.rpid?' selected':''}>${esc(p.name||'Untitled')}${projectFinished(p)?' · '+(p.status==='archived'?'Archived':'Completed'):''}</option>`).join('')}</select></label><p class="hint">${EX.tab==='markdown'?'Markdown includes the selected project’s complete hierarchy, tasks, notes, dates, budgets and your private records. Download a .md file or copy its text.':'CSV exports unique scope rows with full pricing, dates and notes, including your private records. Scope totals exclude project/section allowances. Excel-compatible quoting and formula protection are included.'}</p><p class="hint" id="textExportCount"></p>`;
+  }else if(EX.tab==='brief'){
     const withMaps=mapProjects().filter(([id])=>maps[id]);
     if(!maps[EX.rpid]&&withMaps.length)EX.rpid=withMaps[0][0];
     body.innerHTML=`<div style="display:grid;gap:14px">
@@ -4169,10 +4182,13 @@ function renderExport(){
     </div>`;
   }
   const canShare=!!(navigator.canShare&&window.File&&(()=>{try{return navigator.canShare({files:[new File([''],'x.pdf',{type:'application/pdf'})]})}catch(e){return false}})());
-  $('[data-ex="share"]').hidden=!canShare;
+  const text=EX.tab==='markdown'||EX.tab==='csv',valid=!!projects[EX.rpid]&&ready.tasks&&ready.maps;
+  $('[data-ex="share"]').hidden=text||!canShare;$('[data-ex="preview"]').hidden=text;$('[data-ex="copy"]').hidden=EX.tab!=='markdown';$('[data-ex="copy"]').disabled=!valid;
+  const download=$('[data-ex="download"]');download.textContent=EX.tab==='markdown'?'Download Markdown':EX.tab==='csv'?'Download CSV':'Download PDF';download.disabled=text&&!valid;
   renderExportLive();
 }
 function renderExportLive(){
+  if(EX.tab==='markdown'||EX.tab==='csv'){const valid=!!projects[EX.rpid]&&ready.tasks&&ready.maps;$('[data-ex="download"]').disabled=!valid;$('[data-ex="copy"]').disabled=!valid;const picker=$('[data-export-project]');if(picker){const markup=Object.entries(projects).filter(([,p])=>p).map(([id,p])=>`<option value="${esc(id)}"${id===EX.rpid?' selected':''}>${esc(p.name||'Untitled')}${projectFinished(p)?' · '+(p.status==='archived'?'Archived':'Completed'):''}</option>`).join('');if(picker.innerHTML!==markup){picker.innerHTML=markup;picker.value=projects[EX.rpid]?EX.rpid:''}}const el=$('#textExportCount');if(el)el.textContent=projects[EX.rpid]?`${projects[EX.rpid].name} · ${EX.tab==='csv'?financeData(EX.rpid).rows.filter(r=>r.kind==='scope'&&!r.duplicate).length+' unique scopes':'Project snapshot'}${ready.tasks&&ready.maps?'':' · Loading…'}`:'Create a project before exporting.';return}
   if(EX.tab==='report'){
     const pick=$('#exPick');if(!pick)return;
     const pool=reportPool(),rows=pool.filter(e=>!e.routine),inc=rows.filter(included).length,rout=pool.filter(e=>e.routine&&!e.private).length;
@@ -4208,7 +4224,7 @@ function exFileName(){
   return `Brain dump - ${TPLS.find(t=>t.id===EX.tpl).name} - ${d}.pdf`;
 }
 async function makePDF(){
-  const epoch=authEpoch;await loadPDF();if(epoch!==authEpoch||!activeUser)throw new Error('Account changed. Open the export again.');
+  const epoch=authEpoch,format=EX.tab,context=JSON.stringify(EX);if(!['brief','roadmap','report','dump'].includes(format))throw Error('Choose a PDF format.');await loadPDF();if(context!==JSON.stringify(EX))throw Error('Export settings changed. Try again.');if(epoch!==authEpoch||!activeUser)throw new Error('Account changed. Open the export again.');
   if((EX.tab==='roadmap'||EX.tab==='brief')&&!maps[EX.rpid])throw new Error('Pick a project with a map.');
   const doc=EX.tab==='brief'?buildBrief(briefOpts()):EX.tab==='roadmap'?buildRoadmap(roadmapOpts()):EX.tab==='report'?buildReport(reportOpts()):buildDump(dumpOpts());
   return {blob:doc.output('blob'),name:exFileName()};
@@ -4218,20 +4234,25 @@ async function exportAct(act){
   if(act==='all'||act==='none'){for(const e of reportPool())if(!e.routine)EX.over[e.key]=act==='all';renderExportLive();return}
   if(act==='rall'||act==='rnone'){roadmapSaveExcluded(EX.rpid,act==='rall'?new Set():new Set(Object.keys(mapNodes(EX.rpid))));renderExportLive();return}
   if(act==='ball'||act==='bnone'){briefSaveExcluded(EX.rpid,act==='ball'?new Set():new Set(Object.keys(mapNodes(EX.rpid))));renderExportLive();return}
+  const epoch=authEpoch,format=EX.tab,pid=EX.rpid,request=++exportRequest,current=()=>epoch===authEpoch&&request===exportRequest&&format===EX.tab&&pid===EX.rpid&&!$('#exBack').hidden;
+  if(format==='markdown'||format==='csv'){if(!['download','copy'].includes(act)||act==='copy'&&format!=='markdown')return;try{const snapshot=exportTextSnapshot(format,pid,epoch);if(act==='copy'){await Promise.resolve();if(!current())return;await navigator.clipboard.writeText(snapshot.content);if(current())exStatus('Markdown copied')}else{const url=URL.createObjectURL(new Blob([snapshot.content],{type:snapshot.mime}));download(url,snapshot.name);setTimeout(()=>URL.revokeObjectURL(url),1000);if(current())exStatus('Downloaded '+snapshot.name)}}catch(e){if(current())exStatus(e.message,true)}return}
   let w=null;
   if(act==='preview')w=window.open('','_blank');
   exStatus('Building PDF…');
   try{
-    const {blob,name}=await makePDF();
+    const {blob,name}=await makePDF();if(!current()){if(w)w.close();return}
     const url=URL.createObjectURL(blob);
     if(act==='preview'){if(w)w.location.href=url;else download(url,name);exStatus('')}
     else if(act==='download'){download(url,name);exStatus('Downloaded '+name)}
     else if(act==='share'){
       const file=new File([blob],name,{type:'application/pdf'});
-      try{await navigator.share({files:[file],title:name});exStatus('')}catch(e){exStatus(e&&e.name==='AbortError'?'':'Sharing did not work here. Use Download PDF.',e&&e.name!=='AbortError')}
+      try{await navigator.share({files:[file],title:name});if(current())exStatus('')}catch(e){if(current())exStatus(e&&e.name==='AbortError'?'':'Sharing did not work here. Use Download PDF.',e&&e.name!=='AbortError')}
     }
     setTimeout(()=>URL.revokeObjectURL(url),60000);
-  }catch(e){if(w)w.close();exStatus(e.message,true)}
+  }catch(e){if(w)w.close();if(current())exStatus(e.message,true)}
+}
+function exportTextSnapshot(format,pid,epoch=authEpoch){
+  if(epoch!==authEpoch||!activeUser)throw Error('Account changed. Open Export again.');if(!ready.tasks||!ready.maps)throw Error('Wait for project data to load.');if(!projects[pid])throw Error('Choose an available project.');if(!['markdown','csv'].includes(format))throw Error('Choose Markdown or Budget CSV.');const name=(projects[pid].name||'Project').replace(/[\\/:*?"<>|]+/g,' ');return {pid,epoch,uid:activeUser.uid,content:format==='markdown'?mapMarkdown(pid):financeCSV(pid),name:name+(format==='markdown'?'.md':' budget.csv'),mime:format==='markdown'?'text/markdown;charset=utf-8':'text/csv;charset=utf-8'};
 }
 function download(url,name){const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),100)}
 
@@ -4405,6 +4426,7 @@ document.addEventListener('submit',e=>{
 document.addEventListener('focusin',e=>{if(markdownOpen&&!e.target.closest?.('.markdown-control'))closeMarkdown(false);const f=e.target.closest&&e.target.closest('[data-add]');if(f)lastAddSide=f.dataset.add});
 document.addEventListener('change',e=>{
   const t=e.target;
+  if(t.hasAttribute('data-export-project')){EX.rpid=t.value;saveEX();renderExport();return}
   if(t.hasAttribute('data-home-completed')){homeCompleted=t.checked;LS.set('oym_home_completed',homeCompleted?'1':'0');renderHome();return}
   if(t.hasAttribute('data-fin-project')){if(financeGuard()||finAdd?.pending){t.value=mapPid;return}finAdd=null;mapPid=t.value;LS.set('oym_mappid',mapPid);finEdit=null;renderFinance();return}
   if(t.hasAttribute('data-fin-filter')){if(financeGuard()){t.value=finFilter;return}finFilter=t.value;finEdit=null;renderFinance();return}
@@ -4463,6 +4485,7 @@ document.addEventListener('keydown',e=>{
     if(e.key==='Tab'){const elements=$$('#settingsBack button,#settingsBack input'),first=elements[0],last=elements.at(-1);if(e.shiftKey&&t===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&t===last){e.preventDefault();first.focus()}}
     return;
   }
+  if(!$('#exBack').hidden&&e.key==='Tab'){const elements=$$('#exBack button,#exBack input,#exBack select,#exBack textarea').filter(el=>!el.disabled&&!el.closest('[hidden]')),first=elements[0],last=elements.at(-1);if(e.shiftKey&&e.target===first){e.preventDefault();last?.focus()}else if(!e.shiftKey&&e.target===last){e.preventDefault();first?.focus()}return}
   if(e.key==='Escape'){
     if(markdownOpen){closeMarkdown();return}
     if(!$('#exBack').hidden){closeExport();return}
@@ -4631,12 +4654,10 @@ function mapMarkdown(pid){
   if(unplaced.length){lines.push('','## Tasks not placed on the map','');for(const [id,t] of unplaced)taskLine({taskId:id,title:t.title},'',0)}
   return lines.join('\n')+'\n';
 }
-function mapDownloadMarkdown(){
-  const content=mapMarkdown(mapPid),url=URL.createObjectURL(new Blob([content],{type:'text/markdown;charset=utf-8'})),a=document.createElement('a');
-  a.href=url;a.download=(projects[mapPid]?.name||'plan').replace(/[^a-z0-9_-]+/gi,'-')+'.md';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
-}
+
 
 // Project navigation derives from existing records; project completion never changes tasks.
+let projectsCategory='all',projectsCategoriesOpen=false;
 let projectsBucket=LS.get('oym_projects_bucket','active')==='completed'?'completed':'active',projectsQuery='',projectEdit=null,projectCreateState=null,projectStatusPending=new Set(),homeCompleted=LS.get('oym_home_completed','0')==='1',homeScale=LS.get('oym_home_scale','week')==='month'?'month':'week';
 const projectFinished=p=>p?.status==='done'||p?.status==='archived';
 function projectProgress(pid){const ids=new Set(Object.entries(tasks).filter(([,t])=>t?.projectId===pid).map(([id])=>id));for(const n of Object.values(mapNodes(pid)))if(n?.taskId&&tasks[n.taskId])ids.add(n.taskId);const total=ids.size,done=[...ids].filter(id=>tasks[id].completed).length;return {total,done,percent:total?Math.round(done/total*100):null}}
@@ -4665,28 +4686,31 @@ function projectRoadmapData(pid,today){
 }
 const progressLabel=p=>p.total?`${p.done}/${p.total} tasks finished · ${p.percent}%`:'No tasks yet';
 function projectWorkspaceHeader(){const P=projects[mapPid];return `<div class="project-heading"><button class="btn" type="button" data-project-back>← All projects</button><h1>${esc(P?.name||'Project')}</h1><span>${esc(progressLabel(projectProgress(mapPid)))}</span></div><nav class="project-tabs" role="tablist" aria-label="Project views">${[['timeline','Timeline'],['budget','Budget'],['map','Map']].map(([id,label])=>`<button class="btn project-tab" role="tab" type="button" data-view="${id}" aria-selected="${view===id}">${label}</button>`).join('')}</nav>`}
-function renderProjects(){const host=$('#projectsHost');if(!(ready.tasks&&ready.maps)){host.innerHTML='<p class="empty">Loading…</p>';return}const all=Object.entries(projects).filter(([,p])=>p),list=all.filter(([,p])=>projectFinished(p)===(projectsBucket==='completed')&&(!projectsQuery||String(p.name||'').toLowerCase().includes(projectsQuery.toLowerCase()))).sort((a,b)=>(a[1].order||0)-(b[1].order||0));host.innerHTML=`<h1>Projects</h1><div class="projects-toolbar"><div class="seg" role="group" aria-label="Project status">${segHTML([['active','Active'],['completed','Completed']],projectsBucket,'data-project-bucket')}</div><label>Search projects <input class="txt" type="search" data-project-search value="${esc(projectsQuery)}"></label></div><p class="hint">Completion is an explicit project status. Finishing a project does not change its tasks.</p><form class="project-create" data-project-create-form><label>New project <input class="txt" data-project-create-name maxlength="2000" placeholder="Project name" value="${esc(projectCreateState?.name||'')}"${projectCreateState?.pending?' disabled':''}></label><button class="btn" type="submit"${projectCreateState?.pending?' disabled':''}>${projectCreateState?.pending?'Creating…':'Create project'}</button><span role="status">${esc(projectCreateState?.error||'')}</span></form><div class="project-cards">${list.map(([pid,P])=>{const p=projectProgress(pid);return `<article class="project-card" data-project-card="${esc(pid)}"><h2><button type="button" class="project-name" data-project-open="${esc(pid)}">${esc(P.name||'Untitled')}</button></h2><span>${P.status==='archived'?'Archived':P.status==='done'?'Completed':'Active'} · ${esc(SIDE_NAME[projSideOf(pid)]||'Project')}</span><p>${esc(progressLabel(p))}</p>${p.total?`<progress max="100" value="${p.percent}" aria-label="Tasks finished for ${esc(P.name)}">${p.percent}%</progress>`:''}<div><button class="btn" type="button" data-project-open="${esc(pid)}">Open project</button><button class="btn" type="button" data-project-edit="${esc(pid)}">Edit name</button><button class="btn" type="button" data-project-status="${esc(pid)}" data-project-finished="${projectFinished(P)}"${projectStatusPending.has(pid)?' disabled':''}>${projectFinished(P)?'Reopen':'Complete project'}</button></div>${projectEdit?.pid===pid?projectEditHTML():''}</article>`}).join('')||'<p class="empty">No '+(projectsBucket==='completed'?'completed':'active')+' projects'+(projectsQuery?' match your search.':'.')+'</p>'}</div>`}
+function projectsCategoryData(bucket=projectsBucket,query=projectsQuery,category=projectsCategory){
+  const base=Object.entries(projects).filter(([,p])=>p&&projectFinished(p)===(bucket==='completed')),counts=Object.fromEntries(SIDES.map(id=>[id,base.filter(([pid])=>projSideOf(pid)===id).length]));return {total:base.length,counts,list:base.filter(([pid,p])=>(category==='all'||projSideOf(pid)===category)&&(!query||String(p.name||'').toLowerCase().includes(query.toLowerCase()))).sort((a,b)=>(a[1].order||0)-(b[1].order||0))};
+}
+function renderProjects(){const host=$('#projectsHost');if(!(ready.tasks&&ready.maps)){host.innerHTML='<p class="empty">Loading…</p>';return}let manager=$('#categoryHost');if(!manager){manager=document.createElement('div');manager.id='categoryHost';$('#settingsCategoryMount').append(manager)}if(manager.closest('#projectsHost'))manager.remove();const categoryData=projectsCategoryData(),list=categoryData.list;host.innerHTML=`<h1>Projects</h1><div class="projects-toolbar"><div class="seg" role="group" aria-label="Project status">${segHTML([['active','Active'],['completed','Completed']],projectsBucket,'data-project-bucket')}</div><label>Search projects <input class="txt" type="search" data-project-search value="${esc(projectsQuery)}"></label></div><div class="project-category-filters" role="group" aria-label="Project categories">${[['all','All',categoryData.total],...SIDES.map(id=>[id,SIDE_NAME[id],categoryData.counts[id]||0])].map(([id,name,count])=>`<button type="button" class="btn" data-project-category-filter="${esc(id)}" aria-pressed="${projectsCategory===id}" style="--side-c:${id==='all'?'var(--accent)':'var(--'+id+')'}">${esc(name)} <span>${count}</span></button>`).join('')}<button type="button" class="btn" data-project-categories-manage aria-expanded="${projectsCategoriesOpen}">${projectsCategoriesOpen?'Hide':'Manage'} categories</button></div>${projectsCategoriesOpen?'<div id="projectsCategoryMount"></div>':''}<p class="hint">Completion is an explicit project status. Finishing a project does not change its tasks.</p><form class="project-create" data-project-create-form><label>New project <input class="txt" data-project-create-name maxlength="2000" placeholder="Project name" value="${esc(projectCreateState?.name||'')}"${projectCreateState?.pending?' disabled':''}></label><button class="btn" type="submit"${projectCreateState?.pending?' disabled':''}>${projectCreateState?.pending?'Creating…':'Create project'}</button><span role="status">${esc(projectCreateState?.error||'')}</span></form><div class="project-cards">${list.map(([pid,P])=>{const p=projectProgress(pid);return `<article class="project-card" data-project-card="${esc(pid)}"><h2><button type="button" class="project-name" data-project-open="${esc(pid)}">${esc(P.name||'Untitled')}</button></h2><span>${P.status==='archived'?'Archived':P.status==='done'?'Completed':'Active'} · ${esc(SIDE_NAME[projSideOf(pid)]||'Project')}</span><p>${esc(progressLabel(p))}</p>${p.total?`<progress max="100" value="${p.percent}" aria-label="Tasks finished for ${esc(P.name)}">${p.percent}%</progress>`:''}<div><button class="btn" type="button" data-project-open="${esc(pid)}">Open project</button>${projectCategoryButton(pid)}<button class="btn" type="button" data-project-edit="${esc(pid)}">Edit name</button><button class="btn" type="button" data-project-status="${esc(pid)}" data-project-finished="${projectFinished(P)}"${projectStatusPending.has(pid)?' disabled':''}>${projectFinished(P)?'Reopen':'Complete project'}</button></div>${projectEdit?.pid===pid?projectEditHTML():''}</article>`}).join('')||'<p class="empty">No '+(projectsBucket==='completed'?'completed':'active')+' projects'+(projectsQuery||projectsCategory!=='all'?' match your filters.':'.')+'</p>'}</div>`;if(projectsCategoriesOpen&&!settingsOpen){if(!manager.innerHTML)manager.innerHTML=categoriesHTML();$('#projectsCategoryMount')?.append(manager)}else if(!manager.isConnected)$('#settingsCategoryMount').append(manager)}
 function projectEditHTML(){const s=projectEdit,P=projects[s.pid],custom=maps[s.pid]?.title&&maps[s.pid].title!==P?.name;return `<form class="project-name-editor" data-project-name-form><label>Project name <input class="txt" data-project-name maxlength="2000" value="${esc(s.name)}"${s.pending?' disabled':''}></label>${custom?`<p class="hint">Map main topic stays “${esc(maps[s.pid].title)}”. Edit that title in Map.</p>`:''}<button class="btn" type="submit"${s.pending?' disabled':''}>${s.pending?'Saving…':'Save name'}</button><button class="btn" type="button" data-project-edit-cancel${s.pending?' disabled':''}>Cancel</button><p role="status">${esc(s.error||'')}</p></form>`}
 async function projectSaveName(pid,name,epoch=authEpoch){if(epoch!==authEpoch||!activeUser)throw Error('Account changed. Reopen the project.');if(!projects[pid])throw Error('Project no longer exists.');name=String(name).trim();if(!name||name.length>2000)throw Error('Enter a project name up to 2000 characters.');const old=projects[pid].name,up={['todo/projects/'+pid+'/name']:name};if(!maps[pid]?.title||maps[pid].title===old)up['todo/maps/'+pid+'/title']=name;await upd(up)}
-async function projectCreate(name,epoch=authEpoch,key){
-  if(epoch!==authEpoch||!activeUser)throw Error('Account changed. Start again.');name=String(name).trim();if(!name||name.length>2000)throw Error('Enter a project name up to 2000 characters.');const id=key||newKey('todo/projects');await upd({['todo/projects/'+id]:{name,color:'',icon:'',status:'active',description:'',targetDate:'',createdAt:new Date().toISOString(),order:Date.now()},['todo/sides/'+id]:{side:mSide||'career',private:false},['todo/maps/'+id+'/title']:name});return id;
+async function projectCreate(name,epoch=authEpoch,key,side=projectsCategory==='all'?mSide:projectsCategory){
+  if(epoch!==authEpoch||!activeUser)throw Error('Account changed. Start again.');name=String(name).trim();if(!name||name.length>2000)throw Error('Enter a project name up to 2000 characters.');if(!SIDES.includes(side))throw Error('Choose an available category.');const id=key||newKey('todo/projects');await upd({['todo/projects/'+id]:{name,color:'',icon:'',status:'active',description:'',targetDate:'',createdAt:new Date().toISOString(),order:Date.now()},['todo/sides/'+id]:{side,private:false},['todo/maps/'+id+'/title']:name});return id;
 }
 async function projectCreateSubmit(){
-  if(projectEdit){toast('Save or Cancel the project name first');return}if(projectCreateState?.pending)return;const name=$('[data-project-create-name]')?.value||'',state=projectCreateState||{name,epoch:authEpoch};state.name=name;state.pending=true;state.error='';state.key=state.key||newKey('todo/projects');projectCreateState=state;renderProjects();
-  try{const pid=await projectCreate(state.name,state.epoch,state.key);if(state.epoch===authEpoch&&projectCreateState===state){projectCreateState=null;projectsBucket='active';projectOpen(pid)}}catch(e){if(state.epoch===authEpoch&&projectCreateState===state){state.pending=false;state.error=e.message;renderProjects()}}
+  if(projectEdit){toast('Save or Cancel the project name first');return}if(projectCreateState?.pending)return;const name=$('[data-project-create-name]')?.value||'',state=projectCreateState||{name,epoch:authEpoch};state.name=name;state.pending=true;state.error='';state.key=state.key||newKey('todo/projects');state.side=state.side|| (projectsCategory==='all'?mSide:projectsCategory);projectCreateState=state;renderProjects();
+  try{const pid=await projectCreate(state.name,state.epoch,state.key,state.side);if(state.epoch===authEpoch&&projectCreateState===state){projectCreateState=null;projectsBucket='active';projectOpen(pid)}}catch(e){if(state.epoch===authEpoch&&projectCreateState===state){state.pending=false;state.error=e.message;renderProjects()}}
 }
 async function projectNameSubmit(){const s=projectEdit;if(!s||s.pending||s.epoch!==authEpoch)return;s.name=$('[data-project-name]')?.value??s.name;s.pending=true;s.error='';renderProjects();try{await projectSaveName(s.pid,s.name,s.epoch);if(projectEdit===s&&s.epoch===authEpoch){projectEdit=null;render(true)}}catch(e){if(projectEdit===s&&s.epoch===authEpoch){s.pending=false;s.error=e.message;renderProjects()}}}
 function projectOpen(pid,presentation='timeline'){if(projectCreateState?.pending){toast('Creating project…');return}if(projectEdit){toast(projectEdit.pending?'Saving project name…':'Save or Cancel the project name first');return}if(!projects[pid]||view==='budget'&&financeGuard())return;mapPid=pid;LS.set('oym_mappid',pid);mapSel='';projectEdit=null;setView(presentation)}
 async function projectChangeStatus(button){const pid=button.dataset.projectStatus,epoch=authEpoch;if(!projects[pid]||button.disabled||projectStatusPending.has(pid))return;projectStatusPending.add(pid);button.disabled=true;try{await projectSetComplete(pid,button.dataset.projectFinished!=='true');if(epoch===authEpoch){projectStatusPending.delete(pid);render(true)}}catch(e){if(epoch===authEpoch){projectStatusPending.delete(pid);render(true);toast(e.message)}}}
 function renderHome(){const host=$('#homeHost');if(!(ready.tasks&&ready.maps)){host.innerHTML='<p class="empty">Loading…</p>';return}const A=aggregateSchedule(),lo=A.min||ymd(new Date()),hi=A.max||lo,d0=chronoDay(lo),days=Math.max(1,chronoDay(hi)-d0+1),px=homeScale==='week'?18:5,W=Math.max(560,days*px);const ticks=[];if(homeScale==='week'){for(let n=0;n<days;n+=7)ticks.push({x:n*px,label:ymd(addDays(parseYmd(lo),n))})}else for(let date=new Date(parseYmd(lo).getFullYear(),parseYmd(lo).getMonth(),1);ymd(date)<=hi;date=new Date(date.getFullYear(),date.getMonth()+1,1))ticks.push({x:Math.max(0,chronoDay(ymd(date))-d0)*px,label:MONL[date.getMonth()]+' '+date.getFullYear()});host.innerHTML=`<div class="home-toolbar"><h1>OpenYap</h1><span>All projects · combined schedule</span><label><input type="checkbox" data-home-completed${homeCompleted?' checked':''}> Show completed projects</label><div class="seg" role="group" aria-label="Combined timeline scale">${segHTML([['week','Weeks'],['month','Months']],homeScale,'data-home-scale')}</div></div><p class="hint">${A.projects} projects · ${A.dated} dated scopes/topics · ${A.unscheduled} unscheduled. Dates are planned work; completion stays separate.</p><div class="home-scroll" role="region" tabindex="0" aria-label="Combined project timeline"><div class="home-schedule" style="--home-width:${W}px"><div class="home-row home-dates"><div class="home-label">Project / scope</div><div class="home-track">${ticks.map(t=>`<span style="left:${t.x}px">${esc(t.label)}</span>`).join('')}</div></div>${A.groups.map(g=>`<div class="home-row home-project"><div class="home-label"><button class="project-name" type="button" ${g.pid?`data-project-open="${esc(g.pid)}"`:'data-view="tasks"'}>${esc(g.name)}</button><small>${esc(progressLabel(g.progress))}${projectFinished(projects[g.pid])?' · Completed':''}</small></div><div class="home-track"></div></div>${g.items.map(i=>{const left=i.dated?(chronoDay(i.first)-d0)*px:0,width=i.dated?Math.max(px,(chronoDay(i.last)-chronoDay(i.first)+1)*px):0;return `<div class="home-row${i.done?' home-done':''}" data-home-scope="${esc(g.pid+':'+i.id)}"><div class="home-label"><button class="home-scope-name" type="button" ${i.taskId?`data-open="${esc(i.taskId)}"`:`data-home-node="${esc(i.node)}" data-home-project="${esc(g.pid)}"`}>${esc(i.title)}</button><small>${i.dated?esc(i.first+(i.last!==i.first?' → '+i.last:'')):i.invalid?'Unscheduled · invalid dates':'Unscheduled'}${i.offMap?' · Not on map':''}${i.done?' · Finished':''}</small></div><div class="home-track">${width?`<i class="home-bar" style="left:${left}px;width:${width}px" title="${esc(i.title+': '+i.first+' → '+i.last)}"></i>`:'<span class="home-undated">Unscheduled</span>'}</div></div>`}).join('')||'<div class="home-row"><div class="home-label">No scopes yet</div><div class="home-track"></div></div>'}`).join('')||'<p class="empty">No active projects. Open Projects to see completed work.</p>'}</div></div>`}
-function projectsClick(t){if(projectCreateState?.pending&&t.closest('[data-project-open],[data-project-edit],[data-project-status],[data-project-bucket]')){toast('Creating project…');return true}const open=t.closest('[data-project-open]');if(open){projectOpen(open.dataset.projectOpen);return true}if(t.closest('[data-project-back]')){setView('projects');return true}const bucket=t.closest('[data-project-bucket]');if(bucket){if(projectEdit){toast('Save or Cancel the project name first');return true}projectsBucket=bucket.dataset.projectBucket;LS.set('oym_projects_bucket',projectsBucket);renderProjects();return true}const edit=t.closest('[data-project-edit]');if(edit){if(projectEdit){toast('Save or Cancel the project name first');return true}projectEdit={pid:edit.dataset.projectEdit,name:projects[edit.dataset.projectEdit]?.name||'',epoch:authEpoch,pending:false,error:''};renderProjects();$('[data-project-name]')?.focus();return true}if(t.closest('[data-project-edit-cancel]')){if(!projectEdit?.pending){projectEdit=null;renderProjects()}return true}const status=t.closest('[data-project-status]');if(status){if(projectEdit){toast('Save or Cancel the project name first');return true}projectChangeStatus(status);return true}const scale=t.closest('[data-home-scale]');if(scale){homeScale=scale.dataset.homeScale;LS.set('oym_home_scale',homeScale);renderHome();return true}const node=t.closest('[data-home-node]');if(node){projectOpen(node.dataset.homeProject,'map');mapSel=node.dataset.homeNode;renderMap();return true}return false}
+function projectsClick(t){const category=t.closest('[data-project-category-filter]');if(category){if(projectEdit||projectCreateState?.pending){toast('Save or finish the project edit first');return true}projectsCategory=category.dataset.projectCategoryFilter;renderProjects();return true}if(t.closest('[data-project-categories-manage]')){projectsCategoriesOpen=!projectsCategoriesOpen;renderProjects();if(projectsCategoriesOpen)$('[data-category-form] input')?.focus();return true}if(projectCreateState?.pending&&t.closest('[data-project-open],[data-project-edit],[data-project-status],[data-project-bucket]')){toast('Creating project…');return true}const open=t.closest('[data-project-open]');if(open){projectOpen(open.dataset.projectOpen);return true}if(t.closest('[data-project-back]')){setView('projects');return true}const bucket=t.closest('[data-project-bucket]');if(bucket){if(projectEdit){toast('Save or Cancel the project name first');return true}projectsBucket=bucket.dataset.projectBucket;LS.set('oym_projects_bucket',projectsBucket);renderProjects();return true}const edit=t.closest('[data-project-edit]');if(edit){if(projectEdit){toast('Save or Cancel the project name first');return true}projectEdit={pid:edit.dataset.projectEdit,name:projects[edit.dataset.projectEdit]?.name||'',epoch:authEpoch,pending:false,error:''};renderProjects();$('[data-project-name]')?.focus();return true}if(t.closest('[data-project-edit-cancel]')){if(!projectEdit?.pending){projectEdit=null;renderProjects()}return true}const status=t.closest('[data-project-status]');if(status){if(projectEdit){toast('Save or Cancel the project name first');return true}projectChangeStatus(status);return true}const scale=t.closest('[data-home-scale]');if(scale){homeScale=scale.dataset.homeScale;LS.set('oym_home_scale',homeScale);renderHome();return true}const node=t.closest('[data-home-node]');if(node){projectOpen(node.dataset.homeProject,'map');mapSel=node.dataset.homeNode;renderMap();return true}return false}
 
 function projectSetComplete(pid,complete){
   if(!projects[pid])return Promise.resolve();
   return upd({['todo/projects/'+pid+'/status']:complete?'done':'active',['todo/projects/'+pid+'/completedAt']:complete?new Date().toISOString():null});
 }
 function projectStatusHTML(pid,P){return P?`<div class="project-status">${projectCategoryButton(pid)}<span>${P.status==='done'?'Project completed':'Active project'}</span><button class="btn" data-project-complete="${esc(pid)}" data-project-done="${P.status==='done'}">${P.status==='done'?'Reopen project':'Complete project'}</button></div>`:''}
-function markdownControlHTML(){return `<div class="markdown-control"><button class="btn" data-markdown-toggle aria-expanded="${markdownOpen}" aria-haspopup="menu" ${projects[mapPid]?'':'disabled'}>Markdown</button><div class="markdown-menu" role="menu"${markdownOpen?'':' hidden'}><button class="btn" role="menuitem" data-map-markdown>Download .md</button><button class="btn" role="menuitem" data-map-copy>Copy Markdown</button></div></div>`}
+
 window.addEventListener('resize',()=>{if(markdownOpen)closeMarkdown(false)});
 function closeMarkdown(focus=true){markdownOpen=false;$$('[data-markdown-toggle]').forEach(el=>el.setAttribute('aria-expanded','false'));$$('.markdown-menu').forEach(el=>el.hidden=true);if(focus)$('[data-markdown-toggle]')?.focus()}
 function mapDescriptionToggle(){return `<button class="btn" data-map-descriptions aria-pressed="${mapDescriptions}">${mapDescriptions?'Hide':'Show'} descriptions</button>`}
@@ -4771,18 +4795,21 @@ document.addEventListener('click',e=>{
   if(t.hasAttribute('data-node-action'))nodeCompletionAction(t);
   if(t.hasAttribute('data-map-complete'))mapCompleteAction(t);
   if(t.hasAttribute('data-project-complete')){projectSetComplete(t.dataset.projectComplete,t.dataset.projectDone!=='true').catch(()=>{})}
-  if(t.hasAttribute('data-markdown-toggle')){markdownOpen=!markdownOpen;t.setAttribute('aria-expanded',String(markdownOpen));const menu=$('.markdown-menu',t.parentElement);menu.hidden=!markdownOpen;if(markdownOpen){const r=t.getBoundingClientRect();menu.style.position='fixed';menu.style.left=Math.max(8,Math.min(r.left,window.innerWidth-menu.offsetWidth-8))+'px';menu.style.right='auto';menu.style.top=Math.max(8,Math.min(r.bottom+6,window.innerHeight-menu.offsetHeight-8))+'px';$('[role="menuitem"]',t.parentElement).focus()}}
-  if(t.hasAttribute('data-map-markdown')){mapDownloadMarkdown();closeMarkdown()}
-  if(t.hasAttribute('data-map-copy')){closeMarkdown();const epoch=authEpoch;Promise.resolve().then(()=>navigator.clipboard.writeText(mapMarkdown(mapPid))).then(()=>{if(epoch===authEpoch)toast('Markdown copied')}).catch(()=>{if(epoch===authEpoch)toast('Copy unavailable. Use Download Markdown.')})}
 
 
 
 });
 document.addEventListener('input',e=>{if(e.target.hasAttribute('data-chrono-scrub')){chronoPause();chronoProgress=Number(e.target.value)/1000;chronoPaint()}});
 
+function refreshCategoryForms(saved){
+  const host=$('#categoryHost'),active=document.activeElement,retained=new Map();for(const form of $$('[data-category-form]',host))if(form!==saved&&(form.dataset.dirty||form.dataset.saving)){form.remove();retained.set(form.dataset.categoryForm,form)}host.innerHTML=categoriesHTML();for(const [id,form]of retained){const next=$$('[data-category-form]',host).find(f=>f.dataset.categoryForm===id);if(next)next.replaceWith(form)}if(active?.isConnected&&host.contains(active))active.focus({preventScroll:true});
+}
+document.addEventListener('input',e=>{const form=e.target.closest?.('[data-category-form]');if(form)form.dataset.dirty='true'});
 document.addEventListener('submit',async e=>{
-  const form=e.target.closest('[data-category-form]');if(!form)return;e.preventDefault();
-  if(form.dataset.saving)return;form.dataset.saving='true';const epoch=authEpoch;try{await saveTrackingCategory(form.dataset.categoryForm,form.elements.name.value,form.elements.color.value);if(epoch===authEpoch&&settingsOpen){$('#categoryHost').innerHTML=categoriesHTML();$('[data-settings-close]').focus()}}catch(err){if(epoch===authEpoch&&$('[data-category-error]'))$('[data-category-error]').textContent=err.message}finally{delete form.dataset.saving}
+  const form=e.target.closest('[data-category-form]');if(!form)return;e.preventDefault();if(form.dataset.saving)return;form.dataset.saving='true';const epoch=authEpoch,button=form.querySelector('button'),error=$('[data-category-form-error]',form);button.disabled=true;if(error)error.textContent='';
+  try{await saveTrackingCategory(form.dataset.categoryForm,form.elements.name.value,form.elements.color.value);if(epoch===authEpoch&&form.isConnected){refreshCategoryForms(form);if(view==='projects')renderProjects();if(settingsOpen)$('[data-settings-close]')?.focus();else $('[data-project-categories-manage]')?.focus()}}
+  catch(err){if(epoch===authEpoch&&form.isConnected){if(error)error.textContent=err.message;else $('[data-category-error]',form.closest('.category-manager'))?.replaceChildren(document.createTextNode(err.message))}}
+  finally{if(epoch===authEpoch&&form.isConnected){delete form.dataset.saving;button.disabled=false}}
 });
 
 // Calendar authorization is separate from Firebase identity. Tokens and fetched events live
@@ -4883,14 +4910,14 @@ function listen(){
   const ref=db.ref('.info/connected'),cb=s=>{if(epoch===authEpoch)$('#offline').hidden=!!s.val()};ref.on('value',cb);subscriptions.push([ref,cb]);
 }
 function unlisten(){
-  authEpoch++;EX.rprivate=false;completedProjectId='';projectCategoryClose(false);mapChronoLeave();closeSettings(false);closeMarkdown(false);projectExpanded.clear();listening=false;for(const [ref,cb] of subscriptions)ref.off('value',cb);subscriptions=[];
+  authEpoch++;exportRequest++;projectsCategoriesOpen=false;const manager=$('#categoryHost');if(manager){$('#settingsCategoryMount').append(manager);manager.innerHTML=''}EX.rprivate=false;completedProjectId='';projectCategoryClose(false);mapChronoLeave();closeSettings(false);closeMarkdown(false);projectExpanded.clear();listening=false;for(const [ref,cb] of subscriptions)ref.off('value',cb);subscriptions=[];
   chronoPause();chronoProgress=0;chronoModel=null;googleCalendarClear();
   tasks={};hist={};projects={};sideMap={};maps={};trackingCategories={};categoryEditor=false;applyCategories();_entries=null;ready.tasks=ready.hist=ready.maps=false;
   openId=null;mapSel='';orbitTask='';orbitPage=0;mapDescriptions=false;mapPid='';mapPickOpen=false;mapTray=false;gtSeenPid='';
   // Remove retained edit and undo callbacks before a different account can use them.
   for(const el of $$('[data-g="logside"],[data-g="dside"]'))el.innerHTML='';EX.side='both';EX.dside='both';
   clearTimeout(notesTimer);notesPending=null;hideToast();$('#toast').innerHTML='';
-  $('#exBack').hidden=true;for(const id of ['categoryHost','mswitch','homeHost','projectsHost','projectNav','dashHost','tlHost','financeHost','calHost','mapHost','doneList','doneSummary','exBody']){const el=document.getElementById(id);if(el)el.innerHTML=''};EX.name='';EX.btitle='';EX.rpid='';EX.over={};doneF.q='';doneF.projectId='';$('#doneSearch').value='';$('#logInput').value='';gtFold.clear();gtInline=null;projectEdit=null;projectCreateState=null;projectStatusPending.clear();projectsQuery='';projectsBucket='active';homeCompleted=false;finEdit=null;finAdd=null;finQuery='';finFilter='all';gtDrag?.tip?.remove();gtDrag=null;mpDrag?.ghost?.remove();mpDrag=null;document.body.classList.remove('mp-dragging');endDrag();$$('.mp-ghost,.drag-ghost').forEach(el=>el.remove());hideTip();if(tipEl)tipEl.textContent='';mpPan=null;if(mpPress)clearTimeout(mpPress.timer);mpPress=null;mpPts.clear();if(touchPress)clearTimeout(touchPress.timer);touchPress=null;dragState=null;pointerDown=false;deferred=false;buildSides();render(true);
+  $('#exBack').hidden=true;for(const id of ['categoryHost','mswitch','homeHost','projectsHost','projectNav','dashHost','tlHost','financeHost','calHost','mapHost','doneList','doneSummary','exBody']){const el=document.getElementById(id);if(el)el.innerHTML=''};EX.name='';EX.btitle='';EX.rpid='';EX.over={};doneF.q='';doneF.projectId='';$('#doneSearch').value='';$('#logInput').value='';gtFold.clear();gtInline=null;projectEdit=null;projectCreateState=null;projectsCategory='all';projectsCategoriesOpen=false;projectStatusPending.clear();projectsQuery='';projectsBucket='active';homeCompleted=false;finEdit=null;finAdd=null;finQuery='';finFilter='all';gtDrag?.tip?.remove();gtDrag=null;mpDrag?.ghost?.remove();mpDrag=null;document.body.classList.remove('mp-dragging');endDrag();$$('.mp-ghost,.drag-ghost').forEach(el=>el.remove());hideTip();if(tipEl)tipEl.textContent='';mpPan=null;if(mpPress)clearTimeout(mpPress.timer);mpPress=null;mpPts.clear();if(touchPress)clearTimeout(touchPress.timer);touchPress=null;dragState=null;pointerDown=false;deferred=false;buildSides();render(true);
 }
 async function signIn(){
   gateMsg('');const prov=new firebase.auth.GoogleAuthProvider();prov.setCustomParameters({prompt:'select_account'});
@@ -4921,7 +4948,7 @@ if(auth){
   });
 }else{$('#gate').hidden=false;gateMsg('Could not start sign-in. Reload the page.')}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-window.__oym={projectProgress,projectSchedule,unassignedSchedule,aggregateSchedule,projectRoadmapData,projectSaveName,projectCreate,projectOpen,renderProjects,renderHome,gtRange,financeAddScope,financeData,financePeriods,financeVisible,financeCSV,financeSaveCell,financeOpen,financeCommit,renderFinance,budgetSpan,get finEdit(){return finEdit},setView,gtSaveRate,gtSaveNotes,gtOpenEditor,get gtUnits(){return gtUnits},get gtDescriptions(){return gtDescriptions},costParts,costAmount,costSave,costEditorHTML,parseMoney,fmtMoney,fmtMoneyShort,budgetData,budgetFlow,budgetSet,taskSetBudget,budgetToggle,get budgetOn(){return budgetOn},saveField,mapPanelHTML,setMapSel:id=>{mapSel=id},gtCashHTML,mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapPrintFragments,mapPrintOrientation,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
+window.__oym={projectsCategoryData,get projectsCategory(){return projectsCategory},exportTextSnapshot,exportAct,openExport,renderExport,makePDF,projectProgress,projectSchedule,unassignedSchedule,aggregateSchedule,projectRoadmapData,projectSaveName,projectCreate,projectOpen,renderProjects,renderHome,gtRange,financeAddScope,financeData,financePeriods,financeVisible,financeCSV,financeSaveCell,financeOpen,financeCommit,renderFinance,budgetSpan,get finEdit(){return finEdit},setView,gtSaveRate,gtSaveNotes,gtOpenEditor,get gtUnits(){return gtUnits},get gtDescriptions(){return gtDescriptions},costParts,costAmount,costSave,costEditorHTML,parseMoney,fmtMoney,fmtMoneyShort,budgetData,budgetFlow,budgetSet,taskSetBudget,budgetToggle,get budgetOn(){return budgetOn},saveField,mapPanelHTML,setMapSel:id=>{mapSel=id},gtCashHTML,mapSetPalette,mapTones,mapLabel,roadmapNodes,roadmapToggle,roadmapExcluded,mapSetNodeCompletion,projectMoveCategory,taskProjectGroups,openEditor,mapMarkdown,saveTrackingCategory,projectSetComplete,mapSetCompletion,mapCompletionISO,mapTaskControls,workspaceFor,chronoDay,chronoData,googleEventDays,googleCalendarLoad,googleCalendarConnect,mapFilterNodes,buildBrief,briefToggle,briefExcluded,gtRows,renderGantt,mapNudge,mapMoveBy,mapTidy,mapLink,mapSetColor,mapColorOf,mapLayout,mapPrintFragments,mapPrintOrientation,mapDropRule,mapKindOf,mapKids,mapOrderFor,roadmapData,buildRoadmap,mapUnplaced,mapSave,mapApplyDrop,mapAdd,mapDelete,mapToList,setMapPid:id=>{mapPid=id},get maps(){return maps},dashData,timelineData,calendarData,get tasks(){return tasks},get hist(){return hist},entries,buildReport,buildDump,reportOpts,dumpOpts,EX,parseQuick,taskSide,taskPrivate,applyTheme};
 })();
 </script>
 </body>

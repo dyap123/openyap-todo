@@ -28,7 +28,7 @@ Each tracking category's Tasks page presents expandable **PROJECT** sections wit
 
 ### Markdown for agents
 
-**Markdown** in the Map toolbar opens **Download .md** and **Copy Markdown** options. Either produces an agent-readable `.md` snapshot directly from current canonical data. It includes the project/main topic, project status/privacy, tracking category/color, nested branches/topics, task checkboxes, descriptions, start/due dates, recorded completion timestamps and stable project/node/task IDs. Unscheduled tasks stay undated; unplaced tasks are included separately. Repeating task checkboxes describe the current occurrence.
+**Export → Markdown** offers **Download Markdown** and **Copy Markdown** for an explicitly selected project. Either produces an agent-readable `.md` snapshot directly from current canonical data. It includes the project/main topic, project status/privacy, tracking category/color, nested branches/topics, task checkboxes, descriptions, start/due dates, recorded completion timestamps and stable project/node/task IDs. Unscheduled tasks stay undated; unplaced tasks are included separately. Repeating task checkboxes describe the current occurrence.
 
 The export is a snapshot, not a second editable database or an automatic agent connection. Give the Markdown to an agent to discuss or plan changes, then use its stable IDs to relate changes back to the app. Editing the downloaded file does not write Firebase. Live agent access would require separately authorized access to that user's workspace; no public task endpoint is introduced.
 
@@ -177,8 +177,16 @@ A linked task is charged once per project even when displayed in several branche
 
 Cash flow compares planned weekly/monthly allocations with scope dates. Valid dated tasks off the map also contribute, and invalid nonempty dates leave their whole scope unscheduled. Unallocated allowances spread over the project span. Period cents conserve the scheduled total; no actual spending or invoice timing is inferred. With Budget on, Timeline extends its range to cover all scheduled spending, including dated off-map tasks.
 
-**Export scope CSV** exports each unique scope once with full pricing, dates and notes. It excludes project/section reserves and subtotals, so its Scope total column sums priced scopes rather than the budget envelope. UTF-8 BOM, quoted fields and spreadsheet formula protection support Excel. No actual-cost schema or record migration is introduced.
+**Export → Budget CSV → Download CSV** exports each unique scope once with full pricing, dates and notes. It excludes project/section reserves and subtotals, so its Scope total column sums priced scopes rather than the budget envelope. UTF-8 BOM, quoted fields and spreadsheet formula protection support Excel. No actual-cost schema or record migration is introduced.
 
 Checks: `node tests/finance.test.cjs` (release-gated) and `node tests/finance-browser.cjs` (isolated Chrome). Screenshots: `/private/tmp/oy-todo-finance-{desktop,mobile,flow-desktop,flow-mobile}.png`.
 
 Project navigation checks: `node tests/projects-navigation.test.cjs` (release gated) and `node tests/projects-navigation-browser.cjs` (synthetic Chrome, external traffic blocked). Screenshots: `/private/tmp/oy-todo-project-{home-desktop,home-mobile,list-desktop,list-mobile,workspace-mobile}.png`. Older feature browser tests use legacy setView APIs for their setup; this new suite exercises the visible hierarchy.
+
+### One Export entry and Projects categories
+
+The persistent **Export** button opens six formats: Completed work, Brain dump, Roadmap, Brief (PDFs), Markdown and Budget CSV. Map/Budget no longer have extra export buttons. Opening from a selected project defaults that project; Markdown/CSV offer an explicit selector including completed/archived projects. Text formats have their own download/copy actions without PDF preview/share. They export your complete selected project, including private records; existing PDF privacy/selection/Bluebeam choices stay unchanged. Text content/project/account are captured before asynchronous clipboard operations, and account/format changes suppress stale callbacks.
+
+Projects has **All** and tracking-category filters with counts for the current Active/Completed bucket. They compose with project search. **Manage categories** opens inline rename/color/create forms. Settings retains the same single form host: drafts and errors move between locations rather than duplicate. Clean rows refresh after remote metadata changes; dirty/saving forms keep their input/focus. Each card's **Category** button uses the existing atomic task/history/project reassignment chooser. When moving a filtered card, the destination filter and card focus follow it. New project creation uses the selected category (All uses the current task category). No category deletion or record migration is added.
+
+Checks: `node tests/export-categories.test.cjs` (release gated) and `node tests/export-categories-browser.cjs`. Synthetic Chrome verifies six format controls/downloads/copy, completed selection, category reassignment/drafts and widths320–1440. Screenshots: `/private/tmp/oy-todo-{export-formats,project-categories}-{desktop,mobile}.png`.
