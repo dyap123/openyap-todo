@@ -2978,7 +2978,9 @@ document.addEventListener('pointermove',e=>{
   if(mpPress&&mpPress.id===e.pointerId){
     const dist=Math.hypot(e.clientX-mpPress.x,e.clientY-mpPress.y);
     if(!mpPress.live){
-      if(mpPress.mouse&&dist>5){mpStartDrag(mpPress.info,e.clientX,e.clientY);mpPress.live=true}
+      // Chrome can coalesce a quick drag into one move. Keep the press origin so
+      // that first move contributes its full distance, even if release comes next.
+      if(mpPress.mouse&&dist>5){mpStartDrag(mpPress.info,mpPress.x,mpPress.y);mpPress.live=true}
       else if(!mpPress.mouse&&dist>8){clearTimeout(mpPress.timer);const info=mpPress.info;mpPress=null;
         const c=mapCam[mapPid];if(c){mpPan={id:e.pointerId,x:e.clientX,y:e.clientY,cx:c.x,cy:c.y,moved:true};void info}}
     }

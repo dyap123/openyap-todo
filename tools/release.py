@@ -50,6 +50,7 @@ def release(root, harness, dry_run=False):
     run([str(harness), 'check'], root)
     for test in ('tests/map.test.cjs', 'tests/universal.test.cjs', 'tests/orbit.test.cjs', 'tests/navigation.test.cjs', 'tests/project-category.test.cjs', 'tests/task-visibility.test.cjs', 'tests/quick-add.test.cjs', 'tests/roadmap-completion.test.cjs', 'tests/roadmap-print-map.test.cjs', 'tests/map-theme.test.cjs', 'tests/calendar-actions.test.cjs', 'tests/budget.test.cjs', 'tests/budget-rates.test.cjs', 'tests/palette-selection.test.cjs', 'tests/timeline-editing.test.cjs', 'tests/migration.test.cjs', 'tests/finance.test.cjs', 'tests/projects-navigation.test.cjs', 'tests/export-categories.test.cjs', 'tests/keyboard-spreadsheet.test.cjs'):
         run(['node', test], root)
+    run(['node', 'tests/widget-drag.test.cjs'], root)
     run(['python3', 'tests/release.test.py'], root)
     # Emulator logs must not modify the tracked historical database-debug.log.
     with tempfile.TemporaryDirectory(prefix='todo-rules-') as temporary:
