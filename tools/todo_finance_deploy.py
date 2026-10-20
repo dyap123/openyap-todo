@@ -35,7 +35,7 @@ def preflight(root, commit):
     config=json.loads((root/'firebase/.firebaserc').read_text())
     if config != {'projects':{'default':'openyap-todo'}}:
         raise ValueError('Wrong Firebase project')
-    for name in ['backend/Dockerfile','backend/package-lock.json','backend/deploy/compose.yml','backend/deploy/Caddy.fragment','tools/todo_finance_remote.sh']:
+    for name in ['backend/Dockerfile','backend/package-lock.json','backend/deploy/compose.yml','backend/deploy/check-compose.py','backend/deploy/Caddy.fragment','tools/todo_finance_remote.sh']:
         run(['git','cat-file','-e',f'{commit}:{name}'],root)
 
 def main():

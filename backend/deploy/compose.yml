@@ -26,7 +26,7 @@ services:
     volumes:
       - finance_data:/data
       - /srv/openyap/todo-finance/secrets/firebase.json:/run/secrets/firebase.json:ro
-    tmpfs: [/tmp:size=16m,mode=0700,uid=10001,gid=10001]
+    tmpfs: ['/tmp:size=16m,mode=0700,uid=10001,gid=10001']
     networks:
       edge:
         aliases: [todo-finance]

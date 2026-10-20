@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Only run by the reviewed oy deploy todo-finance target. Never source service.env.
-set -eu
+set -euo pipefail
 commit=${1:-}
 expected=${2:-}
 [[ "$commit" =~ ^[a-f0-9]{40}$ && "$expected" =~ ^[a-f0-9]{64}$ ]] || exit 2
@@ -38,7 +38,7 @@ export FINANCE_COMMIT="$commit"
 trap rollback EXIT
 compose="$release/backend/deploy/compose.yml"
 # docker compose config can disclose interpolated secrets, so never print it.
-[ "$(docker compose -f "$compose" config --services)" = todo-finance ] || exit 2
+docker compose -f "$compose" config --format json | python3 "$release/backend/deploy/check-compose.py"
 docker compose -f "$compose" build todo-finance
 # Image /data is owned by the nonroot UID; Docker initializes a new named volume from it.
 docker compose -f "$compose" up -d --no-deps --wait todo-finance
