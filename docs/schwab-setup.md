@@ -1,0 +1,50 @@
+# Schwab finance adapter
+
+The Finance module is read-only. It needs an HTTPS backend because GitHub Pages cannot safely hold a Schwab app secret, exchange OAuth codes, or refresh brokerage tokens. The runnable service is in `backend/`; no secrets belong in `app-config.js`, Firebase client data, browser storage, commits, chat, or screenshots. No real Schwab credentials or accounts were used for development tests.
+
+## Server configuration
+
+Use Node 22 or newer. In `backend/`, run `npm ci`, then `npm test`. Supply the variables from `.env.example` through the hosting provider's secret/environment settings; `npm start` runs the HTTP listener on `PORT` (8080 by default). The service does not load `.env` automatically. For local process configuration Node supports `node --env-file=/secure/path/finance.env server.mjs`. Production requires a trusted HTTPS reverse proxy to the listener.
+
+1. Register an approved application with [Schwab's Trader API](https://developer.schwab.com/products/trader-api--individual). Register the exact HTTPS callback `https://YOUR_API_HOST/v1/oauth/callback`. Set `SCHWAB_CLIENT_ID`, `SCHWAB_CLIENT_SECRET`, and `SCHWAB_REDIRECT_URI` on the server. The user signs into Schwab directly; this app never asks for brokerage credentials. Review the current [Schwab OAuth guide](https://developer.schwab.com/user-guides/get-started/authenticate-with-oauth) and portal application settings before connecting a real account.
+2. Set `FIREBASE_PROJECT_ID=openyap-todo`, matching the existing frontend sign-in project. Use workload identity/Application Default Credentials with Firebase Auth user-read permissions (revocation checking) and Firestore data access. For local testing only, `GOOGLE_APPLICATION_CREDENTIALS` may point to a service-account JSON stored outside the repository.
+3. Create a **dedicated named Firestore database** `finance` in that project; `FIRESTORE_DATABASE_ID` can override its name. Do not use an existing broadly readable client database. Apply the deny-all client rules in `backend/firestore.rules` to that database before accepting credentials. The Admin SDK accesses it through IAM; client RTDB rules do not protect Firestore. Use the console or a separately reviewed server provisioning workflow; the Todo Pages release currently does not provision this backend or Firestore. Existing task/fitness RTDB paths remain independent. See [Firebase named databases](https://firebase.google.com/docs/firestore/manage-databases) and [Admin SDK Firestore](https://firebase.google.com/docs/reference/admin/node/firebase-admin.firestore).
+4. Generate 32 random bytes for `TOKEN_ENCRYPTION_KEY`, base64 encoded, using `openssl rand -base64 32`. Keep the key in a secret manager, stable across restarts and instances. Tokens are encrypted with AES-256-GCM and authenticated against their Firebase UID. Losing or replacing the key requires users to reconnect. Protect backups and the runtime identity as well as the key.
+5. Set `APP_URL=https://dyap123.github.io/openyap-todo/`. Set `ALLOWED_ORIGINS=https://dyap123.github.io` (comma-separated exact HTTPS origins; no paths or trailing slash). Do not add untrusted origins. All pages on an allowed origin share that browser security boundary. The callback redirect always uses the configured `APP_URL`, never request parameters.
+6. Configure your HTTPS edge to omit query strings, cookies, Authorization headers, request bodies and response bodies from access/error/APM logs. OAuth callback queries include a short-lived code, and account responses contain private data. The Node service itself logs only its startup status. Set provider rate limits and request-size limits on the API; disable caching for every route. Keep the HTTP listener private behind the HTTPS edge. Route the start POST without cross-origin redirects so the browser's trusted `Origin` is preserved.
+7. Set only the public API base in the frontend configuration: `OY_CONFIG.financeApiBase = 'https://YOUR_API_HOST'`. No trailing `/v1` is needed. Publish frontend changes only through the existing reviewed `oy deploy todo` workflow. Provision and release the separate server through an approved server hosting workflow; Pages alone will not activate Schwab.
+
+The service returns authenticated `configured: false` status and the names of missing settings if Schwab configuration is incomplete. Malformed complete configuration fails startup. Firebase Auth credentials are still required for private status. An unconfigured frontend can explain setup without prompting for server secrets.
+
+## API contract
+
+All JSON routes require `Authorization: Bearer <Firebase ID token>`. The server uses `verifyIdToken(token, true)` against the configured Firebase project; it never trusts a UID from a request body. Allowed browser origins receive exact-origin CORS headers. Requests from other browser origins are refused. No cookies are required for private JSON API calls.
+
+| Route | Result |
+| --- | --- |
+| `GET /v1/status` | `{configured, connected, missing: [settingNames], connectedAt: millisecondsOrNull}` |
+| `POST /v1/connect` | `{url: 'https://API/v1/oauth/start', method: 'POST', ticket: opaqueOneTimeTicket}`; replaces any previous connection attempt |
+| `POST /v1/disconnect` | `{connected: false}`; removes stored tokens and invalidates pending callbacks/refreshes |
+| `GET /v1/portfolio` | `{accounts: [Schwab securitiesAccount wrappers], updatedAt: ISO8601}`; refreshes access token when needed |
+
+Connect must submit a **native top-level HTML form** to `url`, method POST, encoding `application/x-www-form-urlencoded`, with a hidden field named `ticket`. Do not navigate to a ticket URL, use a GET form, or send the Firebase token in the form. `/v1/oauth/start` requires an exact trusted browser `Origin`, consumes the one-time start ticket, sets a `__Host-oy_schwab` Secure/HttpOnly/SameSite=Lax nonce cookie, then redirects to Schwab. A plain GET link from another site cannot initiate a connection. This avoids both third-party-cookie dependency and the attack where someone forwards their own connect link to another brokerage holder.
+
+`GET /v1/oauth/callback` is public only for the OAuth return. It validates the hashed one-time state, ten-minute expiry, originating browser nonce, Firebase UID binding and current connection generation before storing tokens. Denied consent returns to the fixed app URL without a connection. Invalid/replayed/expired states return a generic JSON error. The frontend remembers only an account-bound return-to-Finance marker in sessionStorage before leaving and consumes it after sign-in; refresh status after returning if needed; no tokens or account data appear in the redirect URL.
+
+Errors are `{error: code}` with HTTP status. Useful codes: `401 unauthorized`; `403 origin_denied`/`origin_required`; `503 not_configured`; `409 not_connected`, `reconnect_required`, `connection_changed`, `refresh_in_progress`, or `refresh_required`; `502 schwab_unavailable`/`invalid_schwab_response`. Retry a portfolio read after `refresh_required` or a short delay after `refresh_in_progress`. Reconnect when required. Provider response/error bodies are never passed through.
+
+Only Schwab token exchanges/refreshes and `GET /trader/v1/accounts?fields=positions` are implemented. There is no generic URL proxy, order endpoint, trade action, model advice API, or price/history feed. Connected status means encrypted credentials are present, not a successful live brokerage health check. `updatedAt` is the time the response was fetched, not a claim that every underlying price is live. Educational concentration/allocation metrics should derive from the returned data and represent missing values honestly.
+
+## Storage, cleanup and disconnect
+
+Server-only `finance_connections` documents contain encrypted access/refresh tokens, access expiry, a connection generation, connection time and an expiring transactional refresh lease. UID document IDs are hashed. Refresh transactions prevent parallel token rotations across multiple service instances; generation checks prevent a delayed refresh/callback from restoring a disconnected account.
+
+`finance_oauth` documents contain only a UID, generation, browser nonce, phase and ten-minute numeric expiry. Successful callbacks delete them. Abandoned documents can be removed by scheduled server-side cleanup where `expiresAt` is older than the current epoch milliseconds; their expiry is enforced even before deletion. Firestore TTL requires a Timestamp field, so do not configure TTL directly on this numeric field. Restrict both collections to server IAM and retain only as long as needed. Disconnect deletes tokens while retaining a small generation tombstone to prevent in-flight restoration.
+
+Disconnect removes this app's stored access and refresh tokens. It does **not** claim to revoke consent at Schwab: revoke the application through Schwab's account/connected-app controls when needed. Schwab can expire or revoke refresh credentials, requiring browser consent again. No long-lived refresh validity is assumed by this adapter.
+
+## Validation
+
+`npm test` uses synthetic UIDs/provider responses, a transactional in-memory store and a local HTTP server. It covers configuration, token encryption/UID binding, identity/origin checks, OAuth browser binding, forwarded-link attacks, state expiry/replay, account isolation, refresh leasing, disconnect races, error redaction and transport security headers. It makes no brokerage requests or live Firebase mutations. The local HTTP test needs permission to bind localhost in restricted sandboxes.
+
+Before production, verify the named database denies all browser reads/writes, IAM grants only the required server access, secrets and queries are excluded from host logging, the exact callback is approved at Schwab, and an end-to-end consent/refresh/disconnect succeeds with an authorized test account. Those provider/provisioning checks require the owner’s approved credentials and HTTPS host; they cannot be proven by mocked tests.
