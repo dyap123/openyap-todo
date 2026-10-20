@@ -35,7 +35,7 @@ def preflight(root, commit):
     config=json.loads((root/'firebase/.firebaserc').read_text())
     if config != {'projects':{'default':'openyap-todo'}}:
         raise ValueError('Wrong Firebase project')
-    for name in ['backend/Dockerfile','backend/package-lock.json','backend/deploy/compose.yml','backend/deploy/check-compose.py','backend/deploy/Caddy.fragment','tools/todo_finance_remote.sh']:
+    for name in ['backend/Dockerfile','backend/package-lock.json','backend/deploy/compose.yml','backend/deploy/check-compose.py','backend/deploy/edge-control.py','backend/deploy/Caddy.fragment','tools/todo_finance_remote.sh','tools/todo_finance_caddy_probe.py']:
         run(['git','cat-file','-e',f'{commit}:{name}'],root)
 
 def main():
@@ -49,7 +49,7 @@ def main():
     if not re.fullmatch(r'[0-9a-f]{64}',args.caddy_sha):
         raise ValueError('Use SHA256 of the current live Caddyfile')
     preflight(root,args.commit)
-    plan={'host':HOST,'project':'openyap-todo','service':'todo-finance','commit':args.commit,'directory':BASE,'publicBase':'https://api.openyap.org/todo-finance','callback':'https://api.openyap.org/todo-finance/v1/oauth/callback','expectedCaddySha':args.caddy_sha,'actions':['oy check','backend tests','archive reviewed backend only','build/start only todo-finance','validate Caddy candidate before reload','probe public health and unauthenticated status'],'secrets':'existing private server files; never uploaded by this command','rollback':'prior release via same target; persistent volume retained'}
+    plan={'host':HOST,'project':'openyap-todo','service':'todo-finance','commit':args.commit,'directory':BASE,'publicBase':'https://api.openyap.org/todo-finance','callback':'https://api.openyap.org/todo-finance/v1/oauth/callback','expectedCaddySha':args.caddy_sha,'actions':['oy check','backend tests','archive reviewed backend only','build/start only todo-finance','validate full Caddy candidate with temporary routing/privacy stubs','guard existing Caddy image/mounts/ports/networks; repair stale bind with edge-only recreation if needed','assert mounted inode and running admin configuration','probe public health and unauthenticated status'],'secrets':'existing private server files; never uploaded by this command','rollback':'prior release via same target; persistent volume retained'}
     print(json.dumps(plan,indent=2),flush=True)
     if args.dry_run:
         return
@@ -60,7 +60,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix='todo-finance-release-') as temporary:
         archive=Path(temporary)/'release.tar'
         with archive.open('wb') as stream:
-            run(['git','archive','--format=tar',args.commit,'backend','tools/todo_finance_remote.sh'],root,stdout=stream)
+            run(['git','archive','--format=tar',args.commit,'backend','tools/todo_finance_remote.sh','tools/todo_finance_caddy_probe.py'],root,stdout=stream)
         release=f'{BASE}/releases/{args.commit}'
         digest=hashlib.sha256(archive.read_bytes()).hexdigest()
         staged=run(['ssh',HOST,f'if test -e {release}; then test -f {release}/.archive-sha256 && test "$(cat {release}/.archive-sha256)" = {digest} && echo existing; else umask 077; mkdir -p {release}; echo new; fi'],capture=True)

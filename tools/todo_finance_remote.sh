@@ -24,7 +24,7 @@ rollback() {
   if [ "$result" != 0 ]; then
     if [ "$caddy_applied" = true ]; then
       cat "$release/Caddyfile.previous" > "$app/Caddyfile"
-      (cd "$app" && docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile) || true
+      python3 "$release/backend/deploy/edge-control.py" activate "$release/edge.previous.json" || true
     fi
     if [[ "$previous" =~ ^/srv/openyap/todo-finance/releases/([a-f0-9]{40})$ ]]; then
       FINANCE_COMMIT="${BASH_REMATCH[1]}" docker compose -f "$previous/backend/deploy/compose.yml" up -d --no-deps --no-build todo-finance || true
@@ -71,19 +71,17 @@ PY
 # Use the installed Caddy version/modules and existing runtime environment to validate.
 # Candidate is passed on stdin, not copied into the mounted live file before validation.
 cd "$app"
+python3 "$release/tools/todo_finance_caddy_probe.py" --candidate "$candidate"
 docker compose exec -T caddy caddy validate --config - --adapter caddyfile < "$candidate"
 [ "$(sha256sum "$app/Caddyfile" | cut -d' ' -f1)" = "$expected" ] || { echo 'Caddy changed during validation'; exit 2; }
 cp "$app/Caddyfile" "$release/Caddyfile.previous"
 # Preserve inode: Caddy has this file bind-mounted. Atomic rename would leave its old mount.
 caddy_applied=true
 cat "$candidate" > "$app/Caddyfile"
-if ! docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile; then
-  cat "$release/Caddyfile.previous" > "$app/Caddyfile"
-  docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
-  exit 1
-fi
+python3 "$release/backend/deploy/edge-control.py" activate "$release/edge.previous.json"
+python3 "$release/backend/deploy/edge-control.py" assert-runtime
 # No query strings, cookies or credentials in these probes.
-curl --fail --silent --show-error https://api.openyap.org/todo-finance/health
+curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 1 https://api.openyap.org/todo-finance/health
 status=$(curl --silent --output /dev/null --write-out '%{http_code}' https://api.openyap.org/todo-finance/v1/status)
 [ "$status" = 401 ] || { echo 'Private status authentication probe failed'; exit 1; }
 ln -sfn "$release" "$base/current"

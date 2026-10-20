@@ -16,7 +16,7 @@ class Preflight(unittest.TestCase):
         self.root=Path(self.temporary.name).resolve()
         self.git('init','-b','main');self.git('remote','add','origin','https://github.com/dyap123/openyap-todo.git')
         (self.root/'firebase').mkdir();(self.root/'firebase/.firebaserc').write_text(json.dumps({'projects':{'default':'openyap-todo'}}))
-        for name in ['backend/Dockerfile','backend/package-lock.json','backend/deploy/compose.yml','backend/deploy/check-compose.py','backend/deploy/Caddy.fragment','tools/todo_finance_remote.sh']:
+        for name in ['backend/Dockerfile','backend/package-lock.json','backend/deploy/compose.yml','backend/deploy/check-compose.py','backend/deploy/edge-control.py','backend/deploy/Caddy.fragment','tools/todo_finance_remote.sh','tools/todo_finance_caddy_probe.py']:
             p=self.root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('synthetic')
         self.git('add','.');self.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','Synthetic fixture')
         self.commit=self.git('rev-parse','HEAD')
