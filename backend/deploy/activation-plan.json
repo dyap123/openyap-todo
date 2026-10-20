@@ -1,5 +1,5 @@
 {
-  "status": "prepared-for-review-not-deployed",
+  "status": "hosted-unconfigured-verified",
   "host": "openyap@openyap-vps",
   "directory": "/srv/openyap/todo-finance",
   "existingAppDirectory": "/srv/openyap/app",
@@ -16,17 +16,40 @@
     "full proposed configuration validates with installed Caddy2.11.4",
     "temporary localhost Caddy proxy-failure privacy probe passed; live configuration unchanged"
   ],
-  "requiredBeforeRelease": [
-    "reviewed committed Todo source and isolated harness target",
-    "live Caddyfile SHA256",
-    "private scoped Firebase Auth-read identity",
-    "private stable TOKEN_ENCRYPTION_KEY"
-  ],
+  "requiredBeforeRelease": [],
   "requiredForBrokerageConnection": [
     "approved Schwab client ID and secret in private host file",
     "exact callback registered and approved at Schwab",
     "owner browser consent"
   ],
-  "frontend": "do not set API base until live readiness/auth/CORS validated",
-  "noPaidGoogleServiceRequired": true
+  "frontend": "Public base verified for frontend routing; service reports configured:false until approved Schwab settings are supplied. Positive owner-token and brokerage flow remain untested.",
+  "noPaidGoogleServiceRequired": true,
+  "deployedCommit": "df463383e941a1d6fcc78d40810d0c8fc9a0c4ad",
+  "deployedVia": "reviewer-operated oy deploy todo-finance",
+  "verifiedOn": "2026-10-20",
+  "caddySha256": "e1d426d3e6cd2f9ae8dda791fa756ad427bae7539fe355247bca20112bbfa496",
+  "liveVerification": {
+    "health": {
+      "status": 200,
+      "ready": true,
+      "configured": false
+    },
+    "missingOrInvalidFirebaseTokenStatus": 401,
+    "allowedOriginAndPreflight": {
+      "origin": "https://dyap123.github.io",
+      "optionsStatus": 204
+    },
+    "foreignOriginStatus": 403,
+    "existingApiHealthStatus": 200,
+    "caddyHostAndMountedInodesEqual": true,
+    "dataDirectoryMode": "0700",
+    "sqliteFileMode": "0600",
+    "runtimeUid": 10001,
+    "unrelatedAppsUptimesUnchanged": true
+  },
+  "notYetVerified": [
+    "positive authenticated request using the real owner Firebase ID token",
+    "real Schwab OAuth consent/code exchange",
+    "live brokerage portfolio retrieval, refresh and disconnect"
+  ]
 }

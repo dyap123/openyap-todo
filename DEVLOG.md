@@ -1,3 +1,9 @@
+## 2026-10-20 — Public Finance service configured; approved Schwab credentials pending
+
+Developer: todo_modules_builder; manager: codex. The frontend points to the independently deployed HTTPS adapter at `https://api.openyap.org/todo-finance`; shell cache v14 refreshes public configuration. When authenticated status confirms that approved Schwab app credentials are absent, Finance explicitly says **Schwab credentials needed** and that the secure service is available. No connect button or invented account data is shown. An empty API base retains generic setup copy; request errors remain visible and suppress the service-available claim. App keys, secrets and brokerage tokens remain server-side; approved Schwab credentials and subsequent user consent are still needed for a live portfolio.
+
+Extended the existing life behavior test for hosted-but-unconfigured status and a subsequent service failure. The final public URL is applied only after manager verification of live health, Firebase authentication enforcement and origin restrictions. No developer live account access, secrets, commit or deployment.
+
 ## 2026-10-20 — Page-bottom scrolling reproduces the same clock bug
 
 Follow-up report: reaching the page bottom appeared to refresh into Tasks. A read-only native Chrome replay of released8efe0ba confirmed Fitness was at its actual bottom (scrollY917, viewport1050, document1967); the next30-second clock callback revealed Tasks and reset scrollY to0 while `appModule` still said Fitness. The current fix keeps both Fitness and Finance visible at the bottom across native End/wheel scrolling, repeated clock ticks, remote snapshots and same-UID notifications, retaining the focused draft DOM/value and same-page marker. Scroll handlers only hide tooltips/reposition a Map panel; touch handlers are limited to task/map drag targets; visibility/pagehide only pause chronology. No separate scroll-driven route reset was found.

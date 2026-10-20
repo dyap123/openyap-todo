@@ -71,7 +71,7 @@ def main():
         elif staged != 'existing':
             raise ValueError('Unexpected staging response')
         run(['ssh',HOST,f'bash {release}/tools/todo_finance_remote.sh {args.commit} {args.caddy_sha}'])
-    print('Finance service released. Verify authenticated status/Schwab consent before enabling the frontend URL.')
+    print('Finance service released. Publish the verified public API URL; brokerage activation still requires approved app credentials and owner OAuth consent.')
 
 if __name__=='__main__':
     try: main()
