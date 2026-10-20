@@ -1,0 +1,32 @@
+{
+  "status": "prepared-for-review-not-deployed",
+  "host": "openyap@openyap-vps",
+  "directory": "/srv/openyap/todo-finance",
+  "existingAppDirectory": "/srv/openyap/app",
+  "project": "openyap-todo",
+  "service": "todo-finance",
+  "publicBase": "https://api.openyap.org/todo-finance",
+  "callback": "https://api.openyap.org/todo-finance/v1/oauth/callback",
+  "store": "encrypted SQLite on todo_finance_data named volume",
+  "network": "openyap_edge",
+  "verifiedReadOnly": [
+    "SSH access",
+    "existing network",
+    "Node24.21.0 registry manifest",
+    "full proposed configuration validates with installed Caddy2.11.4",
+    "temporary localhost Caddy proxy-failure privacy probe passed; live configuration unchanged"
+  ],
+  "requiredBeforeRelease": [
+    "reviewed committed Todo source and isolated harness target",
+    "live Caddyfile SHA256",
+    "private scoped Firebase Auth-read identity",
+    "private stable TOKEN_ENCRYPTION_KEY"
+  ],
+  "requiredForBrokerageConnection": [
+    "approved Schwab client ID and secret in private host file",
+    "exact callback registered and approved at Schwab",
+    "owner browser consent"
+  ],
+  "frontend": "do not set API base until live readiness/auth/CORS validated",
+  "noPaidGoogleServiceRequired": true
+}

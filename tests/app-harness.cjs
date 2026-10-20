@@ -33,6 +33,7 @@ function makeDB(seed) {
 
 async function boot(seed, options={}) {
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')
+    .replace('<script src="./food-catalogue.js"></script>',()=>'<script>'+fs.readFileSync(path.join(ROOT,'food-catalogue.js'),'utf8')+'</script>')
     .replace(/<script src="https:\/\/www\.gstatic[^>]*><\/script>/g, '')
     .replace(/<script src="https:\/\/cdn\.jsdelivr[^>]*><\/script>/g, '')
     .replace(/<link[^>]*fonts\.g[^>]*>/g, '');
@@ -43,6 +44,7 @@ async function boot(seed, options={}) {
       for(const [key,value] of Object.entries(options.storage||{}))w.localStorage.setItem(key,value);
       for(const [key,value] of Object.entries(options.sessionStorage||{}))w.sessionStorage.setItem(key,value);
       const NativeDate=w.Date;w.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:['2026-09-28T12:00:00-07:00']))}static now(){return +new NativeDate('2026-09-28T12:00:00-07:00')}};
+      if(options.captureIntervals){const nativeInterval=w.setInterval.bind(w);w.__intervals=[];w.setInterval=(callback,ms,...args)=>{w.__intervals.push({callback,ms});return nativeInterval(callback,ms,...args)}}
       w.matchMedia = () => ({ matches: true, addListener() {}, removeListener() {}, addEventListener() {} }); // reduced motion
       w.jspdf = require('jspdf');
       const user = options.user===undefined?{uid:'owner',email:'dyap123@gmail.com',emailVerified:true}:options.user; let authCallback; w.__setUser=u=>authCallback(u); w.__authCalls=[]; w.OY_CONFIG={googleClientId:'test-client'}; w.fetch=options.fetch||(()=>Promise.reject(new Error('Unexpected fetch')));w.google=options.google;

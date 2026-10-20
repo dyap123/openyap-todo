@@ -1,0 +1,50 @@
+name: todo-finance
+services:
+  todo-finance:
+    image: openyap-todo-finance:${FINANCE_COMMIT:?reviewed commit required}
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 96
+    mem_limit: 384m
+    cpus: "0.5"
+    env_file: [/srv/openyap/todo-finance/secrets/service.env]
+    environment:
+      FIREBASE_PROJECT_ID: openyap-todo
+      FINANCE_STORE: sqlite
+      SQLITE_PATH: /data/finance.sqlite
+      PUBLIC_API_BASE: https://api.openyap.org/todo-finance
+      SCHWAB_REDIRECT_URI: https://api.openyap.org/todo-finance/v1/oauth/callback
+      APP_URL: https://dyap123.github.io/openyap-todo/
+      ALLOWED_ORIGINS: https://dyap123.github.io
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/firebase.json
+    volumes:
+      - finance_data:/data
+      - /srv/openyap/todo-finance/secrets/firebase.json:/run/secrets/firebase.json:ro
+    tmpfs: [/tmp:size=16m,mode=0700,uid=10001,gid=10001]
+    networks:
+      edge:
+        aliases: [todo-finance]
+    logging:
+      driver: local
+      options:
+        max-size: 1m
+        max-file: "2"
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://localhost:8080/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+volumes:
+  finance_data:
+    name: todo_finance_data
+networks:
+  edge:
+    external: true
+    name: openyap_edge

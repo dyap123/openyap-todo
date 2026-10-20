@@ -17,7 +17,11 @@ export function configuration(env = process.env) {
       const url = new URL(value);
       if (url.protocol !== 'https:' || url.username || url.password || url.hash) throw new Error('Only HTTPS configuration URLs without credentials/fragments are allowed');
     }
-    if (new URL(config.redirectUri).pathname !== '/v1/oauth/callback' || new URL(config.redirectUri).search) throw new Error('Callback must use /v1/oauth/callback');
+    const base = env.PUBLIC_API_BASE || new URL(config.redirectUri).origin;
+    const publicUrl = new URL(base);
+    if (publicUrl.protocol !== 'https:' || publicUrl.username || publicUrl.password || publicUrl.search || publicUrl.hash || !['', '/todo-finance'].includes(publicUrl.pathname === '/' ? '' : publicUrl.pathname)) throw new Error('PUBLIC_API_BASE requires HTTPS and an allowed empty or /todo-finance prefix');
+    config.publicBase = publicUrl.origin + (publicUrl.pathname === '/' ? '' : publicUrl.pathname);
+    if (config.redirectUri !== config.publicBase + '/v1/oauth/callback') throw new Error('Callback must exactly match PUBLIC_API_BASE + /v1/oauth/callback');
     if (config.origins.some(origin => new URL(origin).origin !== origin) || !config.origins.includes(new URL(config.appUrl).origin)) throw new Error('ALLOWED_ORIGINS must contain exact origins including APP_URL origin');
   }
   return config;
@@ -174,7 +178,7 @@ export function createService({ config, store, verifyIdToken, fetchImpl = fetch,
         const ticket = random(), generation = random();
         await store.mutate('connections', uid, () => ({ generation }));
         await store.mutate('oauth', hash(ticket), () => ({ uid, generation, browser: random(), phase: 'start', expiresAt: now() + 600000 }));
-        const target = new URL('/v1/oauth/start', config.redirectUri);
+        const target = new URL(config.publicBase + '/v1/oauth/start');
         json(200, { url: target.href, method: 'POST', ticket }); return;
       }
       const { token, generation } = await accessToken(uid);

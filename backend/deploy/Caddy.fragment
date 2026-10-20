@@ -1,0 +1,12 @@
+	# BEGIN managed todo-finance
+	@todoFinance path /todo-finance /todo-finance/*
+	log finance_private {
+		no_hostname
+		output discard
+	}
+	log_name @todoFinance finance_private
+	log_skip @todoFinance
+	handle_path /todo-finance/* {
+		reverse_proxy todo-finance:8080
+	}
+	# END managed todo-finance

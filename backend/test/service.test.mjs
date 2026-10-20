@@ -171,3 +171,13 @@ test('forwarded start links and foreign forms cannot attach attacker UID to vict
   assert.equal((await f.request('/v1/oauth/start', { method: 'POST', user: null, form })).status, 302);
   assert.equal((await f.request('/v1/oauth/start', { method: 'POST', user: null, form })).status, 400);
 });
+
+test('public prefix uses exact callback and returns prefixed POST destination', async () => {
+  const env = { FIREBASE_PROJECT_ID: 'p', SCHWAB_CLIENT_ID: 'id', SCHWAB_CLIENT_SECRET: 'secret', PUBLIC_API_BASE: 'https://api.openyap.org/todo-finance', SCHWAB_REDIRECT_URI: 'https://api.openyap.org/todo-finance/v1/oauth/callback', APP_URL: 'https://app.example/', ALLOWED_ORIGINS: 'https://app.example', TOKEN_ENCRYPTION_KEY: randomBytes(32).toString('base64') };
+  const config = configuration(env);
+  const f = fixture({ config });
+  const response = await f.request('/v1/connect', { method: 'POST' });
+  assert.equal(response.body.url, 'https://api.openyap.org/todo-finance/v1/oauth/start');
+  for (const base of ['https://api.openyap.org/todo-finance/', 'https://api.openyap.org/other', 'https://api.openyap.org/todo-finance?x=1', 'https://evil.example/todo-finance']) assert.throws(() => configuration({ ...env, PUBLIC_API_BASE: base }));
+  assert.throws(() => configuration({ ...env, SCHWAB_REDIRECT_URI: env.SCHWAB_REDIRECT_URI + '?next=https://evil.example' }));
+});

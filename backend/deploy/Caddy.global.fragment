@@ -1,0 +1,6 @@
+	# BEGIN managed todo-finance-errors
+	log finance_private_errors {
+		include http.log.error.finance_private
+		output discard
+	}
+	# END managed todo-finance-errors
