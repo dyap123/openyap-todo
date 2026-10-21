@@ -53,6 +53,8 @@ def release(root, harness, dry_run=False):
     run(['node', 'tests/widget-drag.test.cjs'], root)
     run(['node', 'tests/life-modules.test.cjs'], root)
     run(['node', 'tests/workouts.test.cjs'], root)
+    run(['node', 'tests/activity-estimates.test.cjs'], root)
+    run(['node', 'tests/custom-exercises.test.cjs'], root)
     run(['node', 'tests/fitness-seed.test.cjs'], root)
     run(['node', 'tests/life-modules-browser.cjs'], root)
     run(['node', '--test', 'backend/test/service.test.mjs'], root)

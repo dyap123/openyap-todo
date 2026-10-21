@@ -33,6 +33,7 @@ function makeDB(seed) {
 
 async function boot(seed, options={}) {
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')
+    .replace('<script src="./activity-estimates.js"></script>',()=>'<script>'+fs.readFileSync(path.join(ROOT,'activity-estimates.js'),'utf8')+'</script>')
     .replace('<script src="./training-plan.js"></script>',()=>'<script>'+fs.readFileSync(path.join(ROOT,'training-plan.js'),'utf8')+'</script>')
     .replace('<script src="./food-catalogue.js"></script>',()=>'<script>'+fs.readFileSync(path.join(ROOT,'food-catalogue.js'),'utf8')+'</script>')
     .replace(/<script src="https:\/\/www\.gstatic[^>]*><\/script>/g, '')
@@ -60,6 +61,8 @@ async function boot(seed, options={}) {
     },
   });
   await new Promise(r => setTimeout(r, 60));
+  // Auth callbacks may finish after that timer under load; let their scheduled data paint run.
+  await new Promise(r => dom.window.requestAnimationFrame(r));
   return { w: dom.window, d: dom.window.document, db };
 }
 
