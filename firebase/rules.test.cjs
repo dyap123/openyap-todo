@@ -36,7 +36,7 @@ async function t(name, p) { try { await p; pass++; } catch (e) { fail++; console
   await t('other account denied write', assertFails(other.ref('todo/tasks/e').set(1)));
   const alice = env.authenticatedContext('alice', { email: 'alice@example.com', email_verified: false }).database();
   const bob = env.authenticatedContext('bob', { email: 'bob@example.com', email_verified: true }).database();
-  for (const field of ['tasks','projects','maps','history','sides']) {
+  for (const field of ['tasks','projects','maps','history','sides','fitness/profile','fitness/checkins','fitness/workouts']) {
     await t('email user creates own '+field, assertSucceeds(alice.ref('users/alice/todo/'+field+'/a').set({title:'private'})));
     await t('user reads own '+field, assertSucceeds(alice.ref('users/alice/todo/'+field).once('value')));
     await t('different UID cannot read '+field, assertFails(bob.ref('users/alice/todo/'+field).once('value')));

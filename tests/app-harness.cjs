@@ -33,6 +33,7 @@ function makeDB(seed) {
 
 async function boot(seed, options={}) {
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')
+    .replace('<script src="./training-plan.js"></script>',()=>'<script>'+fs.readFileSync(path.join(ROOT,'training-plan.js'),'utf8')+'</script>')
     .replace('<script src="./food-catalogue.js"></script>',()=>'<script>'+fs.readFileSync(path.join(ROOT,'food-catalogue.js'),'utf8')+'</script>')
     .replace(/<script src="https:\/\/www\.gstatic[^>]*><\/script>/g, '')
     .replace(/<script src="https:\/\/cdn\.jsdelivr[^>]*><\/script>/g, '')
